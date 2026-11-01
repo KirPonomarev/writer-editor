@@ -898,7 +898,9 @@
     "src/derived/plot/derivePlotProjection.mjs",
     "test/contracts/yalken-atlas-v5-e03-c01-plot-projection-originref-sequence-layout.contract.test.js",
     "test/unit/plot-source-navigation.test.js",
-    "docs/tasks/2026-11-01--plot-source-navigation.md"
+    "docs/tasks/2026-11-01--plot-source-navigation.md",
+    "docs/tasks/2026-11-01--idea-origin-navigation.md",
+    "test/unit/idea-origin-navigation.test.js"
   ],
   "protectedFiles": [
     {
@@ -1127,7 +1129,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "b17bf8bab9c6d373fd63966c8c9f2bb1aa65339d199d4758d5dabe5c9461df4e"
+        "sha256": "6344cfa69023a6c6859dd0b2f749f75addcfab21c1f4461573b256e26b3506aa"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1135,11 +1137,11 @@
       },
       {
         "path": "src/renderer/commands/projectCommands.mjs",
-        "sha256": "27bb5206b9ba26ea64d056262063373cf904c88bb897288322a0e7b573c1f744"
+        "sha256": "73357541b5217f99938dd3e96e870086a13d6103e1875305b254b803ae45bfd4"
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "375db31c147bdb5464cd0eda30edf0fe5cbcdf4ea2113e6c9b6dc2953c8a1dde"
+        "sha256": "121efb4b587c7fd418f9b8ee1684ee1b05f0b317dbb2cfbe26173674d6bd495e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1303,7 +1305,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "9d259afc3404cf1c90b5047559d91a8489afc9523dc64d79b45768acd777053e"
+        "sha256": "0538403184ab481a7225d04b7acd1cb58cff408eac612f53ad0a6667db70a282"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2819,15 +2821,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "f5692063740129b2a3c32c9b69feacdb572efc32d66e7955b5318ebe07c9c53d"
+        "sha256": "f593b001938c304dd21dc9673b3b375aa58bbd2f153f7889a356004f7da386e2"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "4ae4eb1fb36455b4df82ccd98c6e0a5b795049563ea18c5d8ab091c4b8871d42"
+        "sha256": "50278a7052a6b6d40287c4b1ee77215e44e91dcf3123a320a5737e29b4ed4e5f"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "608b5cc0d3ac3fb48ed331fac54cadba06d5ee2f5c8be56455939a899e0d3b3e"
+        "sha256": "5034286948f655b8863136204335a2c46826ab5b8ae142d7687d3d8a05125190"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3367,7 +3369,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "1422e1452faa1d46b2fd81c46a695b46766e7e1cb195e792372740ae9fbeceb2"
+        "sha256": "cbea62972833f4cfd33d137704336b21f6ee8c145365181a2869088bbf899ecc"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3391,11 +3393,11 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "da4830bff38fdf3399ac85f2447ba77e1a58b9044fbef7b97029dbaea4779187"
+        "sha256": "8a0835c796b54d83c173ede5f4c0c7d9816ae47881bf4488e00613e4a815be6a"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
-        "sha256": "fe3f4e747e121df16bf4b7aebd3f46cc25cfe29adca3be9cf42434def456ff20"
+        "sha256": "63305fa3f7126fbd007f014f0846642f2ef93bd8caff929641d5e8eebcfd3cc1"
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
@@ -3483,7 +3485,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "025db1aa93bc93a9f62a2d5ca89937edc6807e89fca857d4aa1c6c9f3a9f2a18"
+        "sha256": "3eb36782a58cd7a871a05bc8421f88ba2888b285ed9b16c5dbdfcecb892c43d6"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3499,11 +3501,11 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "eab2453b9bde0f024cc0b7c14d7dc5bc344ff40fa622cc3d74f87095a9f18bf5"
+        "sha256": "0e1e7629ae34d8d70c93dca4a973d3402ebd8c2744640dfb88d476692f556831"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
-        "sha256": "24cf83e8f4680e9b348c9caed332dba00012df5df62d6b9641879aed6aa2e0fd"
+        "sha256": "cb5a80a31306ea9d0653f060403de23a53880baa069a0dfedd36cae618edae40"
       },
       {
         "path": "docs/tasks/2026-10-22--mac-native-text-clipboard.md",
@@ -3735,7 +3737,7 @@
       },
       {
         "path": "src/derived/projections/projectionInspectorManifests.mjs",
-        "sha256": "e2e6aefb0ba873c53682604b9f2ad4c25a0fcad0531356cc7eec0ba6b835b6c9"
+        "sha256": "9d8d7a35ffe39c92cf1f7e3027853ab850efcd8cf27f6fe870a74245e90ebed0"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-e03-c05-projection-inspector-fallback-manifests.contract.test.js",
@@ -4019,7 +4021,7 @@
       },
       {
         "path": "docs/tasks/2026-10-31--environment-epochs-full-configuration.md",
-        "sha256": "47a2774af226ddf9b645c3f1ff9bdafcbf7547c8ff5f23ab397ef121122ae68e"
+        "sha256": "ef86a20e57f29a47a70174ade15927c40f7433f7483ef28f80d486911a458267"
       },
       {
         "path": "src/main/environmentEpochPort.cjs",
@@ -4075,11 +4077,19 @@
       },
       {
         "path": "docs/tasks/2026-11-01--plot-source-navigation.md",
-        "sha256": "cba5bd90bd40850154778701acffb158dc0f1dc247bc983f52f810e1cb5c0144"
+        "sha256": "97d60e6c10c82010114b416cf56e1568c79745311b34f7920968c893e82f3f06"
       },
       {
         "path": "test/unit/sector-m-preload-tree-document-command-bridge.test.js",
-        "sha256": "180eed58dc07dc4c839be4311e0376f84f9d8dcb868ce30baaf74076111f80ec"
+        "sha256": "de990f3d1fa336fe5c792148122935fcb67ad144734232d7cb83b6044ef74c00"
+      },
+      {
+        "path": "docs/tasks/2026-11-01--idea-origin-navigation.md",
+        "sha256": "7729f3d4de0b75013db9dab92a4b46207def6278ff2ab686274c1df672365440"
+      },
+      {
+        "path": "test/unit/idea-origin-navigation.test.js",
+        "sha256": "52252bf7048557f835d18251c2d74cd03824f761cf0b611534d1cfae38e9be90"
       }
     ],
     "followupRepair": {

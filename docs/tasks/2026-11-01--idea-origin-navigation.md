@@ -1,6 +1,6 @@
 # Idea saved-origin scene navigation
 
-STATUS: UNACCEPTED_SOURCE_CHECKPOINT1586OF1588_STATIC5PASS_CURRENT_BINDING_PENDING
+STATUS: CANDIDATE_SOURCE_PRE_NATIVE_AND_FULL_DELIVERY
 FROZEN_CAUSAL_INPUTS_SHA256: c4112d685748cb0b6ef1144c493008bf9041be0c1fa246a5d2516b9e51de772b
 HISTORICAL_CAUSAL_RESULT: Whole27tests3pass24fail0skip0todo0cancel on unchanged runtime1f33698b; rawdb6901b4a7715dd3b0f571677932f8a07aa40ce3a81bf3b38b67b5a253082e7d. Actual legacy/generation/dirty-other-save controls pass. Registration drops expectation; Main ignores forged/stale Idea origin and late manifest. No native or implementation acceptance.
 ROLE: BOUNDED_TASK_SPECIFICATION
@@ -21,7 +21,7 @@ DESIGN_TOOL_ROUTER: APPLIED; typed APPLICABLE_EVIDENCE_REQUIRED.
 DESIGN_SOURCE_OF_TRUTH: Existing saved Idea inspector typed slot, Plot source list and native labeled button vocabulary; existing CSS tokens and toolbar typography protected.
 DESIGN_RESEARCH_SOURCES: Current renderer and derived source, V6 P16/P17/MAC14, DesignOS guide/matrix, ui-craft, exact predecessor package. No external UI system or optional service.
 DESIGN_SELECTED_DIRECTION: Bounded saved-source rows with explicit currentness, existing Open scene command, keyboard-accessible native buttons and explicit pagination when more than24origins; no new surface or visual language.
-DIFF_BUDGET: Current continuation allows27exact paths, at most1400meaningful added/removed lines excluding generated bundle and purely mechanical bindings. All existing source/test predicates and frozen27case file remain protected. No independent infrastructure or cleanup.
+DIFF_BUDGET: Current continuation allows28exact paths, at most1400meaningful added/removed lines excluding generated bundle and purely mechanical bindings. All existing source/test predicates and frozen27case file remain protected. No independent infrastructure or cleanup.
 
 ## MICRO_GOAL
 
@@ -65,10 +65,11 @@ One source-navigation outcome only. Current phase creates truthful docs and a fr
 - scripts/ops/sector-m-scope-map.json
 - docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json
 - scripts/ops/release-candidate.mjs
+- test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js
 
 ## DENYLIST
 
-All paths outside the current exact27scope, original Core/schema, command meaning, renderer HTML/CSS/tokens, package pins, preload/IPC, old test predicates/skips/lanes/resource caps/timeouts, profiles, raw histories, frozen contracts and permanent witness preimages. Existing finite test hosts may change only after an actual diagnosed compatibility failure and exact preservation review. No current-stage status or full17qualification promotion.
+All paths outside the current exact28scope, original Core/schema, command meaning, renderer HTML/CSS/tokens, package pins, preload/IPC, old test predicates/skips/lanes/resource caps/timeouts, profiles, raw histories, frozen contracts and permanent witness preimages. Existing finite test hosts may change only after an actual diagnosed compatibility failure and exact preservation review. No current-stage status or full17qualification promotion.
 
 ## CONTRACT / SHAPES
 
@@ -111,3 +112,9 @@ Preserve expected/actual/seed/HEAD/input hash and original raw process evidence.
 
 CURRENT_SOURCE_PHASE04: Actual whole ten affected files1588tests1586pass2fail0skip0todo0cancel, rawb1daa6d318dc78fca3ca8245ee933209bbcdebb13e01c91f833f75859bb4d226. Both causes distinguished: unchanged WP307 current editor namespace pin remains predecessor9d259afc; original static exact registration payload marker lacked the two newly required Idea expectation lines. Static expectation updated with exact inverse restoring merged original and every predicate retained, actual whole5of5raw340d7635. Normal renderer build0raw59777646. All14 execution source inputs physically reread exact after terminal before static-only change, reviewc15d253c. Earlier top-level973 commentary corrected to actual complete1588 denominator. No overall whole-green, native or delivery acceptance.
 SOURCE_CHECKPOINT_REASON: Preserve admitted27-path WIP without claiming current bindings or product delivery; preflight05 for necessary existing first-branch delivery guard compatibility refused dirty worktree before any additional test/runtime edit. After clean checkpoint, re-admit one existing release contract path prospectively; actual owned bare Git new-branch causal test before any guard change. No alternative publisher, fake tracking ref or prime product push.
+
+FIRST_BRANCH_CONTINUATION_ADMISSION: Declaration06 SHA25689c325a66232a0b7d48b59beeea05b75a12482e67c21846bf91b2b66b19338e8; actual clean a97330a2 preflight06 exit0 rawf3dbaeff before additional test or runtime edit. Current allowlist28 adds only existing release CLI contract needed by this same delivery. Exact original delivery87a475b3 unchanged. Diagnose explicit expectedRemoteHead=ABSENT using original owned bare Git fixture; then preserve existing source, clean HEAD, full terminal gzip/TAP and remote binding checks, with actual live remote absence check for first normal push. Existing SHA40 remote branch mode stays protected. No product prime push, fake ref, force, alternate publisher or release authority.
+
+CURRENT_SOURCE_PHASE05: Checkpointa97330a2 preserves original Idea source and genuine whole1588/1586/2 rawb1daa6d3. Original bridge exact expected payload updated only by two Idea lines, whole5pass. Existing first-branch delivery guard diagnosed by appended frozen5 actual owned bare Git cases, RED0of5rawf38f239b then unchanged5of5GREENraw037e256e; frozen30543bcc retains input SHA before guard edit. Closed ABSENT mode now requires actual fresh remote absence plus absent local tracking; every original source, required receipt/full gzip/TAP check and existing SHA40 branch guard stays. Normal push command unchanged, no product push yet. This temporal observation does not reserve a branch or grant release authority. Existing whole release contract and current namespace refresh are still required, along with current native and complete software/delivery. No full17 qualification credit.
+
+CURRENT_CANDIDATE_PHASE06: Source package is being fixed for early actual native before the remaining full software wave. Earlier whole10 result remains1588tests1586pass2fail, never retagged green. Exact two failing assertions and existing/first-branch delivery positive+negative controls now selected9of9pass0skip0todo0cancel rawdcd6244f. Existing producer7 targets prepared/reviewed/applied, independent2108input/741policy/17protected/94current row readback; actual technical byte witnesses appended with real reviewer/UTC and all old registry bytes retained by literal insertion inverse. Final current-source refresh for this factual block precedes clean checkpoint. No native, current whole-baseline, CI,17row qualification, release or delivery completion claimed. All original29logical gates and actual early rebuilt app, no-loss/current/refusal/normal Quit/cold independent raw observations, normal verified push/PR/CI/merge/literal merged checks remain required. Only actual27paths changed inside28allowlist; unchanged inspector contract is still protected.

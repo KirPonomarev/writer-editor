@@ -791,3 +791,45 @@ test('actual existing delivery CLI refuses missing, failed, incomplete, stale, c
     assert.doesNotMatch(result.stdout, /"normalPushStarting":true/u, fault); t.diagnostic(fault + ':remote-still-at-bound-base');
   }
 });
+
+
+function ownedFirstBranchAbsent(f, keepLocalTracking = false) {
+  const taskRoot = path.dirname(f.root), remote = f.git('remote', 'get-url', 'origin');
+  assert.equal(fs.readFileSync(path.join(taskRoot, '.owner'), 'utf8'), 'synthetic-git-delivery-contract');
+  assert.equal(remote, path.join(taskRoot, 'remote.git'));
+  f.git('--git-dir=' + remote, 'update-ref', '-d', 'refs/heads/' + f.proof.branch);
+  if (!keepLocalTracking) f.git('update-ref', '-d', 'refs/remotes/origin/' + f.proof.branch);
+  assert.equal(f.git('ls-remote', '--refs', '--heads', 'origin', 'refs/heads/' + f.proof.branch), '');
+  f.proof.expectedRemoteHead = 'ABSENT';
+}
+
+test('actual existing delivery CLI first branch normal-pushes with honest remote absence and complete terminal proof', t => {
+  const f = verifiedLocalPushFixture(t); ownedFirstBranchAbsent(f);
+  const result = f.run(); assert.equal(result.status, 0, result.stderr);
+  assert.equal(f.remoteHead(), f.head); assert.match(result.stdout, /"normalPushStarting":true/u);
+});
+
+test('actual existing delivery CLI first branch refuses an already present remote under ABSENT expectation', t => {
+  const f = verifiedLocalPushFixture(t); f.proof.expectedRemoteHead = 'ABSENT';
+  const result = f.run(); assert.notEqual(result.status, 0); assert.equal(f.remoteHead(), f.base);
+  assert.match(result.stderr, /E_LOCAL_DELIVERY_PROOF:REMOTE_ABSENCE/u);
+  assert.doesNotMatch(result.stdout, /"normalPushStarting":true/u);
+});
+
+test('actual existing delivery CLI first branch refuses stale local tracking despite actual remote absence', t => {
+  const f = verifiedLocalPushFixture(t); ownedFirstBranchAbsent(f, true);
+  const result = f.run(); assert.notEqual(result.status, 0);
+  assert.equal(f.git('ls-remote', '--refs', '--heads', 'origin', 'refs/heads/' + f.proof.branch), '');
+  assert.match(result.stderr, /E_LOCAL_DELIVERY_PROOF:REMOTE_ABSENCE/u);
+  assert.doesNotMatch(result.stdout, /"normalPushStarting":true/u);
+});
+
+for (const fault of ['changed-source', 'failed-receipt']) test('actual existing delivery CLI first branch retains original ' + fault + ' refusal before any push', t => {
+  const f = verifiedLocalPushFixture(t); ownedFirstBranchAbsent(f);
+  if (fault === 'changed-source') fs.appendFileSync(path.join(f.root, 'leaf.txt'), 'unfrozen first branch edit\n');
+  else { f.receipt.exitCode = 1; f.proof.receipts[f.name] = f.write(f.name + '.json', f.receipt).sha256; }
+  const result = f.run(); assert.notEqual(result.status, 0);
+  assert.match(result.stderr, fault === 'changed-source' ? /E_LOCAL_DELIVERY_PROOF:CANDIDATE_DRIFT/u : /E_LOCAL_DELIVERY_PROOF:NONTERMINAL_OR_FAILED_GATE/u);
+  assert.equal(f.git('ls-remote', '--refs', '--heads', 'origin', 'refs/heads/' + f.proof.branch), '');
+  assert.doesNotMatch(result.stdout, /"normalPushStarting":true/u);
+});

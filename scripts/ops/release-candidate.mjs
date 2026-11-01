@@ -990,7 +990,7 @@ export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
   "src/export/markdown/v1/parseMarkdownV1.mjs": "24510611af0757567b45597f604de443eabc64923f64a5f1f291ee4f1fb1d851",
   "src/export/markdown/v1/serializeMarkdownV1.mjs": "fedbc3e95ce9022c69e704deb1564a3358e50984e17788685184fd03aaae39c1",
   "src/export/markdown/v1/types.mjs": "420a1d65704deb522b05c881c23d7beffeddc5740017edb5955edd43bc95c8f4",
-  "src/main.js": "b17bf8bab9c6d373fd63966c8c9f2bb1aa65339d199d4758d5dabe5c9461df4e",
+  "src/main.js": "6344cfa69023a6c6859dd0b2f749f75addcfab21c1f4461573b256e26b3506aa",
   "src/main/docxImportComputePort.cjs": "6e6fd633a460a8a3fac7a4f0a8fb4e93ed5a84bcc86df60707a92a49882061ab",
   "src/main/docxImportComputeWorker.cjs": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4",
   "src/preload.js": "39a3fbe05a6f4d7844f9bedf00063b7f983976ea79a83f9029f4d29733300ea2",
@@ -1210,7 +1210,7 @@ export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proo
   const git = argv => { const result = spawnSync('git', argv, { cwd: root, encoding: 'utf8' }); if (result.status !== 0) fail('GIT_READ'); return result.stdout.trim(); };
   const proof = JSON.parse(stableRead(path.resolve(proofPath), proofSha256));
   if (!isObjectRecord(proof) || !/^[a-f0-9]{40}$/u.test(proof.head) || !/^[a-f0-9]{40}$/u.test(proof.tree)
-    || !/^[a-f0-9]{40}$/u.test(proof.baseHead) || !/^[a-f0-9]{40}$/u.test(proof.expectedRemoteHead)
+    || !/^[a-f0-9]{40}$/u.test(proof.baseHead) || !(proof.expectedRemoteHead === 'ABSENT' || /^[a-f0-9]{40}$/u.test(proof.expectedRemoteHead))
     || !/^codex\/[a-zA-Z0-9][a-zA-Z0-9._/-]*$/u.test(proof.branch) || proof.branch.includes('..')) fail('REQUEST');
   const plan = artifact(proof.plan), source = artifact(proof.sourceManifest);
   if (plan.head !== proof.head || plan.tree !== proof.tree || source.head !== proof.head || source.tree !== proof.tree
@@ -1277,8 +1277,16 @@ export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proo
   }
   if (requiredCount === 0) fail('NO_REQUIRED_GATES'); checkSource();
   if (hash(Buffer.from(git(['remote', 'get-url', 'origin']))) !== proof.originUrlSha256
-    || git(['rev-parse', 'origin/main']) !== proof.baseHead || git(['rev-parse', 'origin/' + proof.branch]) !== proof.expectedRemoteHead) fail('REMOTE_BINDING');
-  git(['merge-base', '--is-ancestor', proof.baseHead, proof.head]); git(['merge-base', '--is-ancestor', proof.expectedRemoteHead, proof.head]);
+    || git(['rev-parse', 'origin/main']) !== proof.baseHead) fail('REMOTE_BINDING');
+  if (proof.expectedRemoteHead !== 'ABSENT' && git(['rev-parse', 'origin/' + proof.branch]) !== proof.expectedRemoteHead) fail('REMOTE_BINDING');
+  git(['merge-base', '--is-ancestor', proof.baseHead, proof.head]);
+  if (proof.expectedRemoteHead === 'ABSENT') {
+    // A fresh absence observation is required; no synthetic tracking ref or
+    // preliminary product push supplies authority. The existing push stays normal.
+    const remote = spawnSync('git', ['ls-remote', '--refs', '--heads', 'origin', 'refs/heads/' + proof.branch], { cwd: root, encoding: 'utf8' });
+    const tracking = spawnSync('git', ['show-ref', '--verify', '--quiet', 'refs/remotes/origin/' + proof.branch], { cwd: root, encoding: 'utf8' });
+    if (remote.status !== 0 || remote.stdout.trim() !== '' || tracking.status !== 1) fail('REMOTE_ABSENCE');
+  } else git(['merge-base', '--is-ancestor', proof.expectedRemoteHead, proof.head]);
   return Object.freeze({ head: proof.head, branch: proof.branch, requiredCount, plannedCount: plan.rows.length,
     proofSha256, role: 'TEMPORAL_SOURCE_AND_TERMINAL_CAPTURE_GUARD_NOT_RELEASE_ACCEPTANCE' });
 }
