@@ -163,3 +163,51 @@ test('actual registered source replacement preserves Renderer session generation
   assert.equal(snapshot.generation,rendererGeneration);
   assert.equal(f.probe.state().generation,snapshot.generation,'a saved source baseline cannot rewind Main below the live Renderer coordinate');
 });
+
+// Native platform ports only; the complete real createWindow caller and its
+// lifecycle/session guards run unchanged. Loading waits at the platform edge.
+function freshRendererFixture() {
+  const anchor = 'app, BrowserWindow: { getFocusedWindow: () => null, getAllWindows: () => [] },\n    screen: {},';
+  assert.equal(initializer.split(anchor).length,2);
+  const ports = `app, BrowserWindow: class NativeWindowPort {
+      static getFocusedWindow(){return null;} static getAllWindows(){return [];}
+      constructor(options){this.options=options;this.webContents={id:901,session:{},on(){},send(){},setWindowOpenHandler(){},isDestroyed:()=>false};}
+      isDestroyed(){return false;} on(){return this;}
+      loadFile(){return new Promise(()=>{});}
+    }, screen:{getPrimaryDisplay:()=>({id:1,workAreaSize:{width:1920,height:1080}})},`;
+  const nativeProbe = `module.exports.__probe = {
+    newRendererWindow:createWindow, exitBinding:captureLifecycleExitBinding, exitCurrent:isLifecycleExitCurrent,
+    nativeWindowPorts:()=>BrowserWindow.__testNativePorts,`;
+  const mainAnchor = "  const mainPath = path.join(ROOT, 'src/main.js'), originalLoad = Module._load;";
+  assert.equal(initializer.split(mainAnchor).length,2);
+  const input=initializer.replace(anchor,ports).replace(mainAnchor,'  electron.BrowserWindow.__testNativePorts=electron;\n'+mainAnchor)
+    .replace('module.exports.__probe = {',nativeProbe);
+  const compiled=new Module(fixturePath,module);compiled.filename=fixturePath;
+  compiled.paths=Module._nodeModulePaths(path.dirname(fixturePath));
+  compiled._compile(input+'\n'+functionSource('mountRenderer')+'\nmodule.exports={fixture,mountRenderer};',fixturePath);
+  return compiled.exports;
+}
+
+for(const previousGeneration of [0,3])
+ test('actual createWindow starts fresh Renderer after saved generation '+previousGeneration+' and rejects old lifecycle owner',async t=>{
+  const rig=freshRendererFixture(),f=await rig.fixture(t,false,'01_Alpha.txt',true);
+  rig.mountRenderer(f,'Beta',previousGeneration);
+  assert.equal(await f.probe.save(),true);
+  const oldBinding=f.probe.exitBinding(),oldWindow=f.probe.confirmationParent(),oldSession=f.probe.session();
+  assert.equal(f.probe.exitCurrent(oldBinding),true);
+  const before=f.capture(),loader=Module._load;
+  Module._load=function(request,parent,isMain){
+    if(request==='electron'&&parent?.filename===path.join(ROOT,'src/main.js'))return f.probe.nativeWindowPorts();
+    return loader.call(this,request,parent,isMain);
+  };
+  try{f.probe.newRendererWindow();}finally{Module._load=loader;}
+  assert.notEqual(f.probe.confirmationParent(),oldWindow);
+  assert.equal(f.probe.exitCurrent(oldBinding),false,'old window/session callbacks remain stale');
+  const editor=fs.readFileSync(path.join(ROOT,'src/renderer/editor.js'),'utf8');
+  const localInitializer=editor.match(/^let localEditGeneration = [^\n]+;/m);assert.ok(localInitializer);
+  const freshGeneration=require('node:vm').runInNewContext(localInitializer[0]+'\nlocalEditGeneration');
+  assert.equal(f.probe.state().generation,freshGeneration,'new real Renderer lifecycle requires its own zero baseline');
+  assert.notEqual(f.probe.session(),oldSession,'new Renderer owner invalidates the old authoring session');
+  assert.equal(f.probe.state().dirty,false);
+  assert.deepEqual(f.capture(),before,'creating a new window does not rewrite the saved project');
+ });

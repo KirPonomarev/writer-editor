@@ -1127,7 +1127,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "ceaa2797fdb2915b6bf493da3e35a0d8ea56c2e8d9021bc7e72ee6723947e428"
+        "sha256": "b17bf8bab9c6d373fd63966c8c9f2bb1aa65339d199d4758d5dabe5c9461df4e"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2819,15 +2819,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "5db9be52a99e07b50f2f559749a9434a219dbc199a38879ecd0f674e31b36d8c"
+        "sha256": "71efdbd72a307044e7044ab7c2295b97ec09380961b0b36afbec79db36a7b99e"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "830ba0d9a405f80b4851df738a68b5fd6191a62c861d3f594aa46ee51c224e35"
+        "sha256": "8a693570555a58650086ec70f9d6b117f15c32cabe94501d5feb6f5ecf10a860"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "8ac501fb6b3bc0363e86b602ed01431ac4aeb6a8ddb140cb3a8027e70c51477c"
+        "sha256": "14dde93d0dd6726280c17ca8c441537bfe62e74d9d09e0371817643601c3e7b4"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3367,7 +3367,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "80911c5e785ba4eb513baf59778f8d90d6fcc108c6e00fc32ee13071262eb0b0"
+        "sha256": "8ad9483e44eb7e91e7ca1bb0b4da658276f1f19a3d218b334da71308219e90f6"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3391,7 +3391,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "360c62ae76d6db014db633ec06538139148b38029aed5642f7c3e0e907ab3ee9"
+        "sha256": "da4830bff38fdf3399ac85f2447ba77e1a58b9044fbef7b97029dbaea4779187"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3483,7 +3483,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "6475d23b5e0eac9691a47542ea863df5e3e7473fa766d3124fc9674de0e4e5cd"
+        "sha256": "025db1aa93bc93a9f62a2d5ca89937edc6807e89fca857d4aa1c6c9f3a9f2a18"
       },
       {
         "path": "src/renderer/flags.js",
@@ -4071,11 +4071,11 @@
       },
       {
         "path": "test/unit/plot-source-navigation.test.js",
-        "sha256": "c27ec4793b5cb5058bdef637b224e748d6d79bf6ecc23de21ed524fb019ac052"
+        "sha256": "62510d4cb77e3ec3f4cbc92ca49660dfbbac9189d6b78059bcd688b3766c4b9e"
       },
       {
         "path": "docs/tasks/2026-11-01--plot-source-navigation.md",
-        "sha256": "376fe3bfeb11dce450e4dd507e351017585b8a0c130c735159fb4287145c71d5"
+        "sha256": "61e9d7ceeac4efafdc5a1f3e4f9b2f57e0f9443553aca767dc696c07d240eb78"
       }
     ],
     "followupRepair": {

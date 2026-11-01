@@ -37877,6 +37877,12 @@ function createWindow() {
     }
   });
 
+  // A fresh Renderer owns a zero coordinate and a new authoring session.
+  // Dirty/recovery risk remains subject to the guarded startup path.
+  lastSignaledEditGeneration = 0;
+  lastAcknowledgedEditGeneration = 0;
+  commentAuthoringSessionId = crypto.randomUUID();
+
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   mainWindow.webContents.on('will-navigate', blockExternalNavigation);
   mainWindow.webContents.on('will-redirect', blockExternalNavigation);
