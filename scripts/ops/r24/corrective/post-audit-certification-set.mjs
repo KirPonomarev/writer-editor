@@ -132770,15 +132770,15 @@ const R24_INTEROP_ATLAS_UNMENTIONED_ENTITY_ALIAS_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "9e371e6f34847edee5053d3dfc1fdb215cdcec8ef848475b813bcdfe7b7dd639"
+      "sha256": "2ec4434a23dffecf44d242cff647948f4710e850cf1cb87967a6f45850e4b216"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "c064b3b34ae28a50b44e748e2d978aff94388b5baeed38716f481d9bd598946b"
+      "sha256": "96559036ad31fe64de1e0da0c02a4a2a3fcf24a002ffb41321b3dd7b64372b7c"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "e80631f0d3154bf654bf2a2547457aab0128a393fbab6a9caa11cfefc2b8ce12"
+      "sha256": "282badfcd34b5bbb521799d9d4e0d1a0b52bddf2797cf566ee223fa795b60f6f"
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
@@ -132790,7 +132790,7 @@ const R24_INTEROP_ATLAS_UNMENTIONED_ENTITY_ALIAS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "bfbd51c2628815f166e8d12b98c8e0a808daea5ae74782e121206ba867355318"
+      "sha256": "2bf966d07389ecf3144c77143c76d06d1807d2479c7bd1db11037571d182e11c"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -132798,11 +132798,11 @@ const R24_INTEROP_ATLAS_UNMENTIONED_ENTITY_ALIAS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
-      "sha256": "a5faff3dbe2a994658191813f053255580c5605f36a26c77c40e9eac77266f6c"
+      "sha256": "d1ba0d00b90f6d8df974489fd087f0d4aff094a4df430415f888e49ca561b93d"
     },
     {
       "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-      "sha256": "a106b44e1f5d5d5ee023c5101a6abd3ef4dc931f24c895f6c8d354dd823599c8"
+      "sha256": "6aa12f8b78463079934a5b55caab7255392a062ad5fa5d3990a5cdd3c471d998"
     },
     {
       "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
@@ -133086,13 +133086,13 @@ const R24_INTEROP_ATLAS_UNMENTIONED_ENTITY_ALIAS_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-01--atlas-unmentioned-entity-alias.md",
-      "sha256": "79ee0b9f3d9829911366bf6a10c56af9362e081c62239dca294a18834b2acd90"
+      "sha256": "8072b2123a44be1672ba53f276006ca011f5f886ea1c1072a8f44b7692e8aa4e"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "efb9fff831818559927a0d237521be3a4f5b3b4aeebb5baeacb15ee1365c6e24"
+      "sha256": "4727f0d59ca66431e0ce2e4724b3ed9423cc364322214c8fefcf7a5c0603dab2"
     }
   ]
 });

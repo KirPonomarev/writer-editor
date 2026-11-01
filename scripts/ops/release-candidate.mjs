@@ -977,7 +977,7 @@ export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
   "src/core/pulse-policy-codec-v1.mjs": "b7156aa083f855c25315afc1fb84814b69f6694323f3d14b0a6c2002c61a3a3a",
   "src/core/pulse-privacy-v1.mjs": "22ff796ae6299c60134dfca21bfaf0cf569d1fdb21e92e9ce12a7331144859b1",
   "src/core/recovery-ledger-v1.cjs": "f6f0ab01ee768e374f07d2e830b2b4cca3b5a5a68278ca291b46229cffbb0e25",
-  "src/core/runtime.mjs": "51f067d3899289eae99029bd2e3400336aa2baab4a88ba46db50ecbed9f39022",
+  "src/core/runtime.mjs": "d06453cb95da45cd060bd243650548bb3e7230d8ccf91bfc83696d58d879fa13",
   "src/core/writer-local-profile-v1.cjs": "1297d6d0f2b1e145558f476dd4c7351d87b34bc7f8f648a047c2080a2e6f7227",
   "src/core/wse-claims-v1.mjs": "e830fed3297b51faa1f48e19e7025aad4d585b60bbb5bd7a0b0e451683984b2a",
   "src/core/wse-revision-time-object-v1.mjs": "f134ff3e3f067de49ad74a5c710ec80d612accbefa9a6e6867bf9694cdd1a247",

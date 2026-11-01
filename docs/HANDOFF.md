@@ -1,13 +1,11 @@
-## 2026-11-01 — Resume the existing Atlas repair delivery chain
+## 2026-11-01 — Resume current Mac pin counterpart in existing Atlas delivery
 
 DOCUMENT_CLASS: FACTUAL_STATUS
-BINDING_HEAD: ad27c502f6cbc86a3faefdeafb475f78b9c6915d plus declaration06 owned metadata WIP; branch codex/atlas-unmentioned-entity-alias-20261101; source, bundle and three maintained tests frozen.
+BINDING_HEAD: 2eb8db8665160a88ea1630893962e8d00c37233a plus declaration08 owned mechanical WIP; original8038acda base and one existing-alias rollback/delivery chain.
 
-Resume point: whole1415 passes and original-P5 warm/cold native outcome is observed. Both apps are closed normally; original P5 now has four scoped aliases, one current confirmation, seven original-plus-new events/receipts, original three scene bytes and markers. ALIAS_NATIVE_OUTCOME_01.json and the task bind all exact identities, histories, methods/failures and complete closed containers; no private/default profile or replacement corpus.
+Next action: real seven-target preparation/apply/full readback and honest current technical witnesses, then clean checkpoint and actual new-head complete namespace/original six cases/full29software and4freshnative before normal push/PR/CI/merge. The paired current pin change already has entire-cut/verifier literal inverses/all66actual source hashes and original whole726of726 zero fail/skip/todo/cancel, explicitly H3-plus-declaration08 WIP evidence; tests/predicates remain exact. Fetch and verify clean literalmerged source/tests/build/native/mainCI and protected C/B/raw72/old profiles; final guardrails/receipt; continue the full goal.
 
-One next action: finish the single concrete current-successor/selector enrollment under clean-H2 declaration06/preflight0, real current finalizer and honest technical witnesses; then make a clean candidate and run actual complete committed namespace plus the unchanged original six corruption/policy/ancestry cases before another broad wave. H2 early queue stopped after four processes and actual namespace refusal; ALIAS_H2_NAMESPACE_SELECTION_DIAGNOSIS_01.json explains the declared-versus-enrolled gap. No product/bundle/test change or H1 native retag. Full required current local/native/provider/normal merge/literalmerged proofs remain; existing G6 stage and original G5/P5 require fresh identity/expected-old/source/artifact/profile admission.
-
-Use [the admitted task](tasks/2026-11-01--atlas-unmentioned-entity-alias.md) for exact22scope, checks and rollback; CONTEXT has current outcome/blocker, WORKLOG chronology. Full V6/DNA5 ACTIVE, all17Mac UNKNOWN, Word-native PAUSED. Remain one direct developer, no extra actor/service/timer or development question.
+H3 actual namespace and original six cases already pass, plus fresh source-bound original-P5 cold73327 restores five observations and saved3-7CURRENT, normalQuit0. Source/author raw bytes/markers and7events/receipts remain exact; latest closed P5 has94files/192entries with normal cache/shell changes, no ownership retag. Preserve H1 authoring/native evidence, H2 refusal, H3 release drift and every method correction separately. H3 release726 has380pass346fail, causing stop after15software process0of16; remaining13 unexecuted, no push/provider credit. All17MacUNKNOWN/candidateUNFROZEN/releaseNOT_READY/fullV6ACTIVE/Word-nativePAUSED; no historical stage/lease/controller resume or app deletion. Task records the necessary22path companion exchange and exact proof boundary.
 
 ## 2026-11-01 — ENV H10 native observed; current certification input gap
 
