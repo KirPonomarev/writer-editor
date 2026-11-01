@@ -1,3 +1,10 @@
+## 2026-11-01 — Exact DONE task enrollment before continuing alias delivery
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 0b263872a4a011c51ec10b6209a37a0840ebaa8c plus declaration15/preflight16; original delivery base unchanged.
+
+Next action: refresh the real seven current targets and honest witnesses. Exact task-path DONE enrollment already has a literal whole-file inverse preserving every old rule, and the two complete unchanged scope/runner files pass12of12 with zero fail/skip/todo/cancel on H5-plus-declaration15 WIP; raw55524062026b62b8643a2f856564ba15cae36042b02614f1a6a606c118697d94. Create a clean ordinary next checkpoint and run all original29software/fresh4native/current provider/normal merge/literalmerged chain. Keep Atlas-named branch/enforcement active; no branch/phase/prefix/test/cap/timeout/lane/skip change. H5 complete unit4043 with exactly two linked scope failures remains FAIL; no H5 subset is future-head acceptance. Its owned four temporary transition outputs are retained on the same APFS with all six fencing records exact, and the declaration-file preflight race is recorded before any relocation. Original P5/H5 native source/cache/history remain retained; no repeat authoring or app/profile deletion. Continue the full Mac goal after this bounded chain closes.
+
 ## 2026-11-01 — Continue the same Atlas alias delivery after incomplete H4 baseline
 
 DOCUMENT_CLASS: FACTUAL_STATUS

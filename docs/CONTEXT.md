@@ -1,3 +1,10 @@
+## 2026-11-01 — Atlas H5 complete unit baseline: exact task-scope enrollment
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 0b263872a4a011c51ec10b6209a37a0840ebaa8c plus declaration15/preflight16 current map continuation; original8038acda delivery base/same22source paths.
+
+H5 early9 and four fresh originalP5 native oracles completed. Full default unit TAP now reaches4043cases:3982pass2fail59knownskip0todo/cancel; executed3984 includes the two failures. Both failures are the same SectorM exact-path refusal for this already-declared new task document; raw39b73816bd709f8e9af5a2b07f189028faaa10db24df45a4f7904362e1a6d1c6 retained. Subsequent inline Atlas20/guards and remaining19software did not execute. The output correction resolved truncation, not whole baseline acceptance. Original two full scope/runner files reproduce12tests10pass2fail before map edit, raw895cf8c125a79789ca0e3448c00475faa05ca53fee8f831c51ee14c2f6322c3b. Declaration15 admits one exact task-path line beside33existing tasks in current DONE allowlist; all prefixes/phases/enforcers/tests/production stay exact. OriginalP5 closed96files194entries, five observations/three scenes/current3–7, seven events/receipts/four aliases and source/authority bytes remain. FullV6DNA5 ACTIVE/all17MacUNKNOWN/Word-nativePAUSED; no push or PR. After the exact one-line task enrollment, the two complete original files pass12of12 with zero fail/skip/todo/cancel on H5-plus-declaration15 WIP; raw55524062026b62b8643a2f856564ba15cae36042b02614f1a6a606c118697d94. Literal map inverse preserves all old rules; frozen causal tests/production remain exact. Real bindings/witnesses/new candidate/full matrix/native/provider/merge/literalmerged proof remain.
+
 ## 2026-11-01 — Atlas H4 baseline output reconciliation
 
 DOCUMENT_CLASS: FACTUAL_STATUS
