@@ -205,3 +205,39 @@ test('actual nested caller executes its explicit file instead of inheriting the 
   assert.match(result.stdout, /^UNIT_LANE_EXECUTED=1$/mu);
   assert.doesNotMatch(result.stdout + result.stderr, /skipping running files/u);
 });
+
+test('unsupported filename or positional input refuses before every mandatory prelude and test child', () => {
+  const unsupported = 'scripts/ops/ops-synth-negative.test.cjs';
+  assert.equal(fs.existsSync(path.join(root, unsupported)), true, 'unsupported format is an existing real file, not a missing-module kill');
+  for (const args of [
+    ['--with-ops=test:ops', unsupported],
+    ['--with-ops=test:ops', 'not-a-supported-lane'],
+    ['--with-ops=test:ops', '--not-a-supported-option'],
+    ['--with-ops=test:ops', existingTest, unsupported],
+  ]) {
+    refusalBeforeChildren(invoke({ args, unit: { status: 7 } }));
+  }
+});
+
+test('supported existing lanes explicit js mjs and default full selection stay available without ambiguous fallback', () => {
+  const mjs = 'test/contracts/r24-admission-preparation.contract.test.mjs';
+  assert.equal(fs.existsSync(path.join(root, mjs)), true);
+  for (const args of [[existingTest], [mjs], ['unit', existingTest], ['electron', existingTest]]) {
+    const result = invoke({ args }); reachedUnit(result); assert.equal(result.exitCode, 0);
+    assert.ok(result.children.at(-1).argv.includes(path.join(root, args.at(-1))));
+  }
+  for (const lane of ['fast', 'closeout']) {
+    const result = invoke({ args: [lane, '--dry-run'] });
+    assert.equal(result.exitCode, 0); assert.equal(result.children.length, 0);
+    refusalBeforeChildren(invoke({ args: [lane, existingTest] }));
+  }
+  // The unchanged serial full-runner contract separately executes default
+  // selection through all original guards with its finite child boundary.
+});
+
+test('an explicitly empty check mode refuses instead of silently selecting the release default', () => {
+  for (const args of [
+    ['--with-ops=test:ops', '--mode='],
+    ['--with-ops=test:ops', '--mode', '   '],
+  ]) refusalBeforeChildren(invoke({ args, unit: { status: 7 } }));
+});

@@ -2,6 +2,7 @@ const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { readTapTotals, packUnitArtifact, readUnitArtifact, sha256 } = require(path.join(__dirname, 'test-diagnostics.cjs'));
 
 const FAST_LANE_CONTRACT_TESTS = Object.freeze([
   'test/contracts/menu-config-backcompat.contract.test.js',
@@ -67,6 +68,7 @@ function parseCli(rawArgs) {
 
   const tokens = [];
   let checkModeArg = '';
+  let checkModeWasSpecified = false;
   for (let i = 0; i < rawArgs.length; i += 1) {
     const arg = String(rawArgs[i] || '').trim();
     if (!arg) continue;
@@ -87,10 +89,12 @@ function parseCli(rawArgs) {
       continue;
     }
     if (arg.startsWith('--mode=')) {
+      checkModeWasSpecified = true;
       checkModeArg = arg.slice('--mode='.length);
       continue;
     }
     if (arg === '--mode') {
+      checkModeWasSpecified = true;
       if (i + 1 >= rawArgs.length) {
         out.error = 'Missing value for --mode (expected release|promotion).';
         return out;
@@ -113,10 +117,23 @@ function parseCli(rawArgs) {
     tokens.push(arg);
   }
 
-  out.modeArg = tokens[0] || '';
-  out.explicitTests = tokens.filter((arg) => /\.test\.(?:js|mjs)$/u.test(arg));
+  const lanes = new Set(['unit', 'electron', 'fast', 'closeout']);
+  for (const [index, token] of tokens.entries()) {
+    if (/\.test\.(?:js|mjs)$/u.test(token)) {
+      out.explicitTests.push(token);
+    } else if (index === 0 && lanes.has(token)) {
+      out.modeArg = token;
+    } else {
+      out.error = 'Unsupported test filename or positional argument: ' + token;
+      return out;
+    }
+  }
+  if (out.explicitTests.length > 0 && ['fast', 'closeout'].includes(out.modeArg)) {
+    out.error = 'Fixed fast or closeout lane cannot be combined with explicit test files.';
+    return out;
+  }
 
-  if (checkModeArg) {
+  if (checkModeArg || checkModeWasSpecified) {
     const normalizedMode = normalizeCheckMode(checkModeArg);
     if (!normalizedMode) {
       out.error = `Invalid --mode value "${checkModeArg}" (expected release|promotion).`;
@@ -138,6 +155,12 @@ function prepareTestInputs(rootDir, cli) {
   if (selected.length === 0) throw new Error('No test files selected for ' + mode);
   for (const file of selected) {
     if (!fs.statSync(file).isFile()) throw new Error('Test input is not a regular file: ' + file);
+  }
+  const evidenceDirectory = String(process.env.YALKEN_TEST_EVIDENCE_DIR || '').trim();
+  if (evidenceDirectory) {
+    if (!path.isAbsolute(evidenceDirectory) || fs.realpathSync(evidenceDirectory) !== evidenceDirectory
+        || !fs.statSync(evidenceDirectory).isDirectory()) throw new Error('Evidence directory must be an existing canonical absolute directory');
+    fs.accessSync(evidenceDirectory, fs.constants.W_OK);
   }
   const temporary = fs.realpathSync(os.tmpdir());
   const identity = fs.statSync(temporary);
@@ -169,6 +192,8 @@ function testChildEnvironment(overrides = {}) {
   const env = { ...process.env, ...overrides };
   // This is a new test runner, not the parent runner's private reporter child.
   delete env.NODE_TEST_CONTEXT;
+  // Artifact publication belongs to this caller, not nested test processes.
+  delete env.YALKEN_TEST_EVIDENCE_DIR;
   return env;
 }
 
@@ -311,26 +336,37 @@ function readSkippedCount(stdout, stderr) {
   return Number.isInteger(value) ? value : 0;
 }
 
-function readTapTotals(stdout, stderr) {
-  const combined = String(stdout || '') + '\n' + String(stderr || '');
-  const values = {};
-  let marker = '';
-  for (const key of ['tests', 'pass', 'fail', 'cancelled', 'skipped', 'todo']) {
-    const matches = [...combined.matchAll(new RegExp('^([#ℹ])\\s+' + key + ' (\\d+)$', 'gm'))];
-    const last = matches.at(-1);
-    values[key] = last ? Number(last[2]) : null;
-    if (last) {
-      if (marker && marker !== last[1]) return { ...values, executed: null, valid: false };
-      marker = last[1];
-    }
-  }
-  const complete = Object.values(values).every(value => Number.isSafeInteger(value) && value >= 0);
-  const sum = complete ? values.pass + values.fail + values.cancelled + values.skipped + values.todo : null;
-  return {
-    ...values,
-    executed: values.pass === null || values.fail === null ? null : values.pass + values.fail,
-    valid: complete && values.tests === sum,
+function publishUnitOutput(result) {
+  const writeFull = () => {
+    if (result.stdout) process.stdout.write(result.stdout);
+    if (result.stderr) process.stderr.write(result.stderr);
   };
+  const directory = String(process.env.YALKEN_TEST_EVIDENCE_DIR || '').trim();
+  if (!directory) {
+    writeFull();
+    console.log('UNIT_LANE_FULL_ARTIFACT=STDOUT_FULL_TAP');
+    return true;
+  }
+  try {
+    const compressed = packUnitArtifact(result);
+    const file = path.join(directory, 'unit-' + process.pid + '-' + require('node:crypto').randomUUID() + '.tap.gz');
+    fs.writeFileSync(file, compressed, { flag: 'wx', mode: 0o600, flush: true });
+    const reread = fs.readFileSync(file);
+    if (!reread.equals(compressed)) throw new Error('UNIT_ARTIFACT_READBACK_MISMATCH');
+    const decoded = readUnitArtifact(reread);
+    process.stdout.write(decoded.consoleStdout);
+    if (result.stderr) process.stderr.write(result.stderr);
+    console.log('UNIT_LANE_FULL_ARTIFACT=' + JSON.stringify(file));
+    console.log('UNIT_LANE_FULL_ARTIFACT_SHA256=' + sha256(reread));
+    console.log('UNIT_LANE_DIAGNOSTIC_PAYLOADS_VERIFIED=' + decoded.diagnostics);
+    console.log('UNIT_LANE_OPAQUE_DIAGNOSTIC_LINES_RETAINED=' + decoded.opaqueDiagnostics);
+    return true;
+  } catch (error) {
+    // Original output is retained even when transport or interpretation fails.
+    writeFull();
+    console.error('UNIT_LANE_ARTIFACT_REFUSED=' + String(error.message || error));
+    return false;
+  }
 }
 
 function runToolbarCloseoutLane(rootDir, dryRun) {
@@ -648,9 +684,8 @@ if (testFiles.length === 0) {
     encoding: 'utf8',
     maxBuffer: 64 * 1024 * 1024,
   });
-  if (result.stdout) process.stdout.write(result.stdout);
-  if (result.stderr) process.stderr.write(result.stderr);
   exitCode = result.status ?? 1;
+  if (!publishUnitOutput(result) && exitCode === 0) exitCode = 1;
   const tapTotals = readTapTotals(result.stdout, result.stderr);
   console.log(`UNIT_LANE_EXECUTED=${tapTotals.executed === null ? 'UNKNOWN' : tapTotals.executed}`);
   console.log(`UNIT_LANE_SKIPPED_DENOMINATOR=${tapTotals.skipped === null ? 'UNKNOWN' : tapTotals.skipped}`);
