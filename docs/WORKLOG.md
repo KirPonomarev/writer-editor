@@ -1,3 +1,7 @@
+## 2026-11-02 — Meaning UI checkpoint and required current-byte companions
+
+- Clean0981d0d7, outside10047physical sources/modes exact; source/editor/bundle/test frozen and all causal failures retained. Declaration06/preflight06 actual0 admits16doc/metadata paths in one full24path chain. Readonly literal94row gap has10stale entries and two missing Meaning task/unit paths; full inherited namespace remains to be executed. Preserve every historical tuple/policy/approval field and predicate; use existing seven-target producer/review/CAS/readback and delegated technical witnesses. No app/profile/native or release authority follows.
+
 ## 2026-11-02 — Meaning source UI and complete affected software observed
 
 - Added only three actual openDocumentNode/registered-Main cases after all381frozen test lines. Whole55baseline50pass5fail rawfdf37747 distinguished missing controls, dropped expectation and exact static byte marker; final input7cee49c2 unchanged through same whole55/55 raw6edf94d9. No original assertion removed. Editor+104lines/three regions, static marker exact two-line addition with inverse; actual Main/projection/registration stay source-checkpoint bytes.

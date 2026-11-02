@@ -1,10 +1,10 @@
 # Current handoff — Meaning source navigation
 
 DOCUMENT_CLASS: FACTUAL_STATUS
-BINDING_HEAD: 5f9d589ac4f9f2f4e33241c22a108f68599f4612
-CLAIM_BOUNDARY: Idea2190 is closed; Meaning eight-path UI WIP has finite software proof only. Exact predecessor closure remains IDEA_DELIVERY_CLOSURE_01.json d5fd03f5. Native/full mandatory gates/provider delivery remain pending; do not rerun closed Idea gates for factual refresh.
+BINDING_HEAD: 0981d0d79dcf4249493ef1063446ba6ef0440648
+CLAIM_BOUNDARY: Idea2190 is closed; Meaning source/UI checkpoint has finite software proof. Same normal delivery remains in progress; exact current receipts govern reuse. Predecessor closure remains IDEA_DELIVERY_CLOSURE_01.json d5fd03f5; no full Mac acceptance.
 
-NEXT_ACTION: Finish clean eight-path UI checkpoint from declaration05, then fresh current-binding companion admission and existing seven-target prepare/review/CAS apply/readback. Current frozen55/55, original affected625/625 and normal bundle72dbfe46 are source observations only. Early actual rebuilt own-profile native precedes expensive full30software and checked normal PR/CI/merge/literal merged proof. Retain all raw failures, original381test bytes, profiles and witnesses; no old controller/lease resume. Sole executor, full V6/DNA5 ACTIVE/all17MacUNKNOWN.
+NEXT_ACTION: Complete current-byte binding proof under declaration06/preflight06: same-shape new namespace, exact historical inverses, existing seven-target prepare/review/CAS apply/readback/full namespaces and honest append-only technical witnesses. Then early own-profile rebuilt native, remaining full30software and checked normal PR/CI/merge/literal merged proof. Product/test bytes stay0981d0d7; resume from the first missing exact receipt, retain failures/profiles/old witnesses and original381test bytes. No old controller/lease resume; sole executor/full V6 DNA5 ACTIVE/all17MacUNKNOWN.
 
 HISTORICAL_CHECKPOINTS_BOUNDARY: Every pre-existing byte below, including CURRENT labels, belongs to its named historical checkpoint and does not override the operative handoff above.
 

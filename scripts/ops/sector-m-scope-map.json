@@ -535,7 +535,9 @@
       "test/unit/sector-m-preload-tree-document-command-bridge.test.js",
       "docs/tasks/2026-11-01--idea-origin-navigation.md",
       "test/unit/idea-origin-navigation.test.js",
-      "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js"
+      "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
+      "docs/tasks/2026-11-02--meaning-source-navigation.md",
+      "test/unit/meaning-source-navigation.test.js"
     ]
   },
   "allowPrefixByPhase": {
