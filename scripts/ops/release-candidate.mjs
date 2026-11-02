@@ -990,7 +990,7 @@ export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
   "src/export/markdown/v1/parseMarkdownV1.mjs": "24510611af0757567b45597f604de443eabc64923f64a5f1f291ee4f1fb1d851",
   "src/export/markdown/v1/serializeMarkdownV1.mjs": "fedbc3e95ce9022c69e704deb1564a3358e50984e17788685184fd03aaae39c1",
   "src/export/markdown/v1/types.mjs": "420a1d65704deb522b05c881c23d7beffeddc5740017edb5955edd43bc95c8f4",
-  "src/main.js": "b17bf8bab9c6d373fd63966c8c9f2bb1aa65339d199d4758d5dabe5c9461df4e",
+  "src/main.js": "6344cfa69023a6c6859dd0b2f749f75addcfab21c1f4461573b256e26b3506aa",
   "src/main/docxImportComputePort.cjs": "6e6fd633a460a8a3fac7a4f0a8fb4e93ed5a84bcc86df60707a92a49882061ab",
   "src/main/docxImportComputeWorker.cjs": "25cf9ccd00c7259b9fd7c52350f7367f5642b814262285c1fa22c1e0a4c6afe4",
   "src/preload.js": "39a3fbe05a6f4d7844f9bedf00063b7f983976ea79a83f9029f4d29733300ea2",
@@ -1195,6 +1195,11 @@ function runFullMacCli(argv) {
 export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proofSha256 } = {}) {
   const fail = detail => { throw Object.assign(Error('E_LOCAL_DELIVERY_PROOF:' + detail), { code: 'E_LOCAL_DELIVERY_PROOF' }); };
   const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+  const legacyPacket = value => {
+    // This endpoint accepts the existing unversioned layout only.
+    if (isObjectRecord(value) && ['schemaVersion', 'formatVersion', 'format'].some(key => Object.hasOwn(value, key))) fail('UNSUPPORTED_FORMAT');
+    return value;
+  };
   const root = path.resolve(repoRoot || process.cwd()), evidenceRoot = path.dirname(path.resolve(proofPath || ''));
   const stableRead = (file, expected) => {
     const before = fs.lstatSync(file); if (!before.isFile() || before.isSymbolicLink() || !isSha256Hex(expected)) fail('FILE_IDENTITY');
@@ -1202,15 +1207,15 @@ export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proo
     if (before.dev !== after.dev || before.ino !== after.ino || before.size !== after.size || before.mtimeMs !== after.mtimeMs || hash(bytes) !== expected) fail('FILE_DRIFT');
     return bytes;
   };
-  const decode = (bytes, file) => JSON.parse((file.endsWith('.gz') ? gunzipSync(bytes) : bytes).toString('utf8'));
+  const decode = (bytes, file) => legacyPacket(JSON.parse((file.endsWith('.gz') ? gunzipSync(bytes) : bytes).toString('utf8')));
   const artifact = descriptor => {
     if (!isObjectRecord(descriptor) || typeof descriptor.basename !== 'string' || !/^[A-Za-z0-9_.-]+$/u.test(descriptor.basename)) fail('ARTIFACT_NAME');
     const file = path.join(evidenceRoot, descriptor.basename); return decode(stableRead(file, descriptor.sha256), file);
   };
   const git = argv => { const result = spawnSync('git', argv, { cwd: root, encoding: 'utf8' }); if (result.status !== 0) fail('GIT_READ'); return result.stdout.trim(); };
-  const proof = JSON.parse(stableRead(path.resolve(proofPath), proofSha256));
+  const proof = legacyPacket(JSON.parse(stableRead(path.resolve(proofPath), proofSha256)));
   if (!isObjectRecord(proof) || !/^[a-f0-9]{40}$/u.test(proof.head) || !/^[a-f0-9]{40}$/u.test(proof.tree)
-    || !/^[a-f0-9]{40}$/u.test(proof.baseHead) || !/^[a-f0-9]{40}$/u.test(proof.expectedRemoteHead)
+    || !/^[a-f0-9]{40}$/u.test(proof.baseHead) || !(proof.expectedRemoteHead === 'ABSENT' || /^[a-f0-9]{40}$/u.test(proof.expectedRemoteHead))
     || !/^codex\/[a-zA-Z0-9][a-zA-Z0-9._/-]*$/u.test(proof.branch) || proof.branch.includes('..')) fail('REQUEST');
   const plan = artifact(proof.plan), source = artifact(proof.sourceManifest);
   if (plan.head !== proof.head || plan.tree !== proof.tree || source.head !== proof.head || source.tree !== proof.tree
@@ -1249,7 +1254,7 @@ export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proo
     }
     names.add(row.name); if (row.requiredBlocking) requiredCount++;
     else if (JSON.stringify(row.argv) !== JSON.stringify(['npm', 'audit', '--json'])) fail('UNRECOGNIZED_NONBLOCKING');
-    const receipt = JSON.parse(stableRead(path.join(evidenceRoot, row.name + '.json'), proof.receipts[row.name]));
+    const receipt = legacyPacket(JSON.parse(stableRead(path.join(evidenceRoot, row.name + '.json'), proof.receipts[row.name])));
     if (receipt.role !== 'ACTUAL_FOREGROUND_PROCESS_EVIDENCE_NOT_ACCEPTANCE_OR_AUTHORITY' || receipt.name !== row.name
       || receipt.headBefore !== proof.head || receipt.headAfter !== proof.head || JSON.stringify(receipt.argv) !== JSON.stringify(row.argv)
       || !Number.isInteger(receipt.pid) || receipt.pid < 1 || !Number.isFinite(receipt.elapsedSeconds) || receipt.elapsedSeconds <= 0
@@ -1277,8 +1282,16 @@ export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proo
   }
   if (requiredCount === 0) fail('NO_REQUIRED_GATES'); checkSource();
   if (hash(Buffer.from(git(['remote', 'get-url', 'origin']))) !== proof.originUrlSha256
-    || git(['rev-parse', 'origin/main']) !== proof.baseHead || git(['rev-parse', 'origin/' + proof.branch]) !== proof.expectedRemoteHead) fail('REMOTE_BINDING');
-  git(['merge-base', '--is-ancestor', proof.baseHead, proof.head]); git(['merge-base', '--is-ancestor', proof.expectedRemoteHead, proof.head]);
+    || git(['rev-parse', 'origin/main']) !== proof.baseHead) fail('REMOTE_BINDING');
+  if (proof.expectedRemoteHead !== 'ABSENT' && git(['rev-parse', 'origin/' + proof.branch]) !== proof.expectedRemoteHead) fail('REMOTE_BINDING');
+  git(['merge-base', '--is-ancestor', proof.baseHead, proof.head]);
+  if (proof.expectedRemoteHead === 'ABSENT') {
+    // A fresh absence observation is required; no synthetic tracking ref or
+    // preliminary product push supplies authority. The existing push stays normal.
+    const remote = spawnSync('git', ['ls-remote', '--refs', '--heads', 'origin', 'refs/heads/' + proof.branch], { cwd: root, encoding: 'utf8' });
+    const tracking = spawnSync('git', ['show-ref', '--verify', '--quiet', 'refs/remotes/origin/' + proof.branch], { cwd: root, encoding: 'utf8' });
+    if (remote.status !== 0 || remote.stdout.trim() !== '' || tracking.status !== 1) fail('REMOTE_ABSENCE');
+  } else git(['merge-base', '--is-ancestor', proof.expectedRemoteHead, proof.head]);
   return Object.freeze({ head: proof.head, branch: proof.branch, requiredCount, plannedCount: plan.rows.length,
     proofSha256, role: 'TEMPORAL_SOURCE_AND_TERMINAL_CAPTURE_GUARD_NOT_RELEASE_ACCEPTANCE' });
 }

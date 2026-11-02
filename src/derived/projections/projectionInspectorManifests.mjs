@@ -143,13 +143,15 @@ function itemCountFor(projectionId, value) {
   return 0;
 }
 
-function validateInspectorViewOptions(value) {
-  return value === undefined || isPlainObject(value) && Object.keys(value).every(key => ['offset', 'search', 'selectedId'].includes(key))
+function validateInspectorViewOptions(value, originPaging = false) {
+  const fields = originPaging ? ['offset', 'search', 'selectedId', 'originOffset'] : ['offset', 'search', 'selectedId'];
+  return value === undefined || isPlainObject(value) && Object.keys(value).every(key => fields.includes(key))
     && (value.offset === undefined || Number.isSafeInteger(value.offset) && value.offset >= 0 && value.offset <= 1000000)
+    && (value.originOffset === undefined || originPaging && Number.isSafeInteger(value.originOffset) && value.originOffset >= 0 && value.originOffset <= 1000000)
     && ['search', 'selectedId'].every(key => value[key] === undefined || typeof value[key] === 'string' && value[key].length <= 1000);
 }
 
-function authoredInspectorDetails(projectionId, result, options = {}) {
+function authoredInspectorDetails(projectionId, result, options = {}, project = null) {
   const available = result?.ok === true, value = result?.value || {}, isIdea = projectionId === 'idea';
   const full = available ? (isIdea ? value.ideas : value.meanings) || [] : [];
   const search = (options.search || '').trim().toLowerCase(), offset = options.offset || 0, selectedId = options.selectedId || '';
@@ -165,13 +167,29 @@ function authoredInspectorDetails(projectionId, result, options = {}) {
   };
   const rows = filtered.slice(offset, offset + 24).map(preview), selectedSource = ordered.find(row => row.id === selectedId);
   const selected = selectedSource ? preview(selectedSource) : null;
-  const ids = new Set(selected ? [selected.id] : rows.map(row => row.id));
+  const ids = new Set(selected ? [selected.id] : isIdea && selectedId ? [] : rows.map(row => row.id));
   const detail = { rows, total: filtered.length, offset, hasMore: offset + rows.length < filtered.length,
     complete: available && rows.length === filtered.length, selected, selectedState: !available ? 'unavailable' : !selectedId ? 'none' : selected ? 'ready' : 'missing' };
   if (isIdea) {
     const links = (value.originLinks || []).filter(row => ids.has(row.ideaId)), evidence = (value.occurrenceEvidence || []).filter(row => ids.has(row.ideaId));
-    return { ...detail, originLinks: links.slice(0, 24), originLinkCount: links.length, originLinksComplete: available && links.length <= 24,
-      occurrenceEvidence: evidence.slice(0, 24), occurrenceEvidenceCount: evidence.length, occurrenceEvidenceComplete: available && evidence.length <= 24 };
+    const originOffset = options.originOffset || 0, page = links.slice(originOffset, originOffset + 24), pageIds = new Set(page.map(row => row.id)), sourceHashes = new Map();
+    const originSources = page.map(link => {
+      const owner = full.find(row => row.id === link.ideaId), ref = link.originRef, scene = project?.scenes?.[ref.sceneId];
+      if (typeof scene?.text === 'string' && !sourceHashes.has(ref.sceneId)) sourceHashes.set(ref.sceneId, hashCanonicalValue(scene.text));
+      const hasIdentity = owner?.originLinkIds.includes(link.id) && [link.id, link.ideaId].every(id => typeof id === 'string' && id.length > 0 && id.length <= 1000)
+        && scene && /^sha256:[a-f0-9]{64}$/u.test(scene.sceneRevision || '');
+      const current = hasIdentity && ref.schemaVersion === 'idea.originRef.v1' && ref.kind === 'sceneTextRange'
+        && Number.isSafeInteger(ref.startOffset) && Number.isSafeInteger(ref.endOffset) && ref.startOffset >= 0 && ref.endOffset > ref.startOffset
+        && typeof scene.text === 'string' && ref.endOffset <= scene.text.length && sourceHashes.get(ref.sceneId) === ref.sourceHash;
+      return { id: link.id, projectId: value.projectId, ideaId: link.ideaId, sceneId: ref.sceneId,
+        label: String(owner?.title || link.ideaId).slice(0, 1000), sceneTitle: String(scene?.title || ref.sceneId).slice(0, 1000),
+        sceneRevision: typeof scene?.sceneRevision === 'string' ? scene.sceneRevision : '', originRef: ref,
+        sourceState: !hasIdentity ? 'unavailable' : current ? 'current' : 'stale' };
+    });
+    return { ...detail, originLinks: page, originLinkCount: links.length, originLinksComplete: available && originOffset === 0 && links.length <= 24,
+      originSources, originOffset, originHasMore: originOffset + page.length < links.length,
+      occurrenceEvidence: evidence.filter(row => pageIds.has(row.linkId)).slice(0, 24), occurrenceEvidenceCount: evidence.length,
+      occurrenceEvidenceComplete: available && originOffset === 0 && evidence.length <= 24 };
   }
   const evidence = (value.promotionEvidence || []).filter(row => ids.has(row.meaningId));
   return { ...detail, promotionEvidence: evidence.slice(0, 24), promotionEvidenceCount: evidence.length, promotionEvidenceComplete: available && evidence.length <= 24 };
@@ -200,7 +218,7 @@ function plotInspectorDetails(result, project, options = {}) {
 function stateFromResult(manifest, result, options = {}, project = null) {
   const manifestHash = hashCanonicalValue(manifest);
   const details = manifest.projectionId === 'plot' ? { details: plotInspectorDetails(result, project, options) }
-    : ['idea', 'meaning'].includes(manifest.projectionId) ? { details: authoredInspectorDetails(manifest.projectionId, result, options) } : {};
+    : ['idea', 'meaning'].includes(manifest.projectionId) ? { details: authoredInspectorDetails(manifest.projectionId, result, options, project) } : {};
   if (!result?.ok) {
     return {
       schemaVersion: PROJECTION_INSPECTOR_FALLBACK_SCHEMA_VERSION,
@@ -238,7 +256,7 @@ function buildProvider(coreState, projectId, capabilitySnapshot, meta, params) {
   const meaning = deriveMeaningProjection({ coreState, params: { projectId }, capabilitySnapshot });
   const projectionStates = sortProjectionInspectorStates([
     stateFromResult(byProjection.get('plot'), plot, params.plot, coreState?.data?.projects?.[projectId]),
-    stateFromResult(byProjection.get('idea'), idea, params.idea),
+    stateFromResult(byProjection.get('idea'), idea, params.idea, coreState?.data?.projects?.[projectId]),
     stateFromResult(byProjection.get('meaning'), meaning, params.meaning),
   ]);
   const summary = {
@@ -276,7 +294,7 @@ function buildProvider(coreState, projectId, capabilitySnapshot, meta, params) {
 }
 
 export function deriveProjectionInspectorProvider(input = {}) {
-  if (!validateInspectorViewOptions(input?.params?.plot) || !validateInspectorViewOptions(input?.params?.idea) || !validateInspectorViewOptions(input?.params?.meaning)) {
+  if (!validateInspectorViewOptions(input?.params?.plot) || !validateInspectorViewOptions(input?.params?.idea, true) || !validateInspectorViewOptions(input?.params?.meaning)) {
     return { ok: false, error: { code: 'E_PROJECTION_INSPECTOR_OPTIONS_INVALID', op: VIEW_OP, reason: 'OPTIONS_INVALID' } };
   }
   const projectId = normalizeString(input?.params?.projectId);

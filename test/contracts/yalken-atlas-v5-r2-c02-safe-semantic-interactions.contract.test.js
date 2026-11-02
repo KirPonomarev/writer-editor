@@ -3140,3 +3140,72 @@ for (const outcome of ['refused', 'thrown'])
     assert.equal(h.c.statusElement.textContent, message);
     assert.equal(button.attributes['aria-busy'], 'false');
   });
+
+function ideaOriginSourceDom() {
+  const h = plotSourceDom(), c = h.c;
+  const originRef = { schemaVersion: 'idea.originRef.v1', kind: 'sceneTextRange', sceneId: h.row.sceneId,
+    startOffset: 2, endOffset: 15, sourceHash: '6'.repeat(64), targetId: 'saved-idea-a' };
+  const row = { id: 'saved-origin-a', projectId: c.currentProjectId, ideaId: 'saved-idea-a', sceneId: h.row.sceneId,
+    label: 'Авторская идея é 🧭', sceneTitle: h.row.sceneTitle, sceneRevision: h.row.sceneRevision, originRef, sourceState: 'current' };
+  const state = structuredClone(h.provider()), idea = state.projectionStates.find(item => item.projectionId === 'idea');
+  idea.details.originLinks = [{ id: row.id, ideaId: row.ideaId, originRef }];
+  Object.assign(idea.details, { originSources: [row], originOffset: 0, originHasMore: true, originLinkCount: 30, originLinksComplete: false });
+  c.projectionInspectorState = state;
+  const buttons = () => h.walk(c.projectionInspectorHost).filter(node => node.dataset.ideaOriginOpen);
+  const page = label => h.walk(c.projectionInspectorHost).find(node => node.dataset.ideaOriginPage !== undefined && node.textContent === label);
+  h.render();return { ...h, row, state, buttons, page };
+}
+
+test('Idea origin actual source listener sends exact saved identity through existing document intent [FINITE_DOM]', async () => {
+  const h = ideaOriginSourceDom(), button = h.buttons()[0];assert.ok(button);assert.equal(button.disabled, false);
+  assert.match(button.attributes['aria-label'], /Авторская идея é 🧭/u);await button.emit('click');
+  assert.equal(h.opened.length, 1);assert.equal(h.opened[0].node.nodeId, h.row.sceneId);
+  assert.deepEqual(h.opened[0].options.expectedIdeaSource, { schemaVersion: 'idea.sourceNavigation.v1', projectId: h.row.projectId,
+    ideaId: h.row.ideaId, linkId: h.row.id, originRef: h.row.originRef, sceneRevision: h.row.sceneRevision, projectionHash: 'b'.repeat(64) });
+});
+
+for (const fault of ['capability', 'foreign-project', 'missing-revision', 'stale-source'])
+  test('Idea origin actual source control refuses ' + fault + ' [FINITE_DOM]', async () => {
+    const h = ideaOriginSourceDom();
+    if (fault === 'capability') h.c.plotCapability = false;
+    if (fault === 'foreign-project') h.row.projectId = 'another-project';
+    if (fault === 'missing-revision') h.row.sceneRevision = '';
+    if (fault === 'stale-source') h.row.sourceState = 'stale';
+    h.render();const button = h.buttons()[0];assert.ok(button);assert.equal(button.disabled, true);await button.emit('click');assert.equal(h.opened.length, 0);
+  });
+
+for (const stale of ['project', 'surface', 'tab', 'row-revision', 'detached'])
+  test('Idea origin retained source listener refuses stale ' + stale + ' [FINITE_DOM]', async () => {
+    const h = ideaOriginSourceDom(), button = h.buttons()[0];assert.ok(button);
+    if (stale === 'project') h.c.currentProjectId = 'another-project';
+    if (stale === 'surface') h.c.currentAtlasSurface = 'matrix';
+    if (stale === 'tab') h.c.currentRightTab = 'history';
+    if (stale === 'row-revision') h.row.sceneRevision = 'sha256:' + '8'.repeat(64);
+    if (stale === 'detached') h.render();
+    await button.emit('click');assert.equal(h.opened.length, 0);
+  });
+
+test('Idea origin source listener rejects a late foreign tree reply [FINITE_DOM]', async () => {
+  const h = ideaOriginSourceDom();let resolve;const reply = new Promise(done => { resolve = done; });h.c.treeRoot = null;
+  h.c.invokeWorkspaceQueryBridge = () => reply;const button = h.buttons()[0];assert.ok(button);
+  const pending = button.emit('click');await h.settle();h.c.currentProjectId = 'new-project';
+  resolve({ ok: true, projectId: h.row.projectId, root: { children: [{ nodeId: h.row.sceneId, kind: 'scene' }] } });
+  await pending;assert.equal(h.opened.length, 0);
+});
+
+test('Idea origin next source page requests offset24 and stale page controls cannot query [FINITE_DOM]', async () => {
+  const h = ideaOriginSourceDom(), old = h.page('Следующие источники');assert.ok(old);assert.equal(old.disabled, false);
+  h.c.currentRightTab = 'history';await old.emit('click');assert.equal(h.requests.length, 0);
+  h.c.currentRightTab = 'atlas';h.render();await h.page('Следующие источники').emit('click');await h.settle();
+  assert.equal(h.requests.length, 1);assert.equal(h.requests[0].payload.idea.originOffset, 24);
+});
+
+for (const outcome of ['refused', 'thrown'])
+  test('Idea origin ' + outcome + ' source open retains visible recovery guidance [FINITE_DOM]', async () => {
+    const h = ideaOriginSourceDom(), button = h.buttons()[0];assert.ok(button);
+    h.c.openDocumentNode = async () => { if (outcome === 'thrown') throw new Error('E_IDEA_SOURCE_CHANGED');return false; };
+    await button.emit('click');const message = h.c.statusElement.textContent;
+    assert.match(message, /Обновите источники Idea/u);assert.match(message, /Текущий текст остаётся в редакторе/u);
+    assert.equal(h.c.statusElement.style.visibility, 'visible');h.c.updateStatusText('16 слов');
+    assert.equal(h.c.statusElement.textContent, message);assert.equal(button.attributes['aria-busy'], 'false');
+  });

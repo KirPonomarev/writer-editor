@@ -532,7 +532,10 @@
       "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
       "scripts/ops/release-candidate.mjs",
       "src/renderer/commands/projectCommands.mjs",
-      "test/unit/sector-m-preload-tree-document-command-bridge.test.js"
+      "test/unit/sector-m-preload-tree-document-command-bridge.test.js",
+      "docs/tasks/2026-11-01--idea-origin-navigation.md",
+      "test/unit/idea-origin-navigation.test.js",
+      "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js"
     ]
   },
   "allowPrefixByPhase": {
