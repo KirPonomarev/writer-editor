@@ -115,8 +115,8 @@ export function evaluateMutationRun(result, plan, baseline = null) {
       assertionCases.push(row[3]);
       continue;
     }
-    // These two observed semantic sabotages also propagate a typed refusal
-    // through unchanged callers. Retain it as data, never as a kill witness.
+    // Observed semantic sabotages also propagate typed refusals through
+    // unchanged callers. These remain data, never independent kill witnesses.
     // Every other exception, including setup/module/loader failures, invalidates.
     const originalFrame = block.includes(new URL('plan-state.mjs', import.meta.url).href + ':');
     const duplicateSabotage = plan.file === 'plan-state.mjs'
@@ -126,8 +126,19 @@ export function evaluateMutationRun(result, plan, baseline = null) {
       && plan.find.startsWith('draft.fencingCounter += 1;\n      const lease = {')
       && typeof plan.replace === 'string' && plan.replace.startsWith('const lease = {')
       && code === 'E_FENCE_STALE';
-    if (testFailure && originalFrame && (duplicateSabotage || fenceSabotage)) {
-      dependentDomainFailures.push({ caseName: row[3], code, source: 'plan-state.mjs' });
+    const canonicalSabotage = plan.file === 'canonical-json.mjs'
+      && plan.find === 'Object.keys(value).sort().map((k)'
+      && plan.replace === 'Object.keys(value).map((k)';
+    const digestRefusalSource = canonicalSabotage
+      ? code === 'E_TRANSITION_REPLAY_BASELINE_DIGEST' ? 'plan-state.mjs'
+        : code === 'E_R24_W0_OVERLAY_PLAN_DIGEST' ? 'effective-state-compiler.mjs'
+          : code === 'E_MISSION_DIGEST_INVALID' ? 'mission-contract.mjs' : null
+      : null;
+    const secondarySource = originalFrame && (duplicateSabotage || fenceSabotage) ? 'plan-state.mjs'
+      : digestRefusalSource && block.includes(new URL(digestRefusalSource, import.meta.url).href + ':')
+        ? digestRefusalSource : null;
+    if (testFailure && secondarySource) {
+      dependentDomainFailures.push({ caseName: row[3], code, source: secondarySource });
     } else {
       failures.push('E_MUTATION_NOT_ASSERTION:' + row[3]);
     }

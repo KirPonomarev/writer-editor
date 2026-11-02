@@ -189,3 +189,65 @@ test('R24 secondary domain errors alone or with wrong descriptor source unknown 
     status: null, signal: 'SIGTERM' };
   assert.equal(evaluateMutationRun(signalled, plan, baseline).verdict, 'INVALID');
 });
+
+test('R24 canonical key-order sabotage retains observed digest refusals only beside a genuine assertion', async () => {
+  const { evaluateMutationRun } = await api;
+  const plan = await originalPlan('canon-key-order-nondeterministic');
+  const baseline = evaluateMutationRun(mixedDomainRun(plan), plan);
+  assert.equal(baseline.verdict, 'PASS');
+  for (const [code, origin] of [
+    ['E_TRANSITION_REPLAY_BASELINE_DIGEST', 'plan-state.mjs'],
+    ['E_R24_W0_OVERLAY_PLAN_DIGEST', 'effective-state-compiler.mjs'],
+    ['E_MISSION_DIGEST_INVALID', 'mission-contract.mjs'],
+  ]) {
+    const run = evaluateMutationRun(mixedDomainRun(plan, { assertion: true, code, origin }), plan, baseline);
+    assert.equal(run.verdict, 'KILLED', JSON.stringify(run));
+    assert.deepEqual(run.assertionCases, ['finite semantic witness']);
+    assert.deepEqual(run.dependentDomainFailures, [
+      { caseName: 'finite propagated contract', code, source: origin },
+    ]);
+    assert.equal(run.exitCode, 1);
+    assert.equal(run.tap.fail, 2);
+  }
+});
+test('R24 canonical propagated digest refusal alone is never a kill witness', async () => {
+  const { evaluateMutationRun } = await api;
+  const plan = await originalPlan('canon-key-order-nondeterministic');
+  const baseline = evaluateMutationRun(mixedDomainRun(plan), plan);
+  for (const [code, origin] of [
+    ['E_TRANSITION_REPLAY_BASELINE_DIGEST', 'plan-state.mjs'],
+    ['E_R24_W0_OVERLAY_PLAN_DIGEST', 'effective-state-compiler.mjs'],
+    ['E_MISSION_DIGEST_INVALID', 'mission-contract.mjs'],
+  ]) {
+    const run = evaluateMutationRun(mixedDomainRun(plan, { code, origin }), plan, baseline);
+    assert.equal(run.verdict, 'INVALID', JSON.stringify(run));
+    assert.deepEqual(run.assertionCases, []);
+    assert.ok(run.failures.includes('E_MUTATION_ASSERTION_WITNESS_MISSING'));
+  }
+});
+test('R24 canonical secondary refusals require the exact descriptor code and original module frame', async () => {
+  const { evaluateMutationRun } = await api;
+  const plan = await originalPlan('canon-key-order-nondeterministic');
+  const baseline = evaluateMutationRun(mixedDomainRun(plan), plan);
+  for (const [code, origin] of [
+    ['E_TRANSITION_REPLAY_BASELINE_DIGEST', 'lease.mjs'],
+    ['E_R24_W0_OVERLAY_PLAN_DIGEST', 'plan-state.mjs'],
+    ['E_MISSION_DIGEST_INVALID', 'plan-state.mjs'],
+    ['E_UNKNOWN_BINDING', 'mission-contract.mjs'],
+    ['ERR_MODULE_NOT_FOUND', 'mission-contract.mjs'],
+    ['E_R24_READ_MISSING', 'mission-contract.mjs'],
+  ]) assert.equal(evaluateMutationRun(mixedDomainRun(plan, { assertion: true, code, origin }),
+    plan, baseline).verdict, 'INVALID');
+  for (const wrong of [
+    { ...plan, find: plan.find + ' ' },
+    { ...plan, replace: plan.replace + ' ' },
+    await originalPlan('mc-digest-binding-removed'),
+  ]) {
+    const control = evaluateMutationRun(mixedDomainRun(wrong), wrong);
+    assert.equal(evaluateMutationRun(mixedDomainRun(wrong, { assertion: true,
+      code: 'E_MISSION_DIGEST_INVALID', origin: 'mission-contract.mjs' }), wrong, control).verdict, 'INVALID');
+  }
+  const signal = { ...mixedDomainRun(plan, { assertion: true,
+    code: 'E_MISSION_DIGEST_INVALID', origin: 'mission-contract.mjs' }), status: null, signal: 'SIGTERM' };
+  assert.equal(evaluateMutationRun(signal, plan, baseline).verdict, 'INVALID');
+});

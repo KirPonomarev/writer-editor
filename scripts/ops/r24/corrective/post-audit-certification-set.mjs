@@ -134676,11 +134676,11 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "f286b95dab29d8af820e43772c3fcb70872a1ca6acd152454341ec764776aefa"
+      "sha256": "3803030818e7769918b37ca1b58d7eab11870c56174cdbadee73a3d7830c9eef"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "2a42efa50ba4dc67a48e18faba24cb9de0ac9576def4afc4d72c03203f162ae6"
+      "sha256": "acffa456a3d57cd445961aa4312e34bf1ee83d147fe30409163bd2eb9f6f1f14"
     },
     {
       "path": "docs/WORKLOG.md",
@@ -134696,11 +134696,11 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "4f762ce58f3736f76e5c53411f8c75af38a699df8acf59a1ad8587ee0a411db1"
+      "sha256": "a536b9ad8c8a99d1b5588152676a646538c6ab4d6461d3591da2b784cb1d6fee"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "8d5a46a29db8356aabd5a2154f55178ef600c31e30396521d9388a299ba20561"
+      "sha256": "559a3035322b33b6954deb5fa6194c05bb2c7dd9a8db1c50a3fb3bec3fe2c06e"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -134716,7 +134716,7 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "db86c96843f7faeacbccec9509cef86165aaa6521b1fa85d229843a3a7add4e8"
+      "sha256": "507056fb1adffea29867741562acd7019f309d1825e2f206ea68d5759380c2b7"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -134764,11 +134764,11 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "6f14216bca1ecfa87597c8bc0d092d99575a5260565936832f8a663b1f594965"
+      "sha256": "7ff5ec851b89306388765cb500c16ce92f837d0ff8860d0fdf6447221c3e5e5c"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "1fbe193c08b1015d6dea563232f4b608eba57b6173a2b182f243a68973d0c577"
+      "sha256": "aa770761c1bfb0cb76d08154e5de3e6ecc879b8257d44082ee8b64ca014a5c7b"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -135048,7 +135048,7 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
-      "sha256": "8d8823bd40b2cf4146795a7ed0d8244e744d190b0e79c80b845d5b3106e4be3b"
+      "sha256": "a5a940685433eadcc9f6ec7099e2bf868999ad2d94035a87d48a09358375ae5a"
     },
     {
       "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
@@ -135084,11 +135084,11 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/r24/mutation-context.mjs",
-      "sha256": "b3c4f7b6ad053fe6e4dfb7f580e092a56f1161c6ad950611c3c5d74940c358a1"
+      "sha256": "1b8efaabf252b1ce2af62c8c32a79ec3a206d4b00b39045c0364f8ef2262b05e"
     },
     {
       "path": "test/unit/r24-mutation-context.test.js",
-      "sha256": "229d4364a6c49a76858625b61ba22427af9f6595a1e91d9e2510fad561bc64b0"
+      "sha256": "e165d715fda08e7fa126e5bec624250d60cbad71307d0dff9d832bdd77f871d6"
     },
     {
       "path": "scripts/ops/r24/tests/mutation-boundaries.test.mjs",
@@ -135098,7 +135098,7 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c0294af1d8f2786429e4ce30096beed491d7e6324e287f25a43cdb084ec586fa"
+      "sha256": "b44f57cc5445e5eb82afefd3148392cd17c667c8df04d3be9b8ba9b9df1da9d3"
     }
   ]
 });
