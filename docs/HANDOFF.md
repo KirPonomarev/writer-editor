@@ -1,10 +1,10 @@
 # Current handoff — Meaning source navigation
 
 DOCUMENT_CLASS: FACTUAL_STATUS
-BINDING_HEAD: b297df3af179486bb6d82b85e3a4b9df3f850f11
-CLAIM_BOUNDARY: Idea2190 is closed; new Meaning docs phase only. Exact closure, native identities and remaining limitations are in the current CONTEXT header and IDEA_DELIVERY_CLOSURE_01.json d5fd03f5. Do not rerun closed gates merely to refresh these facts.
+BINDING_HEAD: 5f9d589ac4f9f2f4e33241c22a108f68599f4612
+CLAIM_BOUNDARY: Idea2190 is closed; Meaning eight-path UI WIP has finite software proof only. Exact predecessor closure remains IDEA_DELIVERY_CLOSURE_01.json d5fd03f5. Native/full mandatory gates/provider delivery remain pending; do not rerun closed Idea gates for factual refresh.
 
-NEXT_ACTION: Review and checkpoint the seven-path source phase, then obtain fresh exact-head UI/static compatibility preflight for the same delivery. Same frozen47 is45pass2missing UI actions; preserve input19ebda5f and old raw failures. The old relay marker needs only its exact new own-property forwarding lines after admission; no predicate removal. Keep native profiles/builds/companions held; no old controller/lease resume. Sole executor, full V6/DNA5 ACTIVE/all17MacUNKNOWN.
+NEXT_ACTION: Finish clean eight-path UI checkpoint from declaration05, then fresh current-binding companion admission and existing seven-target prepare/review/CAS apply/readback. Current frozen55/55, original affected625/625 and normal bundle72dbfe46 are source observations only. Early actual rebuilt own-profile native precedes expensive full30software and checked normal PR/CI/merge/literal merged proof. Retain all raw failures, original381test bytes, profiles and witnesses; no old controller/lease resume. Sole executor, full V6/DNA5 ACTIVE/all17MacUNKNOWN.
 
 HISTORICAL_CHECKPOINTS_BOUNDARY: Every pre-existing byte below, including CURRENT labels, belongs to its named historical checkpoint and does not override the operative handoff above.
 

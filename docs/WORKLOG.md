@@ -1,3 +1,12 @@
+## 2026-11-02 — Meaning source UI and complete affected software observed
+
+- Added only three actual openDocumentNode/registered-Main cases after all381frozen test lines. Whole55baseline50pass5fail rawfdf37747 distinguished missing controls, dropped expectation and exact static byte marker; final input7cee49c2 unchanged through same whole55/55 raw6edf94d9. No original assertion removed. Editor+104lines/three regions, static marker exact two-line addition with inverse; actual Main/projection/registration stay source-checkpoint bytes.
+- Normal renderer producer0/rawf072d960, editor099b766b/bundle72dbfe46; whole original R2/Idea31/Plot26 executes625/625 raw7c691932, zero skip/todo/cancel. Earlier incorrect CJS syntax-check invocation is retained as a method failure, corrected module-stdin0 without code change. Native/current companions/full30/provider delivery and all17Mac acceptance remain pending.
+
+## 2026-11-02 — Meaning source checkpoint; existing UI phase admitted
+
+- Clean5f9d589a, current frozen47 at45pass2missing UI actions, E03whole36/36, E0/guardrails0 and10048outside sources/modes preserved. Declaration05/preflight05 actual0 admits only existing editor/bundle, exact static expected relay and four docs plus append-only three real relay controls after all381frozen test lines. Source inspection found actual openDocumentNode additionally drops Meaning expectation; original listener fixture stub did not cover it. New whole causal proof precedes UI repair; no native/full delivery claim.
+
 ## 2026-11-02 — Meaning source guards observed; UI remains pending
 
 - Same frozen47 now45pass2missing UI actions, raw04857611; all Main/projection predicates executed without test edits. Retained first source42pass5fail raw44ca1d13 showed stale refusal after recovery fencing. Earlier post-save validation now keeps the exact manifest guard through all remaining awaits; the three frozen full-roster cases pass. No native or full product acceptance.

@@ -1,13 +1,13 @@
 # Current bounded Mac work — Meaning source navigation
 
 DOCUMENT_CLASS: FACTUAL_STATUS
-BINDING_HEAD: b297df3af179486bb6d82b85e3a4b9df3f850f11
-OBSERVED_AT_UTC: 2026-11-02T02:48:14Z
-CLAIM_BOUNDARY: Closed Idea delivery and next documentation phase; no Meaning implementation or full Mac acceptance.
+BINDING_HEAD: 5f9d589ac4f9f2f4e33241c22a108f68599f4612
+OBSERVED_AT_UTC: 2026-11-02T03:15:42.544602+00:00
+CLAIM_BOUNDARY: Closed Idea delivery and owned eight-path Meaning UI-phase software observation on this base; no native, complete delivery or full Mac acceptance.
 
 Idea PR2190 is normally merged from70925227 with identical tree2c4af465. IDEA_DELIVERY_CLOSURE_01.json SHA256d5fd03f5c8347f55a9950d6cb67c65d5211827980f9b9c57e07d193f6b395931 binds all10053physical source/Git blobs/modes, candidate30logical gates, literal merged early7/relevant8, full primary PR20/main20 raw-log proofs with18actual code checkouts plus2dependency summaries each and separate operational close1. Literal merged artifact03 ASAR37cae869 has1479independently read leaves and observed ordinary warm/cold exits0; complete source97/working93 and both saved Idea links remain exact. Dirty709 and deep300 native observations retain their original identities; they are not merged reruns. All original failures, profiles,72protected raw files,16ignored fences and10preimages remain retained. Production audit zero;15moderate development advisories and59old uncovered baseline skips remain explicit.
 
-NEXT_TASK: YALKEN_MEANING_SOURCE_NAVIGATION_20261102. Frozen input19ebda5f initially executes47tests5pass42failure records raw576165d1; current three-seam source whole is45pass2missing UI action failures raw04857611, zero skip/todo/cancel. Raw payload/source/range/revision/projection and post-no-loss/final manifest guards pass; no test edit. Initial recovery-fence failure44ca1d13 is retained and corrected by earlier post-save revalidation. Old behavioral Idea31/Plot26 pass; their literal old62wave retains one static relay-marker failure00278ceb, not current whole-green. Next: clean source checkpoint then fresh UI/static compatibility admission; editor/bundle, native and companions remain held. Direct-fragment promotion, full Atlas and17qualification remain unfinished.
+NEXT_TASK: YALKEN_MEANING_SOURCE_NAVIGATION_20261102. Same frozen50plusstatic5 passes55/55 raw6edf94d9 after actual55baseline50pass5fail rawfdf37747. Input7cee49c2 preserves all381original lines19ebda5f. Existing source action and real openDocumentNode/registration/Main route now preserve exact Meaning expectation; Idea navigation reads fresh saved relationship and keeps author drafts. Normal renderer0 builds bundle72dbfe46 from editor099b766b; whole original R2/Idea/Plot625/625 raw7c691932, no skips/todo/cancel. Main/projection/registration stay exact source checkpoint; all failures remain retained. Next: clean UI checkpoint, admit only necessary existing current-byte companions, then early rebuilt own-profile native and complete required30gates/provider/delivery/literal merged proof. Direct-fragment promotion, full Atlas and17qualification remain unfinished.
 
 Full V6/DNA5 remains ACTIVE; all17Mac qualification rows UNKNOWN, candidate UNFROZEN/release NOT_READY. Word nativeOffice PAUSED; Black Box follows full Mac. Sole direct executor; no other agents, chats, models or optional services.
 

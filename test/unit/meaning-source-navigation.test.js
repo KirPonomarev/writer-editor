@@ -379,3 +379,30 @@ test('Meaning actual Idea source listener selects only the fresh saved Idea and 
   assert.equal(changed.c.getIdeaMeaningAuthorDraft().fields.selectedIdeaId, '', 'a changed saved relationship cannot silently select a different Idea');
   assert.equal(changed.commands.length, 0); assert.equal(changed.opened.length, 0);
 });
+
+for (const variant of ['legacy', 'current', 'null'])
+  test('Meaning actual openDocumentNode reaches registered Main with ' + variant + ' source intent [FINITE_DOM_IPC]', async t => {
+    const x = await fixture(t), h = domModule.exports.plotSourceDom(), c = h.c;
+    c.currentProjectId = x.f.projectId; c.currentDocumentId = x.f.sceneId; c.currentRightTab = 'notes';
+    h.loadActual('openDocumentNode');
+    let delivered;
+    // The finite transport connects the actual renderer listener/dispatch to
+    // the real maintained registry, Kernel, Main and canonical persistence.
+    c.runCommandThroughBus = async (_runner, commandId, payload) => {
+      delivered = await x.ui(commandId, payload); return delivered.result;
+    };
+    const options = variant === 'legacy' ? {} : {expectedMeaningSource: variant === 'null' ? null : x.expected};
+    const before = openSnapshot(x), sent = publications(x.h);
+    const opened = await c.openDocumentNode({nodeId: x.f.sceneId, kind: 'scene'}, options);
+    assert.ok(delivered, 'actual openDocumentNode/dispatch/registry must reach Main');
+    if (variant === 'null') {
+      assert.equal(opened, false, 'own null expectation must reach the actual Main refusal');
+      assert.equal(delivered.mainResult.reason, 'E_MEANING_SOURCE_INVALID');
+      assert.equal(publications(x.h), sent); assert.deepEqual(fullRoster(x.h.root), before.roster);
+    } else {
+      assert.equal(opened, true);
+      if (variant === 'current') assert.deepEqual(delivered.request.payload.expectedMeaningSource, x.expected);
+      else assert.equal(Object.hasOwn(delivered.request.payload, 'expectedMeaningSource'), false);
+      assertOrdinaryOpenFootprint(x, before);
+    }
+  });

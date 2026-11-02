@@ -1,6 +1,6 @@
 # Saved Meaning to its explicit author source
 
-STATUS: SOURCE_GUARDS_OBSERVED_UI_AND_FULL_DELIVERY_PENDING
+STATUS: SOURCE_UI_SOFTWARE_OBSERVED_CURRENT_BINDINGS_NATIVE_AND_DELIVERY_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 TASK_ID: YALKEN_MEANING_SOURCE_NAVIGATION_20261102
 TYPE: UI
@@ -18,6 +18,8 @@ CURRENT_SOURCE_ADMISSION: Declaration04 SHA256e7bfabbc29bc162cb31a4157ee1d1178ce
 FROZEN_CAUSAL_INPUT_SHA256: 19ebda5f90d549c76648d81e331384f77318c257d4608ada0724041b4aafe38d
 HISTORICAL_CAUSAL_RESULT: Whole47tests5pass42failure records0skip0todo0cancel on unchanged runtime; raw576165d1d7507809d39b8f7f713522e247d9532dc6ee7ded2ecba3baf443f966.33Main/relay failures,7absent projection field failures and2missing UI actions are shared causes, not42independent defects. Five lawful controls pass. Deeper UI stale predicates were not yet reached. Earlier reach/bridge-oracle method errors remain preserved; exact method inverse reviewed before final freeze.
 CURRENT_SOURCE_RESULT: Same frozen47 executes45pass2missing UI action failures0skip0todo0cancel; raw0485761137441f89998497f53a38ed2438dc58a47199793f6e309418208c92b3. Initial source whole42pass5fail raw44ca1d13 retained: three stale cases already refused publication but recovery advanced an owner fence. Revalidation now precedes recovery and its post-save manifest guard spans every remaining await; same frozen three cases pass with exact full roster. No test change. Old whole Idea31/Plot26/static5 executes61pass1static byte-marker failure raw00278ceb; all behavioral routes pass on that literal first source version, not retagged final evidence. UI, maintained static marker compatibility, current companions, native and full delivery remain pending.
+CURRENT_UI_ADMISSION: Clean source checkpoint5f9d589ac4f9f2f4e33241c22a108f68599f4612, all10048outside phase sources exact, E03whole36/36/taskE0/guardrails0. Declaration05 SHA25691e073df0fa679d35ad875a3da9105c461fbd0bc9590b59d6d65efa2555f3b4a/preflight05 actual0/raw1135f8952480e7cbe250166ed6cc4674f37c9d6483fcdd113564975540526499 admits exactly four current docs, editor/bundle, new test append and existing static bridge expectation. The full381line input19ebda5f remains exact prefix; append three real openDocumentNode/registered-Main controls because source inspection found its additional missing Meaning relay, outside the original stubbed listener oracle. Execute/freeze whole50 plus static5 BEFORE editor/static edits. Three source-guard production paths, other old tests, companions and native effects remain held.
+CURRENT_UI_RESULT: Frozen whole50plusstatic5 first executes50pass5causal failures rawfdf37747 on unchanged editor; input7cee49c2fa61efca88535a2a58941263b80f1512553a69a68918e40669167a36 retains all381original lines. Same complete55 now55pass0fail/skip/todo/cancel raw6edf94d94d392918d8227ef28f1e8466fe5942f31f38a98308164ae1618917e0. Actual openDocumentNode now forwards raw own Meaning expectation; existing inspector scene action uses guarded command and Idea action rereads the exact saved relationship, guarded against source/project/surface/draft/sequence changes without choosing an arbitrary scene. Editor099b766b plus104lines in three exact regions; static expected marker gains only its two implemented forwarding lines with literal inverse0b53b7fb. Normal renderer producer0/rawf072d960 builds bundle72dbfe46; subsequent whole original R2/Idea31/Plot26 executes625/625, zero skip/todo/cancel, raw7c6919322f1c6b7c7036f4b5dd1e1b62c1fd0b22b67a0155f90dd9e3df0c0216. Source guard trio stays exact. Earlier ESM checker invoked as CJS is a retained method fault; corrected module-stdin syntax check0 changes no code. No actual native, full mandatory gates, provider CI or delivery acceptance yet.
 STORAGE: New reports in dated2026-11-02--meaning-source-navigation on verified writable T777 UUID F2FA9AE0-0081-3FC3-BF56-CC4280D16513. Linked worktree on encrypted/unlocked/writable T7-Secure UUID D1F2E2C1-3210-4A39-A4E0-0AA0AD5110E2. Existing marked TMP03 only for finite tests; existing own npm cache/toolchain reused offline. Fresh native runtime/profile admission is separate and prospective. Preserve all original raw/history/WIP/archives/profiles/markers and their absolute consumers. ExFAT128KiB allocation: bounded compact evidence, no duplicate corpus or cleanup.
 DESIGN_TOOL_ROUTER: APPLIED; typed APPLICABLE_EVIDENCE_REQUIRED for eventual product UI; initial declaration is documentation only.
 DESIGN_VISUAL_QUESTION: How can an author follow the selected saved Meaning to its explicit Idea or exact saved scene source without confusing interpretation with source authority?
@@ -52,8 +54,11 @@ Current source phase admits only the named Main/projection/registration seams af
 - src/main.js
 - src/derived/projections/projectionInspectorManifests.mjs
 - src/renderer/commands/projectCommands.mjs
+- src/renderer/editor.js
+- src/renderer/editor.bundle.js
+- test/unit/sector-m-preload-tree-document-command-bridge.test.js
 
-Initial docs-only and test-only phases are complete as clean checkpoints5a9f6b70 and656d5dcb. Current declaration04 admits only four current docs and the three listed source seams; frozen test19ebda5f and the closed Idea task header stay unchanged. No editor/bundle or native launch authority follows.
+Initial docs/test/source phases are complete as clean checkpoints5a9f6b70/656d5dcb/5f9d589a. Current declaration05 governs only its eight exact paths and phase order; Main/projection/registration and the closed Idea task remain protected. Preserve every original381test byte; append only three real relay controls. Static expectation may gain exactly the two already implemented Meaning forwarding lines with literal inverse; no predicate/body removal. No native launch authority follows.
 
 ## DENYLIST
 
