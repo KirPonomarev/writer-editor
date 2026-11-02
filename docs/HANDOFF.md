@@ -1,3 +1,15 @@
+# Current handoff — Mandatory test setup and lossless diagnostics
+
+CURRENT_INITIAL_CAUSAL_RESULT: Actual finite caller9cases5positive4gaps, zero skip todo cancel; raw7e2d4579795c5b4def6df3401ba5229fe21f8cc69a28fd6f12e12ffa938484aa and frozen input2b121b3dfdd49708d290b00c4b55ba154d32bf9c4afd3b37482aa2cd64c4a895. Real nonzero signal zero-executed and valid Green controls pass; unknown format and bad TMP attempt a later owned-filesystem boundary intercepted by the finite port, while inconsistent TAP and missing explicit file return0. These are exact caller ordering proofs, not real child suite or native coverage. Old runner package WP307 and every runtime byte remain unchanged.
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_BASE: 3d494c75809b6dd7671b8df50e6c4beb99e804d1
+PREDECESSOR: PR2192 fully closed; SCENE_MEANING_DELIVERY_CLOSURE_01.json SHA2566a56726d92f4dc2217502a07fc81b98e9a6a6d7976c74ce084010a7e8ad5a71f binds all required source/native/data/software/provider/protection links. Fresh merged warm44100/cold46460 normal0 retained original ownP1, both Meanings and Idea; candidate creation/refusal actions are not relabeled merged.
+CURRENT_TASK: YALKEN_MANDATORY_TEST_SETUP_DIAGNOSTICS_20261102; direct owner accepts five followups. Current initial six-path declaration01/preflight0 admits docs and new finite causal controls only. No old script/test/product/profile mutation yet.
+NEXT_ACTION: Admit only the demonstrated existing caller and dominant diagnostic producer-reader continuation after this exact causal checkpoint; preserve all old assertions, cases, caps, timings, source and raw. Complete this one normal delivery before the remaining owner followups.
+LIMITATIONS: Preserve all prior raw/errors, closed profiles, witnesses, canonical/baseline WIP, ignored fences and retained test outputs. Full Mac ACTIVE/all17UNKNOWN/releaseNOT_READY;59old skips,15moderate dev findings and native cache/menu limits remain. Other three owner followups are later bounded work, not completed. No extra agent/chat/model/timer or optional service.
+HISTORICAL_CHECKPOINTS_BOUNDARY: All original bytes below retain their own execution identity and historical status.
+
 # Current handoff — Explicit Meaning from saved scene selection
 
 BINDING_BASE: 2c9852f30a580d08509abdd7658303299066f268
