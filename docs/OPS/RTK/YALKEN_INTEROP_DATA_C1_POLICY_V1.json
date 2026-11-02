@@ -902,7 +902,9 @@
     "docs/tasks/2026-11-01--idea-origin-navigation.md",
     "test/unit/idea-origin-navigation.test.js",
     "docs/tasks/2026-11-02--meaning-source-navigation.md",
-    "test/unit/meaning-source-navigation.test.js"
+    "test/unit/meaning-source-navigation.test.js",
+    "docs/tasks/2026-11-02--scene-meaning-promotion.md",
+    "test/unit/scene-meaning-promotion.test.js"
   ],
   "protectedFiles": [
     {
@@ -1143,7 +1145,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "72dbfe46731d1470f8a366ae08beb572d842d292aaba64722e804e2af36e49db"
+        "sha256": "db66aa6ebc1304c2d6d66f36bd8b22b830c47dbc6f652e396a81c89d52234e92"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1307,7 +1309,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "099b766b753e89bba4f4f42fefa1080595180998460986ada0e2bb9325aafdd1"
+        "sha256": "fcf00c3537168d56c782d1017802dff20bf3e4608267e92bbe14cb8707257c1f"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2823,15 +2825,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "1625486eac52472027b7a6c8f0219f597ab66cddae94a119dc5035b615490d56"
+        "sha256": "703297dcdcc35b1158c150b444469363a12cca87f34db3e5e1ee31ac7c546779"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "1fbb9380f9dcf5cdb77928bbe2522153790e514ee5384fc2f94e900c8bbd51ba"
+        "sha256": "0bebee682ddf68fd7700ad0ddabc3dada96a8e24fa3d511cc5047853c8a3b262"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "5a21b7437c68d1b19cb024c55d4ae7d2ec225d5f4f9a362818381bcaa3b5a39f"
+        "sha256": "1411e09918f0d85312be642f86c20860c7cb1a47a82a2fa0aff8883320b95459"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3371,7 +3373,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "db7654b54313a6c43673e03924636b235cd148726c1c888d3e67cabac123555c"
+        "sha256": "147f2168430e3682a4a8a2d94f4cb8bc2755bbeb0e6a6eef8fefcd9243c952ec"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3503,7 +3505,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "1066d7d03e060bb74046e1f9afd9c7b67ab0df64cf975cf29c5122a5fabbe193"
+        "sha256": "fbc119b0212628a6dfe25811c22496e4752dca1bbad786083fc0d5d4984d5119"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4095,11 +4097,19 @@
       },
       {
         "path": "docs/tasks/2026-11-02--meaning-source-navigation.md",
-        "sha256": "2048d7e3e456c3b148342a863124b87d4e635db826081b6c7fa34dba9fee38db"
+        "sha256": "97c3531a730a6295d94662473d01b4a396ac39537b629e4a4d855c5d4a09e724"
       },
       {
         "path": "test/unit/meaning-source-navigation.test.js",
         "sha256": "7cee49c2fa61efca88535a2a58941263b80f1512553a69a68918e40669167a36"
+      },
+      {
+        "path": "docs/tasks/2026-11-02--scene-meaning-promotion.md",
+        "sha256": "9b94579d315d9ac90d9ae3d8d28a7d7954412cec6b438bd038674a07eaa87793"
+      },
+      {
+        "path": "test/unit/scene-meaning-promotion.test.js",
+        "sha256": "22d5e7f088d43161644a5a50eead8d01c7f68a36da163956d2abce24d1f59481"
       }
     ],
     "followupRepair": {

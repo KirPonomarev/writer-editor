@@ -143,9 +143,14 @@ for (const profile of ['WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_
 
 test('Scene Meaning actual listener reaches registered Main Kernel persistence without source or author loss [FINITE_DOM_IPC]', async t => {
   const x = await mainFixture(t), h = formDom({ projectId: x.f.projectId, sceneId: x.f.sceneId, projection: x.projection });
-  let response; h.c.commandPort = async (id, payload) => { response = await x.ui(id, payload); return response.result; };
+  let response, completed; h.c.commandPort = (id, payload) => {
+    completed = x.ui(id, payload).then(value => { response = value; return value.result; });
+    return completed;
+  };
   await h.fill(); const sent = await clickScene(h);
   assertPayload(sent, { projectId: x.f.projectId, sceneId: x.f.sceneId });
+  assert.ok(completed, 'actual registered Main command must start');
+  await completed; await h.settle();
   assert.equal(response.mainResult.ok, true, JSON.stringify(response));
   assert.equal(response.mainResult.value.receipt.storageWritten, true);
   assertSaved(x, sent.payload); assert.deepEqual(h.fields(), { title: '', interpretation: '' });

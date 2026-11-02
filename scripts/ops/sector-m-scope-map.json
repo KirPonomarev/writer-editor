@@ -537,7 +537,9 @@
       "test/unit/idea-origin-navigation.test.js",
       "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
       "docs/tasks/2026-11-02--meaning-source-navigation.md",
-      "test/unit/meaning-source-navigation.test.js"
+      "test/unit/meaning-source-navigation.test.js",
+      "docs/tasks/2026-11-02--scene-meaning-promotion.md",
+      "test/unit/scene-meaning-promotion.test.js"
     ]
   },
   "allowPrefixByPhase": {

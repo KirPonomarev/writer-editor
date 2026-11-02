@@ -4,7 +4,7 @@ DOCUMENT_CLASS: FACTUAL_STATUS
 BINDING_BASE: 2c9852f30a580d08509abdd7658303299066f268
 CLAIM_BOUNDARY: Meaning navigation PR2191 fully closed on this literal merged base; closurebcbc0a23 binds exact source/software/mainCI and fresh actual warm/cold app. New direct scene-fragment authoring is scoped and unimplemented; no fullMac acceptance.
 
-NEXT_ACTION: Same source WIP:53added9removed editor lines and normal bundle; frozen48 gives47pass1unawaited-real-Main test-method failure. Original whole48/raw and frozen input retained; next clean exact admission must preserve assertions while awaiting actual command completion. No current native or delivery acceptance.
+NEXT_ACTION: Focused whole48 now48pass0fail after awaiting the actual registered Main promise, exact inverse to frozen46cc1641 with all original assertions retained; newinput22d5e7f0/raw3a5b1432. Product source unchanged; original675/675/normal build retain exact bytes. Continue current-byte companions then fresh real native and normal full delivery; all old failures retained.
 
 PREDECESSOR_LIMITS: Candidate deep dirty/stale proof retains original literal identity; merged native warm4321/cold5582 bothnormalQuit0 and independent full author/source readback are bounded. Known Chromium cache errors and menu-artifact advisory remain explicit unknown broader impact, no warning-free or full17claim. All previous profiles/raw/failures/witnesses protected.
 
