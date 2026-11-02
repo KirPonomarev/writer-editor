@@ -266,14 +266,31 @@ const listTestFiles = (dir, out = []) => {
   return out.sort();
 };
 
-function runSuite(plan, baseline = null) {
+function originalSuiteFiles() {
   const files = listTestFiles(TESTS_DIR);
   const historicalPriority = files.indexOf(path.join(TESTS_DIR, 'wp603-recovery-post-audit.test.mjs'));
   if (historicalPriority > 0) files.unshift(...files.splice(historicalPriority, 1));
+  return files;
+}
+
+async function runOriginalSuite() {
+  const [{ run }, { tap }, { availableParallelism }] = await Promise.all([
+    import('node:test'), import('node:test/reporters'), import('node:os'),
+  ]);
+  const stream = run({
+    files: originalSuiteFiles(),
+    concurrency: Math.min(4, Math.max(1, availableParallelism() - 1)),
+    isolation: 'process',
+  });
+  stream.on('test:fail', () => { process.exitCode = 1; });
+  stream.compose(tap).pipe(process.stdout);
+}
+
+function runSuite(plan, baseline = null) {
   const env = { ...process.env };
   delete env.NODE_TEST_CONTEXT;
   delete env.YALKEN_TEST_EVIDENCE_DIR;
-  const result = spawnSync(process.execPath, ['--import', mutationPreload(plan), '--test', ...files], {
+  const result = spawnSync(process.execPath, ['--import', mutationPreload(plan), fileURLToPath(import.meta.url), '--run-original-suite'], {
     encoding: 'utf8',
     maxBuffer: 64 * 1024 * 1024,
     cwd: MODULE_DIR,
@@ -338,4 +355,11 @@ export function main() {
 }
 
 const invokedAsScript = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (invokedAsScript) main();
+if (invokedAsScript) {
+  if (process.argv[2] === '--run-original-suite') {
+    if (process.argv.length !== 3) throw new Error('E_MUTATION_SUITE_ARGS');
+    await runOriginalSuite();
+  } else {
+    main();
+  }
+}
