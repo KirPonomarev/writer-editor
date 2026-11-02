@@ -172,7 +172,10 @@ function readTapTotals(stdout, stderr) {
         const format = counter[1] === '#' ? 'tap' : 'spec';
         if (!doc) begin(format);
         requireValid(doc.format === format && !Object.hasOwn(doc.stats, counter[2]));
-        if (format === 'tap') closeScopes(-1);
+        if (format === 'tap') {
+          requireValid(doc.scopes.every(scope => scope.indent === 0));
+          closeScopes(-1);
+        }
         const value = Number(counter[3]);
         requireValid(Number.isSafeInteger(value) && value >= 0);
         doc.stats[counter[2]] = value;
@@ -183,7 +186,9 @@ function readTapTotals(stdout, stderr) {
       const outcome = /^( *)(not ok|ok) (\d+)(?: - .*)?$/u.exec(line);
       if (outcome) {
         begin('tap');
-        const indent = outcome[1].length, scope = scopeAt(indent), id = Number(outcome[3]);
+        const indent = outcome[1].length, pending = doc.scopes.at(-1);
+        requireValid(!pending || pending.indent <= indent || pending.indent === indent + 4);
+        const scope = scopeAt(indent), id = Number(outcome[3]);
         requireValid(Number.isSafeInteger(id) && id === scope.count + 1);
         scope.count += 1;
         requireValid(scope.plan === null || scope.count <= scope.plan);
@@ -198,7 +203,9 @@ function readTapTotals(stdout, stderr) {
       const plan = /^( *)1\.\.(\d+)(?: # SKIP(?: .*)?)?$/iu.exec(line);
       if (plan) {
         begin('tap');
-        const scope = scopeAt(plan[1].length), count = Number(plan[2]);
+        const indent = plan[1].length;
+        requireValid(!doc.scopes.length || doc.scopes.at(-1).indent <= indent);
+        const scope = scopeAt(indent), count = Number(plan[2]);
         requireValid(Number.isSafeInteger(count) && scope.plan === null && count >= scope.count);
         scope.plan = count;
         continue;

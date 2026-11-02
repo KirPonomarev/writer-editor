@@ -261,3 +261,37 @@ test('complete reader verifies and aggregates every native document in concatena
   assert.equal(decoded.totals.skipped, 2);
   assert.equal(decoded.result.stdout, actual.stdout);
 });
+
+
+test('complete artifact refuses nested TAP without each immediate parent outcome', () => {
+  const forms = [
+  {
+    "name": "orphan_child_before_root_zero_plan",
+    "stdout": "TAP version 13\n    ok 1 - orphan child\n    1..1\n1..0\n# tests 1\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n"
+  },
+  {
+    "name": "orphan_child_after_completed_root",
+    "stdout": "TAP version 13\nok 1 - completed root\n    ok 1 - orphan child\n    1..1\n1..1\n# tests 2\n# pass 2\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n"
+  },
+  {
+    "name": "root_footer_without_parent_outcome",
+    "stdout": "TAP version 13\n    ok 1 - orphan child\n    1..1\n# tests 1\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n"
+  },
+  {
+    "name": "grandchild_without_intermediate_parent",
+    "stdout": "TAP version 13\n        ok 1 - orphan grandchild\n        1..1\nok 1 - root\n1..1\n# tests 2\n# pass 2\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n"
+  },
+  {
+    "name": "front_plan_does_not_supply_intermediate_parent",
+    "stdout": "TAP version 13\n    1..1\n    ok 1 - completed child\n        ok 1 - orphan grandchild\n        1..1\nok 1 - root\n1..1\n# tests 3\n# pass 3\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n"
+  }
+];
+  for (const fixture of forms) {
+    const actual = { status: 0, signal: null, error: null, stdout: fixture.stdout, stderr: '' };
+    const decoded = transport.readUnitArtifact(transport.packUnitArtifact(actual));
+    assert.notEqual(decoded.exitCode, 0, fixture.name + ': an unresolved nested child cannot supply GREEN');
+    assert.equal(decoded.totals.valid, false, fixture.name + ': root counters cannot replace the missing parent outcome');
+    assert.equal(decoded.result.stdout, actual.stdout, 'all original orphan bytes remain exact');
+    assert.equal(decoded.result.status, 0, 'the actual process status remains unchanged');
+  }
+});

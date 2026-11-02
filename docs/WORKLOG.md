@@ -5653,3 +5653,8 @@ C1C proof update: original H2 rejected both later exact invalid ancestors; initi
 
 
 2026-11-02T20:56:21.772898+00:00 D20prepare13 actual1: first predicate E_SKIP_POLICY_MISSING on literal data-string token in native child fixture, not a real skipped outer case. No metadata applied. Preserved full prior uncommitted test bytes in compact gzip and exact2data-string inverse; ordinary named skip export retains native skip identity and all old12prefix/6new assertions unchanged. Same18controls and136affected rerun actual0 with0skip. Inventory verifier/policy untouched; fresh exact request14 will use changed source fingerprint rather than retry stale13.
+
+
+## 2026-11-02 - mandatory diagnostics D22 parent completeness
+
+C13fullE0passed229.280s/all40 with independent8118case proof; original WP104naturally failed Q0timeout300s/native538.626s>480. Capturewait includes parent-only hold; no test signals. All raw/error bytes preserved. CleanC13declaration22/preflight0 before edit. Five count-consistent orphan forms wrongly accepted; frozen one19th case RED18pass1fail. Exactly3predicates yield19pass/affected137pass/0skip; entire18case prefix and other reader code recover by inverse7b42e9a8. Independent28inputs match e127d238; old66MBformat totals/59skip stay. No current full baseline/delivery/full17PASS. Reviewed ordinary source checkpoint explicitly leaves current hashes stale until one measured timing correction and final refresh; no broad retry loop.
