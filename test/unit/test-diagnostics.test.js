@@ -187,3 +187,77 @@ test('other JSON diagnostics keep exact opaque TAP bytes in the artifact and onl
   assert.ok(decoded.consoleStdout.includes('# unrelated readable explanation\n'));
   assert.deepEqual(transport.readTapTotals(decoded.consoleStdout, ''), transport.readTapTotals(stdout, ''));
 });
+
+
+// Complete source-bound producer controls: container integrity never supplies a
+// passing verdict when the actual outcomes/plan/footer contradict one another.
+const readerCounterexamples = [{"name":"valid_green_control","status":0,"stdout":"TAP version 13\nok 1 - real case\n1..1\n# tests 1\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n"},{"name":"valid_red_control","status":1,"stdout":"TAP version 13\nnot ok 1 - real case\n1..1\n# tests 1\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n"},{"name":"contradictory_failed_case_green_totals","status":0,"stdout":"TAP version 13\nnot ok 1 - real case\n1..1\n# tests 1\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n"},{"name":"missing_test_outcomes_green_totals","status":0,"stdout":"TAP version 13\n1..1\n# tests 1\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n"},{"name":"duplicate_contradictory_summary","status":0,"stdout":"TAP version 13\nnot ok 1 - real case\n1..1\n# tests 1\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n1..1\n# tests 1\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n"}];
+function nativeNestedReaderResult(failed, reporter = 'tap') {
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'diagnostic-native-nested-'));
+  const file = path.join(scratch, 'actual-reader.test.cjs');
+  const fixtureSource = "const { describe, test, skip } = require('node:test');\nconst assert = require('node:assert/strict');\ndescribe('actual reader group', () => {\n  test('actual reader flat', () => assert.equal(2, 2));\n  test('actual reader parent', async t => {\n    await t.test('actual reader child one', () => assert.equal(3, 3));\n    await t.test('actual reader child two', () => assert.equal(__VALUE__, 4));\n  });\n  skip('declared optional reader child', () => assert.fail('skipped child must not execute'));\n});\n";
+  fs.writeFileSync(file, fixtureSource.replace('__VALUE__', failed ? '0' : '4'), { flag: 'wx' });
+  const env = { ...process.env };
+  delete env.NODE_TEST_CONTEXT;
+  delete env.YALKEN_TEST_EVIDENCE_DIR;
+  const actual = spawnSync(process.execPath, ['--test', '--test-reporter=' + reporter, file], {
+    cwd: root, env, encoding: 'utf8', maxBuffer: 1024 * 1024,
+  });
+  assert.equal(actual.error, undefined);
+  assert.equal(actual.signal, null);
+  assert.equal(actual.status, failed ? 1 : 0, actual.stdout + actual.stderr);
+  assert.match(actual.stdout, /actual reader child one/u);
+  assert.match(actual.stdout, /actual reader child two/u);
+  return actual;
+}
+for (const fixture of readerCounterexamples.slice(2)) {
+  test('complete artifact refuses exact contradictory input: ' + fixture.name, () => {
+    const actual = { ...fixture, stderr: '', signal: null, error: null };
+    const decoded = transport.readUnitArtifact(transport.packUnitArtifact(actual));
+    assert.notEqual(decoded.exitCode, 0, 'hash-valid but contradictory/missing TAP cannot supply GREEN');
+    assert.equal(decoded.result.stdout, actual.stdout, 'all original malformed bytes stay retained');
+    assert.equal(decoded.result.status, actual.status, 'actual process status must never be rewritten');
+  });
+}
+test('complete reader accepts genuine flat and actual nested TAP/spec GREEN including declared skip', () => {
+  const fixture = readerCounterexamples[0];
+  for (const actual of [
+    { ...fixture, stderr: '', signal: null, error: null },
+    nativeNestedReaderResult(false), nativeNestedReaderResult(false, 'spec'),
+  ]) {
+    const decoded = transport.readUnitArtifact(transport.packUnitArtifact(actual));
+    assert.equal(decoded.exitCode, 0);
+    assert.equal(decoded.totals.valid, true);
+    assert.equal(decoded.result.stdout, actual.stdout);
+    assert.equal(decoded.result.stderr, actual.stderr);
+    if (actual !== fixture && actual.stdout.includes('actual reader group')) {
+      assert.equal(decoded.totals.tests, 5);
+      assert.equal(decoded.totals.skipped, 1, 'declared skip remains visible and uncovered');
+    }
+  }
+});
+test('complete reader preserves real failed flat and actual nested TAP process as RED', () => {
+  for (const actual of [
+    { ...readerCounterexamples[1], stderr: '', signal: null, error: null },
+    nativeNestedReaderResult(true),
+  ]) {
+    const decoded = transport.readUnitArtifact(transport.packUnitArtifact(actual));
+    assert.equal(decoded.exitCode, 1);
+    assert.equal(decoded.totals.valid, true, 'real complete failed TAP remains structurally readable');
+    assert.equal(decoded.result.status, 1);
+    assert.equal(decoded.result.stdout, actual.stdout);
+    assert.ok(decoded.totals.fail > 0);
+  }
+});
+test('complete reader verifies and aggregates every native document in concatenated TAP and spec', () => {
+  const a = nativeNestedReaderResult(false), b = nativeNestedReaderResult(false, 'spec');
+  const actual = { status: 0, signal: null, error: null,
+    stdout: a.stdout + b.stdout, stderr: a.stderr + b.stderr };
+  const decoded = transport.readUnitArtifact(transport.packUnitArtifact(actual));
+  assert.equal(decoded.exitCode, 0);
+  assert.equal(decoded.totals.valid, true);
+  assert.equal(decoded.totals.tests, 10, 'a later valid footer cannot hide the earlier executed cohort');
+  assert.equal(decoded.totals.pass, 8);
+  assert.equal(decoded.totals.skipped, 2);
+  assert.equal(decoded.result.stdout, actual.stdout);
+});

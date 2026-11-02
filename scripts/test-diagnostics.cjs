@@ -91,25 +91,152 @@ function summarizeTap(stdout) {
   return { text, diagnostics, opaqueDiagnostics };
 }
 function readTapTotals(stdout, stderr) {
-  const combined = String(stdout || '') + '\n' + String(stderr || '');
-  const values = {};
-  let marker = '';
-  for (const key of ['tests', 'pass', 'fail', 'cancelled', 'skipped', 'todo']) {
-    const matches = [...combined.matchAll(new RegExp('^([#ℹ])\\s+' + key + ' (\\d+)$', 'gm'))];
-    const last = matches.at(-1);
-    values[key] = last ? Number(last[2]) : null;
-    if (last) {
-      if (marker && marker !== last[1]) return { ...values, executed: null, valid: false };
-      marker = last[1];
+  const fields = ['tests', 'pass', 'fail', 'cancelled', 'skipped', 'todo'];
+  const invalid = () => ({ ...Object.fromEntries(fields.map(key => [key, null])), executed: null, valid: false });
+  const refusal = Symbol('incomplete or contradictory native test output');
+  const requireValid = value => { if (!value) throw refusal; };
+  const documents = [];
+  let doc = null, yamlIndent = null, lastOutcome = null;
+  const sealed = () => doc && fields.every(key => Object.hasOwn(doc.stats, key));
+  const closeScopes = indent => {
+    while (doc.scopes.length && doc.scopes.at(-1).indent > indent) {
+      const scope = doc.scopes.pop();
+      requireValid(scope.plan !== null && scope.plan === scope.count);
     }
-  }
-  const complete = Object.values(values).every(value => Number.isSafeInteger(value) && value >= 0);
-  const sum = complete ? values.pass + values.fail + values.cancelled + values.skipped + values.todo : null;
-  return {
-    ...values,
-    executed: values.pass === null || values.fail === null ? null : values.pass + values.fail,
-    valid: complete && values.tests === sum,
   };
+  const scopeAt = indent => {
+    closeScopes(indent);
+    if (!doc.scopes.length || doc.scopes.at(-1).indent < indent) {
+      doc.scopes.push({ indent, count: 0, plan: null });
+    }
+    return doc.scopes.at(-1);
+  };
+  const finish = () => {
+    if (!doc) return;
+    requireValid(yamlIndent === null && sealed());
+    const s = doc.stats, suites = s.suites ?? 0;
+    requireValid(s.tests === s.pass + s.fail + s.cancelled + s.skipped + s.todo);
+    requireValid(doc.raw.bad === 0 || s.fail + s.cancelled > 0);
+    const expected = { pass: s.pass, bad: s.fail + s.cancelled, skip: s.skipped, todo: s.todo };
+    if (doc.format === 'tap') {
+      closeScopes(-1);
+      requireValid(Object.values(doc.suite).reduce((a, b) => a + b, 0) === suites);
+      for (const key of Object.keys(expected)) requireValid(doc.raw[key] - doc.suite[key] === expected[key]);
+    } else {
+      requireValid(doc.open.length === 0);
+      let suiteOutcomes = 0;
+      for (const key of Object.keys(expected)) {
+        requireValid(doc.raw[key] >= expected[key]);
+        suiteOutcomes += doc.raw[key] - expected[key];
+      }
+      requireValid(suiteOutcomes === suites);
+    }
+    documents.push(s);
+    doc = null;
+    lastOutcome = null;
+  };
+  const begin = format => {
+    if (sealed()) finish();
+    if (!doc) doc = { format, stats: {}, raw: { pass: 0, bad: 0, skip: 0, todo: 0 },
+      suite: { pass: 0, bad: 0, skip: 0, todo: 0 }, scopes: [], open: [] };
+    requireValid(doc.format === format);
+  };
+  try {
+    for (const rawLine of (String(stdout || '') + '\n' + String(stderr || '')).split('\n')) {
+      const line = rawLine.endsWith('\r') ? rawLine.slice(0, -1) : rawLine;
+      if (yamlIndent !== null) {
+        if (line === ' '.repeat(yamlIndent) + '...') yamlIndent = null;
+        else if (line === ' '.repeat(yamlIndent) + "type: 'suite'") {
+          requireValid(lastOutcome && !lastOutcome.suite);
+          lastOutcome.suite = true;
+          doc.suite[lastOutcome.category] += 1;
+        }
+        continue;
+      }
+      if (/^TAP version /u.test(line)) {
+        requireValid(line === 'TAP version 13');
+        if (doc) finish();
+        begin('tap');
+        continue;
+      }
+      requireValid(!/^\s*Bail out!/iu.test(line));
+      const yaml = /^( +)---$/u.exec(line);
+      if (yaml) {
+        requireValid(doc?.format === 'tap' && !sealed() && lastOutcome
+          && yaml[1].length === lastOutcome.indent + 2);
+        yamlIndent = yaml[1].length;
+        continue;
+      }
+      const counter = /^([#ℹ])\s+(tests|suites|pass|fail|cancelled|skipped|todo) (\d+)$/u.exec(line);
+      if (counter) {
+        const format = counter[1] === '#' ? 'tap' : 'spec';
+        if (!doc) begin(format);
+        requireValid(doc.format === format && !Object.hasOwn(doc.stats, counter[2]));
+        if (format === 'tap') closeScopes(-1);
+        const value = Number(counter[3]);
+        requireValid(Number.isSafeInteger(value) && value >= 0);
+        doc.stats[counter[2]] = value;
+        continue;
+      }
+      requireValid(!/^[#ℹ]\s+(?:tests|suites|pass|fail|cancelled|skipped|todo)\b/u.test(line));
+      if (/^# Subtest:/u.test(line) && sealed()) finish();
+      const outcome = /^( *)(not ok|ok) (\d+)(?: - .*)?$/u.exec(line);
+      if (outcome) {
+        begin('tap');
+        const indent = outcome[1].length, scope = scopeAt(indent), id = Number(outcome[3]);
+        requireValid(Number.isSafeInteger(id) && id === scope.count + 1);
+        scope.count += 1;
+        requireValid(scope.plan === null || scope.count <= scope.plan);
+        const directive = /(?<!\\)#\s+(SKIP|TODO)\b/iu.exec(line)?.[1].toUpperCase();
+        const category = directive === 'TODO' ? 'todo' : directive === 'SKIP' ? 'skip'
+          : outcome[2] === 'not ok' ? 'bad' : 'pass';
+        doc.raw[category] += 1;
+        lastOutcome = { indent, category, suite: false };
+        continue;
+      }
+      requireValid(!/^\s*(?:not ok|ok)\b/u.test(line));
+      const plan = /^( *)1\.\.(\d+)(?: # SKIP(?: .*)?)?$/iu.exec(line);
+      if (plan) {
+        begin('tap');
+        const scope = scopeAt(plan[1].length), count = Number(plan[2]);
+        requireValid(Number.isSafeInteger(count) && scope.plan === null && count >= scope.count);
+        scope.plan = count;
+        continue;
+      }
+      requireValid(!/^\s*\d+\.\./u.test(line));
+      const opening = /^( *)▶ (.+)$/u.exec(line);
+      if (opening) {
+        begin('spec');
+        const indent = opening[1].length;
+        requireValid(!doc.open.length || doc.open.at(-1).indent < indent);
+        doc.open.push({ indent, name: opening[2] });
+        continue;
+      }
+      const spec = /^( *)([✔✖﹣]) (.*) \(([-+\d.eE]+)ms\)(?: # (SKIP|TODO)(?: .*)?)?$/u.exec(line);
+      if (spec) {
+        begin('spec');
+        const indent = spec[1].length, pending = doc.open.at(-1);
+        requireValid(!pending || pending.indent <= indent);
+        if (pending?.indent === indent) {
+          requireValid(pending.name === spec[3]);
+          doc.open.pop();
+        }
+        const category = spec[5] === 'TODO' ? 'todo' : spec[5] === 'SKIP' || spec[2] === '﹣' ? 'skip'
+          : spec[2] === '✖' ? 'bad' : 'pass';
+        doc.raw[category] += 1;
+        continue;
+      }
+      requireValid(!/^\s*[✔✖﹣]\s/u.test(line));
+    }
+    finish();
+    requireValid(documents.length > 0);
+    const values = Object.fromEntries(fields.map(key => [key, documents.reduce((sum, s) => sum + s[key], 0)]));
+    requireValid(Object.values(values).every(Number.isSafeInteger));
+    return { ...values, executed: values.pass + values.fail, valid: true };
+  } catch (error) {
+    if (error !== refusal) throw error;
+    return invalid();
+  }
 }
 
 function packUnitArtifact(result) {

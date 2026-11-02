@@ -2724,7 +2724,7 @@
       },
       {
         "path": "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js",
-        "sha256": "a2394eaf7f6061353ccf0fb7760a24467f7e58875cdd12b7d9de507795ece85e"
+        "sha256": "2a60d363eb35acab1102d5c15427e7368891238ed496eaf2f079a89972ae9906"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern.contract.test.js",
@@ -2836,15 +2836,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "566b43ec31ab4230eb24f47cb68907ad6dd7657da6e789817cc8882284828aac"
+        "sha256": "e6a06732480f0e6b08edb5ff409d10bd3c1e77435b5cf0e19da096847b9cf278"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "afd76398a0948704b9f1c3bc7ede7c5461a7b45eedb24bce58753af0397af37d"
+        "sha256": "575c77d10db86502bc9feac96d6dfc3b7a1eaf2ac1d93b7e7d7b7a4042f62d68"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "763aa8167ab67620d2a70e6f1ec47e29d07a75b2f380fa0bedd2012c3105eebf"
+        "sha256": "ef80b6255959ab682ccc405e67144e7e652f5cf0d3e54023509c16899fcb5332"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3384,7 +3384,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "fbe62303514dd901086bcac05e693fe1b3416444d1b67fe86bb3a6f67c5e9301"
+        "sha256": "e12f7adeb895754c0fbe8aaa56b3d96e525ac3f509025d74fcdbee6c451e54eb"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4124,7 +4124,7 @@
       },
       {
         "path": "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
-        "sha256": "9678f64592ba3b1e26906caff6378494273b2c3ef7b68b263dbf5620eb34bb39"
+        "sha256": "d665229561cbdc8f7c803c453e1075146ad6bae5285007b81d783e743fe69f34"
       },
       {
         "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
@@ -4132,11 +4132,11 @@
       },
       {
         "path": "scripts/test-diagnostics.cjs",
-        "sha256": "d531c1e693d05846d45513cea2b046b6883ad83a0260a5c074fd19e5e14ae61a"
+        "sha256": "0832010d2486d46826b796c5994223ac1e96fd55a552c2e282646de2425ae6e8"
       },
       {
         "path": "test/unit/test-diagnostics.test.js",
-        "sha256": "28dc92fda9f2cb53413658fbd921eafed077fb2fa5e6289161606d937eff3174"
+        "sha256": "b8fdd00f8d743868ab381786ef6c6219a05d981838107bc7ac41329a2fd3033f"
       },
       {
         "path": "scripts/guards/ops-current-wave-stop.mjs",
@@ -4152,7 +4152,7 @@
       },
       {
         "path": "scripts/ops/r24/test-mutants.mjs",
-        "sha256": "676daeef23879ea2ad19bdbd9ffea16160caa7a8266c5e6eb3dfac9ffcbacc40"
+        "sha256": "267f94b265667d9118eee42cabaecb7b0470ac04b3da50455acd5c719140ad0b"
       },
       {
         "path": "scripts/ops/r24/mutation-context.mjs",
