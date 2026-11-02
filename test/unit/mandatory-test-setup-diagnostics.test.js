@@ -367,3 +367,136 @@ test('maintained historical read port preserves separate encoding and option ide
   assert.equal(text, payload.toString('utf8'));
   assert.equal(calls.length, 2, 'byte and UTF8 requests retain their original option identities');
 });
+
+
+// These finite controls exercise the maintained binary Git batch reader. They
+// never stand in for executing the original historical or mutation cases.
+async function maintainedWp603BatchPort() {
+  const { createHash } = require('node:crypto');
+  const { pathToFileURL } = require('node:url');
+  const text = fs.readFileSync(path.join(root, 'scripts/ops/r24/tests/wp603-recovery-post-audit.test.mjs'), 'utf8');
+  const begin = text.indexOf('const WP603_HISTORICAL_BLOB_ROOTS=');
+  const end = text.indexOf('\nconst WP603_HISTORICAL_BLOBS=', begin);
+  assert.ok(begin >= 0 && end > begin, 'the maintained batch read-port must exist before protocol acceptance');
+  const { gitMemoKey } = await import(pathToFileURL(path.join(root,
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs')).href);
+  const context = { assert, Buffer, createHash, gitMemoKey, REPO_ROOT: root };
+  vm.runInNewContext(text.slice(begin, end) + '\nglobalThis.prime = primeHistoricalGitReadMemo;', context,
+    { filename: 'maintained WP603 batch read-port with finite native process adapter', timeout: 3000 });
+  return { prime: context.prime };
+}
+function finiteWp603Batch() {
+  const { createHash } = require('node:crypto');
+  const payloads = [Buffer.from([0, 255, 10, 195, 169, 0, 13]), Buffer.alloc(0)];
+  const specs = [
+    'bf3b3c3c57e8f2268dc5f0be213c27de0002e5ff:finite/carrier.bin',
+    '39897a04b880391ee9224269a2691f52e9e8018f:finite/empty.bin',
+  ];
+  const records = payloads.map((bytes, i) => [specs[i], createHash('sha256').update(bytes).digest('hex')]);
+  const frames = payloads.map(bytes => {
+    const header = Buffer.from('blob ' + bytes.length + '\0');
+    const oid = createHash('sha1').update(header).update(bytes).digest('hex');
+    return Buffer.concat([Buffer.from(oid + ' blob ' + bytes.length + '\n'), bytes, Buffer.from('\n')]);
+  });
+  return { records, payloads, frames, packet: Buffer.concat(frames) };
+}
+
+test('maintained historical batch read-port preserves binary UTF8 clone and live miss semantics', async () => {
+  const { prime } = await maintainedWp603BatchPort();
+  const port = await maintainedWp603ReadPort();
+  const fixture = finiteWp603Batch();
+  let executions = 0;
+  prime(port.git, fixture.records, (command, argv, options) => {
+    executions += 1;
+    assert.equal(command, 'git');
+    assert.deepEqual(Array.from(argv), ['cat-file', '--batch']);
+    assert.equal(options.cwd, root);
+    assert.equal(options.encoding, null);
+    assert.equal(options.maxBuffer, 64 * 1024 * 1024);
+    assert.deepEqual(Object.keys(options).sort(), ['cwd', 'encoding', 'input', 'maxBuffer']);
+    assert.deepEqual(options.input, Buffer.from(fixture.records.map(row => row[0]).join('\n') + '\n'));
+    return Buffer.from(fixture.packet);
+  });
+  assert.equal(executions, 1);
+  for (let i = 0; i < fixture.records.length; i += 1) {
+    const args = ['show', fixture.records[i][0]];
+    const first = port.git(args, { encoding: null });
+    assert.deepEqual(first, fixture.payloads[i]);
+    if (first.length) first[0] ^= 255;
+    assert.deepEqual(port.git(args, { encoding: null }), fixture.payloads[i]);
+    assert.equal(port.git(args, { encoding: 'utf8' }), fixture.payloads[i].toString('utf8'));
+  }
+  assert.equal(port.calls.length, 0, 'all and only primed option identities avoid native reads');
+  const args = ['show', fixture.records[0][0]];
+  assert.deepEqual(port.git(args), port.payload, 'an unprimed default options identity remains a real miss');
+  assert.equal(port.git(args, { encoding: 'utf8', finiteOtherOption: true }), port.payload.toString('utf8'));
+  const missing = ['show', fixture.records[0][0].replace('carrier.bin', 'missing.bin')];
+  port.state.failures = 1;
+  assert.throws(() => port.git(missing), error => error.code === 'E_FINITE_GIT_READ');
+  assert.deepEqual(port.git(missing), port.payload, 'a failed native miss must be retried');
+  assert.notEqual(port.git(['rev-parse', 'HEAD']), port.git(['rev-parse', 'HEAD']));
+  assert.equal(port.calls.length, 6, 'unknown options, unknown objects, failures and aliases retain the literal native callback');
+});
+
+test('maintained historical batch read-port refuses malformed catalogs before dispatch', async () => {
+  const { prime } = await maintainedWp603BatchPort();
+  const { records } = finiteWp603Batch();
+  const [spec, digest] = records[0];
+  const invalid = [
+    null, [], Array.from({ length: 257 }, (_, i) => [spec + i, digest]),
+    [[spec]], [[spec, digest, 'unexpected']], [[spec, null]], [[spec, '0'.repeat(63)]],
+    [[spec, digest], [spec, digest]],
+    [[spec.replace(/^[^:]+/u, 'HEAD'), digest]],
+    [[spec.replace(/^[^:]+/u, 'a'.repeat(40)), digest]],
+    [[spec.replace('finite/carrier.bin', ''), digest]],
+    ...['/carrier.bin', '../carrier.bin', 'finite/../carrier.bin', 'finite/./carrier.bin',
+      'finite//carrier.bin', 'finite/carrier.bin\nHEAD', 'finite/carrier.bin\0', 'finite:carrier.bin']
+      .map(value => [[spec.replace('finite/carrier.bin', value), digest]]),
+  ];
+  for (const catalog of invalid) {
+    const port = await maintainedWp603ReadPort();
+    port.git(['show', 'd'.repeat(40) + ':existing.bin']);
+    const before = Array.from(port.git.cache.entries());
+    let dispatched = 0;
+    assert.throws(() => prime(port.git, catalog, () => { dispatched += 1; throw new Error('must never dispatch'); }),
+      /WP603_BATCH_CATALOG/u);
+    assert.equal(dispatched, 0);
+    assert.deepEqual(Array.from(port.git.cache.entries()), before, 'invalid catalog cannot alter existing memo entries');
+  }
+});
+
+test('maintained historical batch read-port rejects corrupt frames and never partially publishes', async () => {
+  const { prime } = await maintainedWp603BatchPort();
+  const fixture = finiteWp603Batch();
+  const first = fixture.frames[0];
+  const firstHeaderEnd = first.indexOf(10);
+  const badBody = Buffer.from(fixture.packet); badBody[firstHeaderEnd + 1] ^= 1;
+  const badTerminator = Buffer.from(fixture.packet); badTerminator[first.length - 1] = 0;
+  const badOid = Buffer.from(fixture.packet); badOid.fill(48, 0, 40);
+  const wrongDigest = fixture.records.map(row => [...row]); wrongDigest[1][1] = '0'.repeat(64);
+  const replaceHeader = value => Buffer.concat([Buffer.from(value), fixture.packet.subarray(firstHeaderEnd)]);
+  const header = first.subarray(0, firstHeaderEnd).toString();
+  const cases = [
+    { packet: Buffer.alloc(0) }, { packet: first }, { packet: fixture.packet.subarray(0, -1) },
+    { packet: Buffer.concat([fixture.packet, Buffer.from('extra')]) },
+    { packet: fixture.packet.toString('utf8') },
+    { packet: replaceHeader(header.replace(' blob ', ' tree ')) },
+    { packet: replaceHeader(header.replace(' blob 7', ' blob 07')) },
+    { packet: replaceHeader(header.replace(' blob 7', ' blob 67108865')) },
+    { packet: Buffer.from('missing\n') }, { packet: badOid }, { packet: badBody },
+    { packet: badTerminator }, { packet: fixture.packet, records: wrongDigest },
+    { packet: Buffer.concat([fixture.packet, fixture.frames[0]]) },
+  ];
+  for (const control of cases) {
+    const port = await maintainedWp603ReadPort();
+    port.git(['show', 'e'.repeat(40) + ':existing.bin']);
+    const before = Array.from(port.git.cache.entries());
+    assert.throws(() => prime(port.git, control.records ?? fixture.records, () => control.packet), /WP603_BATCH_/u);
+    assert.deepEqual(Array.from(port.git.cache.entries()), before, 'even a valid first frame cannot publish before the entire packet is accepted');
+  }
+  const port = await maintainedWp603ReadPort();
+  const before = Array.from(port.git.cache.entries());
+  const original = Object.assign(new Error('native batch command failed'), { code: 'E_FINITE_GIT_BATCH' });
+  assert.throws(() => prime(port.git, fixture.records, () => { throw original; }), error => error === original);
+  assert.deepEqual(Array.from(port.git.cache.entries()), before, 'native failures remain failures without a fallback or partial memo');
+});

@@ -2837,15 +2837,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "a2274941df8f02b0e0d24c7c49e690aad1d455c769e9ac10cdf09f004bd4395f"
+        "sha256": "8d47b484e10ad40486e4465fb11d5b4b49ba870bed9d5eeee2ecf839b5fe4be8"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "8ce3fa3a401b00cdb3c297100638a5beb467501e23e7c9445a46e218bb508eb9"
+        "sha256": "0cf4fba322fa770e8451b6044de768214cfb434819a386ae062ab97cb3402606"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "7bca2678610fe814a5918babe1e3fbb5ca56ca4064cb57c17ad19218bc83520f"
+        "sha256": "c53075ddacf0c18dd9e0adf3276e94ff901bd4a0b6913fc5db30fd7b63e16917"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3385,7 +3385,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "6be02f20cebc2fa8f3c0cfe1d8e6abd2f53ba37b0f88fea469076f783f88c69b"
+        "sha256": "3ab5f0879646c98d83d83d8b1cb65b79898578c5cae71ea604cf451531c13a9b"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4125,11 +4125,11 @@
       },
       {
         "path": "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
-        "sha256": "e283ec2f2ce9f2c4fdab8f441de43cb332bf686e0fc505f9cb31c99c0a884f15"
+        "sha256": "09aef5c08607d24584b323960c8d3951322295110a2387aed630853235ae545d"
       },
       {
         "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
-        "sha256": "ac7cdae529f4d9a2237a30217cc4e7f8a6224eb573e182f1570ca3a9c551212a"
+        "sha256": "7457dd035cb6e248a6abbbe1f7fdd7c4557cbcaa4462e69df61b780a55ac1f42"
       },
       {
         "path": "scripts/test-diagnostics.cjs",
@@ -4153,7 +4153,7 @@
       },
       {
         "path": "scripts/ops/r24/test-mutants.mjs",
-        "sha256": "267f94b265667d9118eee42cabaecb7b0470ac04b3da50455acd5c719140ad0b"
+        "sha256": "0042b56dc425a38bf294bb15b1c70f6e762294f0d2f890d61d79bff925ef037f"
       },
       {
         "path": "scripts/ops/r24/mutation-context.mjs",
@@ -4169,7 +4169,7 @@
       },
       {
         "path": "scripts/ops/r24/tests/wp603-recovery-post-audit.test.mjs",
-        "sha256": "5ca20947c6d4de07b9998aa96511692c9f44e9d1c567e26013fe1533b7733d0c"
+        "sha256": "b7be350d3cad09babad229486506fa787db02d568f8be03d26e157ea0ece4901"
       },
       {
         "path": "scripts/ops/ops-synth-negative.test.cjs",

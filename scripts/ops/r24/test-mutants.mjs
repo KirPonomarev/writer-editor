@@ -268,8 +268,12 @@ const listTestFiles = (dir, out = []) => {
 
 function originalSuiteFiles() {
   const files = listTestFiles(TESTS_DIR);
-  const historicalPriority = files.indexOf(path.join(TESTS_DIR, 'wp603-recovery-post-audit.test.mjs'));
-  if (historicalPriority > 0) files.unshift(...files.splice(historicalPriority, 1));
+  // Each measured long file starts in the existing first four native slots.
+  for (const name of ['pre00f-current-head-plan-delivery-reconciliation.test.mjs', 'docs-claim-lint.test.mjs', 'wp603-recovery-post-audit.test.mjs']) {
+    const priority = files.indexOf(path.join(TESTS_DIR, name));
+    if (priority < 0) throw new Error('E_R24_ORIGINAL_PRIORITY_FILE_MISSING:' + name);
+    if (priority > 0) files.unshift(...files.splice(priority, 1));
+  }
   return files;
 }
 
