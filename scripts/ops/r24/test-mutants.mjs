@@ -268,6 +268,8 @@ const listTestFiles = (dir, out = []) => {
 
 function runSuite(plan, baseline = null) {
   const files = listTestFiles(TESTS_DIR);
+  const historicalPriority = files.indexOf(path.join(TESTS_DIR, 'wp603-recovery-post-audit.test.mjs'));
+  if (historicalPriority > 0) files.unshift(...files.splice(historicalPriority, 1));
   const env = { ...process.env };
   delete env.NODE_TEST_CONTEXT;
   delete env.YALKEN_TEST_EVIDENCE_DIR;

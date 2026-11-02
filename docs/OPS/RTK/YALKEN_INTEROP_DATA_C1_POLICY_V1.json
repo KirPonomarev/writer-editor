@@ -914,7 +914,8 @@
     "scripts/ops/r24/test-mutants.mjs",
     "scripts/ops/r24/mutation-context.mjs",
     "test/unit/r24-mutation-context.test.js",
-    "scripts/ops/r24/tests/mutation-boundaries.test.mjs"
+    "scripts/ops/r24/tests/mutation-boundaries.test.mjs",
+    "scripts/ops/r24/tests/wp603-recovery-post-audit.test.mjs"
   ],
   "protectedFiles": [
     {
@@ -2835,15 +2836,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "3803030818e7769918b37ca1b58d7eab11870c56174cdbadee73a3d7830c9eef"
+        "sha256": "6ca80731a5a03f38d17f31f8f9b9a9a9b32be4297b07abfbae244257fd6364bf"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "acffa456a3d57cd445961aa4312e34bf1ee83d147fe30409163bd2eb9f6f1f14"
+        "sha256": "749da93636a4f4439e24d6af9bf9a116a350eedd62d4361955cdb36e291bb209"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "657d66cb467e25bf0afeaf9c1dde23ee6162767f2f86004fe1c3c951183ee0bb"
+        "sha256": "0f06ff739c4f1800e217ef708a3936a50e016cf020d49c591a32c8d575b21c35"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3383,7 +3384,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "559a3035322b33b6954deb5fa6194c05bb2c7dd9a8db1c50a3fb3bec3fe2c06e"
+        "sha256": "acb8a0a757cd2842dee709556ecedaa1768e6e502876eea1773d0d2cc782644c"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4123,11 +4124,11 @@
       },
       {
         "path": "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
-        "sha256": "a5a940685433eadcc9f6ec7099e2bf868999ad2d94035a87d48a09358375ae5a"
+        "sha256": "070533b78edcff01501200dc6e4c046f1f5d439a8dbdfc0b3330af5d460053a3"
       },
       {
         "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
-        "sha256": "72398aed1191224c278eb50102c9d0d37611bde14173be38b84c89f5adcf7c77"
+        "sha256": "ac7cdae529f4d9a2237a30217cc4e7f8a6224eb573e182f1570ca3a9c551212a"
       },
       {
         "path": "scripts/test-diagnostics.cjs",
@@ -4151,7 +4152,7 @@
       },
       {
         "path": "scripts/ops/r24/test-mutants.mjs",
-        "sha256": "4a8a422386680bda1ab50daaef972ad2e18150fe14929541678ea9f3ee422e01"
+        "sha256": "73360268f446a8e61d0187cd874a5950825c978868767eed3b5612223ebe9dd8"
       },
       {
         "path": "scripts/ops/r24/mutation-context.mjs",
@@ -4164,6 +4165,10 @@
       {
         "path": "scripts/ops/r24/tests/mutation-boundaries.test.mjs",
         "sha256": "2126f4e1f2548f3936a2173057479df8017a84fdb6db12d94a37985c860953e9"
+      },
+      {
+        "path": "scripts/ops/r24/tests/wp603-recovery-post-audit.test.mjs",
+        "sha256": "5ca20947c6d4de07b9998aa96511692c9f44e9d1c567e26013fe1533b7733d0c"
       }
     ],
     "followupRepair": {

@@ -4,6 +4,7 @@ import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import {
+  createMemoizedGit,
   verifyWp603MainProductPostEvaluationException,
   verifyWp603RecoveryAdmissionChain,
   WP604_MAIN_PRODUCT_ADMISSION_EXPECTATION
@@ -14,7 +15,7 @@ const POST_AUDIT_ADMISSION='docs/OPS/R24/CORRECTIVE/WP603_PACKAGED_RECOVERY_POST
 const CURRENT_APPROVAL='docs/OPS/R24/CORRECTIVE/WP603_GOVERNANCE_CHANGE_APPROVALS_PACKAGED_RECOVERY_CWD_INVARIANCE_V1.json';
 const HISTORICAL_APPROVAL='docs/OPS/R24/CORRECTIVE/WP603_GOVERNANCE_CHANGE_APPROVALS_V1.json';
 const HISTORICAL_CANDIDATE=WP604_MAIN_PRODUCT_ADMISSION_EXPECTATION.baseSha;
-const realGit=(args,options={})=>execFileSync('git',args,{cwd:REPO_ROOT,encoding:options.encoding??null,maxBuffer:64*1024*1024});
+const realGit=createMemoizedGit((args,options={})=>execFileSync('git',args,{cwd:REPO_ROOT,encoding:options.encoding??null,maxBuffer:64*1024*1024}),{requireImmutable:true,identityProvider:()=>({repoRoot:REPO_ROOT})});
 
 test('WP603 recovery post-audit accepts the exact append-only admission union',()=>{
   const result=verifyWp603MainProductPostEvaluationException({candidateSha:HISTORICAL_CANDIDATE,git:realGit});

@@ -303,3 +303,67 @@ test('actual hard-lane OPS guard keeps one strict doctor and the existing token 
   assert.match(result.output, /CURRENT_WAVE_STOP_CONDITION_GUARD_OK=1/u);
   assert.match(result.output, /CURRENT_WAVE_STRICT_DOCTOR_EXIT=0/u);
 });
+
+
+// Finite controls execute the maintained immutable-history read-port
+// initializer. They do not represent actual WP603, native or release coverage.
+async function maintainedWp603ReadPort() {
+  const { pathToFileURL } = require('node:url');
+  const target = path.join(root, 'scripts/ops/r24/tests/wp603-recovery-post-audit.test.mjs');
+  const text = fs.readFileSync(target, 'utf8');
+  const declarations = text.match(/^const realGit=.+;$/gmu);
+  assert.equal(declarations?.length, 1, 'the exact maintained read-port initializer must be unique');
+  const { createMemoizedGit } = await import(pathToFileURL(path.join(root,
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs')).href);
+  const calls = [], state = { failures: 0, aliasRevision: 0 };
+  const payload = Buffer.from('immutable α carrier\n');
+  const context = {
+    REPO_ROOT: root, createMemoizedGit,
+    execFileSync(command, args, options) {
+      calls.push({ command, args: [...args], options: { ...options } });
+      assert.equal(command, 'git');
+      assert.equal(options.cwd, root);
+      assert.equal(options.maxBuffer, 64 * 1024 * 1024);
+      if (state.failures > 0) {
+        state.failures -= 1;
+        throw Object.assign(new Error('finite Git read failure'), { code: 'E_FINITE_GIT_READ' });
+      }
+      if (args[0] === 'rev-parse' && args[1] === 'HEAD') {
+        return 'finite-live-revision-' + (++state.aliasRevision) + '\n';
+      }
+      return options.encoding === 'utf8' ? payload.toString('utf8') : Buffer.from(payload);
+    },
+  };
+  vm.runInNewContext(declarations[0] + '\nglobalThis.readGit = realGit;', context,
+    { filename: 'literal maintained WP603 Git read port with finite process adapter', timeout: 3000 });
+  return { git: context.readGit, calls, state, payload };
+}
+test('maintained historical read port avoids duplicate immutable reads and isolates returned Buffers', async () => {
+  const { git, calls, payload } = await maintainedWp603ReadPort();
+  const args = ['show', 'a'.repeat(40) + ':carrier.json'];
+  const first = git(args);
+  first[0] ^= 255;
+  assert.deepEqual(git(args), payload, 'a consumer cannot poison the next immutable read');
+  assert.equal(calls.length, 1, 'the same immutable object must pay for one real Git read');
+});
+test('maintained historical read port retries failures and keeps mutable aliases live', async () => {
+  const { git, calls, state, payload } = await maintainedWp603ReadPort();
+  const args = ['show', 'b'.repeat(40) + ':carrier.json'];
+  state.failures = 1;
+  assert.throws(() => git(args), error => error.code === 'E_FINITE_GIT_READ');
+  assert.deepEqual(git(args), payload);
+  assert.equal(calls.length, 2, 'a failed read cannot be cached');
+  assert.notEqual(git(['rev-parse', 'HEAD']), git(['rev-parse', 'HEAD']));
+  assert.equal(calls.length, 4, 'each mutable alias query must reach the adapter');
+});
+test('maintained historical read port preserves separate encoding and option identities', async () => {
+  const { git, calls, payload } = await maintainedWp603ReadPort();
+  const args = ['show', 'c'.repeat(40) + ':carrier.json'];
+  const bytes = git(args, { encoding: null });
+  const text = git(args, { encoding: 'utf8' });
+  assert.equal(Buffer.isBuffer(bytes), true);
+  assert.equal(typeof text, 'string');
+  assert.deepEqual(bytes, payload);
+  assert.equal(text, payload.toString('utf8'));
+  assert.equal(calls.length, 2, 'byte and UTF8 requests retain their original option identities');
+});
