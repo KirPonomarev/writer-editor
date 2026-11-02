@@ -1,3 +1,31 @@
+## 2026-11-02 — Meaning UI checkpoint and required current-byte companions
+
+- Clean0981d0d7, outside10047physical sources/modes exact; source/editor/bundle/test frozen and all causal failures retained. Declaration06/preflight06 actual0 admits16doc/metadata paths in one full24path chain. Readonly literal94row gap has10stale entries and two missing Meaning task/unit paths; full inherited namespace remains to be executed. Preserve every historical tuple/policy/approval field and predicate; use existing seven-target producer/review/CAS/readback and delegated technical witnesses. No app/profile/native or release authority follows.
+
+## 2026-11-02 — Meaning source UI and complete affected software observed
+
+- Added only three actual openDocumentNode/registered-Main cases after all381frozen test lines. Whole55baseline50pass5fail rawfdf37747 distinguished missing controls, dropped expectation and exact static byte marker; final input7cee49c2 unchanged through same whole55/55 raw6edf94d9. No original assertion removed. Editor+104lines/three regions, static marker exact two-line addition with inverse; actual Main/projection/registration stay source-checkpoint bytes.
+- Normal renderer producer0/rawf072d960, editor099b766b/bundle72dbfe46; whole original R2/Idea31/Plot26 executes625/625 raw7c691932, zero skip/todo/cancel. Earlier incorrect CJS syntax-check invocation is retained as a method failure, corrected module-stdin0 without code change. Native/current companions/full30/provider delivery and all17Mac acceptance remain pending.
+
+## 2026-11-02 — Meaning source checkpoint; existing UI phase admitted
+
+- Clean5f9d589a, current frozen47 at45pass2missing UI actions, E03whole36/36, E0/guardrails0 and10048outside sources/modes preserved. Declaration05/preflight05 actual0 admits only existing editor/bundle, exact static expected relay and four docs plus append-only three real relay controls after all381frozen test lines. Source inspection found actual openDocumentNode additionally drops Meaning expectation; original listener fixture stub did not cover it. New whole causal proof precedes UI repair; no native/full delivery claim.
+
+## 2026-11-02 — Meaning source guards observed; UI remains pending
+
+- Same frozen47 now45pass2missing UI actions, raw04857611; all Main/projection predicates executed without test edits. Retained first source42pass5fail raw44ca1d13 showed stale refusal after recovery fencing. Earlier post-save validation now keeps the exact manifest guard through all remaining awaits; the three frozen full-roster cases pass. No native or full product acceptance.
+- Old Idea31/Plot26/static5 whole61pass1static byte-marker failure raw00278ceb; every behavioral route passes on its named literal first source version. Exact forwarding marker compatibility requires the next admitted phase. Source docs/Main/projection/registration only, full V6/DNA5 active.
+
+## 2026-11-02 — Meaning causal input frozen; source guards admitted
+
+- Actual whole47 on unchanged runtime:5lawful controls,42failure records,0skip/todo/cancel; raw576165d1/input19ebda5f. Clean656d5dcb preserves all10054previous tracked physical blobs/modes. Shared missing relay/Main enforcement, absent projection source rows and missing UI actions are distinguished; unreached deeper UI predicates receive no baseline credit.
+- Retained initial full-root footprint method failure and strict bridge reason correction; the final input amendment has exact inverse and no production/old-test change. Declaration03 duplicate-path refusal caused no repository edit; deduplicated04/preflight04 actual0 admits only Main/projection/registration plus four current docs. Editor/bundle, tests, profiles/native and current companions remain held; fullMac unaccepted.
+
+## 2026-11-02 — Idea delivery closed; Meaning source journey scoped
+
+- Idea PR2190 normally merged b297df3a; closure d5fd03f5 binds current software, full provider logs, literal merged actual rebuilt app warm/cold0 and independent complete saved/source readback. Current operative CONTEXT, HANDOFF and Idea task headers now reflect that closed checkpoint; all older journal bytes and phase records remain historical. All17MacUNKNOWN; full V6/DNA5 ACTIVE.
+- Meaning declaration01 SHA256220e504772865c953635549e240bb48fe59b4bc455254de535cb052e55e21932 and actual preflight01 exit0/raw20e7a9d7 precede this five-path docs-only change on clean b297df3a. No runtime/test/profile or qualification input change. Next is the new task E0, clean checkpoint and fresh test-only causal admission; existing Meaning source navigation is unimplemented/unaccepted.
+
 ## 2026-11-02 — Idea native/default observed; delivery format guard corrected
 
 - Literal300595f6 actual native outcome62d43324 observed saved Idea current navigation, no-extra-Save complete Unicode preservation, stale visible refusal, warm/cold normal exits0 with independent whole saved bytes. Its complete default rawb40f51fa passed3/3,4103tests4044pass59exact old uncovered skips,20/20; these remain literal300 evidence, not a future-head rerun. Four own default runtime transition outputs were retained by admitted same-APFS rename; all14ignored fences and original ten preimage files are protected. Confirmed delivery CLI unknown-format defect: genuine frozen13cases1legacy pass12future failures raw21794455; minimal parse-boundary guard now passes all20 actual old/new owned-bare controls, zero fail/skip/todo/cancel rawda8b655b. Unversioned legacy layout remains supported; schemaVersion, formatVersion or format in proof, plan, source manifest or receipt is unsupported and rejected before interpretation/push. Every former source/head/clean/raw/TAP/remote guard and original test body remains. Production runtime1479ASAR leaves unchanged. Current metadata/source freeze, fresh literal-head build/native and all original mandatory software/provider/delivery/merged proofs remain required. No product origin push/PR/merge or full17Mac acceptance.

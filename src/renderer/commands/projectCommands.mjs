@@ -1675,6 +1675,8 @@ export function registerProjectCommands(registry, options = {}) {
               ? { expectedPlotSource: input.expectedPlotSource } : {}),
             ...(Object.hasOwn(input, 'expectedIdeaSource')
               ? { expectedIdeaSource: input.expectedIdeaSource } : {}),
+            ...(Object.hasOwn(input, 'expectedMeaningSource')
+              ? { expectedMeaningSource: input.expectedMeaningSource } : {}),
           },
         );
       } catch (error) {

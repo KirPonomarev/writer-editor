@@ -167,7 +167,7 @@ function authoredInspectorDetails(projectionId, result, options = {}, project = 
   };
   const rows = filtered.slice(offset, offset + 24).map(preview), selectedSource = ordered.find(row => row.id === selectedId);
   const selected = selectedSource ? preview(selectedSource) : null;
-  const ids = new Set(selected ? [selected.id] : isIdea && selectedId ? [] : rows.map(row => row.id));
+  const ids = new Set(selected ? [selected.id] : selectedId ? [] : rows.map(row => row.id));
   const detail = { rows, total: filtered.length, offset, hasMore: offset + rows.length < filtered.length,
     complete: available && rows.length === filtered.length, selected, selectedState: !available ? 'unavailable' : !selectedId ? 'none' : selected ? 'ready' : 'missing' };
   if (isIdea) {
@@ -192,7 +192,40 @@ function authoredInspectorDetails(projectionId, result, options = {}, project = 
       occurrenceEvidenceComplete: available && originOffset === 0 && evidence.length <= 24 };
   }
   const evidence = (value.promotionEvidence || []).filter(row => ids.has(row.meaningId));
-  return { ...detail, promotionEvidence: evidence.slice(0, 24), promotionEvidenceCount: evidence.length, promotionEvidenceComplete: available && evidence.length <= 24 };
+  const sourceHashes = new Map();
+  const sourceRows = (selected ? [selected] : selectedId ? [] : rows).map(row => {
+    const saved = project?.meanings?.meanings?.[row.id], source = saved?.source;
+    const base = { id: row.id, meaningId: row.id, projectId: value.projectId, kind: row.source?.kind || '',
+      sourceState: 'unavailable', sourceLabel: '' };
+    const owned = typeof row.id === 'string' && row.id.length > 0 && row.id.length <= 1000
+      && Object.hasOwn(project?.meanings?.meanings || {}, row.id) && saved.id === row.id && isPlainObject(source);
+    if (base.kind === 'idea') {
+      const ideaId = row.source.ideaId, idea = project?.ideas?.ideas?.[ideaId];
+      const current = owned && source.kind === 'idea' && typeof source.ideaId === 'string'
+        && source.ideaId === ideaId && ideaId.length > 0 && ideaId.length <= 1000
+        && Object.hasOwn(project?.ideas?.ideas || {}, ideaId) && idea?.id === ideaId;
+      return { ...base, ideaId, sourceLabel: String(current ? idea.title || ideaId : ideaId).slice(0, 1000),
+        sourceState: current ? 'current' : 'unavailable' };
+    }
+    const raw = source?.originRef, ref = row.source?.originRef;
+    const valid = owned && source.kind === 'sceneOriginRef' && isPlainObject(raw) && isPlainObject(ref)
+      && Object.keys(ref).every(key => raw[key] === ref[key])
+      && ref.schemaVersion === 'idea.originRef.v1' && ref.kind === 'sceneTextRange'
+      && /^tree-node-[a-f0-9]{32}$/u.test(ref.sceneId)
+      && Number.isSafeInteger(ref.startOffset) && Number.isSafeInteger(ref.endOffset)
+      && ref.startOffset >= 0 && ref.endOffset > ref.startOffset
+      && typeof ref.targetId === 'string' && ref.targetId.length <= 1000
+      && typeof ref.sourceHash === 'string' && /^[a-f0-9]{64}$/u.test(ref.sourceHash);
+    const scene = valid ? project?.scenes?.[ref.sceneId] : null;
+    const hasScene = scene && typeof scene.text === 'string' && /^sha256:[a-f0-9]{64}$/u.test(scene.sceneRevision || '');
+    if (hasScene && !sourceHashes.has(ref.sceneId)) sourceHashes.set(ref.sceneId, hashCanonicalValue(scene.text));
+    const current = hasScene && ref.endOffset <= scene.text.length && sourceHashes.get(ref.sceneId) === ref.sourceHash;
+    const sceneTitle = String(scene?.title || (valid ? ref.sceneId : '')).slice(0, 1000);
+    return { ...base, sceneId: valid ? ref.sceneId : '', sourceLabel: sceneTitle, sceneTitle,
+      sceneRevision: hasScene ? scene.sceneRevision : '', originRef: valid ? { ...ref } : null,
+      sourceState: !hasScene ? 'unavailable' : current ? 'current' : 'stale' };
+  });
+  return { ...detail, sourceRows, promotionEvidence: evidence.slice(0, 24), promotionEvidenceCount: evidence.length, promotionEvidenceComplete: available && evidence.length <= 24 };
 }
 
 function plotInspectorDetails(result, project, options = {}) {
@@ -257,7 +290,7 @@ function buildProvider(coreState, projectId, capabilitySnapshot, meta, params) {
   const projectionStates = sortProjectionInspectorStates([
     stateFromResult(byProjection.get('plot'), plot, params.plot, coreState?.data?.projects?.[projectId]),
     stateFromResult(byProjection.get('idea'), idea, params.idea, coreState?.data?.projects?.[projectId]),
-    stateFromResult(byProjection.get('meaning'), meaning, params.meaning),
+    stateFromResult(byProjection.get('meaning'), meaning, params.meaning, coreState?.data?.projects?.[projectId]),
   ]);
   const summary = {
     manifestCount: manifests.length,

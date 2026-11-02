@@ -1,3 +1,13 @@
+# Current handoff — Meaning source navigation
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_HEAD: 0981d0d79dcf4249493ef1063446ba6ef0440648
+CLAIM_BOUNDARY: Idea2190 is closed; Meaning source/UI checkpoint has finite software proof. Same normal delivery remains in progress; exact current receipts govern reuse. Predecessor closure remains IDEA_DELIVERY_CLOSURE_01.json d5fd03f5; no full Mac acceptance.
+
+NEXT_ACTION: Complete current-byte binding proof under declaration06/preflight06: same-shape new namespace, exact historical inverses, existing seven-target prepare/review/CAS apply/readback/full namespaces and honest append-only technical witnesses. Then early own-profile rebuilt native, remaining full30software and checked normal PR/CI/merge/literal merged proof. Product/test bytes stay0981d0d7; resume from the first missing exact receipt, retain failures/profiles/old witnesses and original381test bytes. No old controller/lease resume; sole executor/full V6 DNA5 ACTIVE/all17MacUNKNOWN.
+
+HISTORICAL_CHECKPOINTS_BOUNDARY: Every pre-existing byte below, including CURRENT labels, belongs to its named historical checkpoint and does not override the operative handoff above.
+
 CURRENT_IDEA_NEXT_PHASE07: Close the same original87a475b3 Idea delivery. Version guard20actual CLI controls now pass da8b655b and all old bytes are preserved. Finish required current metadata binding refresh and clean source checkpoint, fresh admitted literal-head native with independent source/ASAR and saved-byte readback, then every original29logical gate plus existing Electron check, checked normal first push, one PR, required CI/merge/literal merged app and main CI. Previous300 native/default retain exact literal identity; no retagging. All17MacUNKNOWN; original artifacts/profiles/data remain protected.
 
 CURRENT_IDEA_CANDIDATE_NEXT_PHASE06: Finish final current-source binding refresh and clean candidate, original cheap current namespaces/NOOP gates, then fresh prospective APFS runtime/profile admission and early actual rebuilt Idea app. Observe exact linked scene, dirty text preservation, stale/refusal, normal Quit/cold and independent full saved bytes. Only then remaining full29logical software/default/RTK/C1C wave and normal existing verified initial push/PR/current CI/merge/literal merged source+native. No old failed proof retagging, original Plot/earlier profiles/artifacts protected; sole direct executor, all17MacUNKNOWN.

@@ -1,6 +1,11 @@
 # Idea saved-origin scene navigation
 
-STATUS: CURRENT_NATIVE_OBSERVED_DELIVERY_VERSION_GUARD_REQUALIFICATION
+STATUS: BOUNDED_DELIVERY_CLOSED
+DELIVERED_CANDIDATE_SHA: 7092522727e15a4bef693eb37566b68ff3c60fdf
+DELIVERED_MERGED_SHA: b297df3af179486bb6d82b85e3a4b9df3f850f11
+DELIVERY_CLOSURE: IDEA_DELIVERY_CLOSURE_01.json SHA256d5fd03f5c8347f55a9950d6cb67c65d5211827980f9b9c57e07d193f6b395931; normal PR2190, candidate30logical gates, primary PR20/main20 raw logs, separate operational close1, literal merged software and rebuilt actual app warm/cold0. Dirty709/deep300 retain literal identities. All17MacUNKNOWN; full V6/DNA5 remains ACTIVE.
+HISTORICAL_CHECKPOINTS_BOUNDARY: Original specification, admissions and all phase records below retain their exact historical meaning; pending/current wording does not reopen the closed delivery.
+HISTORICAL_START_STATUS: CURRENT_NATIVE_OBSERVED_DELIVERY_VERSION_GUARD_REQUALIFICATION
 FROZEN_CAUSAL_INPUTS_SHA256: c4112d685748cb0b6ef1144c493008bf9041be0c1fa246a5d2516b9e51de772b
 HISTORICAL_CAUSAL_RESULT: Whole27tests3pass24fail0skip0todo0cancel on unchanged runtime1f33698b; rawdb6901b4a7715dd3b0f571677932f8a07aa40ce3a81bf3b38b67b5a253082e7d. Actual legacy/generation/dirty-other-save controls pass. Registration drops expectation; Main ignores forged/stale Idea origin and late manifest. No native or implementation acceptance.
 ROLE: BOUNDED_TASK_SPECIFICATION

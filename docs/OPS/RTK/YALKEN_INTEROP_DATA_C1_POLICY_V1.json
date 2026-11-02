@@ -900,7 +900,9 @@
     "test/unit/plot-source-navigation.test.js",
     "docs/tasks/2026-11-01--plot-source-navigation.md",
     "docs/tasks/2026-11-01--idea-origin-navigation.md",
-    "test/unit/idea-origin-navigation.test.js"
+    "test/unit/idea-origin-navigation.test.js",
+    "docs/tasks/2026-11-02--meaning-source-navigation.md",
+    "test/unit/meaning-source-navigation.test.js"
   ],
   "protectedFiles": [
     {
@@ -1129,7 +1131,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "6344cfa69023a6c6859dd0b2f749f75addcfab21c1f4461573b256e26b3506aa"
+        "sha256": "cea7e85fd14a6acba4327e1444ec3ee64595e3abe95b639b238ca866f404fc73"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1137,11 +1139,11 @@
       },
       {
         "path": "src/renderer/commands/projectCommands.mjs",
-        "sha256": "73357541b5217f99938dd3e96e870086a13d6103e1875305b254b803ae45bfd4"
+        "sha256": "169728f54626109d11aa96d65d6eb889396f03fad0b87ffba8018ba434cddf00"
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "121efb4b587c7fd418f9b8ee1684ee1b05f0b317dbb2cfbe26173674d6bd495e"
+        "sha256": "72dbfe46731d1470f8a366ae08beb572d842d292aaba64722e804e2af36e49db"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1305,7 +1307,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "0538403184ab481a7225d04b7acd1cb58cff408eac612f53ad0a6667db70a282"
+        "sha256": "099b766b753e89bba4f4f42fefa1080595180998460986ada0e2bb9325aafdd1"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2821,15 +2823,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "d7d048f106b7aa6277f3fcdb6ccd0b725e53fae20dddbe9734267a6f0b127c4b"
+        "sha256": "1625486eac52472027b7a6c8f0219f597ab66cddae94a119dc5035b615490d56"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "22e16edb5b64cd3b2326973d56aa77f1684843454f31912454fa46df4a62e329"
+        "sha256": "1fbb9380f9dcf5cdb77928bbe2522153790e514ee5384fc2f94e900c8bbd51ba"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "a1521ba4d9918af49f2741987d9b452b1ad4c4af6fa98f9a495c06da1c82dafe"
+        "sha256": "5a21b7437c68d1b19cb024c55d4ae7d2ec225d5f4f9a362818381bcaa3b5a39f"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3369,7 +3371,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "ca3f5e3a1dccdefa0c19b98ec53c125c67e74d7f46ed3d347bf29eb821e88fb1"
+        "sha256": "db7654b54313a6c43673e03924636b235cd148726c1c888d3e67cabac123555c"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3393,7 +3395,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "5759bf4bb2950148b8cd599bf98f1917cbf64f04cff4d18312668ce8c7b9a2b0"
+        "sha256": "cdf9bd0ca1e94c06c084837802c9042e3a3c5f8873f507855e8d2852532d8b90"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3485,7 +3487,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "3eb36782a58cd7a871a05bc8421f88ba2888b285ed9b16c5dbdfcecb892c43d6"
+        "sha256": "77387d5cd02b37713f03af0bfb84775cdd04780169149997f6496adb98b1e03f"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3501,7 +3503,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "0e1e7629ae34d8d70c93dca4a973d3402ebd8c2744640dfb88d476692f556831"
+        "sha256": "1066d7d03e060bb74046e1f9afd9c7b67ab0df64cf975cf29c5122a5fabbe193"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3737,7 +3739,7 @@
       },
       {
         "path": "src/derived/projections/projectionInspectorManifests.mjs",
-        "sha256": "9d8d7a35ffe39c92cf1f7e3027853ab850efcd8cf27f6fe870a74245e90ebed0"
+        "sha256": "cefb22c04f67079f757eb907dd1b825b0a20444343a2651cd52fa90d42ccac6b"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-e03-c05-projection-inspector-fallback-manifests.contract.test.js",
@@ -4081,15 +4083,23 @@
       },
       {
         "path": "test/unit/sector-m-preload-tree-document-command-bridge.test.js",
-        "sha256": "de990f3d1fa336fe5c792148122935fcb67ad144734232d7cb83b6044ef74c00"
+        "sha256": "0b53b7fb4ce2c851838733024310662d2a0af4d663fb5b3c43b0519a19b1f8fb"
       },
       {
         "path": "docs/tasks/2026-11-01--idea-origin-navigation.md",
-        "sha256": "238afb26e396f72140ba84097f66cfbe151c5494b1de9527ac629ff1ff33fbc1"
+        "sha256": "5a8fad6cf709191fc9de208bb24b16356efb2b9ba14fba4df022f361a49a9adb"
       },
       {
         "path": "test/unit/idea-origin-navigation.test.js",
         "sha256": "52252bf7048557f835d18251c2d74cd03824f761cf0b611534d1cfae38e9be90"
+      },
+      {
+        "path": "docs/tasks/2026-11-02--meaning-source-navigation.md",
+        "sha256": "2048d7e3e456c3b148342a863124b87d4e635db826081b6c7fa34dba9fee38db"
+      },
+      {
+        "path": "test/unit/meaning-source-navigation.test.js",
+        "sha256": "7cee49c2fa61efca88535a2a58941263b80f1512553a69a68918e40669167a36"
       }
     ],
     "followupRepair": {

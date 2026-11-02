@@ -36704,6 +36704,53 @@ async function assertExpectedIdeaSourceCurrent(expected, projectId, guard, initi
   return () => assertRecoverySnapshot(manifestSnapshot);
 }
 
+function normalizeExpectedMeaningSource(value, projectId, nodeId) {
+  const exact = (object, keys) => isPlainObjectValue(object)
+    && Reflect.ownKeys(object).length === keys.length
+    && keys.every(key => Object.getOwnPropertyDescriptor(object, key)?.value !== undefined)
+    && Reflect.ownKeys(object).every(key => typeof key === 'string' && keys.includes(key));
+  const refKeys = ['schemaVersion', 'kind', 'sceneId', 'startOffset', 'endOffset', 'sourceHash', 'targetId'];
+  if (!exact(value, ['schemaVersion', 'projectId', 'meaningId', 'originRef', 'sceneRevision', 'projectionHash'])
+    || value.schemaVersion !== 'meaning.sourceNavigation.v1' || value.projectId !== projectId
+    || !exact(value.originRef, refKeys)) return null;
+  const ref = value.originRef;
+  if (typeof value.meaningId !== 'string' || !value.meaningId || value.meaningId !== value.meaningId.trim() || value.meaningId.length > 1000
+    || ref.schemaVersion !== 'idea.originRef.v1' || ref.kind !== 'sceneTextRange'
+    || ref.sceneId !== nodeId || typeof ref.sceneId !== 'string' || !/^tree-node-[a-f0-9]{32}$/u.test(ref.sceneId)
+    || !Number.isSafeInteger(ref.startOffset) || !Number.isSafeInteger(ref.endOffset)
+    || ref.startOffset < 0 || ref.endOffset <= ref.startOffset
+    || typeof ref.targetId !== 'string' || ref.targetId.length > 1000
+    || typeof ref.sourceHash !== 'string' || !/^[a-f0-9]{64}$/u.test(ref.sourceHash)
+    || typeof value.sceneRevision !== 'string' || !/^sha256:[a-f0-9]{64}$/u.test(value.sceneRevision)
+    || typeof value.projectionHash !== 'string' || !/^[a-f0-9]{64}$/u.test(value.projectionHash)) return null;
+  return { ...value, originRef: { ...ref } };
+}
+
+async function assertExpectedMeaningSourceCurrent(expected, projectId, guard, initial = false) {
+  guard();
+  const manifestSnapshot = await readRecoverySnapshot(getProjectManifestPath(), guard);
+  guard();
+  const source = await buildProductCoreStateForCurrentProject();
+  guard(); assertRecoverySnapshot(manifestSnapshot);
+  const meaningModule = await import(pathToFileURL(path.join(__dirname, 'derived', 'meaning', 'deriveMeaningProjection.mjs')).href);
+  guard(); assertRecoverySnapshot(manifestSnapshot);
+  const project = source.coreState?.data?.projects?.[projectId];
+  const meanings = project?.meanings?.meanings, meaning = meanings?.[expected.meaningId];
+  const scene = project?.scenes?.[expected.originRef.sceneId];
+  const result = meaningModule.deriveMeaningProjection({ coreState: source.coreState, params: { projectId }, capabilitySnapshot: {} });
+  if (source.projectId !== projectId || !Object.hasOwn(meanings || {}, expected.meaningId) || meaning?.id !== expected.meaningId
+    || meaning?.source?.kind !== 'sceneOriginRef'
+    || !Object.keys(expected.originRef).every(key => meaning.source.originRef?.[key] === expected.originRef[key])
+    || !scene || scene.sceneRevision !== expected.sceneRevision
+    || typeof scene.text !== 'string' || expected.originRef.endOffset > scene.text.length
+    || require('./core/browser-safe-hash.cjs').hashCanonicalValue(scene.text) !== expected.originRef.sourceHash
+    || result?.ok !== true || result.value?.projectId !== projectId
+    || initial && result.value?.meta?.projectionHash !== expected.projectionHash) {
+    throw Object.assign(new Error('E_MEANING_SOURCE_STALE'), { code: 'E_MEANING_SOURCE_STALE' });
+  }
+  return () => assertRecoverySnapshot(manifestSnapshot);
+}
+
 async function handleUiOpenDocumentCommand(payload) {
   await editorStartupReadyPromise;
   if (!mainWindow) {
@@ -36715,6 +36762,7 @@ async function handleUiOpenDocumentCommand(payload) {
   const owner = activeStage10ApplicationBootstrap, session = commentAuthoringSessionId;
   const subject = currentLifecycleSubjectId(), generation = lastSignaledEditGeneration;
   const context = captureDocxImportPreviewContext();
+  let meaningSourceGuard = () => {};
   const guard = () => {
     userBookmarkCapability('cmd.project.document.open');
     if (mainWindow !== window || window.isDestroyed() || window.webContents !== contents || contents.isDestroyed()
@@ -36723,20 +36771,26 @@ async function handleUiOpenDocumentCommand(payload) {
       || subject !== currentLifecycleSubjectId() || generation !== lastSignaledEditGeneration) {
       throw Object.assign(new Error('E_PROJECT_DOCUMENT_OPEN_STALE'), { code: 'E_PROJECT_DOCUMENT_OPEN_STALE' });
     }
+    meaningSourceGuard();
   };
   try {
     guard();
     const hasPlotSource = Object.hasOwn(safePayload, 'expectedPlotSource');
     const hasIdeaSource = Object.hasOwn(safePayload, 'expectedIdeaSource');
-    if (hasPlotSource && hasIdeaSource) return { ok: false, error: 'E_DOCUMENT_SOURCE_EXPECTATION_AMBIGUOUS' };
+    const hasMeaningSource = Object.hasOwn(safePayload, 'expectedMeaningSource');
+    if ([hasPlotSource, hasIdeaSource, hasMeaningSource].filter(Boolean).length > 1) return { ok: false, error: 'E_DOCUMENT_SOURCE_EXPECTATION_AMBIGUOUS' };
     const expectedPlotSource = hasPlotSource
       ? normalizeExpectedPlotSource(safePayload.expectedPlotSource, safePayload.projectId, safePayload.nodeId) : null;
     const expectedIdeaSource = hasIdeaSource
       ? normalizeExpectedIdeaSource(safePayload.expectedIdeaSource, safePayload.projectId, safePayload.nodeId) : null;
+    const expectedMeaningSource = hasMeaningSource
+      ? normalizeExpectedMeaningSource(safePayload.expectedMeaningSource, safePayload.projectId, safePayload.nodeId) : null;
     if (hasPlotSource && !expectedPlotSource) return { ok: false, error: 'E_PLOT_SOURCE_INVALID' };
     if (hasIdeaSource && !expectedIdeaSource) return { ok: false, error: 'E_IDEA_SOURCE_INVALID' };
+    if (hasMeaningSource && !expectedMeaningSource) return { ok: false, error: 'E_MEANING_SOURCE_INVALID' };
     if (expectedPlotSource) await assertExpectedPlotSourceCurrent(expectedPlotSource, safePayload.projectId, guard, true);
     if (expectedIdeaSource) await assertExpectedIdeaSourceCurrent(expectedIdeaSource, safePayload.projectId, guard, true);
+    if (expectedMeaningSource) await assertExpectedMeaningSourceCurrent(expectedMeaningSource, safePayload.projectId, guard, true);
     let resolvedNode;
     try {
       resolvedNode = await resolveProjectTreeNodeIdentity(safePayload.nodeId, safePayload.projectId);
@@ -36755,6 +36809,12 @@ async function handleUiOpenDocumentCommand(payload) {
     const canProceed = await confirmDiscardChanges();
     if (!canProceed) return { ok: false, cancelled: true };
     guard();
+    // Revalidate before target recovery can advance an owner fence. Keep this
+    // post-save manifest witness active through every remaining awaited step.
+    if (expectedMeaningSource) {
+      meaningSourceGuard = await assertExpectedMeaningSourceCurrent(expectedMeaningSource, safePayload.projectId, guard);
+      guard();
+    }
     // Saving can await dialogs, recovery and another document's I/O. Resolve
     // the stable target again; a renamed/deleted target is not the old path.
     const currentNode = await resolveProjectTreeNodeIdentity(resolvedNode.nodeId, safePayload.projectId);
@@ -36812,7 +36872,13 @@ async function handleUiOpenDocumentCommand(payload) {
         return { ok: false, error: 'E_IDEA_SOURCE_STALE' };
       }
     }
-    const guardSource = () => { guard(); assertRecoverySnapshot(sourceSnapshot); plotSourceGuard(); ideaSourceGuard(); };
+    if (expectedMeaningSource) {
+      guard(); assertRecoverySnapshot(sourceSnapshot);
+      if (`sha256:${computeHash(sourceSnapshot.raw)}` !== expectedMeaningSource.sceneRevision) {
+        return { ok: false, error: 'E_MEANING_SOURCE_STALE' };
+      }
+    }
+    const guardSource = () => { guard(); assertRecoverySnapshot(sourceSnapshot); plotSourceGuard(); ideaSourceGuard(); meaningSourceGuard(); };
     const contextFromPath = getDocumentContextFromPath(filePath);
     const editorPayload = await attachProjectIdToEditorPayload({
       content,
