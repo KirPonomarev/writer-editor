@@ -910,7 +910,10 @@
     "scripts/test-diagnostics.cjs",
     "test/unit/test-diagnostics.test.js",
     "scripts/guards/ops-current-wave-stop.mjs",
-    "scripts/test-environment.cjs"
+    "scripts/test-environment.cjs",
+    "scripts/ops/r24/test-mutants.mjs",
+    "scripts/ops/r24/mutation-context.mjs",
+    "test/unit/r24-mutation-context.test.js"
   ],
   "protectedFiles": [
     {
@@ -3379,7 +3382,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "cf1b11f3596192b9c42346f55678ed8e787d8a1d01b330adf257ab33282397c2"
+        "sha256": "e22c13b31e0a1065edc5e3b8c9e023c64e503feb590416ff236aa0872b824964"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3511,7 +3514,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "8d2c76f229d1ae48dfe38f2e881ed9936f3838e0462ea068179c36cf89b12ee3"
+        "sha256": "cbd4f3e28d556e8dcc7ef6139030004b1b0bc1804ddfb51a50645e432e2ce6cf"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4119,7 +4122,7 @@
       },
       {
         "path": "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
-        "sha256": "6714a90413bda5014208d75f76709edfb52e72dfca0403b23cb15cb07f1f5e4d"
+        "sha256": "12be69fc1ef234a76f74c166e4ab24ccfd210f07e7ff6b60d4b0fc4501ae8662"
       },
       {
         "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
@@ -4140,6 +4143,22 @@
       {
         "path": "scripts/test-environment.cjs",
         "sha256": "c2382b5696c8498ef122501c771789c4f49f8bc77655a290d502dc678e1b1dba"
+      },
+      {
+        "path": "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json",
+        "sha256": "42db0aa53d9e020ca24891f54da793f138432678e9fa20fd95681f1bfcabaac2"
+      },
+      {
+        "path": "scripts/ops/r24/test-mutants.mjs",
+        "sha256": "4a8a422386680bda1ab50daaef972ad2e18150fe14929541678ea9f3ee422e01"
+      },
+      {
+        "path": "scripts/ops/r24/mutation-context.mjs",
+        "sha256": "b176b04ff677b5c234d14cf935f4c7c9df61228f314ee497e353d1e90e313f4c"
+      },
+      {
+        "path": "test/unit/r24-mutation-context.test.js",
+        "sha256": "c726f49ad66c7bd1cff1a6a62643fccb405d7c6537b4925325cba938a172d3f2"
       }
     ],
     "followupRepair": {

@@ -547,7 +547,11 @@
       "scripts/test-diagnostics.cjs",
       "test/unit/test-diagnostics.test.js",
       "scripts/guards/ops-current-wave-stop.mjs",
-      "scripts/test-environment.cjs"
+      "scripts/test-environment.cjs",
+      "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json",
+      "scripts/ops/r24/test-mutants.mjs",
+      "scripts/ops/r24/mutation-context.mjs",
+      "test/unit/r24-mutation-context.test.js"
     ]
   },
   "allowPrefixByPhase": {

@@ -1,3 +1,7 @@
+CURRENT_D9_SOURCE_RESULT: Actual new whole8 controls pass8of8 zero skip/cancel/todo, rawac7da6fdac31ac3d035cd948d2cb3bd0492b6a8063440072586d4ef50a28758a. The real original-context toolchain case now passes with a validated no-change hook; an actual original canonical semantic mutant is killed by named assertions on the unchanged real cohort, source bytes remain exact. Finite missing-context/module/hash/loader/signal/spawn/missing-or-inconsistent-TAP/skip/zero/changed-cohort cases remain INVALID, never kills. Complete stdout/stderr/status/signal/error gzip recovery independently checks byte lengths and SHA. Env registry actual0 found206/registered49/census157; temp registry0 found5/registered5; all old registry entries and census preserved. All original40 mutant definitions byte exact; all194 old R24 tests unchanged. Full194 control/40 complete mutation runs and normal required delivery remain pending, not inferred from focused controls. Current27path metadata refresh now through unchanged finalizer.
+
+CURRENT_D9_E0_REPAIR: Exact cleanC4 dfcc85a96958614ddd9e078919af5eeaf5ecb1ac; declaration040f03fffd665bcacb496041539033ae041b9dd941242ae99c943147965dd14e and preflight0 admit27 same-chain paths. Original E0 actual1 retained:172of172 main cases; recursive unmutated194of193 with one failure; env registry names only unregistered YALKEN_TEST_EVIDENCE_DIR. Full emitted3436bytes are retained; upstream old runner exposed only2000char tail, not its full baseline output. A focused real original-context toolchain case passes1of1, while the exact138-file unmodified copied tree fails0of1 with E_R24_READ_MISSING at wrong repo root. No mutant applied. Repair only registration and test-execution context/oracle: preserve original40 definitions and all194 original cases/assertions. One finite Node22 load hook applies the single exact pinned semantic replacement in child memory at original module URLs, never source checkout writes. Complete covered assertion failures count kills; missing context/loader/hash, signal, missing or inconsistent TAP, changed cohort, skip/cancel/todo/zero remain FAIL. Preserve all full process bytes/statuses in compact readable receipt. New helper and causal controls only; package/src/CI/finalizer/all17protected unchanged. Then exact current metadata via maintained producer and full required one-chain delivery. FullMac ACTIVE/all17UNKNOWN; no native/release authority. Original history follows unchanged.
+
 CURRENT_D6_BINDINGS_PHASE: CleanC3 217cd367f755879972fb3b9d09b0767a83fcc45b; fresh23path declarationb5d8e3236bf9b8a06b9fa7bd7d83630691385801367fdb6c0844bd742434b5f9/preflight0 receipt3171cdd40fcd23bbf8e236391e9cb166e198ea2080dae7d2b8b2e3da6fd5455b. Source guard/diagnostics frozen after current revised-method89/89; package, src, lock and CI completely equal originalM2. Existing protected17 and unchanged seven-target finalizer must remain exact. Prepare only current namespace delta/successor/scope memberships, pinned request/proposal and current source digests; preserve every inherited historical byte by insertion/selector inverse and append-only delegated technical witnesses. These writes never give independent human/native/full17/release approval. No heavy baseline starts until current metadata admission is valid; normal full delivery and fullMac goal remain open. No further factual-source edits after producer prepares these bindings unless a genuine failure requires a fresh precise revision.
 
 CURRENT_D5_GUARD_RESULT: The entire protected package cf0d3ec978b446c78a0b1879057461f3de7ae72731a5dfeca90957a3afcbe799 is restored and all17protected physical DATA bytes/digests are exact. Shared read-only environment check now executes in existing hard-lane OPS entry before expensive doctor and in caller; original dev bypass/release/promotion bans and all pre-existing assertions are unchanged. Actual revised-method whole7 passes89of89 zero skip todo cancel, receipt3bbcf3e5443c2eb9a5fecba778e16e404eddfd6d942cd6148a8812f05874d5d1/raw2cced413fb81c61cafa7eecb3cde6326273bc8a473f02b024ee9c9ca39566abc. Genuine unchanged-old-wave causal20cases19pass1fail retained7f60d32ce4b7d6b1f8e5f9f95a95c863549458cad516b2f8c2c57a3384ef5664. Corrected only own package10/11 implementation-specific method: current checks bind protected package and actual early OPS behavior; initial9 prefix exact, original14/15 bytes/results retain historical identities and are not current-source credit. Standalone strict caller controls remain. Current namespace/inventory/governance bindings are pending via unchanged maintained producer; no full expensive baseline or delivery acceptance yet.
@@ -17,7 +21,7 @@ CURRENT_CALLER_RESULT: D2 WIP passes actual whole5 68of68 with zero skip todo ca
 # Mandatory test setup and lossless diagnostics
 INITIAL_CAUSAL_RESULT: Actual finite caller9cases5positive4gaps, zero skip todo cancel; raw7e2d4579795c5b4def6df3401ba5229fe21f8cc69a28fd6f12e12ffa938484aa and frozen input2b121b3dfdd49708d290b00c4b55ba154d32bf9c4afd3b37482aa2cd64c4a895. Real nonzero signal zero-executed and valid Green controls pass; unknown format and bad TMP attempt a later owned-filesystem boundary intercepted by the finite port, while inconsistent TAP and missing explicit file return0. These are exact caller ordering proofs, not real child suite or native coverage. Old runner package WP307 and every runtime byte remain unchanged.
 
-STATUS: D6_CURRENT_METADATA_BINDINGS_IN_PROGRESS_NOT_DELIVERED
+STATUS: D9_DEMONSTRATED_E0_CONTEXT_REPAIR_NOT_DELIVERED
 ROLE: BOUNDED_TASK_SPECIFICATION
 TASK_ID: YALKEN_MANDATORY_TEST_SETUP_DIAGNOSTICS_20261102
 TYPE: OPS_WRITE
@@ -50,7 +54,7 @@ Initial four current docs, this exact task and one new maintained finite caller 
 
 ## ALLOWLIST
 
-Current D6 continuation: exactly23paths. package.json is restored and protected, excluded from writes. Source code is frozen; only necessary current metadata and delegated technical witnesses proceed through the unchanged producer. Prior scope versions remain historical.
+Current D9 continuation: exactly27 paths. Package/src/CI/finalizer and all17protected are exact; only demonstrated E0 registry/context repair plus unchanged current metadata producer proceed. All prior scope versions remain historical.
 
 - docs/CONTEXT.md
 - docs/HANDOFF.md
@@ -75,6 +79,10 @@ Current D6 continuation: exactly23paths. package.json is restored and protected,
 - docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
 - docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
 - scripts/ops/sector-m-scope-map.json
+- docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json
+- scripts/ops/r24/test-mutants.mjs
+- scripts/ops/r24/mutation-context.mjs
+- test/unit/r24-mutation-context.test.js
 
 Normal scoped commits, checked push, one PR, ordinary expected-head merge, fresh exact merged verification; normal new branch in the registered existing worktree. T777 task reports create-only, no old report overwrite. Only admitted development caller and package-script edits, no product runtime or profile mutation.
 

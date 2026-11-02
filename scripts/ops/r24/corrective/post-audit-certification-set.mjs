@@ -134696,11 +134696,11 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "4f82286e84e58c1ac19460db9caaf7b03097bf8153912d298e3004935a5e6035"
+      "sha256": "6e659d735b66cf58bceeb8234c4edfb44b09ebbd3550f3d8535bb4430fbaef9b"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "cf1b11f3596192b9c42346f55678ed8e787d8a1d01b330adf257ab33282397c2"
+      "sha256": "e22c13b31e0a1065edc5e3b8c9e023c64e503feb590416ff236aa0872b824964"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -134716,7 +134716,7 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "db809af621f1ceaba1a71c60b99a305cb27bb5514b8ec801caeb574e527678e1"
+      "sha256": "82fbcd8052fdef658d38f41940d7c4f059aa45b48203225beb9deb9d5a7ed7ef"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -134764,11 +134764,11 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "9d671e3b46d95bc53a5b475486be65f8a45f47523464c6329e0384f5a7199681"
+      "sha256": "348c597a407ea6c217f1bebfc309025ca71c3a221fd60e705a002f808527d83c"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "ddc9295d5dfc648bbb0a4db434dfc638841e5e18f42268e892209bb9c95781cd"
+      "sha256": "8d367b94b34d4d5e0e2a1022acfbca26159e2c92ed53e9bf6acfbd58ffac5a05"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -134776,7 +134776,7 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json",
-      "sha256": "4abeb71c3c4557e9a26631149d25fdcbfe36f91b884e7b80e261c89a1408f149"
+      "sha256": "42db0aa53d9e020ca24891f54da793f138432678e9fa20fd95681f1bfcabaac2"
     },
     {
       "path": "docs/tasks/2026-10-30--pulse-authored-corrections.md",
@@ -134856,7 +134856,7 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/sector-m-scope-map.json",
-      "sha256": "8d2c76f229d1ae48dfe38f2e881ed9936f3838e0462ea068179c36cf89b12ee3"
+      "sha256": "cbd4f3e28d556e8dcc7ef6139030004b1b0bc1804ddfb51a50645e432e2ce6cf"
     },
     {
       "path": "scripts/ops/r24/corrective/current-bindings-finalizer.mjs",
@@ -135048,7 +135048,7 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
-      "sha256": "6714a90413bda5014208d75f76709edfb52e72dfca0403b23cb15cb07f1f5e4d"
+      "sha256": "12be69fc1ef234a76f74c166e4ab24ccfd210f07e7ff6b60d4b0fc4501ae8662"
     },
     {
       "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
@@ -135077,12 +135077,24 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     {
       "path": "scripts/test-environment.cjs",
       "sha256": "c2382b5696c8498ef122501c771789c4f49f8bc77655a290d502dc678e1b1dba"
+    },
+    {
+      "path": "scripts/ops/r24/test-mutants.mjs",
+      "sha256": "4a8a422386680bda1ab50daaef972ad2e18150fe14929541678ea9f3ee422e01"
+    },
+    {
+      "path": "scripts/ops/r24/mutation-context.mjs",
+      "sha256": "b176b04ff677b5c234d14cf935f4c7c9df61228f314ee497e353d1e90e313f4c"
+    },
+    {
+      "path": "test/unit/r24-mutation-context.test.js",
+      "sha256": "c726f49ad66c7bd1cff1a6a62643fccb405d7c6537b4925325cba938a172d3f2"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "6e4c8a278687778512862041583191ebea81e3b2cbda9ca56811a03d370a8fce"
+      "sha256": "8b30cb917085310dea15e4a65197cffedc8e6442190f0e3bc9f2c4b97d062f37"
     }
   ]
 });
