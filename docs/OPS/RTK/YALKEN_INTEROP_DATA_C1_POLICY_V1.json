@@ -913,7 +913,8 @@
     "scripts/test-environment.cjs",
     "scripts/ops/r24/test-mutants.mjs",
     "scripts/ops/r24/mutation-context.mjs",
-    "test/unit/r24-mutation-context.test.js"
+    "test/unit/r24-mutation-context.test.js",
+    "scripts/ops/r24/tests/mutation-boundaries.test.mjs"
   ],
   "protectedFiles": [
     {
@@ -2834,11 +2835,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "8ce69047b0bab9e37ac55383a7d77243b2530c0075549046dd3f621d75c69f45"
+        "sha256": "f286b95dab29d8af820e43772c3fcb70872a1ca6acd152454341ec764776aefa"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "2de456b4767b797c2a32b240338a11ce86756e3462d273188c377383841e938b"
+        "sha256": "2a42efa50ba4dc67a48e18faba24cb9de0ac9576def4afc4d72c03203f162ae6"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -3382,7 +3383,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "e22c13b31e0a1065edc5e3b8c9e023c64e503feb590416ff236aa0872b824964"
+        "sha256": "8d5a46a29db8356aabd5a2154f55178ef600c31e30396521d9388a299ba20561"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3514,7 +3515,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "cbd4f3e28d556e8dcc7ef6139030004b1b0bc1804ddfb51a50645e432e2ce6cf"
+        "sha256": "ed7c8c6dd7caecbc0b325c381be3790602b4ba8e9ae45f5ca0be62411801930b"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4122,7 +4123,7 @@
       },
       {
         "path": "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
-        "sha256": "12be69fc1ef234a76f74c166e4ab24ccfd210f07e7ff6b60d4b0fc4501ae8662"
+        "sha256": "8d8823bd40b2cf4146795a7ed0d8244e744d190b0e79c80b845d5b3106e4be3b"
       },
       {
         "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
@@ -4154,11 +4155,15 @@
       },
       {
         "path": "scripts/ops/r24/mutation-context.mjs",
-        "sha256": "b176b04ff677b5c234d14cf935f4c7c9df61228f314ee497e353d1e90e313f4c"
+        "sha256": "b3c4f7b6ad053fe6e4dfb7f580e092a56f1161c6ad950611c3c5d74940c358a1"
       },
       {
         "path": "test/unit/r24-mutation-context.test.js",
-        "sha256": "c726f49ad66c7bd1cff1a6a62643fccb405d7c6537b4925325cba938a172d3f2"
+        "sha256": "229d4364a6c49a76858625b61ba22427af9f6595a1e91d9e2510fad561bc64b0"
+      },
+      {
+        "path": "scripts/ops/r24/tests/mutation-boundaries.test.mjs",
+        "sha256": "2126f4e1f2548f3936a2173057479df8017a84fdb6db12d94a37985c860953e9"
       }
     ],
     "followupRepair": {

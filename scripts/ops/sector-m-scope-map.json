@@ -551,7 +551,8 @@
       "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json",
       "scripts/ops/r24/test-mutants.mjs",
       "scripts/ops/r24/mutation-context.mjs",
-      "test/unit/r24-mutation-context.test.js"
+      "test/unit/r24-mutation-context.test.js",
+      "scripts/ops/r24/tests/mutation-boundaries.test.mjs"
     ]
   },
   "allowPrefixByPhase": {
