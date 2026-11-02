@@ -1,3 +1,13 @@
+## 2026-11-02 — Meaning source guards observed; UI remains pending
+
+- Same frozen47 now45pass2missing UI actions, raw04857611; all Main/projection predicates executed without test edits. Retained first source42pass5fail raw44ca1d13 showed stale refusal after recovery fencing. Earlier post-save validation now keeps the exact manifest guard through all remaining awaits; the three frozen full-roster cases pass. No native or full product acceptance.
+- Old Idea31/Plot26/static5 whole61pass1static byte-marker failure raw00278ceb; every behavioral route passes on its named literal first source version. Exact forwarding marker compatibility requires the next admitted phase. Source docs/Main/projection/registration only, full V6/DNA5 active.
+
+## 2026-11-02 — Meaning causal input frozen; source guards admitted
+
+- Actual whole47 on unchanged runtime:5lawful controls,42failure records,0skip/todo/cancel; raw576165d1/input19ebda5f. Clean656d5dcb preserves all10054previous tracked physical blobs/modes. Shared missing relay/Main enforcement, absent projection source rows and missing UI actions are distinguished; unreached deeper UI predicates receive no baseline credit.
+- Retained initial full-root footprint method failure and strict bridge reason correction; the final input amendment has exact inverse and no production/old-test change. Declaration03 duplicate-path refusal caused no repository edit; deduplicated04/preflight04 actual0 admits only Main/projection/registration plus four current docs. Editor/bundle, tests, profiles/native and current companions remain held; fullMac unaccepted.
+
 ## 2026-11-02 — Idea delivery closed; Meaning source journey scoped
 
 - Idea PR2190 normally merged b297df3a; closure d5fd03f5 binds current software, full provider logs, literal merged actual rebuilt app warm/cold0 and independent complete saved/source readback. Current operative CONTEXT, HANDOFF and Idea task headers now reflect that closed checkpoint; all older journal bytes and phase records remain historical. All17MacUNKNOWN; full V6/DNA5 ACTIVE.

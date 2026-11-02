@@ -4,7 +4,7 @@ DOCUMENT_CLASS: FACTUAL_STATUS
 BINDING_HEAD: b297df3af179486bb6d82b85e3a4b9df3f850f11
 CLAIM_BOUNDARY: Idea2190 is closed; new Meaning docs phase only. Exact closure, native identities and remaining limitations are in the current CONTEXT header and IDEA_DELIVERY_CLOSURE_01.json d5fd03f5. Do not rerun closed gates merely to refresh these facts.
 
-NEXT_ACTION: Complete the clean documentation checkpoint and task E0 for2026-11-02--meaning-source-navigation.md; fresh test-only preflight before causal tests. Keep runtime and old tests unchanged until actual cause and same-task continuation admission. Preserve all profiles, original failures and protected WIP; no old controller or lease is resumed. Sole direct executor, full V6/DNA5 ACTIVE and all17MacUNKNOWN.
+NEXT_ACTION: Review and checkpoint the seven-path source phase, then obtain fresh exact-head UI/static compatibility preflight for the same delivery. Same frozen47 is45pass2missing UI actions; preserve input19ebda5f and old raw failures. The old relay marker needs only its exact new own-property forwarding lines after admission; no predicate removal. Keep native profiles/builds/companions held; no old controller/lease resume. Sole executor, full V6/DNA5 ACTIVE/all17MacUNKNOWN.
 
 HISTORICAL_CHECKPOINTS_BOUNDARY: Every pre-existing byte below, including CURRENT labels, belongs to its named historical checkpoint and does not override the operative handoff above.
 
