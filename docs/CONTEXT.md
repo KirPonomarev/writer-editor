@@ -1,3 +1,15 @@
+# Current task — Explicit Meaning from a saved scene fragment
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_BASE: 2c9852f30a580d08509abdd7658303299066f268
+CLAIM_BOUNDARY: Meaning navigation PR2191 fully closed on this literal merged base; closurebcbc0a23 binds exact source/software/mainCI and fresh actual warm/cold app. New direct scene-fragment authoring is scoped and unimplemented; no fullMac acceptance.
+
+NEXT_ACTION: Focused scene-fragment source proof is48/48 with exact original-assertion inverse; old affected675/675 and normal renderer share unchanged source fcf00c35/bundle db66aa6e. Finish only diagnosed current-byte companions under declaration03, then fresh prospective own native build/profile/UI/independent saved-byte oracle and complete existing delivery gates. Previous Meaning navigation is closed; full V6/DNA5 and all17Mac remain open.
+
+PREDECESSOR_LIMITS: Candidate deep dirty/stale proof retains original literal identity; merged native warm4321/cold5582 bothnormalQuit0 and independent full author/source readback are bounded. Known Chromium cache errors and menu-artifact advisory remain explicit unknown broader impact, no warning-free or full17claim. All previous profiles/raw/failures/witnesses protected.
+
+HISTORICAL_CHECKPOINTS_BOUNDARY: Every original byte below records its dated checkpoint and does not override this current block or exact current receipts. No historical claim is requalified.
+
 # Current bounded Mac work — Meaning source navigation
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -1,3 +1,11 @@
+# Current handoff — Explicit Meaning from saved scene selection
+
+BINDING_BASE: 2c9852f30a580d08509abdd7658303299066f268
+CURRENT_CHECKPOINT: a462598cbfa74a7cb0a19a89eaa18fb37bf78b05; frozen48 source cases,7positive controls and41missing-action failures. Previous Meaning navigation is closed by closurebcbc0a23; its task operative status is corrected with old bytes retained.
+NEXT_ACTION: Apply only admitted current-byte companions after full48/48 software proof and exact test-wait inverse. Protect source fcf00c35/bundle db66aa6e and every original test; then fresh prospective native admission and actual rebuilt app before remaining full30/delivery/merged validation. No native or fullMac acceptance yet.
+LIMITATIONS: Full V6/DNA5 ACTIVE, all17MacUNKNOWN/releaseNOT_READY, old59skips and15moderate dev findings remain explicit. Original profiles/raw/errors and prior literal evidence protected; no old controller/lease resume.
+HISTORICAL_CHECKPOINTS_BOUNDARY: Original literal-M handoff bytes below are retained history and do not override current receipts.
+
 # Current handoff — Meaning source navigation
 
 DOCUMENT_CLASS: FACTUAL_STATUS

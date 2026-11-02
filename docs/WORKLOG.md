@@ -1,3 +1,15 @@
+# Current work — Explicit Meaning from a saved scene fragment
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_BASE: 2c9852f30a580d08509abdd7658303299066f268
+CLAIM_BOUNDARY: Meaning navigation PR2191 fully closed on this literal merged base; closurebcbc0a23 binds exact source/software/mainCI and fresh actual warm/cold app. New direct scene-fragment authoring is scoped and unimplemented; no fullMac acceptance.
+
+NEXT_ACTION: Focused whole48 now48pass0fail after awaiting the actual registered Main promise, exact inverse to frozen46cc1641 with all original assertions retained; newinput22d5e7f0/raw3a5b1432. Product source unchanged; original675/675/normal build retain exact bytes. Continue current-byte companions then fresh real native and normal full delivery; all old failures retained.
+
+PREDECESSOR_LIMITS: Candidate deep dirty/stale proof retains original literal identity; merged native warm4321/cold5582 bothnormalQuit0 and independent full author/source readback are bounded. Known Chromium cache errors and menu-artifact advisory remain explicit unknown broader impact, no warning-free or full17claim. All previous profiles/raw/failures/witnesses protected.
+
+HISTORICAL_CHECKPOINTS_BOUNDARY: Every original byte below records its dated checkpoint and does not override this current block or exact current receipts. No historical claim is requalified.
+
 ## 2026-11-02 — Meaning UI checkpoint and required current-byte companions
 
 - Clean0981d0d7, outside10047physical sources/modes exact; source/editor/bundle/test frozen and all causal failures retained. Declaration06/preflight06 actual0 admits16doc/metadata paths in one full24path chain. Readonly literal94row gap has10stale entries and two missing Meaning task/unit paths; full inherited namespace remains to be executed. Preserve every historical tuple/policy/approval field and predicate; use existing seven-target producer/review/CAS/readback and delegated technical witnesses. No app/profile/native or release authority follows.

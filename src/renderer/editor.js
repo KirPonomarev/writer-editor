@@ -16319,6 +16319,34 @@ function getIdeaMeaningSavedOrigin(entry) {
     startOffset: mention.startOffset, endOffset: mention.endOffset, sourceHash: scene.summary.sceneTextHash, targetId: entry.fields.selectedIdeaId };
 }
 
+function isIdeaMeaningSceneSourceCurrent(entry, originRef = null) {
+  const scene = atlasCurrentSceneState;
+  return entry.projectId === currentProjectId && Boolean(currentDocumentId) && !localDirty
+    && localEditGeneration === lastAckedGeneration && ['ready', 'empty'].includes(scene.state)
+    && scene.projectId === entry.projectId && scene.sceneId === currentDocumentId
+    && /^[a-f0-9]{64}$/.test(scene.summary?.sceneTextHash || '')
+    && (!originRef || originRef.sceneId === scene.sceneId && originRef.sourceHash === scene.summary.sceneTextHash);
+}
+
+function getIdeaMeaningSceneOrigin(entry) {
+  if (!isIdeaMeaningSceneSourceCurrent(entry)) return null;
+  let selection, source, text;
+  try {
+    selection = getSelectionOffsets(); source = parseDocumentContent(composeDocumentContent()); text = getPlainText();
+  } catch { return null; }
+  const start = selection?.start, end = selection?.end, canonical = source?.text;
+  if (source?.issue || typeof canonical !== 'string' || typeof text !== 'string'
+    || !text.startsWith(canonical) || !/^\n*$/u.test(text.slice(canonical.length))
+    || !Number.isSafeInteger(start) || start < 0 || !Number.isSafeInteger(end) || end <= start || end > canonical.length
+    || hashCanonicalValue(canonical) !== atlasCurrentSceneState.summary.sceneTextHash) return null;
+  const splitsSurrogate = offset => offset > 0 && offset < canonical.length
+    && canonical.charCodeAt(offset - 1) >= 0xD800 && canonical.charCodeAt(offset - 1) <= 0xDBFF
+    && canonical.charCodeAt(offset) >= 0xDC00 && canonical.charCodeAt(offset) <= 0xDFFF;
+  if (splitsSurrogate(start) || splitsSurrogate(end)) return null;
+  return { schemaVersion: 'idea.originRef.v1', kind: 'sceneTextRange', sceneId: currentDocumentId,
+    startOffset: start, endOffset: end, sourceHash: atlasCurrentSceneState.summary.sceneTextHash, targetId: '' };
+}
+
 function syncIdeaMeaningAuthorForm(entry) {
   if (!entry.form) return;
   const selected = getIdeaMeaningSelectedIdea(entry), active = currentProjectId === entry.projectId && currentRightTab === 'atlas' && currentAtlasSurface === 'journey';
@@ -16343,6 +16371,8 @@ function syncIdeaMeaningAuthorForm(entry) {
   entry.actions['idea-create'].disabled = blocked || !entry.fields.ideaTitle.trim();
   entry.actions['idea-origin-link'].disabled = blocked || !getIdeaMeaningSavedOrigin(entry);
   entry.actions['meaning-promote'].disabled = blocked || !selected || !entry.fields.meaningTitle.trim() || !entry.fields.meaningInterpretation.trim();
+  entry.actions['meaning-promote-scene'].disabled = blocked || !isIdeaMeaningSceneSourceCurrent(entry)
+    || !entry.fields.meaningTitle.trim() || !entry.fields.meaningInterpretation.trim();
   for (const kind of ['idea', 'meaning']) {
     const detail = getIdeaMeaningDetail(entry, kind);
     entry.actions[kind + '-load'].disabled = !active || !entry.projectId || entry.pending?.active === true;
@@ -16350,7 +16380,8 @@ function syncIdeaMeaningAuthorForm(entry) {
     entry.actions[kind + '-next'].disabled = !active || entry.pending?.active === true || detail?.hasMore !== true;
   }
   entry.actions['idea-discard'].disabled = !active || entry.pending?.active === true;
-  entry.notice.textContent = entry.pending?.active ? 'Saving explicit author intent…' : entry.status || 'Explicit author truth. Select saved records before linking or promotion.';
+  entry.notice.textContent = entry.pending?.active ? 'Saving explicit author intent…' : entry.status
+    || 'Для Meaning задайте заголовок и интерпретацию; выберите сохранённую Idea или выделите фрагмент сохранённой сцены. Несохранённую сцену сначала сохраните.';
 }
 
 function getIdeaMeaningAuthorForm() {
@@ -16380,14 +16411,15 @@ function getIdeaMeaningAuthorForm() {
     label.append(text, input); form.append(label);
   }
   const actions = [['idea-create', 'Create Idea', 'idea.create'], ['idea-origin-link', 'Link selected saved fragment', 'idea.originLink.add'],
-    ['meaning-promote', 'Promote selected Idea to Meaning', 'meaning.promote'], ['idea-load', 'Load saved Ideas'], ['idea-previous', 'Previous Ideas'],
+    ['meaning-promote', 'Promote selected Idea to Meaning', 'meaning.promote'],
+    ['meaning-promote-scene', 'Promote selected scene fragment to Meaning', 'meaning.promote'], ['idea-load', 'Load saved Ideas'], ['idea-previous', 'Previous Ideas'],
     ['idea-next', 'Next Ideas'], ['meaning-load', 'Load saved Meanings'], ['meaning-previous', 'Previous Meanings'], ['meaning-next', 'Next Meanings'], ['idea-discard', 'Discard this author draft']];
   for (const [action, label, commandId] of actions) {
     const button = document.createElement('button'); button.type = 'button'; button.className = 'right-rail-atlas-action'; button.textContent = label;
     button.dataset.ideaMeaningAction = action; if (commandId) button.dataset.productCommandId = commandId; entry.actions[action] = button;
     button.addEventListener('click', () => {
       if (button.disabled || !button.isConnected || entry.pending?.active || entry.projectId !== currentProjectId || currentRightTab !== 'atlas' || currentAtlasSurface !== 'journey') return;
-      if (commandId) { void runProductJourneyCommand(commandId); return; }
+      if (commandId) { void runProductJourneyCommand(commandId, action === 'meaning-promote-scene' ? { meaningSourceKind: 'sceneOriginRef' } : {}); return; }
       if (action === 'idea-discard') {
         for (const key of ['ideaTitle', 'ideaSummary', 'meaningTitle', 'meaningInterpretation']) entry.fields[key] = '';
         entry.intents = {}; entry.revision++; entry.status = 'This author draft was discarded.'; syncIdeaMeaningAuthorForm(entry); return;
@@ -16411,16 +16443,26 @@ async function refreshIdeaMeaningAuthoring(options = {}) {
   await refreshProjectionInspector({ isCurrent: current });
 }
 
-async function runIdeaMeaningAuthoringCommand(commandId) {
+async function runIdeaMeaningAuthoringCommand(commandId, meaningSourceKind = 'idea') {
   const entry = getIdeaMeaningAuthorDraft();
   if (!entry.projectId || currentRightTab !== 'atlas' || currentAtlasSurface !== 'journey' || entry.pending?.active || !entry.form?.isConnected) return { ok: false, reason: 'IDEA_MEANING_INTENT_UNAVAILABLE' };
   const selected = getIdeaMeaningSelectedIdea(entry), fields = entry.fields;
   let payload;
   if (commandId === 'idea.create' && fields.ideaTitle.trim()) payload = { title: fields.ideaTitle, summary: fields.ideaSummary };
   if (commandId === 'idea.originLink.add' && selected) { const originRef = getIdeaMeaningSavedOrigin(entry); if (originRef) payload = { ideaId: selected.id, originRef }; }
-  if (commandId === 'meaning.promote' && selected && fields.meaningTitle.trim() && fields.meaningInterpretation.trim()) payload = {
-    title: fields.meaningTitle, interpretation: fields.meaningInterpretation, source: { kind: 'idea', ideaId: selected.id } };
-  if (!payload) return { ok: false, reason: 'IDEA_MEANING_SAVED_SELECTION_REQUIRED' };
+  if (commandId === 'meaning.promote' && fields.meaningTitle.trim() && fields.meaningInterpretation.trim()) {
+    const originRef = meaningSourceKind === 'sceneOriginRef' ? getIdeaMeaningSceneOrigin(entry) : null;
+    const source = originRef ? { kind: 'sceneOriginRef', originRef }
+      : meaningSourceKind === 'idea' && selected ? { kind: 'idea', ideaId: selected.id } : null;
+    if (source) payload = { title: fields.meaningTitle, interpretation: fields.meaningInterpretation, source };
+  }
+  if (!payload) {
+    if (commandId === 'meaning.promote' && meaningSourceKind === 'sceneOriginRef') {
+      entry.status = 'Выделите непустой фрагмент текущей сохранённой сцены; сохраните текст и обновите Flow, если источник изменился. Авторский ввод сохранён.';
+      updateStatusText(entry.status, { visible: true }); syncIdeaMeaningAuthorForm(entry);
+    }
+    return { ok: false, reason: 'IDEA_MEANING_SAVED_SELECTION_REQUIRED' };
+  }
   if (commandId !== 'idea.originLink.add') {
     const key = JSON.stringify(payload), previous = entry.intents[commandId];
     if (!previous || previous.key !== key) {
@@ -16433,12 +16475,14 @@ async function runIdeaMeaningAuthoringCommand(commandId) {
       entry.intents[commandId] = { key, id: (commandId === 'idea.create' ? 'idea-' : 'meaning-') + id };
     }
     payload[commandId === 'idea.create' ? 'ideaId' : 'meaningId'] = entry.intents[commandId].id;
+    if (payload.source?.kind === 'sceneOriginRef') payload.source.originRef.targetId = payload.meaningId;
   }
   const context = captureAtlasPublication(), revision = entry.revision, provider = entry.provider, sequence = ++atlasCommandPublicationSequence;
   const token = { active: true }; entry.pending = token;
   const presentation = () => context() && entry.projectId === currentProjectId && entry.revision === revision
     && currentAtlasSurface === 'journey' && currentRightTab === 'atlas' && entry.pending === token && sequence === atlasCommandPublicationSequence;
-  const current = () => presentation() && entry.provider === provider;
+  const current = () => presentation() && entry.provider === provider
+    && (payload.source?.kind !== 'sceneOriginRef' || isIdeaMeaningSceneSourceCurrent(entry, payload.source.originRef));
   syncIdeaMeaningAuthorForm(entry);
   let result;
   try {
@@ -17383,7 +17427,7 @@ async function runProductJourneyCommand(commandId, payload = {}) {
   if (typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'
     && ['atlas.languageTag.set', 'atlas.languageTag.clear'].includes(commandId)) return runSceneLanguageCommand(commandId);
   if (typeof window !== 'undefined' && ['WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'].includes(window.__PRODUCT_PROFILE)
-    && ['idea.create', 'idea.originLink.add', 'meaning.promote'].includes(commandId)) return runIdeaMeaningAuthoringCommand(commandId);
+    && ['idea.create', 'idea.originLink.add', 'meaning.promote'].includes(commandId)) return runIdeaMeaningAuthoringCommand(commandId, payload?.meaningSourceKind);
   if (typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'].includes(window.__PRODUCT_PROFILE)
     && ['atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore'].includes(commandId)) return runAtlasCorrectionCommand(commandId, payload);
   if (commandId === 'atlas.observation.suppress') return runAtlasSuppressionCommand();
