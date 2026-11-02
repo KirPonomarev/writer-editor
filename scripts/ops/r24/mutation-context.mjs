@@ -103,22 +103,41 @@ export function evaluateMutationRun(result, plan, baseline = null) {
       if (JSON.stringify(JSON.parse(text)) !== JSON.stringify(plan)) failures.push('E_MUTATION_LOAD_IDENTITY');
     } catch { failures.push('E_MUTATION_LOAD_IDENTITY'); }
   }
-  const failedCases = [];
+  const failedCases = [], assertionCases = [], dependentDomainFailures = [];
   for (let i = 0; i < outcomes.length; i += 1) {
     const row = outcomes[i];
     if (row[1] !== 'not ok') continue;
     const block = stdout.slice(row.index, outcomes[i + 1]?.index ?? stdout.length);
     failedCases.push(row[3]);
-    // A missing module, setup exception, loader crash or process failure is
-    // never a semantic mutant kill, even if the Node runner exits nonzero.
-    if (!/^\s+failureType: 'testCodeFailure'$/m.test(block)
-        || !/^\s+code: 'ERR_ASSERTION'$/m.test(block)) failures.push('E_MUTATION_NOT_ASSERTION:' + row[3]);
+    const testFailure = /^\s+failureType: 'testCodeFailure'$/m.test(block);
+    const code = /^\s+code: '([^']+)'$/m.exec(block)?.[1] ?? null;
+    if (testFailure && code === 'ERR_ASSERTION') {
+      assertionCases.push(row[3]);
+      continue;
+    }
+    // These two observed semantic sabotages also propagate a typed refusal
+    // through unchanged callers. Retain it as data, never as a kill witness.
+    // Every other exception, including setup/module/loader failures, invalidates.
+    const originalFrame = block.includes(new URL('plan-state.mjs', import.meta.url).href + ':');
+    const duplicateSabotage = plan.file === 'plan-state.mjs'
+      && plan.find === '    if (prior) {' && plan.replace === '    if (false) {'
+      && code === 'E_CAS_REVISION_CONFLICT';
+    const fenceSabotage = plan.file === 'lease.mjs' && typeof plan.find === 'string'
+      && plan.find.startsWith('draft.fencingCounter += 1;\n      const lease = {')
+      && typeof plan.replace === 'string' && plan.replace.startsWith('const lease = {')
+      && code === 'E_FENCE_STALE';
+    if (testFailure && originalFrame && (duplicateSabotage || fenceSabotage)) {
+      dependentDomainFailures.push({ caseName: row[3], code, source: 'plan-state.mjs' });
+    } else {
+      failures.push('E_MUTATION_NOT_ASSERTION:' + row[3]);
+    }
   }
+  if (tap.fail > 0 && assertionCases.length === 0) failures.push('E_MUTATION_ASSERTION_WITNESS_MISSING');
   if (failedCases.length !== tap.fail) failures.push('E_MUTATION_FAILURE_COVERAGE');
   if (!baseline && (result.status !== 0 || tap.fail !== 0)) failures.push('E_MUTATION_CONTROL_RED');
   return {
     verdict: failures.length ? 'INVALID' : tap.fail ? 'KILLED' : baseline ? 'SURVIVED' : 'PASS',
-    tap, cohortSha256, cases: names, failedCases, loadedCount: markers.length,
+    tap, cohortSha256, cases: names, failedCases, assertionCases, dependentDomainFailures, loadedCount: markers.length,
     exitCode: result.status, signal: result.signal ?? null, failures,
   };
 }

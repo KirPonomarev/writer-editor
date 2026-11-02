@@ -121,3 +121,71 @@ test('R24 full mutation evidence preserves stdout stderr status signal and spawn
     assert.throws(() => readMutationEvidence(invalid));
   }
 });
+
+function mixedDomainRun(plan, { assertion = false, code = null, origin = 'plan-state.mjs' } = {}) {
+  const source = pathToFileURL(path.join(dir, origin)).href;
+  const block = error => "  ---\n  failureType: 'testCodeFailure'\n  code: '" + error
+    + "'\n  stack: |-\n    contract (" + source + ":1:1)\n  ...\n";
+  const failed = Number(assertion) + Number(code !== null);
+  return { status: failed ? 1 : 0, signal: null, stderr: '',
+    stdout: 'TAP version 13\n# R24_MUTATION_LOADED=' + JSON.stringify(plan) + '\n'
+      + '# Subtest: finite semantic witness\n' + (assertion ? 'not ok' : 'ok') + ' 1 - finite semantic witness\n'
+      + (assertion ? block('ERR_ASSERTION') : '')
+      + '# Subtest: finite propagated contract\n' + (code ? 'not ok' : 'ok') + ' 2 - finite propagated contract\n'
+      + (code ? block(code) : '')
+      + '1..2\n# tests 2\n# pass ' + (2 - failed) + '\n# fail ' + failed
+      + '\n# cancelled 0\n# skipped 0\n# todo 0\n' };
+}
+async function originalPlan(id) {
+  const definitions = await import(pathToFileURL(path.join(dir, 'test-mutants.mjs')).href);
+  const { createMutationPlan } = await api;
+  const mutant = definitions.MUTANTS.find(row => row.id === id);
+  assert.ok(mutant);
+  return createMutationPlan(mutant);
+}
+test('R24 duplicate sabotage keeps a genuine assertion witness with the observed secondary CAS refusal', async () => {
+  const { evaluateMutationRun } = await api;
+  const plan = await originalPlan('ps-duplicate-not-suppressed');
+  const baseline = evaluateMutationRun(mixedDomainRun(plan), plan);
+  assert.equal(baseline.verdict, 'PASS');
+  const run = evaluateMutationRun(mixedDomainRun(plan,
+    { assertion: true, code: 'E_CAS_REVISION_CONFLICT' }), plan, baseline);
+  assert.equal(run.verdict, 'KILLED', JSON.stringify(run));
+  assert.deepEqual(run.assertionCases, ['finite semantic witness']);
+  assert.deepEqual(run.dependentDomainFailures, [
+    { caseName: 'finite propagated contract', code: 'E_CAS_REVISION_CONFLICT', source: 'plan-state.mjs' },
+  ]);
+});
+test('R24 nonmonotonic lease sabotage keeps assertion witnesses with its observed downstream fence refusal', async () => {
+  const { evaluateMutationRun } = await api;
+  const plan = await originalPlan('lease-fencing-not-monotonic');
+  const baseline = evaluateMutationRun(mixedDomainRun(plan), plan);
+  assert.equal(baseline.verdict, 'PASS');
+  const run = evaluateMutationRun(mixedDomainRun(plan,
+    { assertion: true, code: 'E_FENCE_STALE' }), plan, baseline);
+  assert.equal(run.verdict, 'KILLED', JSON.stringify(run));
+  assert.deepEqual(run.assertionCases, ['finite semantic witness']);
+  assert.deepEqual(run.dependentDomainFailures, [
+    { caseName: 'finite propagated contract', code: 'E_FENCE_STALE', source: 'plan-state.mjs' },
+  ]);
+});
+test('R24 secondary domain errors alone or with wrong descriptor source unknown setup or signal remain invalid', async () => {
+  const { evaluateMutationRun } = await api;
+  const plan = await originalPlan('ps-duplicate-not-suppressed');
+  const baseline = evaluateMutationRun(mixedDomainRun(plan), plan);
+  for (const change of [
+    { assertion: false, code: 'E_CAS_REVISION_CONFLICT' },
+    { assertion: true, code: 'E_CAS_REVISION_CONFLICT', origin: 'mission-contract.mjs' },
+    { assertion: true, code: 'E_FENCE_STALE' },
+    { assertion: true, code: 'E_R24_READ_MISSING' },
+    { assertion: true, code: 'ERR_MODULE_NOT_FOUND' },
+    { assertion: true, code: 'E_UNKNOWN_CONTRACT' },
+  ]) assert.equal(evaluateMutationRun(mixedDomainRun(plan, change), plan, baseline).verdict, 'INVALID');
+  const another = await originalPlan('ps-cas-conflict-ignored');
+  const otherBaseline = evaluateMutationRun(mixedDomainRun(another), another);
+  assert.equal(evaluateMutationRun(mixedDomainRun(another,
+    { assertion: true, code: 'E_CAS_REVISION_CONFLICT' }), another, otherBaseline).verdict, 'INVALID');
+  const signalled = { ...mixedDomainRun(plan, { assertion: true, code: 'E_CAS_REVISION_CONFLICT' }),
+    status: null, signal: 'SIGTERM' };
+  assert.equal(evaluateMutationRun(signalled, plan, baseline).verdict, 'INVALID');
+});
