@@ -1,14 +1,10 @@
-# Current handoff — Explicit Meaning from a saved scene fragment
+# Current handoff — Explicit Meaning from saved scene selection
 
-DOCUMENT_CLASS: FACTUAL_STATUS
 BINDING_BASE: 2c9852f30a580d08509abdd7658303299066f268
-CLAIM_BOUNDARY: Meaning navigation PR2191 fully closed on this literal merged base; closurebcbc0a23 binds exact source/software/mainCI and fresh actual warm/cold app. New direct scene-fragment authoring is scoped and unimplemented; no fullMac acceptance.
-
-NEXT_ACTION: Frozen whole48 has7positive controls and41missing-action failures; reached late-source Main refusal passes. Implement only the existing Flow binding after a clean exact-head continuation, preserve frozen input46cc1641 and saved Idea route. Before product edits, admit and correct the previous Meaning task operative delivery status from exact closure; retain its old bytes as historical. All17MacUNKNOWN, releaseNOT_READY, V6/DNA5ACTIVE. Sole direct executor; no subagents, other models, chats, optional services or old controller/lease resume.
-
-PREDECESSOR_LIMITS: Candidate deep dirty/stale proof retains original literal identity; merged native warm4321/cold5582 bothnormalQuit0 and independent full author/source readback are bounded. Known Chromium cache errors and menu-artifact advisory remain explicit unknown broader impact, no warning-free or full17claim. All previous profiles/raw/failures/witnesses protected.
-
-HISTORICAL_CHECKPOINTS_BOUNDARY: Every original byte below records its dated checkpoint and does not override this current block or exact current receipts. No historical claim is requalified.
+CURRENT_CHECKPOINT: a462598cbfa74a7cb0a19a89eaa18fb37bf78b05; frozen48 source cases,7positive controls and41missing-action failures. Previous Meaning navigation is closed by closurebcbc0a23; its task operative status is corrected with old bytes retained.
+NEXT_ACTION: Preserve current source/editor bundle and frozen48 input; correct only the new integration test actual-promise await under clean continuation admission, then whole48 and affected checks. Current47pass1methodfailure is not acceptance; do not change Main or product behavior to satisfy the finite host. Continue same one delivery through current bindings, fresh own native and normal PR/merge.
+LIMITATIONS: Full V6/DNA5 ACTIVE, all17MacUNKNOWN/releaseNOT_READY, old59skips and15moderate dev findings remain explicit. Original profiles/raw/errors and prior literal evidence protected; no old controller/lease resume.
+HISTORICAL_CHECKPOINTS_BOUNDARY: Original literal-M handoff bytes below are retained history and do not override current receipts.
 
 # Current handoff — Meaning source navigation
 

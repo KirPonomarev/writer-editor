@@ -4,7 +4,7 @@ DOCUMENT_CLASS: FACTUAL_STATUS
 BINDING_BASE: 2c9852f30a580d08509abdd7658303299066f268
 CLAIM_BOUNDARY: Meaning navigation PR2191 fully closed on this literal merged base; closurebcbc0a23 binds exact source/software/mainCI and fresh actual warm/cold app. New direct scene-fragment authoring is scoped and unimplemented; no fullMac acceptance.
 
-NEXT_ACTION: Frozen whole48 has7positive controls and41missing-action failures; reached late-source Main refusal passes. Implement only the existing Flow binding after a clean exact-head continuation, preserve frozen input46cc1641 and saved Idea route. Before product edits, admit and correct the previous Meaning task operative delivery status from exact closure; retain its old bytes as historical. All17MacUNKNOWN, releaseNOT_READY, V6/DNA5ACTIVE. Sole direct executor; no subagents, other models, chats, optional services or old controller/lease resume.
+NEXT_ACTION: Minimal Flow binding and normal bundle are source WIP; frozen48 has47pass and one integration test reading actual Main response too early. Save current bytes; under fresh exact admission await the actual registered command promise without weakening any assertion, then run whole source/affected/native/delivery proof. Previous Meaning task now explicitly closed by exactbcbc0a23; all its old bytes retained. Full V6/DNA5 and17Mac remain open.
 
 PREDECESSOR_LIMITS: Candidate deep dirty/stale proof retains original literal identity; merged native warm4321/cold5582 bothnormalQuit0 and independent full author/source readback are bounded. Known Chromium cache errors and menu-artifact advisory remain explicit unknown broader impact, no warning-free or full17claim. All previous profiles/raw/failures/witnesses protected.
 
