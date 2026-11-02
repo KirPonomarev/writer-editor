@@ -904,7 +904,13 @@
     "docs/tasks/2026-11-02--meaning-source-navigation.md",
     "test/unit/meaning-source-navigation.test.js",
     "docs/tasks/2026-11-02--scene-meaning-promotion.md",
-    "test/unit/scene-meaning-promotion.test.js"
+    "test/unit/scene-meaning-promotion.test.js",
+    "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
+    "test/unit/mandatory-test-setup-diagnostics.test.js",
+    "scripts/test-diagnostics.cjs",
+    "test/unit/test-diagnostics.test.js",
+    "scripts/guards/ops-current-wave-stop.mjs",
+    "scripts/test-environment.cjs"
   ],
   "protectedFiles": [
     {
@@ -1157,7 +1163,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "db086cfc4def735d2c6cf5a913fc60a1f604d29b587711045c0b2eb596b17d6e"
+        "sha256": "516cd55627a90ad96645562329d70e5026bdd938d3bc6a63c4de3afb949df335"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -2713,7 +2719,7 @@
       },
       {
         "path": "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js",
-        "sha256": "2a94a207c5533d2d0fbe67d4b3e8c136bda789a8f6874bda24184769665a577f"
+        "sha256": "a2394eaf7f6061353ccf0fb7760a24467f7e58875cdd12b7d9de507795ece85e"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern.contract.test.js",
@@ -2825,15 +2831,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "703297dcdcc35b1158c150b444469363a12cca87f34db3e5e1ee31ac7c546779"
+        "sha256": "8ce69047b0bab9e37ac55383a7d77243b2530c0075549046dd3f621d75c69f45"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "0bebee682ddf68fd7700ad0ddabc3dada96a8e24fa3d511cc5047853c8a3b262"
+        "sha256": "2de456b4767b797c2a32b240338a11ce86756e3462d273188c377383841e938b"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "1411e09918f0d85312be642f86c20860c7cb1a47a82a2fa0aff8883320b95459"
+        "sha256": "657d66cb467e25bf0afeaf9c1dde23ee6162767f2f86004fe1c3c951183ee0bb"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3373,7 +3379,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "147f2168430e3682a4a8a2d94f4cb8bc2755bbeb0e6a6eef8fefcd9243c952ec"
+        "sha256": "cf1b11f3596192b9c42346f55678ed8e787d8a1d01b330adf257ab33282397c2"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3505,7 +3511,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "fbc119b0212628a6dfe25811c22496e4752dca1bbad786083fc0d5d4984d5119"
+        "sha256": "8d2c76f229d1ae48dfe38f2e881ed9936f3838e0462ea068179c36cf89b12ee3"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3649,7 +3655,7 @@
       },
       {
         "path": "scripts/run-tests.js",
-        "sha256": "e1491f196baf958e9acbac20781c54271d95622ebdea9ce578bf75a15e6259d7"
+        "sha256": "c320768c4ee5a90252af9707626183df17decb35869bb23bb8a1e86e196eb387"
       },
       {
         "path": "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
@@ -4105,11 +4111,35 @@
       },
       {
         "path": "docs/tasks/2026-11-02--scene-meaning-promotion.md",
-        "sha256": "9b94579d315d9ac90d9ae3d8d28a7d7954412cec6b438bd038674a07eaa87793"
+        "sha256": "8123c15584d067da35a6ca2d40466497117c0dea8d2a66087f693f7386dab146"
       },
       {
         "path": "test/unit/scene-meaning-promotion.test.js",
         "sha256": "22d5e7f088d43161644a5a50eead8d01c7f68a36da163956d2abce24d1f59481"
+      },
+      {
+        "path": "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
+        "sha256": "6714a90413bda5014208d75f76709edfb52e72dfca0403b23cb15cb07f1f5e4d"
+      },
+      {
+        "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
+        "sha256": "72398aed1191224c278eb50102c9d0d37611bde14173be38b84c89f5adcf7c77"
+      },
+      {
+        "path": "scripts/test-diagnostics.cjs",
+        "sha256": "d531c1e693d05846d45513cea2b046b6883ad83a0260a5c074fd19e5e14ae61a"
+      },
+      {
+        "path": "test/unit/test-diagnostics.test.js",
+        "sha256": "28dc92fda9f2cb53413658fbd921eafed077fb2fa5e6289161606d937eff3174"
+      },
+      {
+        "path": "scripts/guards/ops-current-wave-stop.mjs",
+        "sha256": "ae28c706c18eda41c3b35a7c69d3a030f18e74b9b4d43e287387ffa1df884d89"
+      },
+      {
+        "path": "scripts/test-environment.cjs",
+        "sha256": "c2382b5696c8498ef122501c771789c4f49f8bc77655a290d502dc678e1b1dba"
       }
     ],
     "followupRepair": {

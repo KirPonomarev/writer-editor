@@ -539,7 +539,15 @@
       "docs/tasks/2026-11-02--meaning-source-navigation.md",
       "test/unit/meaning-source-navigation.test.js",
       "docs/tasks/2026-11-02--scene-meaning-promotion.md",
-      "test/unit/scene-meaning-promotion.test.js"
+      "test/unit/scene-meaning-promotion.test.js",
+      "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
+      "test/unit/mandatory-test-setup-diagnostics.test.js",
+      "scripts/run-tests.js",
+      "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js",
+      "scripts/test-diagnostics.cjs",
+      "test/unit/test-diagnostics.test.js",
+      "scripts/guards/ops-current-wave-stop.mjs",
+      "scripts/test-environment.cjs"
     ]
   },
   "allowPrefixByPhase": {

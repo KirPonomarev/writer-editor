@@ -1,3 +1,5 @@
+CURRENT_D6_BINDINGS_PHASE: CleanC3 217cd367f755879972fb3b9d09b0767a83fcc45b; fresh23path declarationb5d8e3236bf9b8a06b9fa7bd7d83630691385801367fdb6c0844bd742434b5f9/preflight0 receipt3171cdd40fcd23bbf8e236391e9cb166e198ea2080dae7d2b8b2e3da6fd5455b. Source guard/diagnostics frozen after current revised-method89/89; package, src, lock and CI completely equal originalM2. Existing protected17 and unchanged seven-target finalizer must remain exact. Prepare only current namespace delta/successor/scope memberships, pinned request/proposal and current source digests; preserve every inherited historical byte by insertion/selector inverse and append-only delegated technical witnesses. These writes never give independent human/native/full17/release approval. No heavy baseline starts until current metadata admission is valid; normal full delivery and fullMac goal remain open. No further factual-source edits after producer prepares these bindings unless a genuine failure requires a fresh precise revision.
+
 CURRENT_D5_GUARD_RESULT: The entire protected package cf0d3ec978b446c78a0b1879057461f3de7ae72731a5dfeca90957a3afcbe799 is restored and all17protected physical DATA bytes/digests are exact. Shared read-only environment check now executes in existing hard-lane OPS entry before expensive doctor and in caller; original dev bypass/release/promotion bans and all pre-existing assertions are unchanged. Actual revised-method whole7 passes89of89 zero skip todo cancel, receipt3bbcf3e5443c2eb9a5fecba778e16e404eddfd6d942cd6148a8812f05874d5d1/raw2cced413fb81c61cafa7eecb3cde6326273bc8a473f02b024ee9c9ca39566abc. Genuine unchanged-old-wave causal20cases19pass1fail retained7f60d32ce4b7d6b1f8e5f9f95a95c863549458cad516b2f8c2c57a3384ef5664. Corrected only own package10/11 implementation-specific method: current checks bind protected package and actual early OPS behavior; initial9 prefix exact, original14/15 bytes/results retain historical identities and are not current-source credit. Standalone strict caller controls remain. Current namespace/inventory/governance bindings are pending via unchanged maintained producer; no full expensive baseline or delivery acceptance yet.
 
 CURRENT_D5_CORRECTION: Exact cleanC2ca802db34 admission00db773ba1153f1850c7ce14219098597a5f57b2b9b5f8847d3c7bc50592c5e9/preflight0 admits24paths. Cheap actual gate failures retained: governance fixture witness missing, inventory two new files/two hashes, DATA protected package, namespace pins. No full expensive baseline started. Restore exact protected package cf0d3ec9; put shared cheap TMP validation before existing hard-lane OPS doctor. Correct only two own newly authored package-entry controls which bound a script string instead of behavior; original9 prefix/all18intents and every pre-existing project assertion stay protected, old14/15 bytes/results remain original historical identities. Existing unchanged seven-target finalizer may update current hashes/enrollments only after all17protected files exact; never reseal protected digests. Standing delegated development witnesses are technical only, not independent human/native/full17/release approval. CI byte exact and no new upload.
@@ -15,7 +17,7 @@ CURRENT_CALLER_RESULT: D2 WIP passes actual whole5 68of68 with zero skip todo ca
 # Mandatory test setup and lossless diagnostics
 INITIAL_CAUSAL_RESULT: Actual finite caller9cases5positive4gaps, zero skip todo cancel; raw7e2d4579795c5b4def6df3401ba5229fe21f8cc69a28fd6f12e12ffa938484aa and frozen input2b121b3dfdd49708d290b00c4b55ba154d32bf9c4afd3b37482aa2cd64c4a895. Real nonzero signal zero-executed and valid Green controls pass; unknown format and bad TMP attempt a later owned-filesystem boundary intercepted by the finite port, while inconsistent TAP and missing explicit file return0. These are exact caller ordering proofs, not real child suite or native coverage. Old runner package WP307 and every runtime byte remain unchanged.
 
-STATUS: D5_PROTECTED_PACKAGE_RESTORATION_AND_EARLY_OPS_GUARD_ADMITTED
+STATUS: D6_CURRENT_METADATA_BINDINGS_IN_PROGRESS_NOT_DELIVERED
 ROLE: BOUNDED_TASK_SPECIFICATION
 TASK_ID: YALKEN_MANDATORY_TEST_SETUP_DIAGNOSTICS_20261102
 TYPE: OPS_WRITE
@@ -48,7 +50,7 @@ Initial four current docs, this exact task and one new maintained finite caller 
 
 ## ALLOWLIST
 
-Current D5 continuation admits exactly these24paths after cleanC2 preflight36b81cc2394d3054ca74321b788743b3c7f9062c323dbbce19845bcddc427860. package.json is admitted only to restore the entire original protected preimage. All initial/D2/D3/D4 scopes below are history.
+Current D6 continuation: exactly23paths. package.json is restored and protected, excluded from writes. Source code is frozen; only necessary current metadata and delegated technical witnesses proceed through the unchanged producer. Prior scope versions remain historical.
 
 - docs/CONTEXT.md
 - docs/HANDOFF.md
@@ -57,7 +59,6 @@ Current D5 continuation admits exactly these24paths after cleanC2 preflight36b81
 - docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md
 - test/unit/mandatory-test-setup-diagnostics.test.js
 - scripts/run-tests.js
-- package.json
 - test/contracts/promotion-heavy-lane-entrypoint.contract.test.js
 - test/unit/r24-wp307-writer-local-profile-integration.test.js
 - scripts/test-diagnostics.cjs
