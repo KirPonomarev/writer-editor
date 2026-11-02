@@ -134676,15 +134676,15 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "6ca80731a5a03f38d17f31f8f9b9a9a9b32be4297b07abfbae244257fd6364bf"
+      "sha256": "566b43ec31ab4230eb24f47cb68907ad6dd7657da6e789817cc8882284828aac"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "749da93636a4f4439e24d6af9bf9a116a350eedd62d4361955cdb36e291bb209"
+      "sha256": "afd76398a0948704b9f1c3bc7ede7c5461a7b45eedb24bce58753af0397af37d"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "0f06ff739c4f1800e217ef708a3936a50e016cf020d49c591a32c8d575b21c35"
+      "sha256": "763aa8167ab67620d2a70e6f1ec47e29d07a75b2f380fa0bedd2012c3105eebf"
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
@@ -134696,11 +134696,11 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "9c36597c1500def1b37514a2e0fba0dcf41d49abe1a39cca964d5c27c7eaf0ef"
+      "sha256": "e7667a311656334b4d0f9269f113252155b21cfdf132b76b505feee31d653108"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "acb8a0a757cd2842dee709556ecedaa1768e6e502876eea1773d0d2cc782644c"
+      "sha256": "fbe62303514dd901086bcac05e693fe1b3416444d1b67fe86bb3a6f67c5e9301"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -134716,7 +134716,7 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "607cbb09c7ed138e586556aea5181ef9bfb76846b7d4f4cfd5a2cd36fb6b2c7d"
+      "sha256": "392d08a94269a64a387cbe785f47afdf897ed937f97746d3260eb419c79d2e1e"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -134764,11 +134764,11 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "7899b1f3797695b2505d8d55ff66afdd474f5dba16d1e5a0714ca704012da4a6"
+      "sha256": "9a4fa97e24082025a13a6162060a440d006e69bc782c778835c8348d35881bc7"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "5baef4bc2bb46927ddec93a7631d790668e19a306ef87414a287476250275ec1"
+      "sha256": "6c9f8a3b3e118d503b2c7059e3182181888960bc8913f43c5a58eb95bca2528f"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -135048,7 +135048,7 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
-      "sha256": "070533b78edcff01501200dc6e4c046f1f5d439a8dbdfc0b3330af5d460053a3"
+      "sha256": "9678f64592ba3b1e26906caff6378494273b2c3ef7b68b263dbf5620eb34bb39"
     },
     {
       "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
@@ -135080,15 +135080,15 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/r24/test-mutants.mjs",
-      "sha256": "73360268f446a8e61d0187cd874a5950825c978868767eed3b5612223ebe9dd8"
+      "sha256": "676daeef23879ea2ad19bdbd9ffea16160caa7a8266c5e6eb3dfac9ffcbacc40"
     },
     {
       "path": "scripts/ops/r24/mutation-context.mjs",
-      "sha256": "1b8efaabf252b1ce2af62c8c32a79ec3a206d4b00b39045c0364f8ef2262b05e"
+      "sha256": "004ae1c1e468866d7935861f081b41bb008fae009e95a58c57712bd7b59deb5b"
     },
     {
       "path": "test/unit/r24-mutation-context.test.js",
-      "sha256": "e165d715fda08e7fa126e5bec624250d60cbad71307d0dff9d832bdd77f871d6"
+      "sha256": "5066ebf39054c3eeb925450bb1acad0411c66ddabe63b7d68ea0506a323dc4a0"
     },
     {
       "path": "scripts/ops/r24/tests/mutation-boundaries.test.mjs",
@@ -135102,7 +135102,7 @@ const R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "3d0c57aa2d9087a303539a5d530053b7f74fe5edc014198f803ee623c6bd1486"
+      "sha256": "12055005810f57a34961a743ca101da79e618f2f2269466ab1eb76d5e8e00aff"
     }
   ]
 });

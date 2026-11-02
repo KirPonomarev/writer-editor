@@ -251,3 +251,102 @@ test('R24 canonical secondary refusals require the exact descriptor code and ori
     code: 'E_MISSION_DIGEST_INVALID', origin: 'mission-contract.mjs' }), status: null, signal: 'SIGTERM' };
   assert.equal(evaluateMutationRun(signal, plan, baseline).verdict, 'INVALID');
 });
+
+
+// Finite transport fixtures include deliberate FAIL/INVALID data. Their case
+// catalogs are data for a caller-budget control, not actual mutation coverage.
+async function finiteCaseCatalogReceipt() {
+  const { captureMutationEvidence } = await api;
+  const cases = Array.from({ length: 198 }, (_, i) =>
+    String(i).padStart(3, '0') + ' finite α#\\ case ' + 'label.'.repeat(38));
+  const cohortSha256 = sha(Buffer.from(JSON.stringify(cases)));
+  const evidence = captureMutationEvidence({ stdout: 'finite original stdout\nα#\\\n',
+    stderr: 'finite original stderr\n', status: 1, signal: null });
+  const rows = Array.from({ length: 40 }, (_, i) => ({
+    id: 'finite-' + i, killed: false, verdict: 'INVALID',
+    tap: { tests: 198, pass: 197, fail: 1, cancelled: 0, skipped: 0, todo: 0 },
+    cohortSha256, cases: [...cases], failedCases: ['finite failure'],
+    assertionCases: [], dependentDomainFailures: [], loadedCount: 1,
+    exitCode: 1, signal: null, failures: ['E_FINITE_TRANSPORT_ONLY'], fullEvidence: evidence,
+  }));
+  rows[38] = { id: 'finite-38', killed: false, verdict: 'INVALID',
+    error: 'finite setup refusal without a case list' };
+  rows[39] = { ...rows[39], cases: ['different actual cohort'],
+    failures: ['E_MUTATION_COHORT_CHANGED'] };
+  return { schemaVersion: 'yalken.r24-mutation-receipt.v1',
+    total: 40, killed: 0, survived: rows.map(row => row.id), score: 0, baseline: 'FAIL',
+    baselineRun: { verdict: 'INVALID', cases, cohortSha256, fullEvidence: evidence },
+    results: rows, notRun: [] };
+}
+function echoDefaultCaller(text) {
+  const env = { ...process.env };
+  delete env.NODE_TEST_CONTEXT;
+  delete env.YALKEN_TEST_EVIDENCE_DIR;
+  // maxBuffer is intentionally omitted, exactly as in the original WP104 lane caller.
+  return spawnSync(process.execPath, ['-e', 'process.stdin.pipe(process.stdout)'],
+    { input: text, encoding: 'utf8', env });
+}
+test('lossless case catalog fits the unchanged real default caller and restores every field', async () => {
+  const receipt = await finiteCaseCatalogReceipt();
+  const original = JSON.stringify(receipt);
+  assert.ok(Buffer.byteLength(original) > 1024 * 1024);
+  const legacy = echoDefaultCaller(original);
+  assert.equal(legacy.error?.code, 'ENOBUFS');
+  assert.notEqual(legacy.status, 0);
+  const { captureMutationEvidence, compactMutationCaseCatalog, restoreMutationCaseCatalog } = await api;
+  console.log('FINITE_CASE_CATALOG_LEGACY_CALLER=' + JSON.stringify({
+    coverage: 'FINITE_TRANSPORT_ONLY', originalBytes: Buffer.byteLength(original),
+    originalSha256: sha(Buffer.from(original)), pid: legacy.pid,
+    completeReturnedProcess: captureMutationEvidence(legacy),
+  }));
+  assert.equal(typeof compactMutationCaseCatalog, 'function');
+  assert.equal(typeof restoreMutationCaseCatalog, 'function');
+  const wire = compactMutationCaseCatalog(receipt);
+  const encoded = JSON.stringify(wire);
+  assert.ok(Buffer.byteLength(encoded) < 1024 * 1024);
+  const current = echoDefaultCaller(encoded);
+  assert.equal(current.error, undefined);
+  assert.equal(current.status, 0);
+  assert.equal(current.stdout, encoded);
+  const restored = restoreMutationCaseCatalog(JSON.parse(current.stdout));
+  assert.deepEqual(restored, receipt);
+  assert.equal(JSON.stringify(restored), original);
+  assert.deepEqual(restoreMutationCaseCatalog(JSON.parse(original)), receipt);
+  assert.deepEqual(wire.results[39].cases, ['different actual cohort']);
+  assert.equal(Object.hasOwn(wire.results[38], 'cases'), false);
+  assert.equal(JSON.stringify(receipt), original, 'transport cannot mutate the source receipt');
+  console.log('FINITE_CASE_CATALOG_CURRENT_CALLER=' + JSON.stringify({
+    coverage: 'FINITE_TRANSPORT_ONLY', compactBytes: Buffer.byteLength(encoded),
+    compactSha256: sha(Buffer.from(encoded)), restoredSha256: sha(Buffer.from(JSON.stringify(restored))),
+    pid: current.pid, completeReturnedProcess: captureMutationEvidence(current),
+  }));
+});
+test('case catalog reader refuses unknown partial corrupt and mismatched references', async () => {
+  const { compactMutationCaseCatalog, restoreMutationCaseCatalog } = await api;
+  assert.equal(typeof compactMutationCaseCatalog, 'function');
+  assert.equal(typeof restoreMutationCaseCatalog, 'function');
+  const source = await finiteCaseCatalogReceipt();
+  const wire = compactMutationCaseCatalog(source);
+  const corruptions = [
+    x => { x.caseCatalogEncoding = 'unsupported'; },
+    x => { delete x.caseCatalogEncoding; },
+    x => { delete x.caseCatalogFullReceiptSha256; },
+    x => { x.caseCatalogFullReceiptSha256 = '0'.repeat(64); },
+    x => { x.results[0].cases.encoding = 'unsupported'; },
+    x => { x.results[0].cases.sha256 = '0'.repeat(64); },
+    x => { x.results[0].cases.extra = true; },
+    x => { x.baselineRun.cases[0] += 'tampered'; },
+    x => { x.results[0].cases = []; },
+    x => { delete x.results[0].cases; },
+    x => { x.results[0].verdict = 'PASS'; },
+    x => { x.baselineRun.cases = ['not the original catalog']; },
+  ];
+  for (const change of corruptions) {
+    const broken = JSON.parse(JSON.stringify(wire));
+    change(broken);
+    assert.throws(() => restoreMutationCaseCatalog(broken), /E_MUTATION_CASE_CATALOG_/u);
+  }
+  assert.throws(() => compactMutationCaseCatalog(wire), /E_MUTATION_CASE_CATALOG_/u);
+  assert.throws(() => restoreMutationCaseCatalog({ ...source, caseCatalogEncoding: 'unsupported' }),
+    /E_MUTATION_CASE_CATALOG_/u);
+});

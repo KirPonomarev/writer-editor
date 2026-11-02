@@ -8,7 +8,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { sha256hex } from './canonical-json.mjs';
-import { createMutationPlan, mutationPreload, evaluateMutationRun, captureMutationEvidence } from './mutation-context.mjs';
+import { createMutationPlan, mutationPreload, evaluateMutationRun, captureMutationEvidence, compactMutationCaseCatalog, restoreMutationCaseCatalog } from './mutation-context.mjs';
 
 const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
 const TESTS_DIR = path.join(MODULE_DIR, 'tests');
@@ -323,7 +323,11 @@ export function main() {
     results,
     notRun: MUTANTS.slice(results.length).map(row => row.id),
   };
-  process.stdout.write('R24_MUTATION_RECEIPT=' + JSON.stringify(receipt) + '\n');
+  const wireReceipt = compactMutationCaseCatalog(receipt);
+  if (JSON.stringify(restoreMutationCaseCatalog(wireReceipt)) !== JSON.stringify(receipt)) {
+    throw new Error('E_MUTATION_CASE_CATALOG_ROUNDTRIP');
+  }
+  process.stdout.write('R24_MUTATION_RECEIPT=' + JSON.stringify(wireReceipt) + '\n');
   if (!complete) {
     process.stderr.write(baseline.verdict !== 'PASS'
       ? 'E_MUTANT_BASELINE_RED: unmutated original-context suite must pass first\n'

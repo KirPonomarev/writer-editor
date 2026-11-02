@@ -185,3 +185,68 @@ export function readMutationEvidence(full) {
       || !(value.error === null || (typeof value.error === 'object' && typeof value.error.message === 'string'))) fail('E_MUTATION_EVIDENCE_RESULT');
   return { value, bytes };
 }
+
+
+// This is an in-payload representation only. It never reuses test results or
+// decides whether evidence passes; every original process stream is retained.
+const CASE_CATALOG_ENCODING = 'baseline-cases-ref-v1';
+function caseCatalogReceipt(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)
+      || value.schemaVersion !== 'yalken.r24-mutation-receipt.v1'
+      || !Array.isArray(value.results)) fail('E_MUTATION_CASE_CATALOG_SHAPE');
+  for (const row of value.results) {
+    if (!row || typeof row !== 'object' || Array.isArray(row)) fail('E_MUTATION_CASE_CATALOG_SHAPE');
+  }
+}
+function caseCatalogArray(value) {
+  if (!Array.isArray(value)) fail('E_MUTATION_CASE_CATALOG_SHAPE');
+  for (const name of value) if (typeof name !== 'string') fail('E_MUTATION_CASE_CATALOG_SHAPE');
+  return value;
+}
+export function compactMutationCaseCatalog(receipt) {
+  caseCatalogReceipt(receipt);
+  if (Object.hasOwn(receipt, 'caseCatalogEncoding')
+      || Object.hasOwn(receipt, 'caseCatalogFullReceiptSha256')) fail('E_MUTATION_CASE_CATALOG_ENCODING');
+  const cases = caseCatalogArray(receipt.baselineRun?.cases);
+  const catalog = JSON.stringify(cases), digest = sha(Buffer.from(catalog));
+  const original = Buffer.from(JSON.stringify(receipt));
+  const results = receipt.results.map(row => {
+    if (!Object.hasOwn(row, 'cases')) return { ...row };
+    const names = caseCatalogArray(row.cases);
+    return { ...row, cases: JSON.stringify(names) === catalog
+      ? { encoding: CASE_CATALOG_ENCODING, sha256: digest } : [...names] };
+  });
+  return { ...receipt, baselineRun: { ...receipt.baselineRun, cases: [...cases] }, results,
+    caseCatalogEncoding: CASE_CATALOG_ENCODING, caseCatalogFullReceiptSha256: sha(original) };
+}
+export function restoreMutationCaseCatalog(wire) {
+  caseCatalogReceipt(wire);
+  const tagged = Object.hasOwn(wire, 'caseCatalogEncoding')
+    || Object.hasOwn(wire, 'caseCatalogFullReceiptSha256');
+  if (!tagged) {
+    if (wire.baselineRun?.cases !== undefined) caseCatalogArray(wire.baselineRun.cases);
+    for (const row of wire.results) if (Object.hasOwn(row, 'cases')) caseCatalogArray(row.cases);
+    return wire;
+  }
+  if (wire.caseCatalogEncoding !== CASE_CATALOG_ENCODING) fail('E_MUTATION_CASE_CATALOG_ENCODING');
+  if (typeof wire.caseCatalogFullReceiptSha256 !== 'string'
+      || !/^[a-f0-9]{64}$/u.test(wire.caseCatalogFullReceiptSha256)) fail('E_MUTATION_CASE_CATALOG_DIGEST');
+  const cases = caseCatalogArray(wire.baselineRun?.cases);
+  const digest = sha(Buffer.from(JSON.stringify(cases)));
+  const results = wire.results.map(row => {
+    if (!Object.hasOwn(row, 'cases')) return { ...row };
+    if (Array.isArray(row.cases)) return { ...row, cases: [...caseCatalogArray(row.cases)] };
+    const ref = row.cases;
+    if (!ref || typeof ref !== 'object' || Object.keys(ref).sort().join(',') !== 'encoding,sha256')
+      fail('E_MUTATION_CASE_CATALOG_REF_SHAPE');
+    if (ref.encoding !== CASE_CATALOG_ENCODING) fail('E_MUTATION_CASE_CATALOG_ENCODING');
+    if (ref.sha256 !== digest) fail('E_MUTATION_CASE_CATALOG_REF_HASH');
+    return { ...row, cases: [...cases] };
+  });
+  const restored = { ...wire, baselineRun: { ...wire.baselineRun, cases: [...cases] }, results };
+  delete restored.caseCatalogEncoding;
+  delete restored.caseCatalogFullReceiptSha256;
+  if (sha(Buffer.from(JSON.stringify(restored))) !== wire.caseCatalogFullReceiptSha256)
+    fail('E_MUTATION_CASE_CATALOG_DIGEST');
+  return restored;
+}
