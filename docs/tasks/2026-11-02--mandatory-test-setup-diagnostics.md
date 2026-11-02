@@ -1,7 +1,9 @@
+CURRENT_CALLER_RESULT: D2 WIP passes actual whole5 68of68 with zero skip todo cancel, raw a2f826075fb1e38fbb0642517e65af6f90b83bb92878f82e44ed3a3d87632ddc and receipt0e82d426f356ace270d5dc096585585c4e781ddb253529bd725eef6e35098585. Original promotion smoke exposed inherited NODE_TEST_CONTEXT false-green; installed Node source confirms recursive runner skips. Five real test child environments now remove only this private key; original14 assertions and 64MiB/serial guards remain. Own added .test.cjs method mistake and interrupted nested run retained without causal acceptance credit; corrected .test.js actual nested child executes. Whole-file inverse recovers all original runner/package/fixture bytes. Diagnostic artifact/reader work and full required delivery remain pending; source savepoint is not acceptance.
+
 # Mandatory test setup and lossless diagnostics
 INITIAL_CAUSAL_RESULT: Actual finite caller9cases5positive4gaps, zero skip todo cancel; raw7e2d4579795c5b4def6df3401ba5229fe21f8cc69a28fd6f12e12ffa938484aa and frozen input2b121b3dfdd49708d290b00c4b55ba154d32bf9c4afd3b37482aa2cd64c4a895. Real nonzero signal zero-executed and valid Green controls pass; unknown format and bad TMP attempt a later owned-filesystem boundary intercepted by the finite port, while inconsistent TAP and missing explicit file return0. These are exact caller ordering proofs, not real child suite or native coverage. Old runner package WP307 and every runtime byte remain unchanged.
 
-STATUS: CAUSAL_RED_REVIEWED_OLD_SOURCE_UNCHANGED
+STATUS: CALLER_CONTINUATION_ADMITTED_OLD_SOURCE_STILL_UNCHANGED
 ROLE: BOUNDED_TASK_SPECIFICATION
 TASK_ID: YALKEN_MANDATORY_TEST_SETUP_DIAGNOSTICS_20261102
 TYPE: OPS_WRITE
@@ -13,6 +15,7 @@ PUSH_BRANCH: codex/mandatory-test-setup-diagnostics-20261102
 DELIVERY_POLICY: COMMIT_REQUIRED=true; PUSH_REQUIRED=true; PR_REQUIRED=true; MERGE_REQUIRED=true; POST_MERGE_EXACT_HEAD_REQUIRED=true
 OWNER_AUTHORITY: Direct owner message01a19b7d-f512-76d2-86b2-ba760b199f34 accepts the five specific followups. VERIFIED_OWNER_FOLLOWUPS_GRANT_02.json preserves the actual direct message and accepted proposal; malformed serialization01 is retained and never authority. Current contour implements first two only as one existing mandatory-caller outcome. No authority from heartbeat or other agent.
 PREDECESSOR: Scene Meaning PR2192 full bounded closure6a56726d92f4dc2217502a07fc81b98e9a6a6d7976c74ce084010a7e8ad5a71f; actual originalM2 source container cf4f8b40b29ebf65fed1516c1dd399a8be56eb8f1fef30611272a42ae6de3ae2 is reused, no duplicate snapshot.
+CURRENT_CALLER_ADMISSION: Clean checkpoint6ee52371937f6ed0120d76030bd017384bf7e643; declaration02 SHA25635dbb84e90ac45a6e12ed0b8a0037f40a23b2649c158f61f7a5dbee722809e90/preflight02 actual0 admits nine exact paths. Preserve original9case prefix and all old assertions. Append package-entry causal controls before old source edit; then minimal caller/package fix and one incomplete finite TAP fixture literal. WP307 diagnostic producer and all other old tests remain protected until later admission.
 INITIAL_ADMISSION: Six exact docs/new causal-test paths, declaration01d5f57587da5266be6322fb32b708e972a929fb14d888e6e18740ef68ebb897ac and prospective preflight0 receipt360516141389bbf79d0b467f31f76b330acb7757d2676209d6882e6029d9367b. Existing scripts, package, workflows and every old test/runtime/profile are protected.
 DESIGN_TOOL_ROUTER: Infra-only; canonical enum is in validated machine declaration01.
 STORAGE: Reports only verified T777 dated2026-11-02--mandatory-test-setup-diagnostics. No native launch/profile or filesystem cleanup. Finite initial caller tests use read-only actual source and finite intercepted child ports; no expensive invalid baseline replay. Any new filesystem runtime needs prospective exact declaration.
@@ -33,19 +36,22 @@ Initial four current docs, this exact task and one new maintained finite caller 
 
 ## ALLOWLIST
 
-Initial only:
+Current caller continuation: original six plus the three exact paths below, admitted by declaration02. Initial admission remains historical.
 - docs/CONTEXT.md
 - docs/HANDOFF.md
 - docs/WORKLOG.md
 - docs/tasks/2026-11-02--scene-meaning-promotion.md
 - docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md
 - test/unit/mandatory-test-setup-diagnostics.test.js
+- scripts/run-tests.js
+- package.json
+- test/contracts/promotion-heavy-lane-entrypoint.contract.test.js
 
-Normal scoped commits, checked push, one PR, ordinary expected-head merge, fresh exact merged verification; normal new branch in the registered existing worktree. T777 task reports create-only, no old report overwrite. No runtime source edit admitted yet.
+Normal scoped commits, checked push, one PR, ordinary expected-head merge, fresh exact merged verification; normal new branch in the registered existing worktree. T777 task reports create-only, no old report overwrite. Only admitted development caller and package-script edits, no product runtime or profile mutation.
 
 ## DENYLIST
 
-No git stash/reset/clean/checkout/rebase/amend/force push or foreign WIP changes. No old test/assertion/fixture/producer/runner/package/workflow write in initial phase. No fake OS alias, relaxed hash/range/owner/capability guard, timeout/cap increase, skipped test, signal/nonzero suppression, unknown-format fallback or synthetic green. No old native profile, raw/history/DB/authority/frozen deletion or modification. No dependency, secret, runtime network, other agent/model/chat, new timer/service/cache or full release claim.
+No git stash/reset/clean/checkout/rebase/amend/force push or foreign WIP changes. No old assertion or case change. Only the exact declaration02 caller, two existing package entries and one incomplete finite success-TAP fixture literal may change; every other old producer, test, workflow and runtime stays protected. No fake OS alias, relaxed hash/range/owner/capability guard, timeout/cap increase, skipped test, signal/nonzero suppression, unknown-format fallback or synthetic green. No old native profile, raw/history/DB/authority/frozen deletion or modification. No dependency, secret, runtime network, other agent/model/chat, new timer/service/cache or full release claim.
 
 ## CONTRACT / SHAPES
 

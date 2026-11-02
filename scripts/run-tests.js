@@ -61,6 +61,7 @@ function parseCli(rawArgs) {
     modeArg: '',
     explicitTests: [],
     checkMode: CHECK_MODE_RELEASE,
+    opsPrelude: [],
     error: '',
   };
 
@@ -69,6 +70,18 @@ function parseCli(rawArgs) {
   for (let i = 0; i < rawArgs.length; i += 1) {
     const arg = String(rawArgs[i] || '').trim();
     if (!arg) continue;
+    if (arg === '--with-ops=test:ops' || arg === '--with-ops=test:ops,test:rtk') {
+      if (out.opsPrelude.length > 0) {
+        out.error = 'Duplicate required prelude is not allowed.';
+        return out;
+      }
+      out.opsPrelude = arg === '--with-ops=test:ops' ? ['test:ops'] : ['test:ops', 'test:rtk'];
+      continue;
+    }
+    if (arg.startsWith('--with-ops')) {
+      out.error = 'Unsupported required prelude; expected the fixed test:ops or test:ops,test:rtk entry.';
+      return out;
+    }
     if (arg === '--dry-run') {
       out.dryRun = true;
       continue;
@@ -115,6 +128,78 @@ function parseCli(rawArgs) {
   return out;
 }
 
+function prepareTestInputs(rootDir, cli) {
+  const mode = cli.modeArg === 'electron' ? 'electron' : 'unit';
+  const selected = cli.explicitTests.length > 0
+    ? cli.explicitTests.map(item => path.resolve(rootDir, item)).sort()
+    : cli.modeArg === 'fast' ? FAST_LANE_CONTRACT_TESTS.map(item => path.resolve(rootDir, item)).sort()
+      : cli.modeArg === 'closeout' ? TOOLBAR_CLOSEOUT_TESTS.map(item => path.resolve(rootDir, item)).sort()
+        : listTestFiles(path.join(rootDir, 'test', mode)).sort();
+  if (selected.length === 0) throw new Error('No test files selected for ' + mode);
+  for (const file of selected) {
+    if (!fs.statSync(file).isFile()) throw new Error('Test input is not a regular file: ' + file);
+  }
+  const temporary = fs.realpathSync(os.tmpdir());
+  const identity = fs.statSync(temporary);
+  if (!identity.isDirectory()) throw new Error('Temporary path is not a directory');
+  fs.accessSync(temporary, fs.constants.W_OK);
+  const needsDarwinAlias = process.platform === 'darwin'
+    && selected.includes(path.join(rootDir, 'test/unit/r24-wp307-writer-local-profile-integration.test.js'));
+  if (needsDarwinAlias) {
+    if (!temporary.startsWith('/private/var/')) {
+      throw new Error('Native Save alias tests require the genuine canonical macOS temporary ancestry before initialization');
+    }
+    if (typeof process.getuid === 'function' && identity.uid !== process.getuid()) {
+      throw new Error('Native Save test temporary root must belong to the current user');
+    }
+    const actual = spawnSync('/usr/bin/getconf', ['DARWIN_USER_TEMP_DIR'], { encoding: 'utf8' });
+    if (actual.error || actual.status !== 0 || !String(actual.stdout || '').trim()) {
+      throw new Error('Cannot verify the genuine macOS temporary parent');
+    }
+    const parent = fs.realpathSync(String(actual.stdout).trim());
+    const relative = path.relative(parent, temporary);
+    if (path.isAbsolute(relative) || relative === '..' || relative.startsWith('..' + path.sep)) {
+      throw new Error('Native Save test TMP must be inside the genuine OS temporary parent');
+    }
+  }
+  return selected;
+}
+
+function testChildEnvironment(overrides = {}) {
+  const env = { ...process.env, ...overrides };
+  // This is a new test runner, not the parent runner's private reporter child.
+  delete env.NODE_TEST_CONTEXT;
+  return env;
+}
+
+function runRequiredOpsPrelude(rootDir, scripts) {
+  for (const script of scripts) {
+    const npmArgs = ['run', '-s', script];
+    const npmExecPath = String(process.env.npm_execpath || '').trim();
+    let command = 'npm', args = npmArgs;
+    if (npmExecPath) {
+      if (!path.isAbsolute(npmExecPath) || path.basename(npmExecPath).toLowerCase() !== 'npm-cli.js') {
+        console.error('E_NPM_EXEC_PATH_INVALID=1');
+        return 1;
+      }
+      command = process.execPath;
+      args = [npmExecPath, ...npmArgs];
+    } else if (process.platform === 'win32') {
+      const shell = String(process.env.ComSpec || '').trim();
+      if (!path.isAbsolute(shell)) {
+        console.error('E_WINDOWS_COMMAND_SHELL_INVALID=1');
+        return 1;
+      }
+      command = shell;
+      args = ['/d', '/s', '/c', 'npm.cmd', ...npmArgs];
+    }
+    const result = spawnSync(command, args, { cwd: rootDir, stdio: 'inherit' });
+    if (result.error) console.error('OPS_PRELUDE_SPAWN_ERROR=' + String(result.error.code || result.error.message));
+    if (result.status !== 0) return result.status ?? 1;
+  }
+  return 0;
+}
+
 function runOpsSynthNegativeTests(rootDir) {
   // R2.4 E0: the synthetic doctor negative suite is a committed static file.
   // Self-materializing a test into a fixed predictable /tmp path at run time
@@ -126,6 +211,7 @@ function runOpsSynthNegativeTests(rootDir) {
     return 1;
   }
   const result = spawnSync(process.execPath, ['--test', committedTestPath], {
+    env: testChildEnvironment(),
     cwd: rootDir,
     stdio: 'inherit'
   });
@@ -212,7 +298,7 @@ function runFastLane(rootDir, dryRun) {
   const tests = spawnSync(process.execPath, ['--test', ...fastTestsAbs], {
     cwd: rootDir,
     stdio: 'inherit',
-    env,
+    env: testChildEnvironment(env),
   });
   return tests.status ?? 1;
 }
@@ -226,18 +312,25 @@ function readSkippedCount(stdout, stderr) {
 }
 
 function readTapTotals(stdout, stderr) {
-  const combined = `${String(stdout || '')}\n${String(stderr || '')}`;
-  const last = (key) => {
-    const matches = [...combined.matchAll(new RegExp(`^[#ℹ]\\s+${key} (\\d+)$`, 'gm'))];
-    if (matches.length === 0) return null;
-    const value = Number(matches[matches.length - 1][1]);
-    return Number.isInteger(value) ? value : null;
+  const combined = String(stdout || '') + '\n' + String(stderr || '');
+  const values = {};
+  let marker = '';
+  for (const key of ['tests', 'pass', 'fail', 'cancelled', 'skipped', 'todo']) {
+    const matches = [...combined.matchAll(new RegExp('^([#ℹ])\\s+' + key + ' (\\d+)$', 'gm'))];
+    const last = matches.at(-1);
+    values[key] = last ? Number(last[2]) : null;
+    if (last) {
+      if (marker && marker !== last[1]) return { ...values, executed: null, valid: false };
+      marker = last[1];
+    }
+  }
+  const complete = Object.values(values).every(value => Number.isSafeInteger(value) && value >= 0);
+  const sum = complete ? values.pass + values.fail + values.cancelled + values.skipped + values.todo : null;
+  return {
+    ...values,
+    executed: values.pass === null || values.fail === null ? null : values.pass + values.fail,
+    valid: complete && values.tests === sum,
   };
-  const pass = last('pass');
-  const fail = last('fail');
-  const skipped = last('skipped');
-  const executed = pass === null && fail === null ? null : (pass ?? 0) + (fail ?? 0);
-  return { pass, fail, skipped, executed };
 }
 
 function runToolbarCloseoutLane(rootDir, dryRun) {
@@ -256,6 +349,7 @@ function runToolbarCloseoutLane(rootDir, dryRun) {
   }
 
   const result = spawnSync(process.execPath, ['--test', ...testsAbs], {
+    env: testChildEnvironment(),
     cwd: rootDir,
     encoding: 'utf8',
   });
@@ -311,6 +405,7 @@ function runAtlasEventContractGuard(rootDir) {
     .map((item) => path.resolve(rootDir, item))
     .sort();
   const result = spawnSync(process.execPath, ['--test', ...testsAbs], {
+    env: testChildEnvironment(),
     cwd: rootDir,
     stdio: 'inherit',
   });
@@ -500,6 +595,20 @@ const isPromotionMode = checkMode === CHECK_MODE_PROMOTION;
 const dryRun = cli.dryRun;
 const modeArg = cli.modeArg;
 
+let testFiles;
+try {
+  testFiles = prepareTestInputs(rootDir, cli);
+} catch (error) {
+  console.error('TEST_SETUP_REFUSED=' + String(error.message || error));
+  process.exitCode = 1;
+  return;
+}
+const preludeExit = runRequiredOpsPrelude(rootDir, cli.opsPrelude);
+if (preludeExit !== 0) {
+  process.exitCode = preludeExit;
+  return;
+}
+
 if (modeArg === 'fast') {
   process.exitCode = runFastLane(rootDir, dryRun);
   return;
@@ -513,9 +622,7 @@ if (modeArg === 'closeout') {
 const explicitTests = cli.explicitTests;
 const mode = modeArg === 'electron' ? 'electron' : 'unit';
 const testDir = path.join(rootDir, 'test', mode);
-const testFiles = explicitTests.length > 0
-  ? explicitTests.map((item) => path.resolve(rootDir, item)).sort()
-  : (fs.existsSync(testDir) ? listTestFiles(testDir).sort() : []);
+// The same complete file cohort was validated before any expensive prelude.
 
 if (testFiles.length === 0) {
   console.error(`No test files found in ./test/${mode} (expected **/*.test.js or **/*.test.mjs).`);
@@ -536,6 +643,7 @@ if (testFiles.length === 0) {
   // exact skip inventory instead of hiding it inside an aggregate exit code.
   // Keep elapsed-time contracts isolated from competing test-file processes.
   const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', ...testFiles], {
+    env: testChildEnvironment(),
     cwd: rootDir,
     encoding: 'utf8',
     maxBuffer: 64 * 1024 * 1024,
@@ -546,6 +654,12 @@ if (testFiles.length === 0) {
   const tapTotals = readTapTotals(result.stdout, result.stderr);
   console.log(`UNIT_LANE_EXECUTED=${tapTotals.executed === null ? 'UNKNOWN' : tapTotals.executed}`);
   console.log(`UNIT_LANE_SKIPPED_DENOMINATOR=${tapTotals.skipped === null ? 'UNKNOWN' : tapTotals.skipped}`);
+  if (result.error) console.error('UNIT_LANE_SPAWN_ERROR=' + String(result.error.code || result.error.message));
+  if (result.signal) console.error('UNIT_LANE_SIGNAL=' + String(result.signal));
+  if (!tapTotals.valid || tapTotals.fail > 0 || tapTotals.cancelled > 0) {
+    console.error('UNIT_LANE_EVIDENCE_INVALID=complete consistent TAP totals are required');
+    if (exitCode === 0) exitCode = 1;
+  }
   if (tapTotals.executed === 0) {
     console.error('E_ZERO_DENOMINATOR_UNIT_LANE=1');
     exitCode = 1;

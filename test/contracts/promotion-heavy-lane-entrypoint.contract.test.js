@@ -27,7 +27,7 @@ function captureFullRunner(failureAt = -1) {
     if (name === 'node:child_process') return { spawnSync(command, args, options) {
       calls.push({ command, args: Array.from(args), options });
       return { status: calls.length - 1 === failureAt ? 7 : 0,
-        stdout: '# pass 1\n# fail 0\n# skipped 0\n', stderr: '' };
+        stdout: 'TAP version 13\n1..1\n# tests 1\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n', stderr: '' };
     } };
     // Guard output locations are planned, not materialized by this harness.
     if (name === 'node:fs') return { ...fs, mkdtempSync: prefix => `${prefix}contract` };

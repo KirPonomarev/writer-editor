@@ -132,3 +132,76 @@ test('mandatory caller bad Darwin temporary ancestry refuses before expensive ch
   // Explicit finite Darwin input on other CI hosts; no native platform parity claim.
   refusalBeforeChildren(invoke({ args: [], platform: 'darwin', temporaryPath: bad }));
 });
+
+function finitePackageSetupBeforePrelude(scriptName) {
+  const scripts = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).scripts;
+  const original = scriptName === 'test'
+    ? 'npm run -s test:ops && node scripts/run-tests.js'
+    : 'npm run -s test:ops && npm run -s test:rtk && node scripts/run-tests.js --mode=promotion';
+  const expected = scriptName === 'test'
+    ? 'npm run -s r24:toolchain && node scripts/run-tests.js --with-ops=test:ops'
+    : 'npm run -s r24:toolchain && node scripts/run-tests.js --mode=promotion --with-ops=test:ops,test:rtk';
+  // Bind the complete maintained script. Unknown dispatch is a setup error,
+  // not a wildcard acceptance or a missing-module mutant kill.
+  assert.notEqual(scripts[scriptName], original, 'the actual package entry starts the expensive prelude before its caller can validate known setup');
+  assert.equal(scripts[scriptName], expected, 'the reviewed fixed entry preserves every original prelude and uses the existing exact toolchain');
+  const args = scriptName === 'test'
+    ? ['--with-ops=test:ops']
+    : ['--mode=promotion', '--with-ops=test:ops,test:rtk'];
+  const bad = fs.realpathSync(process.platform === 'darwin' ? '/private/tmp' : os.tmpdir());
+  refusalBeforeChildren(invoke({ args, platform: 'darwin', temporaryPath: bad }));
+}
+test('package default entry validates known setup before the existing expensive wave (finite source-bound dispatch)', () => {
+  finitePackageSetupBeforePrelude('test');
+});
+test('package promotion entry validates setup before both existing wave and RTK (finite source-bound dispatch)', () => {
+  finitePackageSetupBeforePrelude('promotion:check');
+});
+
+test('required promotion prelude cannot be downgraded by an appended duplicate caller flag', () => {
+  refusalBeforeChildren(invoke({ args: [
+    '--mode=promotion', '--with-ops=test:ops,test:rtk', '--with-ops=test:ops', existingTest,
+  ] }));
+});
+test('valid required prelude retains wave then RTK before the ordinary unit child', () => {
+  const result = invoke({ args: ['--with-ops=test:ops,test:rtk', existingTest] });
+  reachedUnit(result);
+  assert.equal(result.exitCode, 0);
+  assert.deepEqual(result.children.filter(row => row.kind === 'OTHER').map(row => row.argv.at(-1)), ['test:ops', 'test:rtk']);
+  assert.equal(result.children.at(-1).kind, 'UNIT');
+});
+test('each actual required-prelude stage preserves nonzero or unavailable exit and halts its fixed sequence', () => {
+  const begin = source.indexOf('function runRequiredOpsPrelude(');
+  const end = source.indexOf('\nfunction runOpsSynthNegativeTests', begin);
+  assert.ok(begin >= 0 && end > begin, 'test extracts the actual existing-caller helper, not a replacement implementation');
+  for (const failureAt of [0, 1]) for (const status of [7, null]) {
+    const calls = [];
+    const execute = vm.runInNewContext('(' + source.slice(begin, end) + ')', {
+      path, process: { platform: process.platform, execPath: process.execPath, env: { ComSpec: process.env.ComSpec } },
+      console: { error() {} },
+      spawnSync(command, argv) {
+        calls.push({ command, argv: Array.from(argv) });
+        return { status: calls.length - 1 === failureAt ? status : 0 };
+      },
+    });
+    const result = execute(root, ['test:ops', 'test:rtk']);
+    assert.equal(result, status === null ? 1 : status);
+    assert.equal(calls.length, failureAt + 1);
+    assert.deepEqual(calls.map(row => row.argv.at(-1)), ['test:ops', 'test:rtk'].slice(0, failureAt + 1));
+  }
+});
+
+test('actual nested caller executes its explicit file instead of inheriting the parent private test context', () => {
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'mandatory-nested-caller-'));
+  const childTest = path.join(scratch, 'actual-child.test.js');
+  fs.writeFileSync(childTest, "const test = require('node:test'); test('actual nested child executed', () => {});\n", { flag: 'wx' });
+  const result = actualSpawnSync(process.execPath, [runner, '--mode=promotion', childTest], {
+    cwd: root, encoding: 'utf8', maxBuffer: 1024 * 1024,
+  });
+  assert.equal(result.status, 0, 'actual nested caller must execute: ' + result.stdout + '\n' + result.stderr);
+  assert.match(result.stdout, /ok 1 - actual nested child executed/u);
+  assert.match(result.stdout, /^# tests 1$/mu);
+  assert.match(result.stdout, /^# pass 1$/mu);
+  assert.match(result.stdout, /^UNIT_LANE_EXECUTED=1$/mu);
+  assert.doesNotMatch(result.stdout + result.stderr, /skipping running files/u);
+});
