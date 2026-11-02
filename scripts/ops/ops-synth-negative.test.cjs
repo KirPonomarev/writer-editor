@@ -1,9 +1,9 @@
 // R2.4 E0: committed form of the doctor synthetic negative tests.
 // Previously self-materialized by scripts/run-tests.js into a fixed
 // predictable /tmp path at run time; now a static reviewable file.
-const { spawnSync } = require('node:child_process');
+const { execFile } = require('node:child_process');
 const assert = require('node:assert/strict');
-const test = require('node:test');
+const { test, describe } = require('node:test');
 const fs = require('node:fs');
 
 function parseTokens(stdout) {
@@ -34,7 +34,7 @@ function parseIntStrict(s, key) {
   return n;
 }
 
-function runDoctorStrict(envExtra) {
+async function runDoctorStrict(envExtra) {
   const env = { ...process.env, CHECKS_BASELINE_VERSION: 'v1.3', EFFECTIVE_MODE: 'STRICT', ...envExtra };
   delete env.OPS_SYNTH_OVERRIDE_ENABLED;
   delete env.OPS_SYNTH_OVERRIDE_JSON;
@@ -45,7 +45,10 @@ function runDoctorStrict(envExtra) {
     env.OPS_SYNTH_OVERRIDE_JSON = envExtra.OPS_SYNTH_OVERRIDE_JSON;
   }
 
-  const r = spawnSync(process.execPath, ['scripts/doctor.mjs'], { env, encoding: 'utf8' });
+  const r = await new Promise(resolve => {
+    execFile(process.execPath, ['scripts/doctor.mjs'], { env, encoding: 'utf8', maxBuffer: 1024 * 1024 },
+      (error, stdout) => resolve({ status: error ? (Number.isInteger(error.code) ? error.code : 1) : 0, stdout }));
+  });
   const stdout = String(r.stdout || '');
   const tokens = parseTokens(stdout);
   return { status: r.status ?? 1, stdout, tokens };
@@ -63,8 +66,9 @@ function assertStrictBaselineTokens(tokens) {
   }
 }
 
-test('ops strict: baseline ok', () => {
-  const r = runDoctorStrict({});
+describe('strict doctor synthetic CLI scenarios', { concurrency: 3 }, () => {
+test('ops strict: baseline ok', async () => {
+  const r = await runDoctorStrict({});
   assertStrictBaselineTokens(r.tokens);
 
   const c1 = parseIntStrict(getRequired(r.tokens, 'STRICT_LIE_CLASS_01_VIOLATIONS_COUNT'), 'STRICT_LIE_CLASS_01_VIOLATIONS_COUNT');
@@ -82,7 +86,7 @@ test('ops strict: baseline ok', () => {
   assert.ok(r.stdout.split(/\r?\n/).includes('STRICT_LIE_CLASSES_OK=1'));
 });
 
-test('ops synth negative: lie_class_01', () => {
+test('ops synth negative: lie_class_01', async () => {
   const idx = JSON.parse(fs.readFileSync('docs/OPS/INVENTORY_INDEX.json', 'utf8'));
   let invPath = '';
   for (const it of idx.items || []) {
@@ -98,7 +102,7 @@ test('ops synth negative: lie_class_01', () => {
   }
   if (!invPath) {
     // If no empty declared registry exists, the class-01 pattern is currently eliminated.
-    const baseline = runDoctorStrict({});
+    const baseline = await runDoctorStrict({});
     assertStrictBaselineTokens(baseline.tokens);
     const c = parseIntStrict(
       getRequired(baseline.tokens, 'STRICT_LIE_CLASS_01_VIOLATIONS_COUNT'),
@@ -113,7 +117,7 @@ test('ops synth negative: lie_class_01', () => {
     overrides: [{ path: invPath, op: 'json_delete_key', where: { key: 'declaredEmpty' } }]
   };
 
-  const r = runDoctorStrict({
+  const r = await runDoctorStrict({
     OPS_SYNTH_OVERRIDE_ENABLED: '1',
     OPS_SYNTH_OVERRIDE_JSON: JSON.stringify(override)
   });
@@ -130,7 +134,7 @@ test('ops synth negative: lie_class_01', () => {
   assert.ok(c > 0);
 });
 
-test('ops synth negative: lie_class_02', () => {
+test('ops synth negative: lie_class_02', async () => {
   const reg = JSON.parse(fs.readFileSync('docs/OPS/INVARIANTS_REGISTRY.json', 'utf8'));
   const enf = JSON.parse(fs.readFileSync('docs/OPS/CONTOUR-C-ENFORCEMENT.json', 'utf8'));
   const regSet = new Set((reg.items || []).map((x) => x && x.invariantId).filter(Boolean));
@@ -163,7 +167,7 @@ test('ops synth negative: lie_class_02', () => {
     ]
   };
 
-  const r = runDoctorStrict({
+  const r = await runDoctorStrict({
     OPS_SYNTH_OVERRIDE_ENABLED: '1',
     OPS_SYNTH_OVERRIDE_JSON: JSON.stringify(override)
   });
@@ -178,4 +182,6 @@ test('ops synth negative: lie_class_02', () => {
 
   const c = parseIntStrict(getRequired(r.tokens, 'STRICT_LIE_CLASS_02_VIOLATIONS_COUNT'), 'STRICT_LIE_CLASS_02_VIOLATIONS_COUNT');
   assert.ok(c > 0);
+});
+
 });

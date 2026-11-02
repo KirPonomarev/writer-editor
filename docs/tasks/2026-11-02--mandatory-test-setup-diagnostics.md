@@ -1,4 +1,4 @@
-CURRENT_D22_COHERENT_SCOPE: Same29path native mandatory caller and truthful diagnostics outcome. C13E0actualPASS229.280s,176main/198control/40genuineKILLED/full8118; original WP104actualFAIL Q0ETIMEDOUT300s and native538.626s>480,12of17required rows completed/5notstarted. D22clean preflight0, five frozen orphan forms each wronglyaccepted by current reader, actual19caseRED18pass1fail. Exactly3local consistency predicates now require immediate4space parent closure and forbid plans/root counters substituting missing parents. Same19GREEN/affected137, old18case prefix exact, full reader inverse7b42e9a8, independent28oraclee127d238 and old66MBformat compatibility e334c3a0. Original statuses/raw/source/194bodies/40definitions/buffers/timeouts/isolation remain; no broad timing or release acceptance. Save reviewed source checkpoint with explicit stale metadata; then one measured timing correction before full retry. Final7currenthash targets/technical witnesses/trueHEADgates/all mandatory current delivery remain required.
+CURRENT_D24_COHERENT_SCOPE: Same mandatory-caller and truthful diagnostic outcome, prospective30paths. Reader D22three immediate-parent predicates retain19case prefix and28native/adversarial oracle. D23claims fixture/API experiment was physically inversed to C14 after no material whole198gain; all patch/raw/proofs retained and no priority3change implemented. D24cleanC14bootstrap/preflight0 admits one existing static OPSfile: all3original strict lie-class scenarios/CLI calls/assertions/override branches run through native async execFile under one native describe with concurrency3. Whole source inverse recovers original ab335ea6; default1MiB/UTF8/actual native statuses and fresh per-call env preserved. Prototype12.633s and maintained13.815s versus sequential33.834to36.875s, independent actual3child/peak3/readonly/fullstream oraclec1d3591b; genuine3case1suite TAP accepted by strict current reader and all137affected tests pass. No additionalR24case/worker/cache/dependency/product/native change; all198cases/40serialmutants/isolation/cap4 and original240s300s480s/64MiB/default1MiB remain. Final7currenthash targets and only necessary source membership, technical witnesses, sourcecommit/trueHEADgates/current full mandatory delivery remain required. C13actualE0full40 and WP104Q0timeout/native538.626s are retained old-source evidence, not current acceptance; FullMac17UNKNOWN.
 
 CURRENT_D18_TASK: Actual C11originalWP104RED remains the blocker. D18preflight0 permits a fixed private native Node API entry so requested historical-file priority becomes effective; cap4 is limited by native platform default and process isolation remains. All21files/198cases/40serialmutants/original assertions, full byte evidence and240s300s480s/default1MiB/64MiB stay mandatory. NativeAPI diagnostics are198controls/one genuine mutation only, not full acceptance. No new pool/cache/framework, source relocation, product/dependency/native change. Preserve prior failures and close diagnostic consistency before final freeze; one ordinary delivery and exact merged proof remain required.
 
@@ -43,7 +43,7 @@ CURRENT_CALLER_RESULT: D2 WIP passes actual whole5 68of68 with zero skip todo ca
 # Mandatory test setup and lossless diagnostics
 INITIAL_CAUSAL_RESULT: Actual finite caller9cases5positive4gaps, zero skip todo cancel; raw7e2d4579795c5b4def6df3401ba5229fe21f8cc69a28fd6f12e12ffa938484aa and frozen input2b121b3dfdd49708d290b00c4b55ba154d32bf9c4afd3b37482aa2cd64c4a895. Real nonzero signal zero-executed and valid Green controls pass; unknown format and bad TMP attempt a later owned-filesystem boundary intercepted by the finite port, while inconsistent TAP and missing explicit file return0. These are exact caller ordering proofs, not real child suite or native coverage. Old runner package WP307 and every runtime byte remain unchanged.
 
-STATUS: D22_PARENT_COMPLETENESS_VERIFIED_TIMING_AND_DELIVERY_PENDING
+STATUS: D24_ORIGINAL_OPS_CASE_CONCURRENCY_VERIFIED_REQUIRED_GATES_PENDING
 ROLE: BOUNDED_TASK_SPECIFICATION
 TASK_ID: YALKEN_MANDATORY_TEST_SETUP_DIAGNOSTICS_20261102
 TYPE: OPS_WRITE
@@ -76,7 +76,7 @@ Initial four current docs, this exact task and one new maintained finite caller 
 
 ## ALLOWLIST
 
-Current D11 continuation: exactly28 paths. Preserve all194original cases/40definitions; add four observed boundary counterexamples and narrowly correct only the newly authored classifier method. Package/src/CI/finalizer/all17protected exact; unchanged producer and delegated current-byte witnesses only. Prior scopes remain historical.
+Current D24 continuation: exactly30 paths, matching declaration24. All194original R24case bodies/4boundarycases/40definitions and all old assertions stay. Only the existing3OPS read-only CLI cases gain native async scheduling; D22reader and earlier admitted setup/transport fixes retained. Product/package/CI/finalizer/all17protected exact; unchanged producer and delegated current-byte witnesses only. Prior scopes remain historical.
 
 - docs/CONTEXT.md
 - docs/HANDOFF.md
@@ -107,12 +107,13 @@ Current D11 continuation: exactly28 paths. Preserve all194original cases/40defin
 - test/unit/r24-mutation-context.test.js
 - scripts/ops/r24/tests/mutation-boundaries.test.mjs
 - scripts/ops/r24/tests/wp603-recovery-post-audit.test.mjs
+- scripts/ops/ops-synth-negative.test.cjs
 
-Normal scoped commits, checked push, one PR, ordinary expected-head merge, fresh exact merged verification; normal new branch in the registered existing worktree. T777 task reports create-only, no old report overwrite. Only admitted development caller and package-script edits, no product runtime or profile mutation.
+Normal scoped commits, checked push, one PR, ordinary expected-head merge and fresh exact merged verification continue on the same admitted branch in the registered existing worktree. T777 task reports create-only, no old report overwrite. Only admitted development caller and package-script edits, no product runtime or profile mutation.
 
 ## DENYLIST
 
-No git stash/reset/clean/checkout/rebase/amend/force push or foreign WIP changes. No old assertion or case change. Only declaration03 exact paths may change: three demonstrated WP307 diagnostic representations plus helper import, small strict transport/reader, existing caller, fixed package entries and already admitted finite TAP literal. CI remains byte exact; proposed new external upload was rejected and not implemented; all original commands/jobs and every other old producer, assertion, test, workflow and runtime remain protected. No fake OS alias, relaxed hash/range/owner/capability guard, timeout/cap increase, skipped test, signal/nonzero suppression, unknown-format fallback or synthetic green. No old native profile, raw/history/DB/authority/frozen deletion or modification. No dependency, secret, runtime network, other agent/model/chat, new timer/service/cache or full release claim.
+No git stash/reset/clean/checkout/rebase/amend/force push or foreign WIP changes. No old assertion or case change. Only current declaration24 exact30 paths may change: earlier admitted setup/transport/reader paths plus native async scheduling of the same3static OPSCLI cases; all original protective assertions and budgets remain. CI remains byte exact; proposed new external upload was rejected and not implemented; all original commands/jobs and every other old producer, assertion, test, workflow and runtime remain protected. No fake OS alias, relaxed hash/range/owner/capability guard, timeout/cap increase, skipped test, signal/nonzero suppression, unknown-format fallback or synthetic green. No old native profile, raw/history/DB/authority/frozen deletion or modification. No dependency, secret, runtime network, other agent/model/chat, new timer/service/cache or full release claim.
 
 ## CONTRACT / SHAPES
 
