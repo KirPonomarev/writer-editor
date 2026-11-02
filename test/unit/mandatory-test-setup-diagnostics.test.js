@@ -134,21 +134,27 @@ test('mandatory caller bad Darwin temporary ancestry refuses before expensive ch
 });
 
 function finitePackageSetupBeforePrelude(scriptName) {
-  const scripts = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).scripts;
+  const packageBytes = fs.readFileSync(path.join(root, 'package.json'));
+  const scripts = JSON.parse(packageBytes).scripts;
   const original = scriptName === 'test'
     ? 'npm run -s test:ops && node scripts/run-tests.js'
     : 'npm run -s test:ops && npm run -s test:rtk && node scripts/run-tests.js --mode=promotion';
-  const expected = scriptName === 'test'
-    ? 'npm run -s r24:toolchain && node scripts/run-tests.js --with-ops=test:ops'
-    : 'npm run -s r24:toolchain && node scripts/run-tests.js --mode=promotion --with-ops=test:ops,test:rtk';
-  // Bind the complete maintained script. Unknown dispatch is a setup error,
-  // not a wildcard acceptance or a missing-module mutant kill.
-  assert.notEqual(scripts[scriptName], original, 'the actual package entry starts the expensive prelude before its caller can validate known setup');
-  assert.equal(scripts[scriptName], expected, 'the reviewed fixed entry preserves every original prelude and uses the existing exact toolchain');
+  const policy = JSON.parse(fs.readFileSync(path.join(root, 'docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json'), 'utf8'));
+  const protectedPackage = policy.protectedFiles.find(row => row.path === 'package.json');
+  assert.ok(protectedPackage);
+  assert.equal(require('node:crypto').createHash('sha256').update(packageBytes).digest('hex'), protectedPackage.sha256,
+    'the entire protected package stays exact; early setup is implemented at its actual existing first step');
+  assert.equal(scripts[scriptName], original);
+  assert.equal(scripts['test:ops'], 'npm run -s ops:current-wave');
+  assert.equal(scripts['ops:current-wave'], 'node scripts/guards/ops-current-wave-stop.mjs');
+  const bad = fs.realpathSync(process.platform === 'darwin' ? '/private/tmp' : os.tmpdir());
+  const wave = invokeCurrentWaveSetup({ temporaryPath: bad, platform: 'darwin' });
+  assert.equal(wave.children.length, 0, 'the actual first package step refuses before doctor, so its original && chain cannot initialize RTK or units');
+  assert.notEqual(wave.exitCode, 0);
+  assert.match(wave.output, /TEST_SETUP_REFUSED/u);
   const args = scriptName === 'test'
     ? ['--with-ops=test:ops']
     : ['--mode=promotion', '--with-ops=test:ops,test:rtk'];
-  const bad = fs.realpathSync(process.platform === 'darwin' ? '/private/tmp' : os.tmpdir());
   refusalBeforeChildren(invoke({ args, platform: 'darwin', temporaryPath: bad }));
 }
 test('package default entry validates known setup before the existing expensive wave (finite source-bound dispatch)', () => {
@@ -240,4 +246,60 @@ test('an explicitly empty check mode refuses instead of silently selecting the r
     ['--with-ops=test:ops', '--mode='],
     ['--with-ops=test:ops', '--mode', '   '],
   ]) refusalBeforeChildren(invoke({ args, unit: { status: 7 } }));
+});
+
+function invokeCurrentWaveSetup({ temporaryPath = os.tmpdir(), platform = process.platform } = {}) {
+  const wave = fs.readFileSync(path.join(root, 'scripts/guards/ops-current-wave-stop.mjs'), 'utf8');
+  const imports = [
+    "import { spawnSync } from 'node:child_process';\n",
+    "import { validateTestEnvironment } from '../test-environment.cjs';\n",
+  ];
+  let executable = wave;
+  assert.equal(executable.includes(imports[0]), true);
+  for (const declaration of imports) executable = executable.replace(declaration, '');
+  assert.equal(/^import\s/mu.test(executable), false, 'unknown module import cannot silently become a successful finite control');
+  const children = [], output = [], stop = Symbol('finite existing wave exit');
+  const host = { execPath: process.execPath, platform, env: { ...process.env, DEV_FAST_LANE: '', OPS_CONTEXT_MODE: 'release' },
+    getuid: process.getuid?.bind(process), stdout: { write: value => { output.push(String(value)); return true; } },
+    exitCode: undefined, exit(code) { this.exitCode = code; throw stop; } };
+  const childPort = (command, argv = [], options = {}) => {
+    if (path.basename(String(command)) === 'getconf' && argv.join(' ') === 'DARWIN_USER_TEMP_DIR') {
+      return actualSpawnSync(command, argv, { ...options, encoding: 'utf8' });
+    }
+    children.push({ command, argv: [...argv] });
+    return { status: 0, stdout: [
+      'CURRENT_WAVE_STOP_CONDITION_OK=1', 'CURRENT_WAVE_STOP_CONDITION_FAIL_REASON=NONE',
+      'CURRENT_WAVE_STRICT_DOCTOR_EXIT=0', 'CURRENT_WAVE_BOUNDARY_GUARD_EXIT=0',
+      'STRICT_LIE_CLASS_01_VIOLATIONS_COUNT=0', 'STRICT_LIE_CLASS_02_VIOLATIONS_COUNT=0', 'STRICT_LIE_CLASSES_OK=1', '',
+    ].join('\n'), stderr: '' };
+  };
+  let environmentChecks = 0;
+  try {
+    vm.runInNewContext(executable, {
+      process: host, spawnSync: childPort,
+      validateTestEnvironment(options) {
+        environmentChecks += 1;
+        const helper = actualRequire(path.join(root, 'scripts/test-environment.cjs'));
+        return helper.validateTestEnvironment({ ...options, fs, path,
+          os: { ...os, tmpdir: () => temporaryPath }, hostProcess: host, spawnSync: childPort });
+      },
+    }, { filename: 'actual-ops-current-wave-stop.mjs finite module-import adapter', timeout: 3000 });
+  } catch (error) { if (error !== stop) throw error; }
+  return { children, output: output.join(''), exitCode: host.exitCode, environmentChecks };
+}
+test('actual hard-lane OPS guard rejects known bad Darwin TMP before its expensive doctor child', () => {
+  const bad = fs.realpathSync(process.platform === 'darwin' ? '/private/tmp' : os.tmpdir());
+  assert.equal(bad.startsWith('/private/var/'), false);
+  const result = invokeCurrentWaveSetup({ temporaryPath: bad, platform: 'darwin' });
+  assert.equal(result.children.length, 0, 'no expensive doctor may initialize before the known temporary-path refusal');
+  assert.notEqual(result.exitCode, 0);
+  assert.match(result.output, /TEST_SETUP_REFUSED/u);
+});
+test('actual hard-lane OPS guard keeps one strict doctor and the existing token result on genuine setup', () => {
+  const result = invokeCurrentWaveSetup();
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.children.length, 1);
+  assert.deepEqual(result.children[0].argv, ['scripts/doctor.mjs']);
+  assert.match(result.output, /CURRENT_WAVE_STOP_CONDITION_GUARD_OK=1/u);
+  assert.match(result.output, /CURRENT_WAVE_STRICT_DOCTOR_EXIT=0/u);
 });

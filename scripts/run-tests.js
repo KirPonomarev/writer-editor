@@ -2,6 +2,7 @@ const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { validateTestEnvironment } = require(path.join(__dirname, 'test-environment.cjs'));
 const { readTapTotals, packUnitArtifact, readUnitArtifact, sha256 } = require(path.join(__dirname, 'test-diagnostics.cjs'));
 
 const FAST_LANE_CONTRACT_TESTS = Object.freeze([
@@ -162,29 +163,8 @@ function prepareTestInputs(rootDir, cli) {
         || !fs.statSync(evidenceDirectory).isDirectory()) throw new Error('Evidence directory must be an existing canonical absolute directory');
     fs.accessSync(evidenceDirectory, fs.constants.W_OK);
   }
-  const temporary = fs.realpathSync(os.tmpdir());
-  const identity = fs.statSync(temporary);
-  if (!identity.isDirectory()) throw new Error('Temporary path is not a directory');
-  fs.accessSync(temporary, fs.constants.W_OK);
-  const needsDarwinAlias = process.platform === 'darwin'
-    && selected.includes(path.join(rootDir, 'test/unit/r24-wp307-writer-local-profile-integration.test.js'));
-  if (needsDarwinAlias) {
-    if (!temporary.startsWith('/private/var/')) {
-      throw new Error('Native Save alias tests require the genuine canonical macOS temporary ancestry before initialization');
-    }
-    if (typeof process.getuid === 'function' && identity.uid !== process.getuid()) {
-      throw new Error('Native Save test temporary root must belong to the current user');
-    }
-    const actual = spawnSync('/usr/bin/getconf', ['DARWIN_USER_TEMP_DIR'], { encoding: 'utf8' });
-    if (actual.error || actual.status !== 0 || !String(actual.stdout || '').trim()) {
-      throw new Error('Cannot verify the genuine macOS temporary parent');
-    }
-    const parent = fs.realpathSync(String(actual.stdout).trim());
-    const relative = path.relative(parent, temporary);
-    if (path.isAbsolute(relative) || relative === '..' || relative.startsWith('..' + path.sep)) {
-      throw new Error('Native Save test TMP must be inside the genuine OS temporary parent');
-    }
-  }
+  const needsDarwinAlias = selected.includes(path.join(rootDir, 'test/unit/r24-wp307-writer-local-profile-integration.test.js'));
+  validateTestEnvironment({ requiresDarwinAlias: needsDarwinAlias, fs, os, path, hostProcess: process, spawnSync });
   return selected;
 }
 

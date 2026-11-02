@@ -1,3 +1,7 @@
+CURRENT_D5_GUARD_RESULT: The entire protected package cf0d3ec978b446c78a0b1879057461f3de7ae72731a5dfeca90957a3afcbe799 is restored and all17protected physical DATA bytes/digests are exact. Shared read-only environment check now executes in existing hard-lane OPS entry before expensive doctor and in caller; original dev bypass/release/promotion bans and all pre-existing assertions are unchanged. Actual revised-method whole7 passes89of89 zero skip todo cancel, receipt3bbcf3e5443c2eb9a5fecba778e16e404eddfd6d942cd6148a8812f05874d5d1/raw2cced413fb81c61cafa7eecb3cde6326273bc8a473f02b024ee9c9ca39566abc. Genuine unchanged-old-wave causal20cases19pass1fail retained7f60d32ce4b7d6b1f8e5f9f95a95c863549458cad516b2f8c2c57a3384ef5664. Corrected only own package10/11 implementation-specific method: current checks bind protected package and actual early OPS behavior; initial9 prefix exact, original14/15 bytes/results retain historical identities and are not current-source credit. Standalone strict caller controls remain. Current namespace/inventory/governance bindings are pending via unchanged maintained producer; no full expensive baseline or delivery acceptance yet.
+
+CURRENT_D5_CORRECTION: Exact cleanC2ca802db34 admission00db773ba1153f1850c7ce14219098597a5f57b2b9b5f8847d3c7bc50592c5e9/preflight0 admits24paths. Cheap actual gate failures retained: governance fixture witness missing, inventory two new files/two hashes, DATA protected package, namespace pins. No full expensive baseline started. Restore exact protected package cf0d3ec9; put shared cheap TMP validation before existing hard-lane OPS doctor. Correct only two own newly authored package-entry controls which bound a script string instead of behavior; original9 prefix/all18intents and every pre-existing project assertion stay protected, old14/15 bytes/results remain original historical identities. Existing unchanged seven-target finalizer may update current hashes/enrollments only after all17protected files exact; never reseal protected digests. Standing delegated development witnesses are technical only, not independent human/native/full17/release approval. CI byte exact and no new upload.
+
 CURRENT_LOCAL_IMPLEMENTATION: Candidate source freeze pending this normal commit. Actual whole6 caller/transport83of83 raw43cd66429098fe5aab45a0b39cd3ff5f4e24a5b89938b239f1a517e684a29c43 and remaining4direct-consumer18of18 rawdf23605c9411e37df0686ee9439db02a25c30372535a976c1f65b7bfd356abe2, all zero skip todo cancel. Whole WP307 recorded actual child0 and816of816; full17332813byte stdout artifact1c125bb72758fbfa6b556e956fad5d3fa3f322e15ded8c10d634969f4e14474d independently read. Caller outer wait was not durably saved before an AppleDouble post-reader method failure: UNKNOWN, not retagged PASS; raw and sidecar retained. Current reader on those same bytes preserves all816 outcome lines and434decoded plus519opaque diagnostics, renders403005console bytes, no new test execution or speed claim. All411old root/nested payload bytes exact; original14/15 prefixes, assertions, caps, serial guards and all original source bytes recovered by inverse. CI byte exact: proposed new external artifact upload rejected and not implemented; existing full provider logs remain. Current full mandatory candidate gates and normal checked push PR CI merge plus literal merged proof remain open; fullV6DNA5 ACTIVE and all17Mac rows UNKNOWN.
 
 CURRENT_FINAL_SCOPE: Twelve actual delivery paths; D3 admitted thirteen before automatic review rejected the CI export. The unused workflow path is now protected and removed from the task allowlist. No new workflow, job, upload or external export. Next clean final declaration will bind the actual twelve-path candidate.
@@ -11,7 +15,7 @@ CURRENT_CALLER_RESULT: D2 WIP passes actual whole5 68of68 with zero skip todo ca
 # Mandatory test setup and lossless diagnostics
 INITIAL_CAUSAL_RESULT: Actual finite caller9cases5positive4gaps, zero skip todo cancel; raw7e2d4579795c5b4def6df3401ba5229fe21f8cc69a28fd6f12e12ffa938484aa and frozen input2b121b3dfdd49708d290b00c4b55ba154d32bf9c4afd3b37482aa2cd64c4a895. Real nonzero signal zero-executed and valid Green controls pass; unknown format and bad TMP attempt a later owned-filesystem boundary intercepted by the finite port, while inconsistent TAP and missing explicit file return0. These are exact caller ordering proofs, not real child suite or native coverage. Old runner package WP307 and every runtime byte remain unchanged.
 
-STATUS: LOCAL_IMPLEMENTATION_PROVED_CANDIDATE_GATES_PENDING
+STATUS: D5_PROTECTED_PACKAGE_RESTORATION_AND_EARLY_OPS_GUARD_ADMITTED
 ROLE: BOUNDED_TASK_SPECIFICATION
 TASK_ID: YALKEN_MANDATORY_TEST_SETUP_DIAGNOSTICS_20261102
 TYPE: OPS_WRITE
@@ -44,7 +48,8 @@ Initial four current docs, this exact task and one new maintained finite caller 
 
 ## ALLOWLIST
 
-Current diagnostic continuation: thirteen exact paths, declaration03 SHA2566120638f290f8e70f6a3a61db68588ca52855731b233f816866cc8fe0bc28963 and preflight0 receipt9d6fb3c14df85eaea20d827354fad9e190bff4b6e2033650de1297d7a63eb5bd. Initial and caller admissions remain historical.
+Current D5 continuation admits exactly these24paths after cleanC2 preflight36b81cc2394d3054ca74321b788743b3c7f9062c323dbbce19845bcddc427860. package.json is admitted only to restore the entire original protected preimage. All initial/D2/D3/D4 scopes below are history.
+
 - docs/CONTEXT.md
 - docs/HANDOFF.md
 - docs/WORKLOG.md
@@ -57,6 +62,18 @@ Current diagnostic continuation: thirteen exact paths, declaration03 SHA25661206
 - test/unit/r24-wp307-writer-local-profile-integration.test.js
 - scripts/test-diagnostics.cjs
 - test/unit/test-diagnostics.test.js
+- scripts/guards/ops-current-wave-stop.mjs
+- scripts/test-environment.cjs
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+- docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json
+- docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- scripts/ops/sector-m-scope-map.json
 
 Normal scoped commits, checked push, one PR, ordinary expected-head merge, fresh exact merged verification; normal new branch in the registered existing worktree. T777 task reports create-only, no old report overwrite. Only admitted development caller and package-script edits, no product runtime or profile mutation.
 
