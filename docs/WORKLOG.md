@@ -1,3 +1,15 @@
+# Current work — Explicit Meaning from a saved scene fragment
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_BASE: 2c9852f30a580d08509abdd7658303299066f268
+CLAIM_BOUNDARY: Meaning navigation PR2191 fully closed on this literal merged base; closurebcbc0a23 binds exact source/software/mainCI and fresh actual warm/cold app. New direct scene-fragment authoring is scoped and unimplemented; no fullMac acceptance.
+
+NEXT_ACTION: Frozen whole48 has7positive controls and41missing-action failures; reached late-source Main refusal passes. Implement only the existing Flow binding after a clean exact-head continuation, preserve frozen input46cc1641 and saved Idea route. Before product edits, admit and correct the previous Meaning task operative delivery status from exact closure; retain its old bytes as historical. All17MacUNKNOWN, releaseNOT_READY, V6/DNA5ACTIVE. Sole direct executor; no subagents, other models, chats, optional services or old controller/lease resume.
+
+PREDECESSOR_LIMITS: Candidate deep dirty/stale proof retains original literal identity; merged native warm4321/cold5582 bothnormalQuit0 and independent full author/source readback are bounded. Known Chromium cache errors and menu-artifact advisory remain explicit unknown broader impact, no warning-free or full17claim. All previous profiles/raw/failures/witnesses protected.
+
+HISTORICAL_CHECKPOINTS_BOUNDARY: Every original byte below records its dated checkpoint and does not override this current block or exact current receipts. No historical claim is requalified.
+
 ## 2026-11-02 — Meaning UI checkpoint and required current-byte companions
 
 - Clean0981d0d7, outside10047physical sources/modes exact; source/editor/bundle/test frozen and all causal failures retained. Declaration06/preflight06 actual0 admits16doc/metadata paths in one full24path chain. Readonly literal94row gap has10stale entries and two missing Meaning task/unit paths; full inherited namespace remains to be executed. Preserve every historical tuple/policy/approval field and predicate; use existing seven-target producer/review/CAS/readback and delegated technical witnesses. No app/profile/native or release authority follows.
