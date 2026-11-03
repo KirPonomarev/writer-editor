@@ -44,6 +44,7 @@ let unloadHookBound = false
 let runtimeCommandListenerAttached = false
 let recoveryRestoredListenerAttached = false
 let userBookmarkManageHandler = null
+let runtimeHistoryCommandHandler = null
 
 export function getTiptapImageInsertionPosition() {
   const editor = currentEditorInstance
@@ -518,11 +519,27 @@ function destroyCurrentEditor() {
   currentFormattingStateHandler = null
 }
 
+function routeRuntimeHistoryCommand(payload) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return false
+  const canonical = payload.commandId, legacy = payload.command
+  const commandId = ['cmd.project.edit.undo', 'cmd.project.edit.redo'].includes(canonical) ? canonical : null
+  const legacyId = ['undo', 'edit-undo'].includes(legacy) ? 'cmd.project.edit.undo'
+    : ['redo', 'edit-redo'].includes(legacy) ? 'cmd.project.edit.redo' : null
+  if (!commandId && !legacyId) return false
+  // Consume invalid history envelopes too: none may fall through to the
+  // private bridge, even when a host or a Writer instance is unavailable.
+  if ((canonical !== undefined && !commandId) || (legacy !== undefined && !legacyId)
+    || (commandId && legacyId && commandId !== legacyId)) return true
+  runtimeHistoryCommandHandler?.(commandId || legacyId)
+  return true
+}
+
 function ensureRuntimeListenersAttached() {
   if (!window.electronAPI) return
 
   if (!runtimeCommandListenerAttached && typeof window.electronAPI.onRuntimeCommand === 'function') {
     window.electronAPI.onRuntimeCommand((payload) => {
+      if (routeRuntimeHistoryCommand(payload)) return
       if ((!currentEditorInstance || currentEditorInstance.isDestroyed || currentEditorInstance.isEditable === false)
         && (/^cmd\.project\.(?:format|list|insert|edit|bookmarks)\./.test(payload?.commandId || '')
           || /^(?:undo|redo|edit-undo|edit-redo|format-|insert-)/.test(payload?.command || ''))) return
@@ -678,6 +695,8 @@ export function destroyTiptap() {
 }
 export function setTiptapRuntimeHandlers(runtimeHandlers = {}) {
   userBookmarkManageHandler = runtimeHandlers.userBookmarkManage || null
+  runtimeHistoryCommandHandler = typeof runtimeHandlers.historyCommand === 'function'
+    ? runtimeHandlers.historyCommand : null
   if (!currentRuntimeBridge || typeof currentRuntimeBridge.setRuntimeHandlers !== 'function') {
     return
   }
@@ -688,6 +707,14 @@ export function setTiptapRuntimeHandlers(runtimeHandlers = {}) {
 export function setTiptapFormattingStateHandler(handler = null) {
   currentFormattingStateHandler = typeof handler === 'function' ? handler : null
   notifyFormattingStateChange()
+}
+
+export function isTiptapHistoryTargetFocused(allowOwnedToolbar = false) {
+  const target = getFocusedManuscriptBodyEditor() || currentEditorInstance
+  const dom = target?.view?.dom, active = document.activeElement
+  if (!target || target.isDestroyed || target.isEditable === false || target.view.composing
+    || !dom?.isConnected || !active?.isConnected || !document.hasFocus()) return false
+  return dom.contains(active) || (allowOwnedToolbar && target === currentEditorInstance)
 }
 
 export function focusTiptapSurface(position = 'current') {

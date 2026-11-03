@@ -23,6 +23,7 @@ import {
   getTiptapSelectionOffsets,
   getTiptapPlainText,
   initTiptap,
+  isTiptapHistoryTargetFocused,
   redoTiptap,
   runTiptapFormatCommand,
   setTiptapDocumentSnapshot,
@@ -24850,26 +24851,36 @@ function handleReplace() {
   return { performed: true, replaced };
 }
 
-function handleUndo() {
-  if (!editor) return { performed: false };
-  if (isTiptapMode) {
-    beginCentralSheetStripStructuralTransition();
-    return undoTiptap();
+function runFocusedHistoryCommand(action) {
+  const active = document.activeElement;
+  if (!document.hasFocus() || !(active instanceof HTMLElement) || !active.isConnected
+    || fullEnvironmentComposing) return { performed: false, action };
+  if (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA') {
+    const writable = (active.tagName === 'TEXTAREA'
+      || ['text', 'search', 'email', 'url', 'tel', 'password'].includes(active.type))
+      && !active.readOnly && !active.matches(':disabled');
+    return { performed: writable && document.execCommand(action) === true, action };
   }
-  editor.focus();
-  document.execCommand('undo');
-  return { performed: true };
+  if (!editor || !currentProjectId || !currentDocumentId) return { performed: false, action };
+  const button = active.closest('button[data-action]');
+  const ownedToolbar = Boolean(button && toolbarShell?.contains(button) && button.dataset.action === action
+    && !button.matches(':disabled'));
+  if (isTiptapMode) {
+    if (!isTiptapHistoryTargetFocused(ownedToolbar)) return { performed: false, action };
+    beginCentralSheetStripStructuralTransition();
+    return action === 'undo' ? undoTiptap() : redoTiptap();
+  }
+  if (!editor.isContentEditable || (!editor.contains(active) && !ownedToolbar)) return { performed: false, action };
+  if (ownedToolbar) editor.focus();
+  return { performed: document.execCommand(action) === true, action };
+}
+
+function handleUndo() {
+  return runFocusedHistoryCommand('undo');
 }
 
 function handleRedo() {
-  if (!editor) return { performed: false };
-  if (isTiptapMode) {
-    beginCentralSheetStripStructuralTransition();
-    return redoTiptap();
-  }
-  editor.focus();
-  document.execCommand('redo');
-  return { performed: true };
+  return runFocusedHistoryCommand('redo');
 }
 
 function handleZoomOut() {
@@ -25749,9 +25760,11 @@ function handleUiAction(action) {
       setToolbarColorPickerOpen(false);
       return true;
     case 'undo':
-      return handleUndo().performed !== false;
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);
+      return true;
     case 'redo':
-      return handleRedo().performed !== false;
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
+      return true;
     case 'align-left':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
       return true;
@@ -27393,6 +27406,9 @@ if (window.electronAPI) {
 
   if (isTiptapMode) {
     setTiptapRuntimeHandlers({
+      historyCommand: (commandId) => {
+        void dispatchUiCommand(commandId);
+      },
       openSettings: () => openSettingsModal(),
       safeResetShell: () => openFullEnvironmentSource('RESET'),
       restoreLastStableShell: () => openFullEnvironmentSource('LAST_STABLE'),

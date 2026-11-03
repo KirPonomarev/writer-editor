@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "c6daca66506e1ab650409e859f87e52f719e93bb",
+  "snapshotId": "menu-default-desktop-minimal-undo-redo-20261025",
+  "sourceConfigSha256": "96da4dd2e76e572804a50673a07dee3883d9ae771f766ea3ffe4c6cb9fba48cc",
+  "sourceArtifactSha256": "3a9c4a702ea8978fc9c6bb78e2a92f6cf5213eedbcd55f34be6802354184c8ad",
+  "menu": {
+    "id": "edit",
+    "label": "Редактирование",
+    "labelKey": "menu.edit",
+    "items": [
+      {
+        "id": "edit-undo",
+        "role": "undo",
+        "mode": [
+          "offline",
+          "web_subset"
+        ],
+        "profile": [
+          "minimal",
+          "pro",
+          "guru"
+        ],
+        "stage": [
+          "X1",
+          "X2",
+          "X3",
+          "X4"
+        ],
+        "enabledWhen": {
+          "op": "all",
+          "args": []
+        }
+      },
+      {
+        "id": "edit-redo",
+        "role": "redo",
+        "mode": [
+          "offline",
+          "web_subset"
+        ],
+        "profile": [
+          "minimal",
+          "pro",
+          "guru"
+        ],
+        "stage": [
+          "X1",
+          "X2",
+          "X3",
+          "X4"
+        ],
+        "enabledWhen": {
+          "op": "all",
+          "args": []
+        }
+      },
+      {
+        "id": "edit-copy",
+        "role": "copy",
+        "mode": [
+          "offline",
+          "web_subset"
+        ],
+        "profile": [
+          "minimal",
+          "pro",
+          "guru"
+        ],
+        "stage": [
+          "X1",
+          "X2",
+          "X3",
+          "X4"
+        ],
+        "enabledWhen": {
+          "op": "flag",
+          "name": "selectionExists"
+        }
+      },
+      {
+        "id": "edit-select-all",
+        "role": "selectAll",
+        "mode": [
+          "offline",
+          "web_subset"
+        ],
+        "profile": [
+          "minimal",
+          "pro",
+          "guru"
+        ],
+        "stage": [
+          "X1",
+          "X2",
+          "X3",
+          "X4"
+        ],
+        "enabledWhen": {
+          "op": "all",
+          "args": []
+        }
+      }
+    ]
+  },
+  "normalizedMenu": {
+    "canonicalCmdId": null,
+    "disabledReasonCode": null,
+    "enabledWhenAst": null,
+    "id": "edit",
+    "items": [
+      {
+        "canonicalCmdId": null,
+        "disabledReasonCode": null,
+        "enabledWhenAst": {
+          "args": [],
+          "op": "all"
+        },
+        "id": "edit-undo",
+        "mode": [
+          "offline",
+          "web_subset"
+        ],
+        "origin": "base",
+        "profile": [
+          "minimal",
+          "pro",
+          "guru"
+        ],
+        "role": "undo",
+        "sourceRefs": [
+          "src/menu/menu-config.v2.json"
+        ],
+        "stage": [
+          "X1",
+          "X2",
+          "X3",
+          "X4"
+        ],
+        "visibilityPolicy": "visible_enabled"
+      },
+      {
+        "canonicalCmdId": null,
+        "disabledReasonCode": null,
+        "enabledWhenAst": {
+          "args": [],
+          "op": "all"
+        },
+        "id": "edit-redo",
+        "mode": [
+          "offline",
+          "web_subset"
+        ],
+        "origin": "base",
+        "profile": [
+          "minimal",
+          "pro",
+          "guru"
+        ],
+        "role": "redo",
+        "sourceRefs": [
+          "src/menu/menu-config.v2.json"
+        ],
+        "stage": [
+          "X1",
+          "X2",
+          "X3",
+          "X4"
+        ],
+        "visibilityPolicy": "visible_enabled"
+      },
+      {
+        "canonicalCmdId": null,
+        "disabledReasonCode": null,
+        "enabledWhenAst": {
+          "name": "selectionExists",
+          "op": "flag"
+        },
+        "id": "edit-copy",
+        "mode": [
+          "offline",
+          "web_subset"
+        ],
+        "origin": "base",
+        "profile": [
+          "minimal",
+          "pro",
+          "guru"
+        ],
+        "role": "copy",
+        "sourceRefs": [
+          "src/menu/menu-config.v2.json"
+        ],
+        "stage": [
+          "X1",
+          "X2",
+          "X3",
+          "X4"
+        ],
+        "visibilityPolicy": "visible_enabled"
+      },
+      {
+        "canonicalCmdId": null,
+        "disabledReasonCode": null,
+        "enabledWhenAst": {
+          "args": [],
+          "op": "all"
+        },
+        "id": "edit-select-all",
+        "mode": [
+          "offline",
+          "web_subset"
+        ],
+        "origin": "base",
+        "profile": [
+          "minimal",
+          "pro",
+          "guru"
+        ],
+        "role": "selectAll",
+        "sourceRefs": [
+          "src/menu/menu-config.v2.json"
+        ],
+        "stage": [
+          "X1",
+          "X2",
+          "X3",
+          "X4"
+        ],
+        "visibilityPolicy": "visible_enabled"
+      }
+    ],
+    "label": "Редактирование",
+    "labelKey": "menu.edit",
+    "mode": [
+      "offline"
+    ],
+    "origin": "base",
+    "profile": [
+      "minimal",
+      "pro",
+      "guru"
+    ],
+    "sourceRefs": [
+      "src/menu/menu-config.v2.json"
+    ],
+    "stage": [
+      "X0",
+      "X1",
+      "X2",
+      "X3",
+      "X4"
+    ],
+    "visibilityPolicy": "visible_enabled"
+  }
+}

@@ -498,7 +498,7 @@ function runMenuSnapshotGuard(rootDir, isPromotionMode) {
     [
       'scripts/ops/menu-config-normalize.mjs',
       '--snapshot-check',
-      '--snapshot-id=menu-default-desktop-minimal-undo-redo-20261025',
+      '--snapshot-id=menu-default-desktop-minimal-kernel-history-20261103',
       `--mode=${checkMode}`,
     ],
     { cwd: rootDir, stdio: 'inherit' },
@@ -516,7 +516,7 @@ function runMenuArtifactExportGuard(rootDir, isPromotionMode) {
       '--out',
       'docs/OPS/ARTIFACTS/menu/menu.normalized.json',
       '--snapshot-id',
-      'menu-default-desktop-minimal-undo-redo-20261025',
+      'menu-default-desktop-minimal-kernel-history-20261103',
       '--lock-artifact',
       `--mode=${checkMode}`,
     ],
@@ -531,7 +531,7 @@ function runMenuArtifactLockGuard(rootDir, isPromotionMode) {
     process.execPath,
     [
       'scripts/ops/check-menu-artifact-lock.mjs',
-      '--snapshot-id=menu-default-desktop-minimal-undo-redo-20261025',
+      '--snapshot-id=menu-default-desktop-minimal-kernel-history-20261103',
       `--mode=${checkMode}`,
     ],
     { cwd: rootDir, stdio: 'inherit' },

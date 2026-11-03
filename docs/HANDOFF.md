@@ -1,3 +1,18 @@
+# Current task — Writer native menu history
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: WIP_FOCUSED12_PASS_MENU_SUCCESSOR_AND_CLEAN_SCOPE31_ADMISSION_PENDING
+BINDING_BASE_SHA: c6daca66506e1ab650409e859f87e52f719e93bb
+TASK: YALKEN_WRITER_NATIVE_HISTORY_20261103; sole executor, one existing worktree and codex/writer-native-history-20261103 delivery chain.
+VERIFIED_BUILD: Pure merged M2 ASAR0b856d1c3e97cd5ceb5fc5cdaaf7ab8fcba8b5096a10a608d26c6a881a0ef76b warm/cold closed. Separate diagnostic03 ASAR05b9af49 is explicitly instrumented and cannot qualify a production fix.
+PROOFS: PR2194 merged M2 closure94f294d8 includes current main20 full raw and independent semantic oracles, local21, source10066 and actual merged native/data/cold. Historical C2 before-push executable-verifier invocation stays NOT_PROVEN; no backdating. New causal oracle87c22330 preserves75records/15snapshots: Writer mouse Undo/Redo fail without any event/Kernel entry; physical keys work once; ordinary INPUT native mouse history works and Writer generation stays7.
+BLOCKER: Source routing focused12PASS after genuine RED02 with9assertion failures; native/menu successor and delivery not qualified. Locale addition requires a successful clean31path preflight after this WIP checkpoint. Initial dirty preflight02 and premature two-insert process error are preserved; catalog restored byte-exact before checkpoint.
+NEXT_STEP: Clean checkpoint, fresh31path preflight, reapply preserved two-key locale proposal, generate successor and complete focused/required/native/guarded delivery proofs.
+PLAN: Full unchanged V6/DNA5 Writer+Atlas15cells/fourprojections/STAGE00..11+WSE+Pulse+ENV, all17qualificationUNKNOWN, releaseNOT_READY/candidateUNFROZEN. Deep stays UNAVAILABLE_LOCAL_STUB_ONLY.
+LIMITS: Word/nativeOfficePAUSED; BlackBox afterfullMac; LinuxWindows existing boundaries/mandatoryCI. No agents/chats/models/timers/optional services. Every old app/profile/raw and complete journal below retained.
+
+--- Historical records below retain original identities and claims ---
+
 # Current task — Actual Mac menu artifact namespace
 
 DOCUMENT_CLASS: FACTUAL_STATUS

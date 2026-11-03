@@ -39098,7 +39098,8 @@ const {
   evaluateRuntimeMenuSourcePolicy,
 } = require('./menu/menu-runtime-source-policy.js');
 const MENU_ACCELERATOR_TOKENS = Object.freeze({
-  platformQuit: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q'
+  platformQuit: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
+  platformRedo: process.platform === 'win32' ? 'Ctrl+Y' : 'CmdOrCtrl+Shift+Z'
 });
 const COMMAND_BUS_ROUTE = 'command.bus';
 const ALLOWED_MENU_ROLES = new Set(['undo', 'redo', 'cut', 'copy', 'paste', 'selectAll']);
@@ -39922,7 +39923,7 @@ function verifyMenuArtifactLockAtRuntime() {
   const mode = resolveRuntimeMenuArtifactMode();
   const state = evaluateMenuArtifactLockState({
     mode,
-    expectedSnapshotId: 'menu-default-desktop-minimal-undo-redo-20261025',
+    expectedSnapshotId: 'menu-default-desktop-minimal-kernel-history-20261103',
   });
 
   if (state.result === MENU_ARTIFACT_RESULT_FAIL) {

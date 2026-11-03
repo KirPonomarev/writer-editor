@@ -218,7 +218,10 @@
       "items": [
         {
           "id": "edit-undo",
-          "role": "undo",
+          "label": "Undo",
+          "labelKey": "menu.edit.undo",
+          "accelerator": "CmdOrCtrl+Z",
+          "command": "cmd.project.edit.undo",
           "mode": ["offline", "web_subset"],
           "profile": ["minimal", "pro", "guru"],
           "stage": ["X1", "X2", "X3", "X4"],
@@ -229,7 +232,10 @@
         },
         {
           "id": "edit-redo",
-          "role": "redo",
+          "label": "Redo",
+          "labelKey": "menu.edit.redo",
+          "accelerator": "$platformRedo",
+          "command": "cmd.project.edit.redo",
           "mode": ["offline", "web_subset"],
           "profile": ["minimal", "pro", "guru"],
           "stage": ["X1", "X2", "X3", "X4"],
