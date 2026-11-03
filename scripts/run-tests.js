@@ -679,6 +679,7 @@ if (testFiles.length === 0) {
     console.error('E_ZERO_DENOMINATOR_UNIT_LANE=1');
     exitCode = 1;
   }
+  const finishUnitLane = () => {
   if (exitCode === 0 && explicitTests.length === 0) {
     const atlasEventContractsExit = runAtlasEventContractGuard(rootDir);
     if (atlasEventContractsExit !== 0) {
@@ -752,4 +753,25 @@ if (testFiles.length === 0) {
     }
   }
   process.exitCode = exitCode;
+  };
+  // Complete both captured streams before following children inherit the pipes.
+  if (exitCode !== 0 || explicitTests.length !== 0) {
+    finishUnitLane();
+  } else {
+    process.stdout.write('', (stdoutError) => {
+      if (stdoutError) {
+        console.error('UNIT_LANE_OUTPUT_REFUSED=stdout:' + String(stdoutError.code || stdoutError.message || stdoutError));
+        process.exitCode = 1;
+        return;
+      }
+      process.stderr.write('', (stderrError) => {
+        if (stderrError) {
+          console.error('UNIT_LANE_OUTPUT_REFUSED=stderr:' + String(stderrError.code || stderrError.message || stderrError));
+          process.exitCode = 1;
+          return;
+        }
+        finishUnitLane();
+      });
+    });
+  }
 }

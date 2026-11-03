@@ -21,8 +21,8 @@ function assertContainsRegex(text, regex, label) {
 function captureFullRunner(failureAt = -1) {
   const calls = [], output = [];
   const runtime = { execPath: process.execPath, argv: [process.execPath, RUN_TESTS_PATH],
-    env: {}, platform: 'linux', stdout: { write: value => output.push(value) },
-    stderr: { write: value => output.push(value) }, exitCode: undefined };
+    env: {}, platform: 'linux', stdout: { write(value, callback) { output.push(value); if (typeof callback === 'function') callback(); return true; } },
+    stderr: { write(value, callback) { output.push(value); if (typeof callback === 'function') callback(); return true; } }, exitCode: undefined };
   const loader = name => {
     if (name === 'node:child_process') return { spawnSync(command, args, options) {
       calls.push({ command, args: Array.from(args), options });

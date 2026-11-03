@@ -2725,7 +2725,7 @@
       },
       {
         "path": "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js",
-        "sha256": "2a60d363eb35acab1102d5c15427e7368891238ed496eaf2f079a89972ae9906"
+        "sha256": "ac1d1b840835639a316a54af3adcbc96451d16d20d7a02c73f7a5c877e53f5e4"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern.contract.test.js",
@@ -2837,15 +2837,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "8d47b484e10ad40486e4465fb11d5b4b49ba870bed9d5eeee2ecf839b5fe4be8"
+        "sha256": "7d84ac242c1683d3d23dcc5da463b44124128b4288b847d130cb760b1a0fa13b"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "0cf4fba322fa770e8451b6044de768214cfb434819a386ae062ab97cb3402606"
+        "sha256": "981cabc03a60c7e2760fcf90c2ff9ff6f6d5bfb2b21c8857b37cc49e1db68372"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "c53075ddacf0c18dd9e0adf3276e94ff901bd4a0b6913fc5db30fd7b63e16917"
+        "sha256": "99c6d1937cced5407cefa68a5b20aecde8299a730c6c1bd7bc27eeedc9a1aac0"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3385,7 +3385,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "3ab5f0879646c98d83d83d8b1cb65b79898578c5cae71ea604cf451531c13a9b"
+        "sha256": "e4119a7963a65150ad6c4ad20b2fb4a8349303ad28923e9001e2bce663322b47"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3661,7 +3661,7 @@
       },
       {
         "path": "scripts/run-tests.js",
-        "sha256": "c320768c4ee5a90252af9707626183df17decb35869bb23bb8a1e86e196eb387"
+        "sha256": "8ceab9ca568fdab5bd6f04613fe40880d64046aede0cafaad16f3dbae2e6430e"
       },
       {
         "path": "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
@@ -4125,11 +4125,11 @@
       },
       {
         "path": "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
-        "sha256": "09aef5c08607d24584b323960c8d3951322295110a2387aed630853235ae545d"
+        "sha256": "3a77f9b2e6d710d1a6d401b7b772f4b81e327c4b861fc0fc95c975f89e0cf25a"
       },
       {
         "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
-        "sha256": "7457dd035cb6e248a6abbbe1f7fdd7c4557cbcaa4462e69df61b780a55ac1f42"
+        "sha256": "5a7b15396c72da6cb5da76d8e4d3f7fbc9ffb6e194fa7a56716e566fcaa51732"
       },
       {
         "path": "scripts/test-diagnostics.cjs",

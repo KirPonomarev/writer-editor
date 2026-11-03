@@ -500,3 +500,41 @@ test('maintained historical batch read-port rejects corrupt frames and never par
   assert.throws(() => prime(port.git, fixture.records, () => { throw original; }), error => error === original);
   assert.deepEqual(Array.from(port.git.cache.entries()), before, 'native failures remain failures without a fallback or partial memo');
 });
+
+
+// Real pipes and the exact whole caller execute below. Unit and later gate
+// bodies are finite ports; none of their fixture TAP is product/unit coverage.
+const d29NativePipeDriver = "'use strict';\nconst fs=require('node:fs'),os=require('node:os'),path=require('node:path'),vm=require('node:vm'),{createRequire}=require('node:module'),cp=require('node:child_process');\nconst root=process.cwd(),runner=path.join(root,'scripts/run-tests.js'),source=fs.readFileSync(runner,'utf8'),realRequire=createRequire(runner),mode=process.argv[1],green=process.argv[2],stop=Symbol('controlled exit');\nconst stdoutPayload=green.replace('TAP version 13\\n','TAP version 13\\n# D29_LARGE_STDOUT_BEGIN\\n# '+'x'.repeat(2*1024*1024)+'\\n# D29_LARGE_STDOUT_END\\n');\nconst stderrPayload='# D29_LARGE_STDERR_BEGIN\\n# '+'s'.repeat(2*1024*1024)+'\\n# D29_LARGE_STDERR_END\\n';\nconst port=(channel)=>({write(value,callback){if(value===''&&typeof callback==='function'&&mode===channel+'-error'){queueMicrotask(()=>callback(Object.assign(new Error('controlled publication failure'),{code:'E_D29_WRITE_FAILURE'})));return false;}return process[channel].write(value,callback);}});\nconst host={argv:[process.execPath,runner],execPath:process.execPath,platform:process.platform,version:process.version,versions:process.versions,env:{...process.env},getuid:process.getuid?.bind(process),getgid:process.getgid?.bind(process),cwd:()=>root,pid:process.pid,exitCode:0,stdout:port('stdout'),stderr:port('stderr'),exit(code=0){this.exitCode=code;throw stop;}};\nconst readOnlyFs=Object.create(fs);for(const method of ['writeFileSync','appendFileSync','mkdirSync','mkdtempSync','rmSync','unlinkSync','renameSync'])readOnlyFs[method]=()=>{throw Error('D29 caller control forbids filesystem mutation');};\nlet unitSeen=false,following=false;\nconst spawnPort=(command,args=[],options={})=>{\n if(path.basename(String(command))==='getconf'&&args.length===1&&args[0]==='DARWIN_USER_TEMP_DIR')return cp.spawnSync(command,args,{...options,encoding:'utf8'});\n if(args[0]==='--test'&&args[1]==='--test-concurrency=1'){unitSeen=true;return{status:0,signal:null,error:null,stdout:mode==='stderr-order'?green:stdoutPayload,stderr:mode==='stderr-order'?stderrPayload:''};}\n if(unitSeen&&!following){following=true;const marker=cp.spawnSync(process.execPath,['-e',\"process.stdout.write('FOLLOW_INHERITED_CHILD_D29\\\\n');process.stderr.write('FOLLOW_INHERITED_CHILD_D29\\\\n');\"],{stdio:'inherit'});return{...marker,status:7};}\n return{status:0,signal:null,error:null,stdout:'',stderr:''};\n};\nconst req=name=>name==='node:child_process'?{...realRequire(name),spawnSync:spawnPort}:name==='node:fs'?readOnlyFs:realRequire(name);\nconst context={require:req,module:{exports:{}},__filename:runner,__dirname:path.dirname(runner),process:host,Buffer,URL,console};\nprocess.on('beforeExit',()=>{process.exitCode=host.exitCode;});\ntry{vm.runInNewContext('(function(require,module,exports,__filename,__dirname){\\n'+source+'\\n})(require,module,module.exports,__filename,__dirname);',context,{filename:runner,timeout:3000});}catch(error){if(error!==stop)throw error;}\n";
+function invokeD29NativePipe(mode) {
+  const env = { ...process.env };
+  delete env.NODE_TEST_CONTEXT;
+  delete env.YALKEN_TEST_EVIDENCE_DIR;
+  return actualSpawnSync(process.execPath, ['-e', d29NativePipeDriver, mode, green], {
+    cwd: root, env, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, timeout: 10000,
+  });
+}
+for (const channel of ['stdout', 'stderr']) test('mandatory caller completes full ' + channel + ' publication before inherited follow-up effects on real pipes', () => {
+  const result = invokeD29NativePipe(channel + '-order');
+  assert.equal(result.error, undefined);
+  assert.equal(result.signal, null);
+  assert.equal(result.status, 7, 'the finite first following gate refusal must remain the actual caller result');
+  assert.match(result.stdout, /UNIT_LANE_EXECUTED=1/u, 'the exact maintained caller must reach and validate its controlled unit boundary');
+  const payload = channel === 'stdout'
+    ? green.replace('TAP version 13\n', 'TAP version 13\n# D29_LARGE_STDOUT_BEGIN\n# ' + 'x'.repeat(2 * 1024 * 1024) + '\n# D29_LARGE_STDOUT_END\n')
+    : '# D29_LARGE_STDERR_BEGIN\n# ' + 's'.repeat(2 * 1024 * 1024) + '\n# D29_LARGE_STDERR_END\n';
+  const stream = result[channel], at = stream.indexOf(payload);
+  assert.ok(at >= 0, 'the entire original ' + channel + ' payload must stay contiguous before any inherited child bytes');
+  assert.ok(stream.indexOf('FOLLOW_INHERITED_CHILD_D29\n') >= at + payload.length,
+    'the actual following inherited effect must wait for complete ' + channel + ' publication');
+});
+for (const channel of ['stdout', 'stderr']) test('mandatory caller refuses ' + channel + ' publication callback failure before following effects', () => {
+  const result = invokeD29NativePipe(channel + '-error');
+  assert.equal(result.error, undefined);
+  assert.equal(result.signal, null);
+  assert.equal(result.status, 1, 'a publication failure must fail before reaching the finite following gate');
+  assert.match(result.stdout, /UNIT_LANE_EXECUTED=1/u);
+  assert.equal((result.stdout + result.stderr).includes('FOLLOW_INHERITED_CHILD_D29'), false,
+    'a write callback error cannot reserve or execute a following child');
+  assert.match(result.stderr, /UNIT_LANE_OUTPUT_REFUSED=.*E_D29_WRITE_FAILURE/u,
+    'the actual publication failure must remain explicit and readable');
+});
