@@ -1123,3 +1123,144 @@ test('actual Main PDF streams target versions with bounded reads and rejects gro
     assert.deepEqual(await h.fs.readFile(h.manifestPath), manifest);
   });
 });
+
+// Zero margins are canonical BookProfile data, separately from positive page sizes.
+const { normalizePdfBookProfile } = require('../../src/export/pdf/pdfExportHandler');
+const pdfZeroMarginKeys = Object.freeze([
+  'marginTopMm', 'marginRightMm', 'marginBottomMm', 'marginLeftMm',
+]);
+
+test('PDF zero-margin compatibility preserves each Core-valid zero and all-zero geometry', async t => {
+  const core = await import(require('node:url').pathToFileURL(
+    require('node:path').resolve(__dirname, '../../src/core/bookProfile.mjs')).href);
+  const cases = [
+    ['top', [0, 12.5, 18, 25.4]],
+    ['right', [7.5, 0, 18, 25.4]],
+    ['bottom', [7.5, 12.5, 0, 25.4]],
+    ['left', [7.5, 12.5, 18, 0]],
+    ['all', [0, 0, 0, 0]],
+  ];
+  for (const [name, margins] of cases) {
+    await t.test(name, () => {
+      const canonical = core.createDefaultBookProfile({ formatId: 'A5',
+        ...Object.fromEntries(pdfZeroMarginKeys.map((key, i) => [key, margins[i]])) });
+      assert.equal(core.validateBookProfile(canonical).ok, true);
+      assert.equal(Object.isFrozen(canonical), true);
+      const before = JSON.stringify(canonical);
+      const normalized = normalizePdfBookProfile(canonical);
+      assert.deepEqual(pdfZeroMarginKeys.map(key => normalized[key]), margins);
+      assert.equal(normalized.widthMm, 148);
+      assert.equal(normalized.heightMm, 210);
+      const html = buildPdfPrintHtml({ bookProfile: canonical, scenes: [
+        { sceneId: 'zero-source', title: 'Zero margins', text: 'Literal <tag> & é 🧭 東京.' },
+      ] });
+      assert.ok(html.includes('size: 148mm 210mm;'));
+      assert.ok(html.includes(`margin: ${margins.map(value => `${value}mm`).join(' ')};`));
+      assert.ok(html.includes('Literal &lt;tag&gt; &amp; é 🧭 東京.'));
+      assert.equal(JSON.stringify(canonical), before);
+    });
+  }
+});
+
+test('PDF zero-margin compatibility retains positive dimensions and prior fallback boundaries', () => {
+  const rejectedByLegacyNumber = [undefined, null, false, '', '0', '-0', [], [0], {},
+    NaN, Infinity, -Infinity, -1, 0n, new Number(0)];
+  for (const value of rejectedByLegacyNumber) {
+    const normalized = normalizePdfBookProfile(Object.fromEntries(
+      ['widthMm', 'heightMm', ...pdfZeroMarginKeys].map(key => [key, value])));
+    assert.equal(normalized.widthMm, 210);
+    assert.equal(normalized.heightMm, 297);
+    assert.deepEqual(pdfZeroMarginKeys.map(key => normalized[key]), [25.4, 25.4, 25.4, 25.4]);
+  }
+  const signedZero = normalizePdfBookProfile({ widthMm: -0, heightMm: 0,
+    ...Object.fromEntries(pdfZeroMarginKeys.map(key => [key, -0])) });
+  assert.equal(signedZero.widthMm, 210);
+  assert.equal(signedZero.heightMm, 297);
+  assert.deepEqual(pdfZeroMarginKeys.map(key => signedZero[key]), [0, 0, 0, 0]);
+  for (const [value, expected] of [[12.5, 12.5], ['12.5', 12.5], [true, 1]]) {
+    const normalized = normalizePdfBookProfile(Object.fromEntries(
+      ['widthMm', 'heightMm', ...pdfZeroMarginKeys].map(key => [key, value])));
+    assert.equal(normalized.widthMm, expected);
+    assert.equal(normalized.heightMm, expected);
+    assert.deepEqual(pdfZeroMarginKeys.map(key => normalized[key]), Array(4).fill(expected));
+  }
+  assert.throws(() => normalizePdfBookProfile({ marginTopMm: Symbol('legacy-invalid') }), TypeError);
+  assert.throws(() => normalizePdfBookProfile({ widthMm: Symbol('legacy-invalid') }), TypeError);
+});
+
+test('PDF zero-margin compatibility reaches isolated render options and typed export result', async () => {
+  const core = await import(require('node:url').pathToFileURL(
+    require('node:path').resolve(__dirname, '../../src/core/bookProfile.mjs')).href);
+  const canonical = core.createDefaultBookProfile({ formatId: 'A5',
+    ...Object.fromEntries(pdfZeroMarginKeys.map(key => [key, 0])) });
+  const before = JSON.stringify(canonical), calls = {};
+  const bytes = Buffer.from('%PDF-zero-margin-unit-port-only');
+  const result = await runPdfExport({ confirmed: true }, {
+    normalizePdfExportPayload: () => ({ confirmed: true }),
+    makeTypedPdfExportError: (code, reason, details) => ({ ok: false, error: { code, reason, details } }),
+    readCanonicalPdfExportSource: () => ({ bookProfile: canonical,
+      scenes: [{ sceneId: 'zero-source', title: 'Zero margins', text: 'Saved source only.' }] }),
+    resolvePdfExportPath: () => ({ outPath: '/unit/zero-margins.pdf' }),
+    validatePdfExportTarget: () => ({ ok: true }),
+    renderPdfBuffer: (html, options) => {
+      calls.html = html; calls.renderProfile = options.bookProfile; return bytes;
+    },
+    queueDiskOperation: operation => operation(),
+    writeBufferAtomic: (outPath, buffer) => { calls.outPath = outPath; calls.buffer = buffer; },
+    updateStatus: status => { calls.status = status; },
+  });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.exported, true);
+  assert.equal(result.sceneCount, 1);
+  assert.equal(result.bytesWritten, bytes.length);
+  assert.equal(calls.outPath, '/unit/zero-margins.pdf');
+  assert.deepEqual(calls.buffer, bytes);
+  assert.deepEqual({
+    marginRule: calls.html.match(/margin: [^;]+;/)[0],
+    renderMargins: pdfZeroMarginKeys.map(key => calls.renderProfile[key]),
+    resultMargins: pdfZeroMarginKeys.map(key => result.bookProfile[key]),
+  }, { marginRule: 'margin: 0mm 0mm 0mm 0mm;', renderMargins: [0, 0, 0, 0], resultMargins: [0, 0, 0, 0] });
+  assert.equal(JSON.stringify(canonical), before);
+});
+
+test('actual Main PDF zero-margin compatibility preserves saved truth and rejects invalid dimensions', async t => {
+  const core = await import(require('node:url').pathToFileURL(
+    require('node:path').resolve(__dirname, '../../src/core/bookProfile.mjs')).href);
+  for (const invalid of [false, true]) {
+    await t.test(invalid ? 'invalid saved width cannot become fallback authority' : 'canonical saved zero reaches print and receipt', async t => {
+      const h = await pdfMainFixture(t), path = require('node:path');
+      const canonical = core.createDefaultBookProfile({ ...h.bookProfile,
+        ...Object.fromEntries(pdfZeroMarginKeys.map(key => [key, 0])) });
+      const savedProfile = invalid ? { ...canonical, widthMm: 0 } : canonical;
+      assert.equal(core.validateBookProfile(savedProfile).ok, !invalid);
+      await h.fs.writeFile(h.manifestPath, JSON.stringify({ ...h.manifest, bookProfile: savedProfile }));
+      const beforeManifest = await h.fs.readFile(h.manifestPath), beforeScene = await h.fs.readFile(h.scene);
+      if (!invalid) {
+        const source = await h.main.source();
+        assert.deepEqual(pdfZeroMarginKeys.map(key => source.bookProfile[key]), [0, 0, 0, 0]);
+        assert.equal(Object.isFrozen(source.bookProfile), true);
+      }
+      let html = null;
+      h.main.prepareExport({ render: value => { html = value; } });
+      const target = path.join(h.root, 'zero-margins.pdf');
+      const result = await h.main.export(target);
+      assert.deepEqual(await h.fs.readFile(h.manifestPath), beforeManifest);
+      assert.deepEqual(await h.fs.readFile(h.scene), beforeScene);
+      if (invalid) {
+        assert.equal(result.ok, false);
+        assert.equal(result.error.code, 'E_EXPORT_PDF_SOURCE_UNAVAILABLE');
+        assert.equal(html, null);
+        await assert.rejects(() => h.fs.access(target), { code: 'ENOENT' });
+      } else {
+        assert.equal(result.ok, true, JSON.stringify(result));
+        assert.equal(result.exported, true);
+        assert.equal(await h.fs.readFile(target, 'utf8'), '%PDF-native-port-fixture');
+        assert.deepEqual({
+          marginRule: html.match(/margin: [^;]+;/)[0],
+          resultMargins: pdfZeroMarginKeys.map(key => result.bookProfile[key]),
+          widthMm: result.bookProfile.widthMm, heightMm: result.bookProfile.heightMm,
+        }, { marginRule: 'margin: 0mm 0mm 0mm 0mm;', resultMargins: [0, 0, 0, 0], widthMm: 148, heightMm: 210 });
+      }
+    });
+  }
+});

@@ -30,6 +30,10 @@ function normalizeNumber(value, fallback) {
   return Number.isFinite(number) && number > 0 ? number : fallback;
 }
 
+function normalizePdfMargin(value) {
+  return value === 0 ? 0 : normalizeNumber(value, 25.4);
+}
+
 function normalizePdfBookProfile(profile) {
   const source = isPlainObjectValue(profile) ? profile : {};
   return {
@@ -39,10 +43,10 @@ function normalizePdfBookProfile(profile) {
     widthMm: normalizeNumber(source.widthMm, 210),
     heightMm: normalizeNumber(source.heightMm, 297),
     orientation: source.orientation === 'landscape' ? 'landscape' : 'portrait',
-    marginTopMm: normalizeNumber(source.marginTopMm, 25.4),
-    marginRightMm: normalizeNumber(source.marginRightMm, 25.4),
-    marginBottomMm: normalizeNumber(source.marginBottomMm, 25.4),
-    marginLeftMm: normalizeNumber(source.marginLeftMm, 25.4),
+    marginTopMm: normalizePdfMargin(source.marginTopMm),
+    marginRightMm: normalizePdfMargin(source.marginRightMm),
+    marginBottomMm: normalizePdfMargin(source.marginBottomMm),
+    marginLeftMm: normalizePdfMargin(source.marginLeftMm),
     chapterStartRule: typeof source.chapterStartRule === 'string' && source.chapterStartRule
       ? source.chapterStartRule
       : 'next-page',

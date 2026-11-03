@@ -923,7 +923,8 @@
     "test/unit/sector-m-native-history-ownership.test.js",
     "test/fixtures/menu/edit-history-native-roles.v1.json",
     "docs/tasks/2026-11-03--writer-native-history.md",
-    "docs/tasks/2026-11-03--writer-pdf-target-bytes.md"
+    "docs/tasks/2026-11-03--writer-pdf-target-bytes.md",
+    "docs/tasks/2026-11-04--writer-pdf-zero-margins.md"
   ],
   "protectedFiles": [
     {
@@ -2844,15 +2845,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "111f1242b9b13d58e4c5d767bccc676c349ae8c8b2ed484f435bbf428bc4cd41"
+        "sha256": "4b43d51679b2659d8fe3a0fcf39846e6d445d7f905ed45d69d83d423fc7cfe8f"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "73fad4e7eb951ffd2800c1ada63a8cf505d0373f19033721196b7250c78a68f3"
+        "sha256": "fc6ecad4123293a72c45e9174bfbbe5edbc31cc88d136ee8f94ecf5d4df261b6"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "3d1b71690dddfb4839d207411d9856cdd327be919df526b4f14d765c45519ba3"
+        "sha256": "c5403d6a01162bbda27051a99adf0fe95f57f66def89cf034155b5595b212cf3"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3392,7 +3393,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "ef3c4a6d4b506721271175e077cccfcacecddc67085658df6ceca8bb437770ca"
+        "sha256": "ed83774b008494edc877c111eb5c597f3f4e9cd9067366be403aec6a2353b437"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3884,7 +3885,7 @@
       },
       {
         "path": "src/export/pdf/pdfExportHandler.js",
-        "sha256": "0961ab0f7505f304fe43708c5aea82929cf4b879ea38144390cb517caa3903e3"
+        "sha256": "66a355d3d9a13051a90b7544a2d96b977a580e87552c3520d35735d12a709b51"
       },
       {
         "path": "src/export/docx/atomicWriteBuffer.js",
@@ -3892,7 +3893,7 @@
       },
       {
         "path": "test/unit/pdf-export-handler.test.js",
-        "sha256": "cedb2d81e8aab1db4b8602ca7e29b7f7c322d61018bbe6da370393742206dec0"
+        "sha256": "31ea08f3a6ff44608361fe1fbc7434ff87557618e51ff8a799b015b3dbc1a73f"
       },
       {
         "path": "test/unit/sector-m-s31-pdf-export.test.js",
@@ -4213,6 +4214,10 @@
       {
         "path": "docs/tasks/2026-11-03--writer-pdf-target-bytes.md",
         "sha256": "97ee19d06ea8b8eeed9a9aa6370bce450fa2c230dcf97a593fd0c256183fb87c"
+      },
+      {
+        "path": "docs/tasks/2026-11-04--writer-pdf-zero-margins.md",
+        "sha256": "495c43f6c961e79019bd4db19a4e72f7ac1136f288de8a261cc8b4cdbd52488c"
       }
     ],
     "followupRepair": {
