@@ -2,6 +2,8 @@ const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { validateTestEnvironment } = require(path.join(__dirname, 'test-environment.cjs'));
+const { readTapTotals, packUnitArtifact, readUnitArtifact, sha256 } = require(path.join(__dirname, 'test-diagnostics.cjs'));
 
 const FAST_LANE_CONTRACT_TESTS = Object.freeze([
   'test/contracts/menu-config-backcompat.contract.test.js',
@@ -61,23 +63,39 @@ function parseCli(rawArgs) {
     modeArg: '',
     explicitTests: [],
     checkMode: CHECK_MODE_RELEASE,
+    opsPrelude: [],
     error: '',
   };
 
   const tokens = [];
   let checkModeArg = '';
+  let checkModeWasSpecified = false;
   for (let i = 0; i < rawArgs.length; i += 1) {
     const arg = String(rawArgs[i] || '').trim();
     if (!arg) continue;
+    if (arg === '--with-ops=test:ops' || arg === '--with-ops=test:ops,test:rtk') {
+      if (out.opsPrelude.length > 0) {
+        out.error = 'Duplicate required prelude is not allowed.';
+        return out;
+      }
+      out.opsPrelude = arg === '--with-ops=test:ops' ? ['test:ops'] : ['test:ops', 'test:rtk'];
+      continue;
+    }
+    if (arg.startsWith('--with-ops')) {
+      out.error = 'Unsupported required prelude; expected the fixed test:ops or test:ops,test:rtk entry.';
+      return out;
+    }
     if (arg === '--dry-run') {
       out.dryRun = true;
       continue;
     }
     if (arg.startsWith('--mode=')) {
+      checkModeWasSpecified = true;
       checkModeArg = arg.slice('--mode='.length);
       continue;
     }
     if (arg === '--mode') {
+      checkModeWasSpecified = true;
       if (i + 1 >= rawArgs.length) {
         out.error = 'Missing value for --mode (expected release|promotion).';
         return out;
@@ -100,10 +118,23 @@ function parseCli(rawArgs) {
     tokens.push(arg);
   }
 
-  out.modeArg = tokens[0] || '';
-  out.explicitTests = tokens.filter((arg) => /\.test\.(?:js|mjs)$/u.test(arg));
+  const lanes = new Set(['unit', 'electron', 'fast', 'closeout']);
+  for (const [index, token] of tokens.entries()) {
+    if (/\.test\.(?:js|mjs)$/u.test(token)) {
+      out.explicitTests.push(token);
+    } else if (index === 0 && lanes.has(token)) {
+      out.modeArg = token;
+    } else {
+      out.error = 'Unsupported test filename or positional argument: ' + token;
+      return out;
+    }
+  }
+  if (out.explicitTests.length > 0 && ['fast', 'closeout'].includes(out.modeArg)) {
+    out.error = 'Fixed fast or closeout lane cannot be combined with explicit test files.';
+    return out;
+  }
 
-  if (checkModeArg) {
+  if (checkModeArg || checkModeWasSpecified) {
     const normalizedMode = normalizeCheckMode(checkModeArg);
     if (!normalizedMode) {
       out.error = `Invalid --mode value "${checkModeArg}" (expected release|promotion).`;
@@ -113,6 +144,65 @@ function parseCli(rawArgs) {
   }
 
   return out;
+}
+
+function prepareTestInputs(rootDir, cli) {
+  const mode = cli.modeArg === 'electron' ? 'electron' : 'unit';
+  const selected = cli.explicitTests.length > 0
+    ? cli.explicitTests.map(item => path.resolve(rootDir, item)).sort()
+    : cli.modeArg === 'fast' ? FAST_LANE_CONTRACT_TESTS.map(item => path.resolve(rootDir, item)).sort()
+      : cli.modeArg === 'closeout' ? TOOLBAR_CLOSEOUT_TESTS.map(item => path.resolve(rootDir, item)).sort()
+        : listTestFiles(path.join(rootDir, 'test', mode)).sort();
+  if (selected.length === 0) throw new Error('No test files selected for ' + mode);
+  for (const file of selected) {
+    if (!fs.statSync(file).isFile()) throw new Error('Test input is not a regular file: ' + file);
+  }
+  const evidenceDirectory = String(process.env.YALKEN_TEST_EVIDENCE_DIR || '').trim();
+  if (evidenceDirectory) {
+    if (!path.isAbsolute(evidenceDirectory) || fs.realpathSync(evidenceDirectory) !== evidenceDirectory
+        || !fs.statSync(evidenceDirectory).isDirectory()) throw new Error('Evidence directory must be an existing canonical absolute directory');
+    fs.accessSync(evidenceDirectory, fs.constants.W_OK);
+  }
+  const needsDarwinAlias = selected.includes(path.join(rootDir, 'test/unit/r24-wp307-writer-local-profile-integration.test.js'));
+  validateTestEnvironment({ requiresDarwinAlias: needsDarwinAlias, fs, os, path, hostProcess: process, spawnSync });
+  return selected;
+}
+
+function testChildEnvironment(overrides = {}) {
+  const env = { ...process.env, ...overrides };
+  // This is a new test runner, not the parent runner's private reporter child.
+  delete env.NODE_TEST_CONTEXT;
+  // Artifact publication belongs to this caller, not nested test processes.
+  delete env.YALKEN_TEST_EVIDENCE_DIR;
+  return env;
+}
+
+function runRequiredOpsPrelude(rootDir, scripts) {
+  for (const script of scripts) {
+    const npmArgs = ['run', '-s', script];
+    const npmExecPath = String(process.env.npm_execpath || '').trim();
+    let command = 'npm', args = npmArgs;
+    if (npmExecPath) {
+      if (!path.isAbsolute(npmExecPath) || path.basename(npmExecPath).toLowerCase() !== 'npm-cli.js') {
+        console.error('E_NPM_EXEC_PATH_INVALID=1');
+        return 1;
+      }
+      command = process.execPath;
+      args = [npmExecPath, ...npmArgs];
+    } else if (process.platform === 'win32') {
+      const shell = String(process.env.ComSpec || '').trim();
+      if (!path.isAbsolute(shell)) {
+        console.error('E_WINDOWS_COMMAND_SHELL_INVALID=1');
+        return 1;
+      }
+      command = shell;
+      args = ['/d', '/s', '/c', 'npm.cmd', ...npmArgs];
+    }
+    const result = spawnSync(command, args, { cwd: rootDir, stdio: 'inherit' });
+    if (result.error) console.error('OPS_PRELUDE_SPAWN_ERROR=' + String(result.error.code || result.error.message));
+    if (result.status !== 0) return result.status ?? 1;
+  }
+  return 0;
 }
 
 function runOpsSynthNegativeTests(rootDir) {
@@ -126,6 +216,7 @@ function runOpsSynthNegativeTests(rootDir) {
     return 1;
   }
   const result = spawnSync(process.execPath, ['--test', committedTestPath], {
+    env: testChildEnvironment(),
     cwd: rootDir,
     stdio: 'inherit'
   });
@@ -212,7 +303,7 @@ function runFastLane(rootDir, dryRun) {
   const tests = spawnSync(process.execPath, ['--test', ...fastTestsAbs], {
     cwd: rootDir,
     stdio: 'inherit',
-    env,
+    env: testChildEnvironment(env),
   });
   return tests.status ?? 1;
 }
@@ -225,19 +316,37 @@ function readSkippedCount(stdout, stderr) {
   return Number.isInteger(value) ? value : 0;
 }
 
-function readTapTotals(stdout, stderr) {
-  const combined = `${String(stdout || '')}\n${String(stderr || '')}`;
-  const last = (key) => {
-    const matches = [...combined.matchAll(new RegExp(`^[#ℹ]\\s+${key} (\\d+)$`, 'gm'))];
-    if (matches.length === 0) return null;
-    const value = Number(matches[matches.length - 1][1]);
-    return Number.isInteger(value) ? value : null;
+function publishUnitOutput(result) {
+  const writeFull = () => {
+    if (result.stdout) process.stdout.write(result.stdout);
+    if (result.stderr) process.stderr.write(result.stderr);
   };
-  const pass = last('pass');
-  const fail = last('fail');
-  const skipped = last('skipped');
-  const executed = pass === null && fail === null ? null : (pass ?? 0) + (fail ?? 0);
-  return { pass, fail, skipped, executed };
+  const directory = String(process.env.YALKEN_TEST_EVIDENCE_DIR || '').trim();
+  if (!directory) {
+    writeFull();
+    console.log('UNIT_LANE_FULL_ARTIFACT=STDOUT_FULL_TAP');
+    return true;
+  }
+  try {
+    const compressed = packUnitArtifact(result);
+    const file = path.join(directory, 'unit-' + process.pid + '-' + require('node:crypto').randomUUID() + '.tap.gz');
+    fs.writeFileSync(file, compressed, { flag: 'wx', mode: 0o600, flush: true });
+    const reread = fs.readFileSync(file);
+    if (!reread.equals(compressed)) throw new Error('UNIT_ARTIFACT_READBACK_MISMATCH');
+    const decoded = readUnitArtifact(reread);
+    process.stdout.write(decoded.consoleStdout);
+    if (result.stderr) process.stderr.write(result.stderr);
+    console.log('UNIT_LANE_FULL_ARTIFACT=' + JSON.stringify(file));
+    console.log('UNIT_LANE_FULL_ARTIFACT_SHA256=' + sha256(reread));
+    console.log('UNIT_LANE_DIAGNOSTIC_PAYLOADS_VERIFIED=' + decoded.diagnostics);
+    console.log('UNIT_LANE_OPAQUE_DIAGNOSTIC_LINES_RETAINED=' + decoded.opaqueDiagnostics);
+    return true;
+  } catch (error) {
+    // Original output is retained even when transport or interpretation fails.
+    writeFull();
+    console.error('UNIT_LANE_ARTIFACT_REFUSED=' + String(error.message || error));
+    return false;
+  }
 }
 
 function runToolbarCloseoutLane(rootDir, dryRun) {
@@ -256,6 +365,7 @@ function runToolbarCloseoutLane(rootDir, dryRun) {
   }
 
   const result = spawnSync(process.execPath, ['--test', ...testsAbs], {
+    env: testChildEnvironment(),
     cwd: rootDir,
     encoding: 'utf8',
   });
@@ -311,6 +421,7 @@ function runAtlasEventContractGuard(rootDir) {
     .map((item) => path.resolve(rootDir, item))
     .sort();
   const result = spawnSync(process.execPath, ['--test', ...testsAbs], {
+    env: testChildEnvironment(),
     cwd: rootDir,
     stdio: 'inherit',
   });
@@ -500,6 +611,20 @@ const isPromotionMode = checkMode === CHECK_MODE_PROMOTION;
 const dryRun = cli.dryRun;
 const modeArg = cli.modeArg;
 
+let testFiles;
+try {
+  testFiles = prepareTestInputs(rootDir, cli);
+} catch (error) {
+  console.error('TEST_SETUP_REFUSED=' + String(error.message || error));
+  process.exitCode = 1;
+  return;
+}
+const preludeExit = runRequiredOpsPrelude(rootDir, cli.opsPrelude);
+if (preludeExit !== 0) {
+  process.exitCode = preludeExit;
+  return;
+}
+
 if (modeArg === 'fast') {
   process.exitCode = runFastLane(rootDir, dryRun);
   return;
@@ -513,9 +638,7 @@ if (modeArg === 'closeout') {
 const explicitTests = cli.explicitTests;
 const mode = modeArg === 'electron' ? 'electron' : 'unit';
 const testDir = path.join(rootDir, 'test', mode);
-const testFiles = explicitTests.length > 0
-  ? explicitTests.map((item) => path.resolve(rootDir, item)).sort()
-  : (fs.existsSync(testDir) ? listTestFiles(testDir).sort() : []);
+// The same complete file cohort was validated before any expensive prelude.
 
 if (testFiles.length === 0) {
   console.error(`No test files found in ./test/${mode} (expected **/*.test.js or **/*.test.mjs).`);
@@ -536,20 +659,27 @@ if (testFiles.length === 0) {
   // exact skip inventory instead of hiding it inside an aggregate exit code.
   // Keep elapsed-time contracts isolated from competing test-file processes.
   const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', ...testFiles], {
+    env: testChildEnvironment(),
     cwd: rootDir,
     encoding: 'utf8',
     maxBuffer: 64 * 1024 * 1024,
   });
-  if (result.stdout) process.stdout.write(result.stdout);
-  if (result.stderr) process.stderr.write(result.stderr);
   exitCode = result.status ?? 1;
+  if (!publishUnitOutput(result) && exitCode === 0) exitCode = 1;
   const tapTotals = readTapTotals(result.stdout, result.stderr);
   console.log(`UNIT_LANE_EXECUTED=${tapTotals.executed === null ? 'UNKNOWN' : tapTotals.executed}`);
   console.log(`UNIT_LANE_SKIPPED_DENOMINATOR=${tapTotals.skipped === null ? 'UNKNOWN' : tapTotals.skipped}`);
+  if (result.error) console.error('UNIT_LANE_SPAWN_ERROR=' + String(result.error.code || result.error.message));
+  if (result.signal) console.error('UNIT_LANE_SIGNAL=' + String(result.signal));
+  if (!tapTotals.valid || tapTotals.fail > 0 || tapTotals.cancelled > 0) {
+    console.error('UNIT_LANE_EVIDENCE_INVALID=complete consistent TAP totals are required');
+    if (exitCode === 0) exitCode = 1;
+  }
   if (tapTotals.executed === 0) {
     console.error('E_ZERO_DENOMINATOR_UNIT_LANE=1');
     exitCode = 1;
   }
+  const finishUnitLane = () => {
   if (exitCode === 0 && explicitTests.length === 0) {
     const atlasEventContractsExit = runAtlasEventContractGuard(rootDir);
     if (atlasEventContractsExit !== 0) {
@@ -623,4 +753,25 @@ if (testFiles.length === 0) {
     }
   }
   process.exitCode = exitCode;
+  };
+  // Complete both captured streams before following children inherit the pipes.
+  if (exitCode !== 0 || explicitTests.length !== 0) {
+    finishUnitLane();
+  } else {
+    process.stdout.write('', (stdoutError) => {
+      if (stdoutError) {
+        console.error('UNIT_LANE_OUTPUT_REFUSED=stdout:' + String(stdoutError.code || stdoutError.message || stdoutError));
+        process.exitCode = 1;
+        return;
+      }
+      process.stderr.write('', (stderrError) => {
+        if (stderrError) {
+          console.error('UNIT_LANE_OUTPUT_REFUSED=stderr:' + String(stderrError.code || stderrError.message || stderrError));
+          process.exitCode = 1;
+          return;
+        }
+        finishUnitLane();
+      });
+    });
+  }
 }

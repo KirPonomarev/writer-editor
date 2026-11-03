@@ -21,13 +21,13 @@ function assertContainsRegex(text, regex, label) {
 function captureFullRunner(failureAt = -1) {
   const calls = [], output = [];
   const runtime = { execPath: process.execPath, argv: [process.execPath, RUN_TESTS_PATH],
-    env: {}, platform: 'linux', stdout: { write: value => output.push(value) },
-    stderr: { write: value => output.push(value) }, exitCode: undefined };
+    env: {}, platform: 'linux', stdout: { write(value, callback) { output.push(value); if (typeof callback === 'function') callback(); return true; } },
+    stderr: { write(value, callback) { output.push(value); if (typeof callback === 'function') callback(); return true; } }, exitCode: undefined };
   const loader = name => {
     if (name === 'node:child_process') return { spawnSync(command, args, options) {
       calls.push({ command, args: Array.from(args), options });
       return { status: calls.length - 1 === failureAt ? 7 : 0,
-        stdout: '# pass 1\n# fail 0\n# skipped 0\n', stderr: '' };
+        stdout: 'TAP version 13\n# Subtest: finite runner dispatch control\nok 1 - finite runner dispatch control\n1..1\n# tests 1\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n', stderr: '' };
     } };
     // Guard output locations are planned, not materialized by this harness.
     if (name === 'node:fs') return { ...fs, mkdtempSync: prefix => `${prefix}contract` };

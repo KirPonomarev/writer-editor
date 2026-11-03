@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { validateTestEnvironment } from '../test-environment.cjs';
 
 const FAIL_SIGNAL_CODE = 'E_GOVERNANCE_STRICT_FAIL';
 
@@ -118,6 +119,27 @@ if (fastLaneBypassActive()) {
     'STRICT_LIE_CLASSES_OK=1',
     'CURRENT_WAVE_STOP_CONDITION_GUARD_OK=1',
   ], 0);
+}
+
+try {
+  validateTestEnvironment({ requiresDarwinAlias: true });
+} catch (error) {
+  printAndExit([
+    'CURRENT_WAVE_GUARD_RAN=1',
+    'CURRENT_WAVE_STOP_CONDITION_OK=0',
+    'CURRENT_WAVE_STOP_CONDITION_FAIL_REASON=TEST_SETUP_REFUSED',
+    'CURRENT_WAVE_FAIL_SIGNAL=' + FAIL_SIGNAL_CODE,
+    'CURRENT_WAVE_GUARD_MODE=' + resolveGuardMode(),
+    'CURRENT_WAVE_RECURSION_BYPASS_REQUESTED=0',
+    'CURRENT_WAVE_RECURSION_BYPASS_ALLOWED=0',
+    'CURRENT_WAVE_STRICT_DOCTOR_EXIT=NOT_RUN',
+    'CURRENT_WAVE_BOUNDARY_GUARD_EXIT=NOT_RUN',
+    'STRICT_LIE_CLASS_01_VIOLATIONS_COUNT=0',
+    'STRICT_LIE_CLASS_02_VIOLATIONS_COUNT=0',
+    'STRICT_LIE_CLASSES_OK=0',
+    'CURRENT_WAVE_STOP_CONDITION_GUARD_OK=0',
+    'TEST_SETUP_REFUSED=' + String(error.message || error),
+  ], 1);
 }
 
 const doctor = runDoctorStrict();

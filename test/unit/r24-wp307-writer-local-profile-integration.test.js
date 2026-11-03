@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
+const { packDiagnostic } = require('../../scripts/test-diagnostics.cjs');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const profile = require('../../src/core/writer-local-profile-v1.cjs');
@@ -2580,7 +2581,7 @@ async function correctionMainFixture(t, packaged = false, beforeProject, histori
   };
   x.apply = async (id, payload) => {
     const before = authorIdentitySnapshot(x), response = await x.ui(id, payload), after = authorIdentitySnapshot(x);
-    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_CORRECTION_PERSISTENCE', id, response, before, after }));
+    t.diagnostic(packDiagnostic({ causalReach: 'ACTUAL_CORRECTION_PERSISTENCE', id, response, before, after }));
     const applied = response.mainResult.ok === true; assertCorrectionPersistence(x, before, after, id, payload, applied);
     const receipt = assertTemporalMainReceipt(response.mainResult, id); assert.equal(response.result.ok, true);
     assert.equal(response.result.value.performed, true); assert.equal(response.result.value.commandAuthority, 'CommandKernel');
@@ -2964,7 +2965,7 @@ async function ideaMeaningMainFixture(t, packaged = false, beforeProject) {
       interpretation: 'Chosen interpretation ' + tag, source: { kind: 'idea', ideaId: x.ideaId } };
   x.apply = async (id, payload) => {
     const before = authorIdentitySnapshot(x), response = await x.ui(id, payload), after = authorIdentitySnapshot(x);
-    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_IDEA_MEANING_PERSISTENCE', id, response, beforeManifest: before.manifest, afterManifest: after.manifest,
+    t.diagnostic(packDiagnostic({ causalReach: 'ACTUAL_IDEA_MEANING_PERSISTENCE', id, response, beforeManifest: before.manifest, afterManifest: after.manifest,
       beforeEvents: before.events.length, afterEvents: after.events.length, beforeRoster: before.roster, afterRoster: after.roster }));
     assertIdeaMeaningPersistence(x, before, after, id, payload, response.mainResult.ok === true);
     const receipt = assertTemporalMainReceipt(response.mainResult, id); assert.deepEqual(after.receipts.at(-1), receipt);
@@ -3275,7 +3276,7 @@ async function sceneLanguageMainFixture(t, packaged = false, beforeProject) {
   x.saved = id => JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas.languageTags.scenes[id];
   x.apply = async (id, payload) => {
     const before = authorIdentitySnapshot(x), response = await x.ui(id, payload), after = authorIdentitySnapshot(x);
-    t.diagnostic(JSON.stringify({ causalReach: 'ACTUAL_SCENE_LANGUAGE_PERSISTENCE', id, payload, response,
+    t.diagnostic(packDiagnostic({ causalReach: 'ACTUAL_SCENE_LANGUAGE_PERSISTENCE', id, payload, response,
       beforeManifest: before.manifest, afterManifest: after.manifest, beforeRoster: before.roster, afterRoster: after.roster }));
     assertSceneLanguagePersistence(x, before, after, id, payload, response.mainResult.ok === true);
     const receipt = assertTemporalMainReceipt(response.mainResult, id); assert.deepEqual(after.receipts.at(-1), receipt);

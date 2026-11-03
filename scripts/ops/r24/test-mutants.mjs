@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 // R2.4 E0 — implementation mutation suite over the r24 runtime modules.
-// Every mutant is a single semantic sabotage applied to a private copy of
-// the module tree; the full E0 suite then runs against that copy. A mutant
-// that no test kills is a survivor and fails this gate. Score must be 1.
+// Every original semantic sabotage runs in an isolated child at the original
+// module URL, preserving repo context without source writes. Only a complete
+// matching cohort and genuine assertion failure kills a mutant. Score must be 1.
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { sha256hex } from './canonical-json.mjs';
+import { createMutationPlan, mutationPreload, evaluateMutationRun, captureMutationEvidence, compactMutationCaseCatalog, restoreMutationCaseCatalog } from './mutation-context.mjs';
 
 const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
 const TESTS_DIR = path.join(MODULE_DIR, 'tests');
@@ -266,65 +266,104 @@ const listTestFiles = (dir, out = []) => {
   return out.sort();
 };
 
-function runSuite(root) {
-  const files = listTestFiles(path.join(root, 'tests'));
-  const result = spawnSync(process.execPath, ['--test', ...files], {
-    encoding: 'utf8',
-    maxBuffer: 64 * 1024 * 1024,
-    cwd: root,
-  });
-  return { status: typeof result.status === 'number' ? result.status : 1, tail: `${result.stdout || ''}${result.stderr || ''}`.slice(-2000) };
+function originalSuiteFiles() {
+  const files = listTestFiles(TESTS_DIR);
+  // Each measured long file starts in the existing first four native slots.
+  for (const name of ['pre00f-current-head-plan-delivery-reconciliation.test.mjs', 'docs-claim-lint.test.mjs', 'wp603-recovery-post-audit.test.mjs']) {
+    const priority = files.indexOf(path.join(TESTS_DIR, name));
+    if (priority < 0) throw new Error('E_R24_ORIGINAL_PRIORITY_FILE_MISSING:' + name);
+    if (priority > 0) files.unshift(...files.splice(priority, 1));
+  }
+  return files;
 }
 
-function applyMutant(mutant) {
-  const work = fs.mkdtempSync(path.join(os.tmpdir(), 'r24-mutant-'));
-  fs.cpSync(MODULE_DIR, work, { recursive: true, filter: (src) => !src.includes(`${path.sep}.git`) });
-  const target = path.join(work, mutant.file);
-  const source = fs.readFileSync(target, 'utf8');
-  const occurrences = source.split(mutant.find).length - 1;
-  if (occurrences !== 1) {
-    return { error: `E_MUTANT_ANCHOR_${occurrences === 0 ? 'MISSING' : 'AMBIGUOUS'}`, work };
-  }
-  fs.writeFileSync(target, source.replace(mutant.find, mutant.replace));
-  return { work, digest: sha256hex(fs.readFileSync(target)) };
+async function runOriginalSuite() {
+  const [{ run }, { tap }, { availableParallelism }] = await Promise.all([
+    import('node:test'), import('node:test/reporters'), import('node:os'),
+  ]);
+  const stream = run({
+    files: originalSuiteFiles(),
+    concurrency: Math.min(4, Math.max(1, availableParallelism() - 1)),
+    isolation: 'process',
+  });
+  stream.on('test:fail', () => { process.exitCode = 1; });
+  stream.compose(tap).pipe(process.stdout);
+}
+
+function runSuite(plan, baseline = null) {
+  const env = { ...process.env };
+  delete env.NODE_TEST_CONTEXT;
+  delete env.YALKEN_TEST_EVIDENCE_DIR;
+  const result = spawnSync(process.execPath, ['--import', mutationPreload(plan), fileURLToPath(import.meta.url), '--run-original-suite'], {
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024,
+    cwd: MODULE_DIR,
+    env,
+  });
+  return { ...evaluateMutationRun(result, plan, baseline),
+    fullEvidence: captureMutationEvidence(result) };
 }
 
 export function main() {
   const started = Date.now();
-  const baseline = runSuite(MODULE_DIR);
-  if (baseline.status !== 0) {
-    process.stderr.write(`E_MUTANT_BASELINE_RED: unmutated suite must pass first\n${baseline.tail}\n`);
-    process.exit(1);
-  }
+  const controlPlan = createMutationPlan();
+  const baseline = runSuite(controlPlan);
   const results = [];
-  for (const mutant of MUTANTS) {
-    const applied = applyMutant(mutant);
-    if (applied.error) {
-      results.push({ id: mutant.id, killed: false, error: applied.error });
-      continue;
+  if (baseline.verdict === 'PASS') {
+    for (const mutant of MUTANTS) {
+      try {
+        const plan = createMutationPlan(mutant);
+        const run = runSuite(plan, baseline);
+        results.push({ id: mutant.id, killed: run.verdict === 'KILLED',
+          digest: plan.mutantSha256, plan, ...run });
+        // Setup or changed coverage invalidates the lane; do not repeatedly
+        // execute the same broken setup and never credit it as a kill.
+        if (run.verdict === 'INVALID') break;
+      } catch (error) {
+        results.push({ id: mutant.id, killed: false, verdict: 'INVALID',
+          error: error.message });
+        break;
+      }
     }
-    const run = runSuite(applied.work);
-    results.push({ id: mutant.id, killed: run.status !== 0, digest: applied.digest });
-    fs.rmSync(applied.work, { recursive: true, force: true });
   }
-  const killed = results.filter((r) => r.killed).length;
-  const survived = results.filter((r) => !r.killed);
+  const killed = results.filter(row => row.killed).length;
+  const survived = results.filter(row => !row.killed).map(row => row.id);
+  const complete = baseline.verdict === 'PASS' && results.length === MUTANTS.length
+    && killed === MUTANTS.length && survived.length === 0;
   const receipt = {
     schemaVersion: 'yalken.r24-mutation-receipt.v1',
-    total: results.length,
+    total: MUTANTS.length,
     killed,
-    survived: survived.map((s) => s.id),
-    score: results.length === 0 ? 0 : killed / results.length,
-    baseline: 'PASS',
+    survived,
+    score: killed / MUTANTS.length,
+    baseline: baseline.verdict === 'PASS' ? 'PASS' : 'FAIL',
     durationMs: Date.now() - started,
+    context: 'ORIGINAL_FILE_URLS_PINNED_IN_MEMORY_SINGLE_MUTATION',
+    definitionsSha256: sha256hex(Buffer.from(JSON.stringify(MUTANTS))),
+    baselineRun: { plan: controlPlan, ...baseline },
+    results,
+    notRun: MUTANTS.slice(results.length).map(row => row.id),
   };
-  process.stdout.write(`R24_MUTATION_RECEIPT=${JSON.stringify(receipt)}\n`);
-  if (survived.length > 0 || results.length === 0) {
-    process.stderr.write(`E_MUTANT_SURVIVOR:${survived.map((s) => s.id).join(',')}\n`);
-    process.exit(1);
+  const wireReceipt = compactMutationCaseCatalog(receipt);
+  if (JSON.stringify(restoreMutationCaseCatalog(wireReceipt)) !== JSON.stringify(receipt)) {
+    throw new Error('E_MUTATION_CASE_CATALOG_ROUNDTRIP');
+  }
+  process.stdout.write('R24_MUTATION_RECEIPT=' + JSON.stringify(wireReceipt) + '\n');
+  if (!complete) {
+    process.stderr.write(baseline.verdict !== 'PASS'
+      ? 'E_MUTANT_BASELINE_RED: unmutated original-context suite must pass first\n'
+      : 'E_MUTANT_INVALID_OR_SURVIVOR:' + survived.concat(receipt.notRun).join(',') + '\n');
+    process.exitCode = 1;
   }
   return receipt;
 }
 
 const invokedAsScript = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (invokedAsScript) main();
+if (invokedAsScript) {
+  if (process.argv[2] === '--run-original-suite') {
+    if (process.argv.length !== 3) throw new Error('E_MUTATION_SUITE_ARGS');
+    await runOriginalSuite();
+  } else {
+    main();
+  }
+}

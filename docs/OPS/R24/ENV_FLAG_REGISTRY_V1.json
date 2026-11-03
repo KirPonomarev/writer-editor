@@ -339,6 +339,13 @@
       "semantics": "An externally set Git graft path disables the C1C immutable-history hint; the original exhaustive candidate resolver and all original validation remain authoritative. This guard does not read or authorize the external file.",
       "defaultEffect": "Unset = continue complete history identity checks; any nonempty value = retain the original exhaustive lookup.",
       "registeredBy": "YALKEN_C1C_BOUNDED_THROUGHPUT_20261030"
+    },
+    {
+      "name": "YALKEN_TEST_EVIDENCE_DIR",
+      "flagClass": "BEHAVIOR",
+      "semantics": "Selects one explicit existing canonical absolute writable local directory for complete test stdout/stderr/status evidence. Exclusive generated gzip artifacts are fully hashed and independently reread before brief console references. Invalid directory, missing bytes, unknown evidence and real failures stay FAIL. The key is removed from unit child environments; it cannot select test coverage, skip gates, change roots or grant product/release authority.",
+      "defaultEffect": "Unset = retain the complete original TAP on stdout; no artifact writer and no test, status, cap or timeout change.",
+      "registeredBy": "YALKEN_MANDATORY_TEST_SETUP_DIAGNOSTICS_20261102"
     }
   ],
   "census": [

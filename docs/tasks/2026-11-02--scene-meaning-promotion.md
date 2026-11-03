@@ -1,3 +1,14 @@
+# Current closure — Explicit Meaning from saved scene fragment
+
+STATUS: CLOSED_BOUNDED_DELIVERY_FULL_MAC_STILL_ACTIVE
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK_ID: YALKEN_SCENE_MEANING_PROMOTION_20261102
+MERGED_SHA: 3d494c75809b6dd7671b8df50e6c4beb99e804d1
+CLOSURE: SCENE_MEANING_DELIVERY_CLOSURE_01.json SHA2566a56726d92f4dc2217502a07fc81b98e9a6a6d7976c74ce084010a7e8ad5a71f in dated2026-11-02--scene-meaning-promotion T777 reports.
+CLAIM_BOUNDARY: Candidate06e7 actual selected-fragment promotion and old Idea route,48new/whole1693 and all30logical candidate gates; normal PR2192 merge, full PR20/main20 original archives and221individual current cases each, operational close1. Literal merged source10057, early7/relevant8, fresh actual artifact02 warm44100/cold46460 normalQuit0 retained both Meanings/Idea/scenes/source navigation plus independent full saved-data and1479ASAR leaves. Protected source/raw/fences/retained outputs and finalguardrails complete. Candidate authoring/refusal and finite race negatives retain original identity.
+LIMITATIONS: All17MacUNKNOWN, candidateUNFROZEN/releaseNOT_READY/fullgoalACTIVE;59old skips,15moderate dev advisories and native cache/menu findings retained. No broad IME/caret-highlight, signing/notary/public distribution or full qualification claim.
+HISTORICAL_TASK_BYTES_BOUNDARY: The complete original task specification follows unchanged; old pending/status fields describe their original checkpoints.
+
 # Explicit Meaning from a saved scene fragment
 
 STATUS: FOCUSED_SOURCE_OBSERVED_NATIVE_AND_DELIVERY_PENDING
