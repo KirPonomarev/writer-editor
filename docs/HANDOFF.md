@@ -1,3 +1,13 @@
+# Resume — Writer PDF target content version
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_BASE_SHA: b3a6f9f2ae692d7e0eeb27bdc2b5534f51b0972b
+TASK: YALKEN_WRITER_PDF_TARGET_BYTES_20261103; same registered worktree, codex/writer-pdf-target-bytes-20261103. See 2026-11-03--writer-pdf-target-bytes.md for15path scope and guards; current evidence in dated2026-11-03--writer-current-pdf on T777.
+VERIFIED: Frozen9RED -> identical9GREEN, whole152/152 and physical real ExFAT NEXT preservation; source oraclea5056178 and original-artifact reread9e3f7919. Main5c53c3f7, no actual native PDF acceptance yet. Prior Writer history delivery63dc372b is closed and must not be replayed.
+NEXT_STEP: Qualify actual production PDF from the frozen candidate under a separately admitted own native profile, following its required delivery checks. Full17Mac qualification remainsUNKNOWN; protected old data/history/apps/profiles stay exact.
+
+--- Historical records below retain original identities and claims ---
+
 # Current task — Writer native menu history
 
 DOCUMENT_CLASS: FACTUAL_STATUS
