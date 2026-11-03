@@ -922,7 +922,8 @@
     "docs/tasks/2026-11-03--mac-menu-artifact-namespace.md",
     "test/unit/sector-m-native-history-ownership.test.js",
     "test/fixtures/menu/edit-history-native-roles.v1.json",
-    "docs/tasks/2026-11-03--writer-native-history.md"
+    "docs/tasks/2026-11-03--writer-native-history.md",
+    "docs/tasks/2026-11-03--writer-pdf-target-bytes.md"
   ],
   "protectedFiles": [
     {
@@ -1151,7 +1152,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "92a90857259a15cd6b0903c1c59dd438698c37e7696d135567861563f6940bcf"
+        "sha256": "5c53c3f729e2c81b249d94beb836bd471ccdffb73348af4c8fb39f4914b2147b"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2843,15 +2844,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "9f15c3935e625546be0bdd110af666f892e9aa24c0533bfb5dff5cacdbb02ac1"
+        "sha256": "111f1242b9b13d58e4c5d767bccc676c349ae8c8b2ed484f435bbf428bc4cd41"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "9ba4f4032e76977b67df198105a97f97394d63928863995c897a8fa32088b403"
+        "sha256": "73fad4e7eb951ffd2800c1ada63a8cf505d0373f19033721196b7250c78a68f3"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "ac7c47ed93ba73e4e7b23174ca9ba0dc92c262bf0ba6035dddc4d853e599c5d9"
+        "sha256": "3d1b71690dddfb4839d207411d9856cdd327be919df526b4f14d765c45519ba3"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3391,7 +3392,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "e46d99c1fa9e9fc56e7fa5f17ff1b46462560eb8da46be05102bc4501d218ed3"
+        "sha256": "ef3c4a6d4b506721271175e077cccfcacecddc67085658df6ceca8bb437770ca"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3891,7 +3892,7 @@
       },
       {
         "path": "test/unit/pdf-export-handler.test.js",
-        "sha256": "b7f29fdeb262efc9373cc258502da5af5efd924a632d19f39638915710b266df"
+        "sha256": "cedb2d81e8aab1db4b8602ca7e29b7f7c322d61018bbe6da370393742206dec0"
       },
       {
         "path": "test/unit/sector-m-s31-pdf-export.test.js",
@@ -4208,6 +4209,10 @@
       {
         "path": "src/menu/menu-locale.catalog.v1.json",
         "sha256": "56efe4a0f34bdb3b6719be2c432a0a8ab477ec272b3899d41fcb7bddbabe7970"
+      },
+      {
+        "path": "docs/tasks/2026-11-03--writer-pdf-target-bytes.md",
+        "sha256": "97ee19d06ea8b8eeed9a9aa6370bce450fa2c230dcf97a593fd0c256183fb87c"
       }
     ],
     "followupRepair": {

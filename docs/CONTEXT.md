@@ -1,3 +1,16 @@
+# Current task — PDF target content version
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_FIXED_FROZEN9_AND_WHOLE152_PASS_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: b3a6f9f2ae692d7e0eeb27bdc2b5534f51b0972b
+TASK: YALKEN_WRITER_PDF_TARGET_BYTES_20261103; one developer and one ordinary delivery chain, branch codex/writer-pdf-target-bytes-20261103.
+SOURCE_PROOF: Main5c53c3f729e2c81b249d94beb836bd471ccdffb73348af4c8fb39f4914b2147b changes only PDF target-version capture; original1009test lines exact plus116frozen lines. Actual unchanged-source9RED -> identical9GREEN, whole152of152 and real ExFAT same-metadata foreign-byte refusal. Independent oraclea50561788d88c5f1ecc19b77cb73f204ba25842f707a82acacfbd09ae0bb9770; all five original/corrected physical outputs reread by9e3f7919. Synthetic PDF-port proof is not actual native PDF rendering.
+PREDECESSOR: Writer history PR2195 normally merged at this base; closure63dc372bf07743fbfb0148730c56ab6cdbc87710e3931865bcf6adc8307d0638 includes both CI20/raw8, actual merged rebuild/UI10/cold data/source10069/final guardrails0. Earlier pending blocks retain historical identities.
+CURRENT: Required current bindings, immutable candidate, fresh actual native PDF and full ordinary delivery still pending. Every old history/profile/app/raw remains protected; no target hash grants write authority or non-cooperating-writer CAS.
+LIMITS: Full V6/DNA5 Writer/Atlas15cells/fourprojections/STAGE00..11/WSE/Pulse/ENV continues; all17MacUNKNOWN, candidateUNFROZEN, releaseNOT_READY, DeepUNAVAILABLE_LOCAL_STUB_ONLY. Existing15moderatebuildtools/production0 and59baseline skips remain explicit. Word/nativeOfficePAUSED; BlackBox afterfullMac; LinuxWindows existing boundaries/mandatoryCI. No agents/models/chats/timers/optional services.
+
+--- Historical records below retain original identities and claims ---
+
 # Current task — Writer native menu history
 
 DOCUMENT_CLASS: FACTUAL_STATUS

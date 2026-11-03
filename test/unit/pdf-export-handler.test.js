@@ -1007,3 +1007,119 @@ test('actual Main Markdown retains its observed committed outcome if lease final
   assert.deepEqual(await h.fs.readFile(h.scene),source);
   assert.equal(JSON.stringify(result).includes(h.root),false);
 });
+
+
+test('actual Main PDF refuses changed target bytes when all filesystem version metadata is preserved', async t => {
+  const path = require('node:path');
+  for (const phase of ['render', 'queued', 'staging']) await t.test(phase, async t => {
+    const h = await pdfMainFixture(t), target = path.join(h.root, 'coarse-target.pdf');
+    await h.fs.writeFile(target, 'KEEP');
+    const version = await h.fs.lstat(target, { bigint: true });
+    const source = await h.fs.readFile(h.scene), manifest = await h.fs.readFile(h.manifestPath);
+    const lstat = h.fs.lstat, open = h.fs.open, write = h.fs.writeFile;
+    let changed = false;
+    // The separately retained real ExFAT probe has this exact metadata view.
+    // Keep actual byte I/O on every CI filesystem, including the descriptor.
+    h.fs.lstat = async function (file, ...args) {
+      return changed && file === target ? version : lstat.call(this, file, ...args);
+    };
+    h.fs.open = async function (file, flags, ...args) {
+      const handle = await open.call(this, file, flags, ...args);
+      if (file === target && flags === 'r') {
+        const stat = handle.stat.bind(handle);
+        handle.stat = async (...options) => changed ? version : stat(...options);
+      }
+      return handle;
+    };
+    const foreignWrite = async () => {
+      assert.equal(changed, false);
+      const handle = await open.call(h.fs, target, 'r+');
+      try { await handle.write('NEXT', 0, 'utf8'); } finally { await handle.close(); }
+      changed = true;
+      assert.equal(await h.fs.readFile(target, 'utf8'), 'NEXT');
+    };
+    h.fs.writeFile = async function (file, ...args) {
+      const value = await write.call(this, file, ...args);
+      if (phase === 'staging' && String(file).startsWith(target + '.') && String(file).endsWith('.tmp')) {
+        await foreignWrite();
+      }
+      return value;
+    };
+    h.main.prepareExport({
+      render: async () => { if (phase === 'render') await foreignWrite(); },
+      queued: async () => { if (phase === 'queued') await foreignWrite(); },
+    });
+    let result;
+    try { result = await h.main.export(target); }
+    finally { h.fs.lstat = lstat; h.fs.open = open; h.fs.writeFile = write; }
+    assert.equal(changed, true, 'the foreign write reached the requested boundary');
+    assert.equal(result.ok, false, JSON.stringify(result));
+    assert.equal(result.error.reason, 'pdf_context_stale');
+    assert.notEqual(result.error.details?.exported, true);
+    assert.equal(await h.fs.readFile(target, 'utf8'), 'NEXT');
+    assert.equal(h.main.statuses().some(args => args.includes('PDF экспортирован')), false);
+    assert.deepEqual(await h.fs.readFile(h.scene), source);
+    assert.deepEqual(await h.fs.readFile(h.manifestPath), manifest);
+  });
+});
+
+test('actual Main PDF streams target versions with bounded reads and rejects growth truncation or stale context', async t => {
+  const path = require('node:path');
+  for (const phase of ['stable', 'grow', 'truncate', 'generation']) await t.test(phase, async t => {
+    const h = await pdfMainFixture(t), target = path.join(h.root, 'streamed-target.pdf');
+    const original = Buffer.alloc(128 * 1024 + 19, 'x');
+    await h.fs.writeFile(target, original);
+    const version = await h.fs.lstat(target, { bigint: true });
+    const source = await h.fs.readFile(h.scene), manifest = await h.fs.readFile(h.manifestPath);
+    const open = h.fs.open, lstat = h.fs.lstat;
+    let injected = false, reads = 0, largestRead = 0, opened = 0, closed = 0;
+    h.fs.lstat = async function (file, ...args) {
+      return file === target ? version : lstat.call(this, file, ...args);
+    };
+    h.fs.open = async function (file, flags, ...args) {
+      const handle = await open.call(this, file, flags, ...args);
+      if (file === target && flags === 'r') {
+        opened++;
+        const read = handle.read.bind(handle), close = handle.close.bind(handle);
+        handle.stat = async () => version;
+        handle.close = async () => { closed++; return close(); };
+        handle.read = async function (buffer, offset, length, position) {
+          reads++; largestRead = Math.max(largestRead, length);
+          const result = await read(buffer, offset, length, position);
+          if (!injected && result.bytesRead && phase !== 'stable') {
+            injected = true;
+            if (phase === 'generation') h.main.mutate('generation');
+            else {
+              const writer = await open.call(h.fs, target, phase === 'grow' ? 'a' : 'r+');
+              try { if (phase === 'grow') await writer.write('GROW'); else await writer.truncate(0); }
+              finally { await writer.close(); }
+            }
+          }
+          return result;
+        };
+      }
+      return handle;
+    };
+    h.main.prepareExport();
+    let result;
+    try { result = await h.main.export(target); }
+    finally { h.fs.open = open; h.fs.lstat = lstat; }
+    assert.ok(reads > (phase === 'generation' ? 0 : 1), 'actual target byte reads executed');
+    assert.ok(largestRead > 0 && largestRead <= 64 * 1024, 'every read is bounded');
+    assert.equal(opened, closed, 'all target descriptors close on success and refusal');
+    if (phase === 'stable') {
+      assert.equal(result.ok, true, JSON.stringify(result));
+      assert.deepEqual(await h.fs.readFile(target), Buffer.from('%PDF-native-port-fixture'));
+    } else {
+      assert.equal(injected, true);
+      assert.equal(result.ok, false, JSON.stringify(result));
+      assert.notEqual(result.error.details?.exported, true);
+      assert.equal(h.main.statuses().some(args => args.includes('PDF экспортирован')), false);
+      const expected = phase === 'grow' ? Buffer.concat([original, Buffer.from('GROW')])
+        : phase === 'truncate' ? Buffer.alloc(0) : original;
+      assert.deepEqual(await h.fs.readFile(target), expected);
+    }
+    assert.deepEqual(await h.fs.readFile(h.scene), source);
+    assert.deepEqual(await h.fs.readFile(h.manifestPath), manifest);
+  });
+});
