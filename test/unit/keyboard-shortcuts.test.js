@@ -526,6 +526,6 @@ for (const mode of ['release', 'promotion']) {
     assert.equal(state.mode, mode); assert.equal(state.result, 'PASS');
     assert.equal(state.exitCode, 0); assert.equal(state.mismatch, false);
     assert.deepEqual(state.issues, []); assert.equal(h.warnings.length, 0);
-    assertNativeHistoryProjection(h, h.context.resolveRuntimeMenuBuildConfig(mode));
+    assertCurrentHistoryProjection(h, h.context.resolveRuntimeMenuBuildConfig(mode));
   });
 }

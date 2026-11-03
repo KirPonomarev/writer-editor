@@ -82,6 +82,16 @@
       "ru": "Редактирование",
       "en": "Edit"
     },
+    "menu.edit.undo": {
+      "base": "Undo",
+      "ru": "Отменить",
+      "en": "Undo"
+    },
+    "menu.edit.redo": {
+      "base": "Redo",
+      "ru": "Повторить",
+      "en": "Redo"
+    },
     "menu.view": {
       "base": "View",
       "ru": "Вид",

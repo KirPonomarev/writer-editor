@@ -81,6 +81,13 @@ test('unrelated runtime commands retain their existing bridge path and readonly 
   assert.deepEqual(locked.directCalls, []); assert.deepEqual(locked.hostCalls, []);
 });
 
+test('non-record runtime envelopes refuse before any interpretation or bridge call', () => {
+  for (const packet of [null, undefined, false, 43, 'undo', [], Object.assign([], { commandId: ids.undo })]) {
+    const h = liveListener({}); h.send(packet);
+    assert.deepEqual(h.hostCalls, []); assert.deepEqual(h.directCalls, []);
+  }
+});
+
 class Element {
   constructor(tagName = 'DIV', extra = {}) {
     Object.assign(this, { tagName, type: 'text', isConnected: true, readOnly: false,
@@ -224,9 +231,30 @@ test('capability refusal happens before either target adapter', async () => {
   }
 });
 
+test('the existing global composition fence protects both native fields and the PM target', async () => {
+  for (const target of ['control', 'pmDom']) {
+    const h = await authoringHarness(); h.document.activeElement = h[target];
+    h.context.fullEnvironmentComposing = true; const before = h.observe();
+    const result = await h.invoke('undo'); assert.equal(result.value.result.performed, false);
+    assert.equal(h.pmCalls, 0); assert.deepEqual(h.nativeCalls, []); assert.deepEqual(h.observe(), before);
+  }
+});
+
+test('a replaced registered PM owner cannot receive history from the still-focused old DOM', async () => {
+  const h = await authoringHarness(), before = h.observe();
+  h.context.currentEditorInstance = { ...h.pm, view: { dom: new Element(), composing: false } };
+  const result = await h.invoke('undo'); assert.equal(result.value.result.performed, false);
+  assert.equal(h.pmCalls, 0); assert.deepEqual(h.observe(), before);
+});
+
 test('actual toolbar and live host handlers dispatch existing canonical Kernel ids rather than direct history', () => {
   const ui = actualFunction(editorSource, 'handleUiAction');
+  const calls = [], context = vm.createContext({ EXTRA_COMMAND_IDS: { EDIT_UNDO: ids.undo, EDIT_REDO: ids.redo },
+    dispatchUiCommand: commandId => calls.push(commandId) });
+  vm.runInContext(ui, context);
   for (const action of ['undo', 'redo']) {
+    const before = calls.length; assert.equal(context.handleUiAction(action), true);
+    assert.equal(calls.length, before + 1); assert.equal(calls.at(-1), ids[action]);
     const branch = ui.slice(ui.indexOf("case '" + action + "':"));
     const body = branch.slice(0, branch.indexOf('\n    case ', 1));
     assert.match(body, new RegExp('dispatchUiCommand\\(EXTRA_COMMAND_IDS.EDIT_' + action.toUpperCase()));

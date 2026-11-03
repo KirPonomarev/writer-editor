@@ -519,27 +519,23 @@ function destroyCurrentEditor() {
   currentFormattingStateHandler = null
 }
 
-function routeRuntimeHistoryCommand(payload) {
-  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return false
-  const canonical = payload.commandId, legacy = payload.command
-  const commandId = ['cmd.project.edit.undo', 'cmd.project.edit.redo'].includes(canonical) ? canonical : null
-  const legacyId = ['undo', 'edit-undo'].includes(legacy) ? 'cmd.project.edit.undo'
-    : ['redo', 'edit-redo'].includes(legacy) ? 'cmd.project.edit.redo' : null
-  if (!commandId && !legacyId) return false
-  // Consume invalid history envelopes too: none may fall through to the
-  // private bridge, even when a host or a Writer instance is unavailable.
-  if ((canonical !== undefined && !commandId) || (legacy !== undefined && !legacyId)
-    || (commandId && legacyId && commandId !== legacyId)) return true
-  runtimeHistoryCommandHandler?.(commandId || legacyId)
-  return true
-}
-
 function ensureRuntimeListenersAttached() {
   if (!window.electronAPI) return
 
   if (!runtimeCommandListenerAttached && typeof window.electronAPI.onRuntimeCommand === 'function') {
     window.electronAPI.onRuntimeCommand((payload) => {
-      if (routeRuntimeHistoryCommand(payload)) return
+      if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return
+      const canonical = payload.commandId, legacy = payload.command
+      const commandId = ['cmd.project.edit.undo', 'cmd.project.edit.redo'].includes(canonical) ? canonical : null
+      const legacyId = ['undo', 'edit-undo'].includes(legacy) ? 'cmd.project.edit.undo'
+        : ['redo', 'edit-redo'].includes(legacy) ? 'cmd.project.edit.redo' : null
+      if (commandId || legacyId) {
+        // Invalid history envelopes are consumed too: no private-bridge fallback.
+        if ((canonical !== undefined && !commandId) || (legacy !== undefined && !legacyId)
+          || (commandId && legacyId && commandId !== legacyId)) return
+        runtimeHistoryCommandHandler?.(commandId || legacyId)
+        return
+      }
       if ((!currentEditorInstance || currentEditorInstance.isDestroyed || currentEditorInstance.isEditable === false)
         && (/^cmd\.project\.(?:format|list|insert|edit|bookmarks)\./.test(payload?.commandId || '')
           || /^(?:undo|redo|edit-undo|edit-redo|format-|insert-)/.test(payload?.command || ''))) return

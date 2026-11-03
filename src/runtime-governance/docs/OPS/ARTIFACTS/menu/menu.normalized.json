@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "snapshotId": "menu-default-desktop-minimal-undo-redo-20261025",
-  "normalizedHashSha256": "346b5b8f42e8f412bc0d07bf6130a9d07f7ff8728ed1b625737b8afa1f9edeb1",
-  "generatedAt": "2026-10-25T11:33:41.944Z",
-  "generatedFromCommit": "67d574188a405bbdcf289f48828cd3123744f4ef",
+  "snapshotId": "menu-default-desktop-minimal-kernel-history-20261103",
+  "normalizedHashSha256": "927766b8786be74c5ee01dae7528496f3f93ce9167f5ebcb8bca82e4541bc17e",
+  "generatedAt": "2026-11-03T14:57:06.608Z",
+  "generatedFromCommit": "0f83cada12a766f82e66abe2ae6c85a4e1876ee2",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
@@ -14,6 +14,16 @@
         "base": "Редактирование",
         "en": "Edit",
         "ru": "Редактирование"
+      },
+      "menu.edit.redo": {
+        "base": "Redo",
+        "en": "Redo",
+        "ru": "Повторить"
+      },
+      "menu.edit.undo": {
+        "base": "Undo",
+        "en": "Undo",
+        "ru": "Отменить"
       },
       "menu.file": {
         "base": "Документ",
@@ -314,6 +324,8 @@
   ],
   "commands": [
     "cmd.project.blackBox.exportManualCoreCapsuleKitV1",
+    "cmd.project.edit.redo",
+    "cmd.project.edit.undo",
     "cmd.project.export.docxMin",
     "cmd.project.exportAllScenesTxtV1",
     "cmd.project.exportCurrentSceneTxtV1",
@@ -813,13 +825,16 @@
       "id": "edit",
       "items": [
         {
-          "canonicalCmdId": null,
+          "accelerator": "CmdOrCtrl+Z",
+          "canonicalCmdId": "cmd.project.edit.undo",
           "disabledReasonCode": null,
           "enabledWhenAst": {
             "args": [],
             "op": "all"
           },
           "id": "edit-undo",
+          "label": "Undo",
+          "labelKey": "menu.edit.undo",
           "mode": [
             "offline",
             "web_subset"
@@ -830,7 +845,6 @@
             "pro",
             "guru"
           ],
-          "role": "undo",
           "sourceRefs": [
             "src/menu/menu-config.v2.json"
           ],
@@ -843,13 +857,16 @@
           "visibilityPolicy": "visible_enabled"
         },
         {
-          "canonicalCmdId": null,
+          "accelerator": "$platformRedo",
+          "canonicalCmdId": "cmd.project.edit.redo",
           "disabledReasonCode": null,
           "enabledWhenAst": {
             "args": [],
             "op": "all"
           },
           "id": "edit-redo",
+          "label": "Redo",
+          "labelKey": "menu.edit.redo",
           "mode": [
             "offline",
             "web_subset"
@@ -860,7 +877,6 @@
             "pro",
             "guru"
           ],
-          "role": "redo",
           "sourceRefs": [
             "src/menu/menu-config.v2.json"
           ],

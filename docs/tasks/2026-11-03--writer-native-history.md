@@ -5,6 +5,7 @@ CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
 BINDING_BASE_SHA: c6daca66506e1ab650409e859f87e52f719e93bb
 HEAD_SHA_AT_START: c6daca66506e1ab650409e859f87e52f719e93bb
+CHECKPOINT_ADMISSION_BASE_SHA: 0f83cada12a766f82e66abe2ae6c85a4e1876ee2; same chain, not a remote base transfer.
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/writer-native-history-20261103
 DESIGN_TOOL_ROUTER: Mechanical existing command and browser adapter correction, no design contract change; canonical enum is in validated machine declaration01.
@@ -70,7 +71,7 @@ FEATURE_INTEGRATION_MANIFEST_V1: EXISTING_SEAM; featureId WRITER_NATIVE_HISTORY;
 
 Canonical and legacy history selectors must agree when both exist. Invalid/mixed selectors and missing host callback refuse without private bridge fallback. Native fields are resolved from live focus, supported text type, connection, readOnly and disabled state, independent of active Writer. They never force Writer focus or alter its generation. PM history requires live registered editable, non-composing owned target and current authoring identity. Toolbar emits the same Kernel intent, with actual owned toolbar identity checked at the effect. No async publication or payload-derived target permit.
 
-Create new snapshot menu-default-desktop-minimal-kernel-history-20261103 through the existing CLI; retain every original snapshot entry. Required labels use the existing locale catalog with exactly two new entries and preserve every old entry. The proposed31st path requires a new successful clean preflight: declaration02 correctly refused dirty state. The agent mistakenly applied two catalog inserts after that refusal; the exact proposal and process failure are retained, and only those inserts were restored to original bytes before the WIP checkpoint. No retrospective PASS or product push. Preserve the native role builder and exact prior Edit projection in the historical fixture; qualify new default canonical command items with stronger actual builder, Kernel, target and native tests. The frozen diagnostic oracle is independent evidence, not authority.
+Create new snapshot menu-default-desktop-minimal-kernel-history-20261103 through the existing CLI; retain every original snapshot entry. Required labels use the existing locale catalog with exactly two new entries and preserve every old entry. The proposed31st path requires a new successful clean preflight: declaration02 correctly refused dirty state. The agent mistakenly applied two catalog inserts after that refusal; the exact proposal and process failure are retained, and only those inserts were restored to original bytes before the WIP checkpoint. Fresh clean preflight03 ef2d838b then admitted31paths on WIP checkpoint0f83cada before exact reapply. No retrospective PASS or product push. Preserve the native role builder and exact prior Edit projection in the historical fixture; qualify new default canonical command items with stronger actual builder, Kernel, target and native tests. The frozen diagnostic oracle is independent evidence, not authority.
 
 ## IMPLEMENTATION_STEPS
 
