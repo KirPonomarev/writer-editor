@@ -286,7 +286,10 @@ function evaluateMenuArtifactLockState(input = {}) {
 
     const lockedArtifactPath = normalizeRelativePath(lockDoc.artifactPath);
     if (lockedArtifactPath) {
-      const resolvedLockedArtifactPath = joinPathSegmentsWithinRoot(REPO_ROOT, [lockedArtifactPath], {
+      const lockRoot = normalizeResolvedComparisonPath(lockPath) === normalizeResolvedComparisonPath(DEFAULT_LOCK_PATH)
+        ? RUNTIME_GOVERNANCE_ROOT
+        : REPO_ROOT;
+      const resolvedLockedArtifactPath = joinPathSegmentsWithinRoot(lockRoot, [lockedArtifactPath], {
         resolveSymlinks: false,
       });
       if (normalizeResolvedComparisonPath(artifactPath) !== normalizeResolvedComparisonPath(resolvedLockedArtifactPath)) {

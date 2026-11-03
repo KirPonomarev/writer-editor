@@ -916,7 +916,10 @@
     "test/unit/r24-mutation-context.test.js",
     "scripts/ops/r24/tests/mutation-boundaries.test.mjs",
     "scripts/ops/r24/tests/wp603-recovery-post-audit.test.mjs",
-    "scripts/ops/ops-synth-negative.test.cjs"
+    "scripts/ops/ops-synth-negative.test.cjs",
+    "src/menu/menu-artifact-lock.js",
+    "test/contracts/menu-artifact-export-and-runtime-verify.contract.test.js",
+    "docs/tasks/2026-11-03--mac-menu-artifact-namespace.md"
   ],
   "protectedFiles": [
     {
@@ -2837,15 +2840,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "7d84ac242c1683d3d23dcc5da463b44124128b4288b847d130cb760b1a0fa13b"
+        "sha256": "b6aa968e169d2b1c2852d6889e8887258b009e36ea8c10b61533c775ee9f4290"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "981cabc03a60c7e2760fcf90c2ff9ff6f6d5bfb2b21c8857b37cc49e1db68372"
+        "sha256": "540cb3a7198b00797f5351e8f38b4bffa76333e066d8f1ec5cabf1aaec3f2c38"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "99c6d1937cced5407cefa68a5b20aecde8299a730c6c1bd7bc27eeedc9a1aac0"
+        "sha256": "3249446b9ed61c50580ddd0dd2f72743090ff6757ab85a6d5d61d5375394a2a9"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3385,7 +3388,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "e4119a7963a65150ad6c4ad20b2fb4a8349303ad28923e9001e2bce663322b47"
+        "sha256": "793aa86c8f58735efc976f999700f7dac7306cec2383633f5a3ab39397a4e6f9"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3509,7 +3512,7 @@
       },
       {
         "path": "docs/tasks/2026-10-22--full-mac-atlas-map.md",
-        "sha256": "cbdf7d76dd6ba4aa8629c4f831971ed6a8c2596b8af424a28d029106b8a5f1b2"
+        "sha256": "25b94b655839f95a7a3e733f8b392af46e8003b4827127b6e2bb2a7a7ecb0cd8"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-er-c03-command-reachability-command-kernel-authority.contract.test.js",
@@ -3653,7 +3656,7 @@
       },
       {
         "path": "test/unit/keyboard-shortcuts.test.js",
-        "sha256": "4cc30c9e0d2ed3816aee35451b8882d16e77b341c3a6798de13eebb6be921e09"
+        "sha256": "e7acd7f13d3f2b537c6621761502ddb6d8dd16d21c97c326d43cbf94d6b3fc45"
       },
       {
         "path": "scripts/ops/menu-config-normalize.mjs",
@@ -4174,6 +4177,18 @@
       {
         "path": "scripts/ops/ops-synth-negative.test.cjs",
         "sha256": "2f21afa5359d360b009a23867cc3db085f4b7c091b705e5a8fa456a5b148366b"
+      },
+      {
+        "path": "src/menu/menu-artifact-lock.js",
+        "sha256": "b2cc29adba3af48f6d19b34480c42725491b2df5ca82f7ad1bf980f5b032e574"
+      },
+      {
+        "path": "test/contracts/menu-artifact-export-and-runtime-verify.contract.test.js",
+        "sha256": "9eabd395f86fea80eabeab97f4c55733dda13a9b29709301239dabda8546bb5e"
+      },
+      {
+        "path": "docs/tasks/2026-11-03--mac-menu-artifact-namespace.md",
+        "sha256": "a1362cd78fb9cc322882f463a65a7ab8518f15272a2a52af6ae08981cb381f60"
       }
     ],
     "followupRepair": {

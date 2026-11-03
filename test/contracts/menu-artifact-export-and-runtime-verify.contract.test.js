@@ -229,3 +229,113 @@ test('failSignal/token are registered and token is not in required set', () => {
   const flattened = flattenStrings(requiredSet);
   assert.equal(flattened.includes('MENU_ARTIFACT_LOCK_MATCH_OK'), false);
 });
+
+
+// Real files and the unchanged production module at an isolated package namespace.
+// These are menu-query contracts, not an installed-app or native responder claim.
+function withMirroredMenuFixture(run) {
+  withTempDir((tmpDir) => {
+    const root = path.join(tmpDir, 'fixture-repo');
+    const copied = [
+      'src/menu/menu-artifact-lock.js', 'src/core/io/path-boundary.js',
+      'docs/OPS/ARTIFACTS/menu/menu.normalized.json', 'docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json',
+      'docs/OPS/STATUS/MENU_ARTIFACT_VERIFY_CANON.json',
+      'src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json',
+      'src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json',
+      'src/runtime-governance/docs/OPS/STATUS/MENU_ARTIFACT_VERIFY_CANON.json',
+    ];
+    for (const name of copied) {
+      const to = path.join(root, name);
+      fs.mkdirSync(path.dirname(to), { recursive: true });
+      fs.copyFileSync(path.join(REPO_ROOT, name), to);
+      assert.deepEqual(fs.readFileSync(to), fs.readFileSync(path.join(REPO_ROOT, name)));
+    }
+    const verifier = require(path.join(root, 'src/menu/menu-artifact-lock.js'));
+    const canonical = {
+      artifactPath: path.join(root, 'docs/OPS/ARTIFACTS/menu/menu.normalized.json'),
+      lockPath: path.join(root, 'docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json'),
+      verifyCanonPath: path.join(root, 'docs/OPS/STATUS/MENU_ARTIFACT_VERIFY_CANON.json'),
+    };
+    const mirrorArtifact = path.join(root, 'src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json');
+    const mirrorLock = path.join(root, 'src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json');
+    run({ verifier, canonical, mirrorArtifact, mirrorLock });
+  });
+}
+
+for (const mode of ['release', 'promotion']) test('correct packaged menu namespace passes ' + mode, () => {
+  withMirroredMenuFixture(({ verifier, mirrorArtifact, mirrorLock }) => {
+    const result = verifier.evaluateMenuArtifactLockState({ mode });
+    assert.equal(result.result, 'PASS', JSON.stringify(result));
+    assert.equal(result.exitCode, 0);
+    assert.equal(result.mismatch, false);
+    assert.deepEqual(result.issues, []);
+    assert.equal(result.artifactPath, mirrorArtifact);
+    assert.equal(result.lockPath, mirrorLock);
+    assert.equal(result.expectedArtifactBytesSha256, result.actualArtifactBytesSha256);
+  });
+});
+
+test('explicit canonical menu namespace still passes both modes', () => {
+  withMirroredMenuFixture(({ verifier, canonical }) => {
+    for (const mode of ['release', 'promotion']) {
+      const result = verifier.evaluateMenuArtifactLockState({ ...canonical, mode });
+      assert.equal(result.result, 'PASS', JSON.stringify(result));
+      assert.equal(result.exitCode, 0);
+      assert.equal(result.mismatch, false);
+      assert.deepEqual(result.issues, []);
+    }
+  });
+});
+
+test('identical menu bytes in the opposite namespace never satisfy the selected lock', () => {
+  withMirroredMenuFixture(({ verifier, canonical, mirrorArtifact }) => {
+    for (const input of [{ artifactPath: canonical.artifactPath }, { artifactPath: mirrorArtifact, lockPath: canonical.lockPath }]) {
+      for (const mode of ['release', 'promotion']) {
+        const result = verifier.evaluateMenuArtifactLockState({ ...input, mode });
+        assert.equal(result.result, mode === 'promotion' ? 'FAIL' : 'WARN', JSON.stringify(result));
+        assert.equal(result.exitCode, mode === 'promotion' ? 1 : 0);
+        assert.equal(result.mismatch, true);
+        assert.equal(result.failSignalCode, 'E_MENU_ARTIFACT_TAMPER_OR_DRIFT');
+        assert.deepEqual(result.issues.map(row => row.code), ['LOCK_ARTIFACT_PATH_MISMATCH']);
+      }
+    }
+  });
+});
+
+test('packaged menu raw-byte tamper remains an isolated failure in both modes', () => {
+  withMirroredMenuFixture(({ verifier, mirrorArtifact }) => {
+    fs.appendFileSync(mirrorArtifact, ' ');
+    for (const mode of ['release', 'promotion']) {
+      const result = verifier.evaluateMenuArtifactLockState({ mode });
+      assert.equal(result.result, mode === 'promotion' ? 'FAIL' : 'WARN', JSON.stringify(result));
+      assert.equal(result.exitCode, mode === 'promotion' ? 1 : 0);
+      assert.notEqual(result.expectedArtifactBytesSha256, result.actualArtifactBytesSha256);
+      assert.deepEqual(result.issues.map(row => row.code), ['ARTIFACT_BYTES_HASH_MISMATCH']);
+    }
+  });
+});
+
+test('packaged menu wrong snapshot remains an isolated failure in both modes', () => {
+  withMirroredMenuFixture(({ verifier }) => {
+    for (const mode of ['release', 'promotion']) {
+      const result = verifier.evaluateMenuArtifactLockState({ mode, expectedSnapshotId: 'different-frozen-snapshot' });
+      assert.equal(result.result, mode === 'promotion' ? 'FAIL' : 'WARN', JSON.stringify(result));
+      assert.equal(result.exitCode, mode === 'promotion' ? 1 : 0);
+      assert.deepEqual(result.issues.map(row => row.code), ['EXPECTED_SNAPSHOT_ID_MISMATCH']);
+    }
+  });
+});
+
+test('packaged lock cannot select a parent namespace through its payload', () => {
+  withMirroredMenuFixture(({ verifier, mirrorLock }) => {
+    const lock = readJson(mirrorLock);
+    lock.artifactPath = '../outside/menu.normalized.json';
+    writeJson(mirrorLock, lock);
+    for (const mode of ['release', 'promotion']) {
+      const result = verifier.evaluateMenuArtifactLockState({ mode });
+      assert.equal(result.result, mode === 'promotion' ? 'FAIL' : 'WARN', JSON.stringify(result));
+      assert.equal(result.exitCode, mode === 'promotion' ? 1 : 0);
+      assert.deepEqual(result.issues.map(row => row.code), ['LOCK_ARTIFACT_PATH_INVALID']);
+    }
+  });
+});
