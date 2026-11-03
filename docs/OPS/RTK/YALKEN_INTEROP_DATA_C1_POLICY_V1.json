@@ -919,7 +919,10 @@
     "scripts/ops/ops-synth-negative.test.cjs",
     "src/menu/menu-artifact-lock.js",
     "test/contracts/menu-artifact-export-and-runtime-verify.contract.test.js",
-    "docs/tasks/2026-11-03--mac-menu-artifact-namespace.md"
+    "docs/tasks/2026-11-03--mac-menu-artifact-namespace.md",
+    "test/unit/sector-m-native-history-ownership.test.js",
+    "test/fixtures/menu/edit-history-native-roles.v1.json",
+    "docs/tasks/2026-11-03--writer-native-history.md"
   ],
   "protectedFiles": [
     {
@@ -1148,7 +1151,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "cea7e85fd14a6acba4327e1444ec3ee64595e3abe95b639b238ca866f404fc73"
+        "sha256": "92a90857259a15cd6b0903c1c59dd438698c37e7696d135567861563f6940bcf"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1160,7 +1163,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "db66aa6ebc1304c2d6d66f36bd8b22b830c47dbc6f652e396a81c89d52234e92"
+        "sha256": "9298b9017a5bbfe0d19eface28e341aea30b9a3863dfeec3f64e0d676422d2b5"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1288,7 +1291,7 @@
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "4d623a4f06d7d6a0a6fb4f29a28669fb406b180465fbfd46e383b70f394de7fb"
+        "sha256": "8eec3fd967e62f4f25d0a9eb0460d2f406a27e262b8fc05b429f63c037c82011"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -1324,7 +1327,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "fcf00c3537168d56c782d1017802dff20bf3e4608267e92bbe14cb8707257c1f"
+        "sha256": "9170b1a654e5f3aefe3769a176d593c7a0b1ad3afb304c3a23cf6badceaf7444"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2728,7 +2731,7 @@
       },
       {
         "path": "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js",
-        "sha256": "ac1d1b840835639a316a54af3adcbc96451d16d20d7a02c73f7a5c877e53f5e4"
+        "sha256": "443e191854341e64dd0e6280e81f4491df280e45b2c3e11f9e45443ad7baceeb"
       },
       {
         "path": "test/contracts/rtk-word-list-pattern.contract.test.js",
@@ -2840,15 +2843,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "b6aa968e169d2b1c2852d6889e8887258b009e36ea8c10b61533c775ee9f4290"
+        "sha256": "9f15c3935e625546be0bdd110af666f892e9aa24c0533bfb5dff5cacdbb02ac1"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "540cb3a7198b00797f5351e8f38b4bffa76333e066d8f1ec5cabf1aaec3f2c38"
+        "sha256": "9ba4f4032e76977b67df198105a97f97394d63928863995c897a8fa32088b403"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "3249446b9ed61c50580ddd0dd2f72743090ff6757ab85a6d5d61d5375394a2a9"
+        "sha256": "ac7c47ed93ba73e4e7b23174ca9ba0dc92c262bf0ba6035dddc4d853e599c5d9"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3388,7 +3391,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "793aa86c8f58735efc976f999700f7dac7306cec2383633f5a3ab39397a4e6f9"
+        "sha256": "e46d99c1fa9e9fc56e7fa5f17ff1b46462560eb8da46be05102bc4501d218ed3"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3628,15 +3631,15 @@
       },
       {
         "path": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-        "sha256": "3a9c4a702ea8978fc9c6bb78e2a92f6cf5213eedbcd55f34be6802354184c8ad"
+        "sha256": "ac4fdf95753fbe0b342f99246b94cb0d5e82d289418946cc1ad3b3929eba15d9"
       },
       {
         "path": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
-        "sha256": "123429e24a88f02708f89f9563a18fbe84781df593f3dbc19b8ace25b505d375"
+        "sha256": "7dccb519c7b1c5f18c8051c0dac9570acffb4b0ca09933ba539578dd31646c71"
       },
       {
         "path": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
-        "sha256": "5b6a4c5f5bf178517ddccfb2d041144e53f5e54ac5244109a54c65de6eed3272"
+        "sha256": "41b6ea10d8094698d7017e9fdc8088b62b8808bb9dfd9d87cab0f73cd0bf9e0b"
       },
       {
         "path": "docs/tasks/2026-10-23--mac-native-select-all.md",
@@ -3644,27 +3647,27 @@
       },
       {
         "path": "src/menu/menu-config.v2.json",
-        "sha256": "96da4dd2e76e572804a50673a07dee3883d9ae771f766ea3ffe4c6cb9fba48cc"
+        "sha256": "8460a56d479599f35df7fc90e94fc5521beffe251bc00f9701eb657f62785cfb"
       },
       {
         "path": "src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-        "sha256": "3a9c4a702ea8978fc9c6bb78e2a92f6cf5213eedbcd55f34be6802354184c8ad"
+        "sha256": "ac4fdf95753fbe0b342f99246b94cb0d5e82d289418946cc1ad3b3929eba15d9"
       },
       {
         "path": "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
-        "sha256": "123429e24a88f02708f89f9563a18fbe84781df593f3dbc19b8ace25b505d375"
+        "sha256": "7dccb519c7b1c5f18c8051c0dac9570acffb4b0ca09933ba539578dd31646c71"
       },
       {
         "path": "test/unit/keyboard-shortcuts.test.js",
-        "sha256": "e7acd7f13d3f2b537c6621761502ddb6d8dd16d21c97c326d43cbf94d6b3fc45"
+        "sha256": "974f660079d82ce487a9eb2a76ff0a1781bf57a8777115bf01186df3f2ce52f7"
       },
       {
         "path": "scripts/ops/menu-config-normalize.mjs",
-        "sha256": "6f29e916e8561c7ad96af5418129e5d13e3dd781e02719bbe404c76bb452b34a"
+        "sha256": "273d99906cc57fa1fed210717780c08171859a0e9efecda979dad14488c9be85"
       },
       {
         "path": "scripts/run-tests.js",
-        "sha256": "8ceab9ca568fdab5bd6f04613fe40880d64046aede0cafaad16f3dbae2e6430e"
+        "sha256": "baa06fbd364e0b3e298f52206d10e0c022b0ef625f0d8bf88d7f04f2cc72fe64"
       },
       {
         "path": "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
@@ -4189,6 +4192,22 @@
       {
         "path": "docs/tasks/2026-11-03--mac-menu-artifact-namespace.md",
         "sha256": "a1362cd78fb9cc322882f463a65a7ab8518f15272a2a52af6ae08981cb381f60"
+      },
+      {
+        "path": "test/unit/sector-m-native-history-ownership.test.js",
+        "sha256": "b67ae5ace3690eb0ba368fb26e9269106c22d05f2dc6b6916c7326a1c8d214a7"
+      },
+      {
+        "path": "test/fixtures/menu/edit-history-native-roles.v1.json",
+        "sha256": "6eddb09e789abfa0513416b654f0340625817f3a59b1c5046f6261a11e8ec0ca"
+      },
+      {
+        "path": "docs/tasks/2026-11-03--writer-native-history.md",
+        "sha256": "33b3bd8279eb2890a21b4a09a7f6aa6dc77e3632c85e5f962163e866aa9c98e2"
+      },
+      {
+        "path": "src/menu/menu-locale.catalog.v1.json",
+        "sha256": "56efe4a0f34bdb3b6719be2c432a0a8ab477ec272b3899d41fcb7bddbabe7970"
       }
     ],
     "followupRepair": {

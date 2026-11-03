@@ -9,6 +9,13 @@
       "createdFromCommit": "59ed787fb75769222d880cb9d5769e02ed614b0e"
     },
     {
+      "id": "menu-default-desktop-minimal-kernel-history-20261103",
+      "normalizedHashSha256": "927766b8786be74c5ee01dae7528496f3f93ce9167f5ebcb8bca82e4541bc17e",
+      "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
+      "createdAt": "2026-11-03T14:57:06.511Z",
+      "createdFromCommit": "0f83cada12a766f82e66abe2ae6c85a4e1876ee2"
+    },
+    {
       "id": "menu-default-desktop-minimal-select-all-20261023",
       "normalizedHashSha256": "50aa09a87b32a7989fc908ee86c172e317fe22954bafe4c338a1dfd04ec5c541",
       "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",

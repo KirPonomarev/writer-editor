@@ -96,16 +96,16 @@ test('native Mac Cut edits only a live focused authoring target once; other keys
 
 // Actual production functions and real artifact reads at a finite Electron boundary;
 // these tests do not execute an OS responder or prove native Cmd+A selection.
-const SELECT_ALL_SNAPSHOT = 'menu-default-desktop-minimal-undo-redo-20261025';
-async function nativeMenuRoleHarness(verificationOverrides = {}) {
+const SELECT_ALL_SNAPSHOT = 'menu-default-desktop-minimal-kernel-history-20261103';
+async function nativeMenuRoleHarness(verificationOverrides = {}, platform = 'darwin') {
   const fs = require('node:fs'), vm = require('node:vm');
   const source = await readFile(join(process.cwd(), 'src/main.js'), 'utf8');
   const readJson = file => JSON.parse(fs.readFileSync(join(process.cwd(), file), 'utf8'));
   const artifactPort = require('../../src/menu/menu-artifact-lock.js');
   const sourcePolicy = require('../../src/menu/menu-runtime-source-policy.js');
   const normalizer = require('../../src/menu/menu-config-normalizer.js');
-  const verificationInputs = [], verificationStates = [], warnings = [];
-  const context = { process: { platform: 'darwin', env: {}, argv: [] }, path: require('node:path'), fsSync: fs,
+  const verificationInputs = [], verificationStates = [], warnings = [], commandCalls = [];
+  const context = { process: { platform, env: {}, argv: [] }, path: require('node:path'), fsSync: fs,
     DEFAULT_MENU_ARTIFACT_PATH: artifactPort.DEFAULT_ARTIFACT_PATH, MENU_ARTIFACT_RESULT_FAIL: artifactPort.RESULT_FAIL,
     resolveMenuArtifactModeFromInput: artifactPort.resolveModeFromInput,
     ...sourcePolicy, normalizeMenuConfigPipeline: normalizer.normalizeMenuConfigPipeline,
@@ -114,13 +114,16 @@ async function nativeMenuRoleHarness(verificationOverrides = {}) {
       verificationInputs.push(JSON.parse(JSON.stringify(input)));
       const state = artifactPort.evaluateMenuArtifactLockState({ ...input, ...verificationOverrides }); verificationStates.push(state); return state;
     },
-    buildCommandClickHandler() { throw Error('FINITE_PORT_UNEXPECTED_PRODUCT_COMMAND'); },
+    resolveMenuCommandId: require('../../src/menu/command-namespace-canon.js').resolveMenuCommandId,
+    dispatchMenuCommand(commandId, payload, options) { commandCalls.push({ commandId, payload, options }); },
+    logDevError(_where, error) { throw error; },
   };
   vm.createContext(context);
   const names = ['normalizeRuntimeString', 'isRuntimeRecord', 'createRuntimeMenuPolicyError', 'emitRuntimeMenuAdvisory',
     'parseRuntimeJsonInput', 'resolveRuntimeMenuLocaleCatalog', 'normalizeRuntimeOverlayPayload', 'normalizeRuntimeContextPayload',
     'resolveRuntimeMenuArtifactPath', 'resolveRawConfigMixAttempt', 'readMenuArtifactDocument', 'resolveRuntimeMenuBuildConfig',
-    'buildMenuItemFromConfig', 'resolveRuntimeMenuArtifactMode', 'verifyMenuArtifactLockAtRuntime'];
+    'buildMenuItemFromConfig', 'resolveRuntimeMenuArtifactMode', 'verifyMenuArtifactLockAtRuntime',
+    'resolveMenuAccelerator', 'buildConfiguredMenuCommandPayload', 'buildCommandClickHandler', 'isMenuLocalCustomizationCommandId'];
   const functions = names.map(name => {
     const start = source.indexOf('function ' + name + '('), end = source.indexOf('\n}\n', start);
     assert.ok(start >= 0 && end > start, 'actual Main function exists: ' + name); return source.slice(start, end + 2);
@@ -128,7 +131,13 @@ async function nativeMenuRoleHarness(verificationOverrides = {}) {
   const roleStart = source.indexOf('const ALLOWED_MENU_ROLES ='), roleEnd = source.indexOf('const MENU_RUNTIME_OVERLAYS_ENV_PATH', roleStart);
   assert.ok(roleStart >= 0 && roleEnd > roleStart);
   const constants = ['MENU_RUNTIME_OVERLAYS_ENV_PATH', 'MENU_RUNTIME_OVERLAYS_ENV_JSON', 'MENU_RUNTIME_CONTEXT_ENV_PATH',
-    'MENU_RUNTIME_CONTEXT_ENV_JSON', 'MENU_RUNTIME_ARTIFACT_ENV_PATH', 'MENU_RUNTIME_RAW_CONFIG_ENV_PATH', 'MENU_RUNTIME_LEGACY_RAW_CONFIG_ENV_PATH'];
+    'MENU_RUNTIME_CONTEXT_ENV_JSON', 'MENU_RUNTIME_ARTIFACT_ENV_PATH', 'MENU_RUNTIME_RAW_CONFIG_ENV_PATH', 'MENU_RUNTIME_LEGACY_RAW_CONFIG_ENV_PATH',
+    'MENU_ACCELERATOR_TOKENS', 'COMMAND_BUS_ROUTE', 'MENU_LOCAL_CUSTOMIZATION_COMMAND_IDS',
+    'MENU_CUSTOMIZATION_COMMAND_RESET', 'MENU_CUSTOMIZATION_COMMAND_TOGGLE_VISIBILITY',
+    'MENU_CUSTOMIZATION_COMMAND_MOVE_EARLIER', 'MENU_CUSTOMIZATION_COMMAND_MOVE_LATER',
+    'MENU_PRESENTATION_COMMAND_CLASSIC', 'MENU_PRESENTATION_COMMAND_COMPACT',
+    'MENU_LOCALE_COMMAND_BASE', 'MENU_LOCALE_COMMAND_RU', 'MENU_LOCALE_COMMAND_EN'];
+  constants.sort((a, b) => source.indexOf('const ' + a + ' =') - source.indexOf('const ' + b + ' ='));
   vm.runInContext(source.slice(roleStart, roleEnd) + constants.map(name => {
     const start = source.indexOf('const ' + name + ' ='); assert.ok(start >= 0); return source.slice(start, source.indexOf(';', start) + 1);
   }).join('\n') + '\n' + functions.join('\n'), context);
@@ -150,7 +159,14 @@ async function nativeMenuRoleHarness(verificationOverrides = {}) {
     const projected = edit.items.find(node => node.id === 'edit-select-all'); assert.equal(projected.canonicalCmdId, null);
     return item;
   };
-  return { context, config, readJson, normalize, nativeItem, verificationInputs, verificationStates, warnings };
+  const historical = readJson('test/fixtures/menu/edit-history-native-roles.v1.json');
+  assert.equal(require('node:crypto').createHash('sha256').update(fs.readFileSync(join(process.cwd(),
+    'test/fixtures/menu/edit-history-native-roles.v1.json'))).digest('hex'),
+  '6eddb09e789abfa0513416b654f0340625817f3a59b1c5046f6261a11e8ec0ca', 'predecessor fixture remains byte-exact');
+  const historicalConfig = JSON.parse(JSON.stringify(config));
+  historicalConfig.menus.find(node => node.id === 'edit').items = historical.menu.items;
+  return { context, config, readJson, normalize, nativeItem, verificationInputs, verificationStates, warnings,
+    commandCalls, historical, historicalConfig };
 }
 
 test('native Select All reaches the actual default packaged artifact resolver and Main builder', async () => {
@@ -281,8 +297,8 @@ test('actual menu CLI implicit promotion default matches the successor while the
   }
 });
 
-// Finite projection of actual production menu functions. Native INPUT, TEXTAREA
-// and Writer Undo/Redo still require independent OS responder execution.
+// Frozen predecessor roles remain supported by the actual builder. They are a
+// historical compatibility control, not the current PM-aware command contract.
 function assertNativeHistoryProjection(h, config) {
   h.nativeItem(config);
   const edit = config.menus.find(menu => menu.id === 'edit');
@@ -304,9 +320,9 @@ function assertNativeHistoryProjection(h, config) {
 }
 
 for (const role of ['undo', 'redo']) {
-  test('native ' + role + ' reaches the actual default packaged artifact and Main builder', async () => {
+  test('historical native ' + role + ' retains exact predecessor projection and actual Main role builder', async () => {
     const h = await nativeMenuRoleHarness();
-    const runtime = h.context.resolveRuntimeMenuBuildConfig('release');
+    const runtime = h.normalize(h.historicalConfig);
     h.nativeItem(runtime);
     const edit = runtime.menus.find(menu => menu.id === 'edit'); assert.ok(edit);
     const built = h.context.buildMenuItemFromConfig(edit, runtime, 'menus.edit');
@@ -315,16 +331,15 @@ for (const role of ['undo', 'redo']) {
     assert.equal(item.role, role); assert.equal(item.enabled, true); assert.equal(item.visible, true);
     for (const key of ['command', 'actionId', 'click', 'label', 'accelerator']) assert.equal(item[key], undefined, key);
     assert.equal(edit.items.find(node => node.id === 'edit-' + role).canonicalCmdId, null);
-    const artifact = h.readJson('docs/OPS/ARTIFACTS/menu/menu.normalized.json');
-    assert.equal(artifact.snapshotId, SELECT_ALL_SNAPSHOT);
-    assert.deepEqual(h.readJson('src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json'), artifact);
-    assert.deepEqual(JSON.parse(JSON.stringify(runtime.menus)), artifact.menus);
-    assert.deepEqual(h.normalize().menus, artifact.menus);
+    assert.equal(h.historical.snapshotId, 'menu-default-desktop-minimal-undo-redo-20261025');
+    assert.equal(h.historical.sourceCommit, 'c6daca66506e1ab650409e859f87e52f719e93bb');
+    assert.deepEqual(JSON.parse(JSON.stringify(edit)), h.historical.normalizedMenu);
+    assert.deepEqual(h.normalize(h.historicalConfig).menus.find(menu => menu.id === 'edit'), h.historical.normalizedMenu);
   });
 }
 
-test('canonical native Undo and Redo remain unconditional across all admitted child-control contexts', async () => {
-  const h = await nativeMenuRoleHarness(), edit = h.config.menus.find(menu => menu.id === 'edit');
+test('historical native Undo and Redo retain unconditional role semantics in all child-control contexts', async () => {
+  const h = await nativeMenuRoleHarness(), edit = h.historicalConfig.menus.find(menu => menu.id === 'edit');
   assert.ok(edit);
   assert.deepEqual(edit.items.map(item => item.id), ['edit-undo', 'edit-redo', 'edit-copy', 'edit-select-all']);
   for (const role of ['undo', 'redo']) {
@@ -336,17 +351,17 @@ test('canonical native Undo and Redo remain unconditional across all admitted ch
   }
   for (const profile of ['minimal', 'pro', 'guru']) for (const stage of ['X1', 'X2', 'X3', 'X4']) {
     for (const mode of ['offline', 'web_subset']) for (const hasDocument of [false, true]) for (const selectionExists of [false, true]) {
-      assertNativeHistoryProjection(h, h.normalize(h.config, { profile, stage, mode, hasDocument, selectionExists }));
+      assertNativeHistoryProjection(h, h.normalize(h.historicalConfig, { profile, stage, mode, hasDocument, selectionExists }));
     }
   }
 });
 
-test('native history semantic oracle detects each role omission hidden gate unsupported role and command bypass', async () => {
+test('historical history-role oracle retains each omission hidden gate unsupported role and command bypass refusal', async () => {
   const h = await nativeMenuRoleHarness();
-  assertNativeHistoryProjection(h, h.normalize());
+  assertNativeHistoryProjection(h, h.normalize(h.historicalConfig));
   for (const role of ['undo', 'redo']) {
     for (const mutation of ['omit', 'hidden', 'mode-gated', 'profile-gated', 'stage-gated', 'unsupported', 'command-bypass']) {
-      const config = JSON.parse(JSON.stringify(h.config)), edit = config.menus.find(node => node.id === 'edit');
+      const config = JSON.parse(JSON.stringify(h.historicalConfig)), edit = config.menus.find(node => node.id === 'edit');
       const item = edit.items.find(node => node.id === 'edit-' + role); assert.ok(item, 'lawful mutation source ' + role);
       if (mutation === 'omit') edit.items = edit.items.filter(node => node !== item);
       if (mutation === 'hidden') item.visible = false;
@@ -358,6 +373,62 @@ test('native history semantic oracle detects each role omission hidden gate unsu
       assert.throws(() => assertNativeHistoryProjection(h, h.normalize(config)), error => error.code === 'ERR_ASSERTION'
         || mutation === 'unsupported' && error.message.includes('Unsupported menu role'), role + ': ' + mutation);
     }
+  }
+});
+
+function assertCurrentHistoryProjection(h, config, platform = 'darwin') {
+  h.nativeItem(config);
+  const edit = config.menus.find(menu => menu.id === 'edit'); assert.ok(edit);
+  const built = h.context.buildMenuItemFromConfig(edit, config, 'menus.edit');
+  assert.deepEqual(Array.from(built.submenu, item => item.id), ['edit-undo', 'edit-redo', 'edit-copy', 'edit-select-all']);
+  for (const action of ['undo', 'redo']) {
+    const item = built.submenu.find(node => node.id === 'edit-' + action), commandId = 'cmd.project.edit.' + action;
+    assert.ok(item); assert.equal(item.role, undefined); assert.equal(item.enabled, true); assert.equal(item.visible, true);
+    assert.equal(item.label, action === 'undo' ? 'Undo' : 'Redo'); assert.equal(typeof item.click, 'function');
+    assert.equal(item.accelerator, action === 'undo' ? 'CmdOrCtrl+Z' : platform === 'win32' ? 'Ctrl+Y' : 'CmdOrCtrl+Shift+Z');
+    assert.equal(edit.items.find(node => node.id === 'edit-' + action).canonicalCmdId, commandId);
+    const before = h.commandCalls.length; item.click();
+    assert.equal(h.commandCalls.length, before + 1);
+    assert.deepEqual(JSON.parse(JSON.stringify(h.commandCalls.at(-1))), { commandId, payload: {}, options: { route: 'command.bus' } });
+  }
+}
+
+test('current packaged history commands use actual builder click and canonical bus route on existing three platforms', async () => {
+  for (const platform of ['darwin', 'win32', 'linux']) {
+    const h = await nativeMenuRoleHarness({}, platform), runtime = h.context.resolveRuntimeMenuBuildConfig('promotion');
+    assertCurrentHistoryProjection(h, runtime, platform);
+    const artifact = h.readJson('docs/OPS/ARTIFACTS/menu/menu.normalized.json');
+    assert.equal(artifact.snapshotId, SELECT_ALL_SNAPSHOT);
+    assert.deepEqual(h.readJson('src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json'), artifact);
+    assert.deepEqual(JSON.parse(JSON.stringify(runtime.menus)), artifact.menus);
+    assert.deepEqual(h.normalize().menus, artifact.menus);
+  }
+});
+
+test('current canonical history stays available across every admitted child-control context without Writer visibility authority', async () => {
+  const h = await nativeMenuRoleHarness();
+  for (const profile of ['minimal', 'pro', 'guru']) for (const stage of ['X1', 'X2', 'X3', 'X4']) {
+    for (const mode of ['offline', 'web_subset']) for (const hasDocument of [false, true]) for (const selectionExists of [false, true]) {
+      assertCurrentHistoryProjection(h, h.normalize(h.config, { profile, stage, mode, hasDocument, selectionExists }));
+    }
+  }
+});
+
+test('current history oracle refuses role bypass, wrong commands, missing intent and hidden or gated menu entries', async () => {
+  const h = await nativeMenuRoleHarness(); assertCurrentHistoryProjection(h, h.normalize());
+  for (const action of ['undo', 'redo']) for (const mutation of ['omit', 'hidden', 'mode', 'profile', 'stage', 'role', 'wrong-command', 'missing-command', 'accelerator']) {
+    const config = JSON.parse(JSON.stringify(h.config)), edit = config.menus.find(menu => menu.id === 'edit');
+    const item = edit.items.find(node => node.id === 'edit-' + action);
+    if (mutation === 'omit') edit.items = edit.items.filter(node => node !== item);
+    if (mutation === 'hidden') item.visible = false;
+    if (mutation === 'mode') item.mode = ['web_subset'];
+    if (mutation === 'profile') item.profile = ['guru'];
+    if (mutation === 'stage') item.stage = ['X4'];
+    if (mutation === 'role') { delete item.command; item.role = action; }
+    if (mutation === 'wrong-command') item.command = 'cmd.project.save';
+    if (mutation === 'missing-command') delete item.command;
+    if (mutation === 'accelerator') item.accelerator = 'CmdOrCtrl+S';
+    assert.throws(() => assertCurrentHistoryProjection(h, h.normalize(config)), error => error.code === 'ERR_ASSERTION', action + ':' + mutation);
   }
 });
 
@@ -455,6 +526,6 @@ for (const mode of ['release', 'promotion']) {
     assert.equal(state.mode, mode); assert.equal(state.result, 'PASS');
     assert.equal(state.exitCode, 0); assert.equal(state.mismatch, false);
     assert.deepEqual(state.issues, []); assert.equal(h.warnings.length, 0);
-    assertNativeHistoryProjection(h, h.context.resolveRuntimeMenuBuildConfig(mode));
+    assertCurrentHistoryProjection(h, h.context.resolveRuntimeMenuBuildConfig(mode));
   });
 }

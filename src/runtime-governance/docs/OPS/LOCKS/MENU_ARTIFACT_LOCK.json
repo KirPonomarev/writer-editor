@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "artifactPath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-  "normalizedHashSha256": "346b5b8f42e8f412bc0d07bf6130a9d07f7ff8728ed1b625737b8afa1f9edeb1",
-  "artifactBytesSha256": "3a9c4a702ea8978fc9c6bb78e2a92f6cf5213eedbcd55f34be6802354184c8ad",
-  "snapshotId": "menu-default-desktop-minimal-undo-redo-20261025",
+  "normalizedHashSha256": "927766b8786be74c5ee01dae7528496f3f93ce9167f5ebcb8bca82e4541bc17e",
+  "artifactBytesSha256": "ac4fdf95753fbe0b342f99246b94cb0d5e82d289418946cc1ad3b3929eba15d9",
+  "snapshotId": "menu-default-desktop-minimal-kernel-history-20261103",
   "hashMethod": "sha256(raw-file-bytes)",
-  "lockedAt": "2026-10-25T11:36:30.897Z",
-  "lockedFromCommit": "67d574188a405bbdcf289f48828cd3123744f4ef"
+  "lockedAt": "2026-11-03T14:57:06.610Z",
+  "lockedFromCommit": "0f83cada12a766f82e66abe2ae6c85a4e1876ee2"
 }
