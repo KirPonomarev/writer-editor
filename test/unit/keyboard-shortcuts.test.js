@@ -97,7 +97,7 @@ test('native Mac Cut edits only a live focused authoring target once; other keys
 // Actual production functions and real artifact reads at a finite Electron boundary;
 // these tests do not execute an OS responder or prove native Cmd+A selection.
 const SELECT_ALL_SNAPSHOT = 'menu-default-desktop-minimal-undo-redo-20261025';
-async function nativeMenuRoleHarness() {
+async function nativeMenuRoleHarness(verificationOverrides = {}) {
   const fs = require('node:fs'), vm = require('node:vm');
   const source = await readFile(join(process.cwd(), 'src/main.js'), 'utf8');
   const readJson = file => JSON.parse(fs.readFileSync(join(process.cwd(), file), 'utf8'));
@@ -112,7 +112,7 @@ async function nativeMenuRoleHarness() {
     console: { warn: message => warnings.push(message) },
     evaluateMenuArtifactLockState(input) {
       verificationInputs.push(JSON.parse(JSON.stringify(input)));
-      const state = artifactPort.evaluateMenuArtifactLockState(input); verificationStates.push(state); return state;
+      const state = artifactPort.evaluateMenuArtifactLockState({ ...input, ...verificationOverrides }); verificationStates.push(state); return state;
     },
     buildCommandClickHandler() { throw Error('FINITE_PORT_UNEXPECTED_PRODUCT_COMMAND'); },
   };
@@ -200,7 +200,7 @@ test('native Select All semantic oracle detects omission hidden gated and unsupp
 });
 
 test('actual runtime menu verification requests the successor and retains strict failure and old path advisory', async () => {
-  const h = await nativeMenuRoleHarness(); h.context.verifyMenuArtifactLockAtRuntime();
+  const h = await nativeMenuRoleHarness({ lockPath: join(process.cwd(), 'docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json') }); h.context.verifyMenuArtifactLockAtRuntime();
   assert.equal(h.verificationInputs.length, 1); assert.equal(h.verificationInputs[0].expectedSnapshotId, SELECT_ALL_SNAPSHOT);
   const state = h.verificationStates[0], artifact = h.readJson('src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json');
   assert.equal(state.issues.some(row => row.code === 'EXPECTED_SNAPSHOT_ID_MISMATCH'), artifact.snapshotId !== SELECT_ALL_SNAPSHOT);
@@ -438,5 +438,23 @@ for (const platform of ['darwin', 'win32']) {
         assert.equal(h.prevented, 1); assert.deepEqual(h.commands, [id]); assert.equal(h.stopped, 0);
       }
     }
+  });
+}
+
+
+// Actual Main defaults use the shipped namespace; the older advisory case
+// above explicitly crosses namespaces and retains every original assertion.
+for (const mode of ['release', 'promotion']) {
+  test('actual Main correct packaged menu verification passes ' + mode + ' without an advisory', async () => {
+    const h = await nativeMenuRoleHarness();
+    if (mode === 'promotion') h.context.process.argv = ['--promotionMode=true'];
+    assert.doesNotThrow(() => h.context.verifyMenuArtifactLockAtRuntime());
+    assert.equal(h.verificationInputs.length, 1);
+    assert.equal(h.verificationInputs[0].expectedSnapshotId, SELECT_ALL_SNAPSHOT);
+    const state = h.verificationStates[0];
+    assert.equal(state.mode, mode); assert.equal(state.result, 'PASS');
+    assert.equal(state.exitCode, 0); assert.equal(state.mismatch, false);
+    assert.deepEqual(state.issues, []); assert.equal(h.warnings.length, 0);
+    assertNativeHistoryProjection(h, h.context.resolveRuntimeMenuBuildConfig(mode));
   });
 }

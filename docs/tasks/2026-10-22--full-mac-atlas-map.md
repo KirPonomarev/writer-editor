@@ -235,3 +235,47 @@ AGENT_FINAL_REPORT_V1 and CODEX_OUTPUT_POLICY: exactly one text block, KEY: VALU
 ## FAIL_PROTOCOL
 
 Record expected/actual, exact fixture/seed, source/build/profile identities, hashes, command/exit and one next hypothesis. Stop the loop after three identical signatures. Do not hide actual failure with fallback/test deletion/skip/self-PASS or substitute old evidence for current execution. Native input or observation-method mistakes remain raw evidence and require a new frozen method before retry.
+
+
+# Full macOS factual remainder — 2026-11-03
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: 6861258476de5b86840330b0136675911b52fe6b
+CLAIM_BOUNDARY: Source and already observed bounded native facts only; qualification17 stays UNKNOWN in unchanged FIRST_MAC_RELEASE_CUT_V2.json. This is a finite rendering of the existing plan, not a new tracker, graph or release authority. Detailed original task bytes above remain unchanged.
+
+| Existing row | Result | Current source observation | What was observed in app | Concrete gap and next result |
+|---|---|---|---|---|
+| MAC-01 MR-01 | Обязательства и scoped verdict | V2 scope query на M даёт VALID и NOT_READY; original109-node graph сохранён. | Scope query не является app acceptance. | Связать итоговый R, независимые proofs и exact permit с existing release gate; не менять UNKNOWN ради schema green. |
+| MAC-02 MR-02 | Writer обычный путь | Есть сцены, editor, Kernel и durable save routes. | M2 own app: exact scenes и author data сохранены после warm и true cold; это bounded исторический build. | На finalR выполнить frozen text/order/Unicode/IME/undo/save/reopen oracle и supported workload. |
+| MAC-03 MR-03 | Recovery, backup, conflict, history | Есть autosave, dirty-admission, lifecycle и readable recovery contracts. | Полного fault/recovery app proof на finalR здесь нет. | Отдельные maintained faults и actual restart с независимым whole-file roster, без overwrite и power-loss преувеличения. |
+| MAC-04 MR-04A | TXT оба направления | Есть safe-create import и text export contracts. | App qualification finalR UNKNOWN; старые proofs не переименовывать. | Frozen Unicode/newline/scene-selection-book cases, donor/foreign readback через реальные routes. |
+| MAC-05 MR-04B | Markdown оба направления | Есть parser/serializer поддержанного IR и safe import. | Manual-map Markdown не заменяет Writer Markdown qualification. | Реальные supported import/export и явный loss/refusal ledger на finalR. |
+| MAC-06 MR-04C | Project Archive оба направления | Есть archive export/import и identity-rebind/recovery contracts. | App qualification полного author-data corpus на finalR UNKNOWN. | Независимый ZIP roster/bytes, actual import-as-new/edit/save/cold с maps/history/epochs и foreign protection. |
+| MAC-07 MR-04D | DOCX и разрешённый review | Есть worker import, minimal export и текущие review exceptions. | FinalR proof UNKNOWN; Word/nativeOffice остаётся PAUSED. | Поддержанный DOCX fixture и raw XML/Current/Original/comments/anchors reader через разрешённый product route, без снятия Office pause. |
+| MAC-08 MR-05 | Capability, entitlement и downgrade | Main использует exact V12 profile, Kernel revalidation и FREE_SAFE_DENY_PRO_DISABLED. | Нет полного stale/revoked/offline/downgrade app proof на finalR. | Фиксировать denial без потери author data, actual dispatch negatives; не включать pro или новые authority. |
+| MAC-09 MR-05 | Keyboard, focus, IME и a11y | Native menu roles и focus-aware clipboard routes сохранены. | M2 bounded navigation/selection есть; полная keyboard/IME/a11y матрица finalR UNKNOWN. | Actual supported Mac journey и parity; текущий namespace defect исправляется отдельно без смены menu form. |
+| MAC-10 MR-06 | Полный численный workload | Есть PERF-01..13 contract; proxy timing explicitly not accepted. | UNKNOWN_REQUIRES_APPROVED_EXACT_WORKLOAD_AND_ARTIFACT. | Один declared Writer+Atlas+WSE+Pulse+Continuity+epochs workload и независимые latency/RSS/cancel measurements. |
+| MAC-11 MR-07/MR-08 | Package, security и channel | Electron43.8.4; production audit0; frozen package policies и actual ASAR reader есть. | M2 unsigned owned app warm/cold и1479ASAR leaves проверены; это не qualified distribution. | Исправить ложный menu namespace failure, затем exact package/install/upgrade/rollback и разрешённый signing/channel proof; cache warning cause UNKNOWN. |
+| MAC-12 MR-09/MR-10 | Audits, owner permit, terminal | Existing release/evidence tools и scope guards не выдают signing/public authority. | FinalR/audits/exact permit ещё нет. | После immutable qualified R выполнить требуемые independent audits, authenticated exact owner permit и terminal readback. |
+| MAC-13 ATLAS_FOUNDATION | Atlas foundation | Есть anchor/book/projector/decision substrate contracts. | Bounded maps и источник-сцена наблюдались; вся foundation на finalR не квалифицирована. | Независимый anchor/book/projector reader и exact foundation claim на R. |
+| MAC-14 FULL_ATLAS_MAPS | Все Atlas stages/cells/projections | Есть bounded manual authoring, read surfaces, Plot/Idea/Meaning routes; это не all12/15/4 completion. | M2 own app: two explicit Meanings, Idea, exact scene navigation и cold retention; прочие cells/stages не выводятся из этого. | Закрывать конкретные gaps нижней12stage таблицы; genuine full15cells и four distinct projections на одном R. |
+| MAC-15 WSE_DECISION_MEMORY | WSE и память решений | Есть frozen intent/query/proposal/state/revision/series contracts и presentation models. | Полный WSE journey на finalR UNKNOWN. | Поддержанные intents/proposals/decisions/provenance/stale refusals через actual app и независимый reader; не считать Core-only proof app proof. |
+| MAC-16 PULSE_CONTINUITY | Pulse, continuity и history | Есть policy/ledger/formulas/privacy/local history и authored-correction routes. | Полная совместная нагрузка/restore/privacy qualification finalR UNKNOWN. | Независимо прочитать events/aggregates/full history/privacy/restore и simultaneous full-product workload. |
+| MAC-17 ENV-EPOCH-01 | ENV-EPOCH-01 | Configuration epochs относятся к existing WP303; immutable history и manuscript protected. | Итоговая exactR qualification UNKNOWN; прежний bounded ENV contour сохраняет свой SHA/build. | Actual before/after configuration epochs с независимым ledger/manuscript reader и всеми agreed configuration families. |
+
+| Existing Atlas stage | Concrete remainder |
+|---|---|
+| 00 Truth Binding и калибровка | Stage10 identity/lease/CAS contracts exist; prove exact source/build/profile and truth binding with independent calibration. |
+| 01 Exact Atlas vertical slice | Existing current-scene and manual-map vertical routes; repeat only missing exact full-scope acceptance, not an Atlas rewrite. |
+| 02 Полные ручные карты и legacy migration | Manual node/edge/group/attachment/portal/template and JSON/Markdown/PDF routes exist; qualify full authoring, legacy migration, undo and portability on R. |
+| 03 Plot, Idea и Meaning projections | Plot/Idea/Meaning source routes exist; bounded explicit promotions/navigation/cold observed on M2. Shared-object sync, reversible move, previews and complete projection evidence still need exactR proof. |
+| 04 Deterministic Atlas domain | Deterministic domain and exact-term mention contracts exist; qualify all agreed dimensions/scopes without turning derived data into author truth. |
+| 05 Полный Atlas UX | Overview/dossiers/matrices/heatmap/reports/diagnostics routes exist; complete explicit UI, quiet WRITE, keyboard/list/table parity and large-workload behavior need actual proof. |
+| 06 Time, fictional calendar и Continuity | Calendar/temporal anchors/continuity facts and ledgers exist; qualify exact/approximate/open ranges, perspectives, promises/disappearance/evidence and author correction. |
+| 07 Global language expansion и Deep | Concrete implementation gap: current default Deep decision UNAVAILABLE_LOCAL_STUB_ONLY, canAnalyze false, zero certified languages and zero-byte null resource. Requires actual allowed offline engine/resources/license and frozen corpus metrics for agreed RU/EN and other applicable tiers; GLOBAL-only is not replacement. |
+| 08 Advanced graph и cross-projection | Global/composite and cross-projection derived modules exist; actual advanced graph navigation, cancel/stale guards, cross-projection behavior and author-write separation need exact app proof. |
+| 09 Series, vocabularies и полная переносимость | Series/vocabulary and package/repeat-import contracts exist; qualify complete supported series portability and conflicts without full-history loss. |
+| 10 Comments, history и collab integration | Existing local comments/history/review contracts remain; current allowed DOCX routes required, wide mixed-provider work remains separately deferred and Office pause preserved. |
+| 11 Platform certification и program closure | Actual macOS27.0.1 build26A434 arm64 observed; final17rows require one immutable R, qualified channel, workload, audits and exact permit. CI Linux/Windows does not qualify those product releases. |
+
+Required analytical denominator remains fragment-or-selected-node, scene, book crossed with associations, plot-threads, knowledge, time, promises: all15cells. Plot, Idea, Meaning and Atlas are four separate projections. Writer/WSE/Pulse/Continuity/EnvironmentEpochs must coexist in the final workload. BlackBox after fullMac; no platform expansion, new encrypted product, authority promotion or history rewrite is made by this factual update.
