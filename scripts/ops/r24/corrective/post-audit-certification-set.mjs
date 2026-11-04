@@ -139803,6 +139803,10 @@ const R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_SUCCESSOR = Object.freeze({
   ...R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA,
   baseSha: "4a9779ae8b21d269db4ed4007c8a7ad0c553304e",
   baseTree: "550cae3566db5b7f3b447a874fb929e8d889a967",
+  bindings:Object.entries({
+    ...Object.fromEntries(R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR.bindings.map(({path,sha256})=>[path,sha256])),
+    ...Object.fromEntries(R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA.bindings.map(({path,sha256})=>[path,sha256])),
+  }).map(([path,sha256])=>({path,sha256})),
 });
 
 export function verifyR24InteropWordPromotionSuccessor({candidateSha='HEAD',git=defaultGit}={}){
