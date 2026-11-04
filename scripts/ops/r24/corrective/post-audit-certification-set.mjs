@@ -136688,7 +136688,7 @@ const R24_INTEROP_WRITER_PDF_ZERO_MARGINS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "e8ae43d2204615c2d46b10e2527086f7e70477377e5d462cfa57edf0991ae116"
+      "sha256": "22fa010ef09e425f4fa2cd2b126bad0443ee77bfb3cf59d52b06b6c300abb49b"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -137176,13 +137176,13 @@ const R24_INTEROP_WRITER_PDF_ZERO_MARGINS_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-04--writer-pdf-zero-margins.md",
-      "sha256": "495c43f6c961e79019bd4db19a4e72f7ac1136f288de8a261cc8b4cdbd52488c"
+      "sha256": "f50d2b4edc5f8286d9115e1d9142c97bb7aaea3c39585f7b77dba5b43176cd31"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "5d209a4d394bdafd31879d864547f68fe7dbec89d60b647650cb3032224bb422"
+      "sha256": "3864a3f80b5e9aef10bde9f008997cbcca1634c040d83c1a8a5f40b312c57443"
     }
   ]
 });

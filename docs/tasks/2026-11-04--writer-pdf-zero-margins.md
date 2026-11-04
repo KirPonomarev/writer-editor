@@ -87,6 +87,6 @@ Exactly AGENT_FINAL_REPORT_V1 nineteen keys in one text block, KEY: VALUE, basen
 
 Preserve all old source bodies, profiles/apps/raw/failures and genuine red. Correct observer/procedure mistakes separately without producer rerun absent changed conditions; no invented success, weakened requirement or retrospective identity relabel. Original first baseline failure and owner-interrupted attempt remain historical facts in predecessor closure.
 
-## SOURCE_CHECKPOINT
+### SOURCE_CHECKPOINT
 
 Frozen141-line append8f8e64da, whole test31ea08f3: actual unchanged-source RED738ee327 is163tests/153pass/10fail (8assertions and2parents), all original152 ordered outcomes pass. Product module66a355d3 changes only numeric margin interpretation; literal inverse is0961ab0f. Identical GREEN04827a93 is163of163/0skip-todo-cancel. Independent356516ba verifies ordered names, exact ten verdict transitions and original1125-line prefix. This WIP source proof is not a committed candidate, native or release acceptance.
