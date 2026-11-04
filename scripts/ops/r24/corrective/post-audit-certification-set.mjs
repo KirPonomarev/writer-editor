@@ -137747,7 +137747,600 @@ const R24_INTEROP_MANUAL_MAP_NATIVE_DIALOG_BUDGET_DELTA = Object.freeze({
     }
   ]
 });
-const R24_INTEROP_CURRENT_INPUTS_DELTA = R24_INTEROP_MANUAL_MAP_NATIVE_DIALOG_BUDGET_DELTA;
+const R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA = Object.freeze({
+  "id": "YALKEN_ATLAS_OFFLINE_SCENE_ANALYSIS_20261104",
+  "successorBaseSha": "da3df41cca30a952c77d16b6056c208e4fb8c374",
+  "successorBaseTree": "850f9cddd14432dfaf34707315e963dff16ba36d",
+  "bindings": [
+    {
+      "path": "src/main.js",
+      "sha256": "50b7bcac6691a32d0cddaa8e7046957805a519334c6fad0808ac5480a303fc9b"
+    },
+    {
+      "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "sha256": "39dbad55068bd3a93cce5f92b8036b46ef722831e8cd298243576cd7f7d5738d"
+    },
+    {
+      "path": "src/renderer/editor.bundle.js",
+      "sha256": "828d91dee4121fbf89fd1b0aafbe5ce09c752df573b87427d2bcc2998ad21b0e"
+    },
+    {
+      "path": "src/renderer/editor.js",
+      "sha256": "4cfd8001281491914562fda03dc72122528cad649b57581c5bd108b13e4b51ba"
+    },
+    {
+      "path": "docs/CONTEXT.md",
+      "sha256": "ed30a118a384a0ff75aa8b16a4a76b81a4e0d840ae1af4e8370ea83381a91a88"
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "sha256": "24e0da36e41368a0c9764ba52767bc9ffe5aa6dad38885c59711649772f0d331"
+    },
+    {
+      "path": "docs/WORKLOG.md",
+      "sha256": "964a426cb6bb063443fba09ee12c185efca38c6fbd5fc185d6f788cf63f988dc"
+    },
+    {
+      "path": "docs/ARCH_DIFF_LOG.md",
+      "sha256": "a717142018993d788a537fa22e49aa5cb9cb59d43a366a6090cb9111e103a035"
+    },
+    {
+      "path": "src/product/stage10ProductWiring.mjs",
+      "sha256": "30d10f86ccddd6aede0612bee45befe2d7b447cd6ecb9ac680666d0d18155160"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "f16c6b8b5df820880a118f5abeffdcdb274d1fd0ec334c9c6cef653df2880f3c"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "3813ba7a69f49def409c3be067fdcb7445f120ded73a99edd85dab565a4c3c7e"
+    },
+    {
+      "path": "scripts/ops/release-candidate.mjs",
+      "sha256": "cdf9bd0ca1e94c06c084837802c9042e3a3c5f8873f507855e8d2852532d8b90"
+    },
+    {
+      "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "sha256": "77387d5cd02b37713f03af0bfb84775cdd04780169149997f6496adb98b1e03f"
+    },
+    {
+      "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "sha256": "516cd55627a90ad96645562329d70e5026bdd938d3bc6a63c4de3afb949df335"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "736444da9a45ab53a6a4f2b9025fb3c8a3151da43c7e479eb04f0747573a3ea4"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
+      "sha256": "fdbd0fc50c37982e870266e421c196871dc22eec407ec4b7255a0edb8a5aa75f"
+    },
+    {
+      "path": "docs/tasks/2026-10-29--certification-applicable-inputs.md",
+      "sha256": "fbbad21ea2d91249b959abff64e14c1b4df4521284cafb219eff2745ed300b63"
+    },
+    {
+      "path": "test/unit/manual-map-scene-navigation.test.js",
+      "sha256": "62ccced5d75b82ad22ea4eab5db1b2edfb84cc65d5ee015c74933ac98c6b5eaf"
+    },
+    {
+      "path": "docs/tasks/2026-10-29--manual-map-scene-navigation.md",
+      "sha256": "709c12d4fc53b166f2fafb3cc1826806287ac0135ba35a8a846f5ffeca81ef65"
+    },
+    {
+      "path": "src/derived/atlas/deriveAtlasContinuityLedgerSurface.mjs",
+      "sha256": "fc41f18eed4756db0ab97b57bc637dec857cb6b1ff6af027a1ab5642f6d3cb58"
+    },
+    {
+      "path": "test/unit/r24-wp605-wse-revision-time-object-integration.test.js",
+      "sha256": "342bbe52162d3d2acbbdd7d8eaf263f0c09c90cfcfe0d73fa1da9e102b86b20f"
+    },
+    {
+      "path": "docs/tasks/2026-10-29--wse-semantic-diff.md",
+      "sha256": "3e775297841769968805d85b6adca492eeae1a9d33d366c3fe5f40e5b262a933"
+    },
+    {
+      "path": "scripts/ops/r24/corrective/rcv00b-current-head-effective-state-compiler.mjs",
+      "sha256": "2b559b5fc07d97ceddbd28700285603dfa9336a7982d2d4881c3f98440c6e67a"
+    },
+    {
+      "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "12395d379d836c705ff4d1898729f3098a68cb9da4feab3f7a35f788664487ac"
+    },
+    {
+      "path": "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs",
+      "sha256": "fb314243dc5f12ced34257efd30a556deacecfb2fc1f77a7ed945ac064f52944"
+    },
+    {
+      "path": "docs/tasks/2026-10-30--c1c-bounded-throughput.md",
+      "sha256": "0d425f8f86ab8aeb80d61e60960a146ed13a098262f38444b2062b060964d256"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "6cd2c3072ce07c3ea788a2e38c33c6a5e7ebb3de53d5a0c18a2f5e98872a2e09"
+    },
+    {
+      "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "5590989d9966748267260b55fad647a1c3254a0abf3bcb5fe87b32a795ddea1d"
+    },
+    {
+      "path": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "2e901d6eb1eeadd04af24efd0822a828b7a81123c0b4c63856edbe3bb47f5285"
+    },
+    {
+      "path": "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json",
+      "sha256": "42db0aa53d9e020ca24891f54da793f138432678e9fa20fd95681f1bfcabaac2"
+    },
+    {
+      "path": "docs/tasks/2026-10-30--pulse-authored-corrections.md",
+      "sha256": "66ebb5ce863c8c5c4d9eeaa2c7f400844ea3985b94728df57cde575ef1986637"
+    },
+    {
+      "path": "src/command/commandSurfaceKernel.js",
+      "sha256": "59cb92fe22ea14c09abae404eaec8838ba1bc9ebc6633751792045becc7faae9"
+    },
+    {
+      "path": "src/core/entitlement-law-v1.cjs",
+      "sha256": "a6fc1bbd56623fb6d5b9a6f75c7725bc41977b42a9cfab67559e4b1cc00fbc0f"
+    },
+    {
+      "path": "src/core/pulse-claim-v1.mjs",
+      "sha256": "5e29d24b917bd6b9fed39c6d308b8e209540ce5162b01537d00224517070bd52"
+    },
+    {
+      "path": "src/core/pulse-privacy-v1.mjs",
+      "sha256": "22ff796ae6299c60134dfca21bfaf0cf569d1fdb21e92e9ce12a7331144859b1"
+    },
+    {
+      "path": "src/renderer/commands/capabilityPolicy.mjs",
+      "sha256": "51e76ce9cef08701a8d204dbb705181ddaa4d4da9dc1d00e330d3f075b9dd75d"
+    },
+    {
+      "path": "src/renderer/commands/projectCommands.mjs",
+      "sha256": "169728f54626109d11aa96d65d6eb889396f03fad0b87ffba8018ba434cddf00"
+    },
+    {
+      "path": "src/renderer/pulseHistoryPresentationModel.mjs",
+      "sha256": "61456610aaadfd82448d8e6cc37d011abeace5e1b8867f0a7df61361779180bc"
+    },
+    {
+      "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "sha256": "c79b39d4d62fb44f58db7c51462bfd5f0f093605faa2e9d8d9130251d0fa6f0b"
+    },
+    {
+      "path": "test/unit/r24-wp804-pulse-privacy-integration.test.js",
+      "sha256": "d727eda4391567bb3b6f639e94c5a456b884c6d3642180f8b633f1b14d210bd4"
+    },
+    {
+      "path": "test/unit/r24-wp806-pulse-claim-integration.test.js",
+      "sha256": "e7daca4c36ea4812e4736d9a35ee43c1088e7790a7bfaab0de7f6d57ae4dc127"
+    },
+    {
+      "path": "test/unit/r24-wp806-pulse-claim-mutants.test.js",
+      "sha256": "f72790d67feefad1feb7bfe2d25ee5e489113913afdf7a80bfe1b78c7b89f4fe"
+    },
+    {
+      "path": "test/unit/paste-focus-signal.test.js",
+      "sha256": "2ae57c6c1488f121cb1c7b0c140b2c0e962ff3a5c11e031a11d91ae593ceaa0f"
+    },
+    {
+      "path": "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs",
+      "sha256": "73eaae3abff45fb2cedfc96ab8844ca86194a1684afcc7ba925716529e78910d"
+    },
+    {
+      "path": "docs/tasks/2026-10-30--navigator-save-counter-freshness.md",
+      "sha256": "3f10553d3863bee15fcffe7a63f1ceb89758eb54e208edbdb68a9f19467a9510"
+    },
+    {
+      "path": "test/unit/navigator-derived-counters-renderer.test.js",
+      "sha256": "cbb7da96b6acfc620b76dc56337d0dc3d311c83356408fc252d4003ea91df203"
+    },
+    {
+      "path": "test/contracts/rtk-word-nested-tables.contract.test.js",
+      "sha256": "ba1268a8ecbe5fda9b174af3d805f39c0049c211807f28dbf74cc9672de5b871"
+    },
+    {
+      "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
+      "sha256": "dfaacea4ce201e44ffc3ce9bce7c15a9c65363e43f2879edacf3c788a88b98b3"
+    },
+    {
+      "path": "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
+      "sha256": "09a412ad89a7485be846547bd6feef614e86c429b3dc2dcb9c7c64a021d77682"
+    },
+    {
+      "path": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "ed7c8c6dd7caecbc0b325c381be3790602b4ba8e9ae45f5ca0be62411801930b"
+    },
+    {
+      "path": "scripts/ops/r24/corrective/current-bindings-finalizer.mjs",
+      "sha256": "a16a7f58f9557922a3590ea46f3ee720ad7d9aefea0f7d0473d018f902438f91"
+    },
+    {
+      "path": "test/unit/current-bindings-finalizer.test.js",
+      "sha256": "461fb0c2fa8ca2f4cd3b1eb78a4465b4e85e0c55730612951df08f67d3287012"
+    },
+    {
+      "path": "docs/tasks/2026-10-31--current-bindings-finalizer.md",
+      "sha256": "886899e394d69cfa05e3a1015599d70b8e34791ed7bf5c5072a7978ee2b1a76d"
+    },
+    {
+      "path": "scripts/ops/r24/corrective/c2a-effective-certification.mjs",
+      "sha256": "978eb47c88004ac4ac38773c94d5552ddb1f29212e4646b29d23483a8a712a3d"
+    },
+    {
+      "path": "scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs",
+      "sha256": "2909665be72b5c47795234f6429886125b2c04d2d5bc991af626f6ef66d97cc9"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "72067115f69dc10390b1cfb76f5289ef83b2c8bff80837f28a464adaa08ff4b6"
+    },
+    {
+      "path": "docs/PROCESS.md",
+      "sha256": "ed46f07e957d2a1476fc429aeef9e842ae4309043d75ba6db0bb3ddfd4beb397"
+    },
+    {
+      "path": "docs/references/YALKEN_DESIGN_TOOL_MATRIX_V1.md",
+      "sha256": "5638bc02e16e68314f34b54993265cb7d8f02f953a9dbfb2681324f6d38a64f5"
+    },
+    {
+      "path": "docs/architecture/AGENT_TASK_ARCHITECTURE_DECLARATION_V1.schema.json",
+      "sha256": "54559d324d7b2d3e3692417017b089a85ee1f2e79cd2fdc61a7441d42e238da6"
+    },
+    {
+      "path": "docs/tasks/2026-10-31--evidence-based-ui-router.md",
+      "sha256": "32d4d197c11d4f3b21486d11580705bdb03c2914f0999fafc786b064f0a5591d"
+    },
+    {
+      "path": "scripts/agent-guardrails-lib.mjs",
+      "sha256": "ac063f0827c61d76e2dce49907f447c58ce815f37a36d973233a5c3dc2caac0f"
+    },
+    {
+      "path": "test/contracts/agent-architecture-guardrails.contract.test.js",
+      "sha256": "2745f8c9279cc3799af32ead5995d14207c9b2b37a8b08dad1e49503f0879903"
+    },
+    {
+      "path": "test/unit/agent-architecture-guardrails.test.js",
+      "sha256": "f8660889323ac82d587948123c2590c5d564cf4817161aeb24f38d433f25f2dc"
+    },
+    {
+      "path": "docs/tasks/2026-10-31--environment-epochs-full-configuration.md",
+      "sha256": "ef86a20e57f29a47a70174ade15927c40f7433f7483ef28f80d486911a458267"
+    },
+    {
+      "path": "src/main/environmentEpochPort.cjs",
+      "sha256": "4b4c9726244afe057d5e4630f532d521c57f34bcef6adacbeef5a854274be693"
+    },
+    {
+      "path": "src/renderer/design-os/designOsEnvironmentEpochs.mjs",
+      "sha256": "d2767701ff45093811bf7aa8fbc02875c0b7ed98d66a1dc220240058fe3cb3fd"
+    },
+    {
+      "path": "test/unit/environment-epochs-full-configuration.test.js",
+      "sha256": "65e6212b4012cbd09c28e77dca78e246d94117439e785e24140993c3188fce85"
+    },
+    {
+      "path": "test/unit/environment-epochs-full-port.test.js",
+      "sha256": "92ee72c97835a2e3e04fb05e248ea7e072797f51bcfc66013c15c989a3cd6372"
+    },
+    {
+      "path": "test/unit/environment-epochs-full-ui.test.js",
+      "sha256": "c0a7a42b6b9182d70b4ad905786d1af6f30f4e3cbaa5aa58d4ebc4c64f98087f"
+    },
+    {
+      "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
+      "sha256": "bd9f206841e3538ab45b7b44f0d34e3f6a20ce87ccbf63a4661987d970c18c52"
+    },
+    {
+      "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
+      "sha256": "d1eec777d8f15f99a93a48f63261c3ce1df66d186ac949818c9a0518e3d20f30"
+    },
+    {
+      "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "sha256": "6d870255cf0c0ffe09d5ea9da2b8769466fc5630b2a52715d11b40feabb76653"
+    },
+    {
+      "path": "test/unit/metadata-inspector-read-model-main.test.js",
+      "sha256": "3d54c6c050a2f07a90df976354837d9f4a39838936e12a66e6e8c4540aa1b039"
+    },
+    {
+      "path": "test/unit/project-tree-pathless-contract.test.js",
+      "sha256": "ccd6a971618e732218a50f1bad67b96f3172eec81f584af4e732bf345570e055"
+    },
+    {
+      "path": "test/unit/sector-m-command-kernel-shell-action-adoption.test.js",
+      "sha256": "94074c358cab7b3d7edaf001aa54f6402f295d701e9cf6d0ae6784c2b66ad00a"
+    },
+    {
+      "path": "test/unit/sector-m-design-os-save-boundary-truth-sync.test.js",
+      "sha256": "441618f58a02ae3fd74f8d0fdb90d617c2d6ef5871b888704c5411b45f364ca2"
+    },
+    {
+      "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
+      "sha256": "f461c13a171690cec3178326db05eb289fa480ea645fecdbdf7fb7f252f5cfb2"
+    },
+    {
+      "path": "test/unit/sector-m-toolbar-master-library-sync.test.js",
+      "sha256": "a2e3fd1231aa275ff0c9ed29a0f1a530ec976838e28321094cb77ba207114b5c"
+    },
+    {
+      "path": "test/unit/sector-m-toolbar-master-remove-return.test.js",
+      "sha256": "2533d46f97c1cdab816f75af48d2b30abedfe094852ae9599befa8eaf76504ab"
+    },
+    {
+      "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
+      "sha256": "a9608eb4772dbb1b02689de31f2eea0b1d826f6f03de9f332fee5368e961f529"
+    },
+    {
+      "path": "src/core/runtime.mjs",
+      "sha256": "d06453cb95da45cd060bd243650548bb3e7230d8ccf91bfc83696d58d879fa13"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
+      "sha256": "cb5a80a31306ea9d0653f060403de23a53880baa069a0dfedd36cae618edae40"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-e04-c02-atlas-alias-scope-suppression-boundary.contract.test.js",
+      "sha256": "8f130323b3ccba941072bf6338f9fb21cbf8a1cb3f5e8b08941ab782d7f39ef3"
+    },
+    {
+      "path": "docs/tasks/2026-11-01--atlas-unmentioned-entity-alias.md",
+      "sha256": "daa6f365fb6bddac8b5df1c2effad392c824381a39bbcd26f864d1d1aab43d3b"
+    },
+    {
+      "path": "src/derived/plot/derivePlotProjection.mjs",
+      "sha256": "be2770772c8634f03910a528f302f7532cb3994be3f059e9bbeb715417ff3055"
+    },
+    {
+      "path": "src/derived/projections/projectionInspectorManifests.mjs",
+      "sha256": "cefb22c04f67079f757eb907dd1b825b0a20444343a2651cd52fa90d42ccac6b"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-e03-c01-plot-projection-originref-sequence-layout.contract.test.js",
+      "sha256": "dcdcd3047aabd40e62bcb5df9fee56270577cde31a4036f5a7474c55d05f0740"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-e03-c05-projection-inspector-fallback-manifests.contract.test.js",
+      "sha256": "afd8a776eeca4038988ae5806fd92f03b8d07db6a6189d680ec9fe9d8a95fe3c"
+    },
+    {
+      "path": "test/unit/plot-source-navigation.test.js",
+      "sha256": "62510d4cb77e3ec3f4cbc92ca49660dfbbac9189d6b78059bcd688b3766c4b9e"
+    },
+    {
+      "path": "docs/tasks/2026-11-01--plot-source-navigation.md",
+      "sha256": "97d60e6c10c82010114b416cf56e1568c79745311b34f7920968c893e82f3f06"
+    },
+    {
+      "path": "test/unit/sector-m-preload-tree-document-command-bridge.test.js",
+      "sha256": "0b53b7fb4ce2c851838733024310662d2a0af4d663fb5b3c43b0519a19b1f8fb"
+    },
+    {
+      "path": "docs/tasks/2026-11-01--idea-origin-navigation.md",
+      "sha256": "5a8fad6cf709191fc9de208bb24b16356efb2b9ba14fba4df022f361a49a9adb"
+    },
+    {
+      "path": "test/unit/idea-origin-navigation.test.js",
+      "sha256": "52252bf7048557f835d18251c2d74cd03824f761cf0b611534d1cfae38e9be90"
+    },
+    {
+      "path": "docs/tasks/2026-11-02--meaning-source-navigation.md",
+      "sha256": "97c3531a730a6295d94662473d01b4a396ac39537b629e4a4d855c5d4a09e724"
+    },
+    {
+      "path": "test/unit/meaning-source-navigation.test.js",
+      "sha256": "7cee49c2fa61efca88535a2a58941263b80f1512553a69a68918e40669167a36"
+    },
+    {
+      "path": "docs/tasks/2026-11-02--scene-meaning-promotion.md",
+      "sha256": "8123c15584d067da35a6ca2d40466497117c0dea8d2a66087f693f7386dab146"
+    },
+    {
+      "path": "test/unit/scene-meaning-promotion.test.js",
+      "sha256": "22d5e7f088d43161644a5a50eead8d01c7f68a36da163956d2abce24d1f59481"
+    },
+    {
+      "path": "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
+      "sha256": "3a77f9b2e6d710d1a6d401b7b772f4b81e327c4b861fc0fc95c975f89e0cf25a"
+    },
+    {
+      "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
+      "sha256": "5a7b15396c72da6cb5da76d8e4d3f7fbc9ffb6e194fa7a56716e566fcaa51732"
+    },
+    {
+      "path": "scripts/run-tests.js",
+      "sha256": "baa06fbd364e0b3e298f52206d10e0c022b0ef625f0d8bf88d7f04f2cc72fe64"
+    },
+    {
+      "path": "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js",
+      "sha256": "443e191854341e64dd0e6280e81f4491df280e45b2c3e11f9e45443ad7baceeb"
+    },
+    {
+      "path": "scripts/test-diagnostics.cjs",
+      "sha256": "bfbcd27ee2935206a248d510fbf13f2c2e0ffc7d192df55e2d94e8538818102f"
+    },
+    {
+      "path": "test/unit/test-diagnostics.test.js",
+      "sha256": "ff45ff6787423974ebf11db0f3b6a61d16839ad4da775f6235cf63c643a79e94"
+    },
+    {
+      "path": "scripts/guards/ops-current-wave-stop.mjs",
+      "sha256": "ae28c706c18eda41c3b35a7c69d3a030f18e74b9b4d43e287387ffa1df884d89"
+    },
+    {
+      "path": "scripts/test-environment.cjs",
+      "sha256": "c2382b5696c8498ef122501c771789c4f49f8bc77655a290d502dc678e1b1dba"
+    },
+    {
+      "path": "scripts/ops/r24/test-mutants.mjs",
+      "sha256": "0042b56dc425a38bf294bb15b1c70f6e762294f0d2f890d61d79bff925ef037f"
+    },
+    {
+      "path": "scripts/ops/r24/mutation-context.mjs",
+      "sha256": "004ae1c1e468866d7935861f081b41bb008fae009e95a58c57712bd7b59deb5b"
+    },
+    {
+      "path": "test/unit/r24-mutation-context.test.js",
+      "sha256": "5066ebf39054c3eeb925450bb1acad0411c66ddabe63b7d68ea0506a323dc4a0"
+    },
+    {
+      "path": "scripts/ops/r24/tests/mutation-boundaries.test.mjs",
+      "sha256": "2126f4e1f2548f3936a2173057479df8017a84fdb6db12d94a37985c860953e9"
+    },
+    {
+      "path": "scripts/ops/r24/tests/wp603-recovery-post-audit.test.mjs",
+      "sha256": "b7be350d3cad09babad229486506fa787db02d568f8be03d26e157ea0ece4901"
+    },
+    {
+      "path": "scripts/ops/ops-synth-negative.test.cjs",
+      "sha256": "2f21afa5359d360b009a23867cc3db085f4b7c091b705e5a8fa456a5b148366b"
+    },
+    {
+      "path": "src/menu/menu-artifact-lock.js",
+      "sha256": "b2cc29adba3af48f6d19b34480c42725491b2df5ca82f7ad1bf980f5b032e574"
+    },
+    {
+      "path": "test/contracts/menu-artifact-export-and-runtime-verify.contract.test.js",
+      "sha256": "9eabd395f86fea80eabeab97f4c55733dda13a9b29709301239dabda8546bb5e"
+    },
+    {
+      "path": "test/unit/keyboard-shortcuts.test.js",
+      "sha256": "974f660079d82ce487a9eb2a76ff0a1781bf57a8777115bf01186df3f2ce52f7"
+    },
+    {
+      "path": "docs/tasks/2026-10-22--full-mac-atlas-map.md",
+      "sha256": "25b94b655839f95a7a3e733f8b392af46e8003b4827127b6e2bb2a7a7ecb0cd8"
+    },
+    {
+      "path": "docs/tasks/2026-11-03--mac-menu-artifact-namespace.md",
+      "sha256": "a1362cd78fb9cc322882f463a65a7ab8518f15272a2a52af6ae08981cb381f60"
+    },
+    {
+      "path": "src/renderer/tiptap/index.js",
+      "sha256": "8eec3fd967e62f4f25d0a9eb0460d2f406a27e262b8fc05b429f63c037c82011"
+    },
+    {
+      "path": "src/menu/menu-config.v2.json",
+      "sha256": "8460a56d479599f35df7fc90e94fc5521beffe251bc00f9701eb657f62785cfb"
+    },
+    {
+      "path": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+      "sha256": "ac4fdf95753fbe0b342f99246b94cb0d5e82d289418946cc1ad3b3929eba15d9"
+    },
+    {
+      "path": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+      "sha256": "7dccb519c7b1c5f18c8051c0dac9570acffb4b0ca09933ba539578dd31646c71"
+    },
+    {
+      "path": "src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+      "sha256": "ac4fdf95753fbe0b342f99246b94cb0d5e82d289418946cc1ad3b3929eba15d9"
+    },
+    {
+      "path": "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+      "sha256": "7dccb519c7b1c5f18c8051c0dac9570acffb4b0ca09933ba539578dd31646c71"
+    },
+    {
+      "path": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
+      "sha256": "41b6ea10d8094698d7017e9fdc8088b62b8808bb9dfd9d87cab0f73cd0bf9e0b"
+    },
+    {
+      "path": "scripts/ops/menu-config-normalize.mjs",
+      "sha256": "273d99906cc57fa1fed210717780c08171859a0e9efecda979dad14488c9be85"
+    },
+    {
+      "path": "test/unit/sector-m-native-history-ownership.test.js",
+      "sha256": "b67ae5ace3690eb0ba368fb26e9269106c22d05f2dc6b6916c7326a1c8d214a7"
+    },
+    {
+      "path": "test/fixtures/menu/edit-history-native-roles.v1.json",
+      "sha256": "6eddb09e789abfa0513416b654f0340625817f3a59b1c5046f6261a11e8ec0ca"
+    },
+    {
+      "path": "docs/tasks/2026-11-03--writer-native-history.md",
+      "sha256": "33b3bd8279eb2890a21b4a09a7f6aa6dc77e3632c85e5f962163e866aa9c98e2"
+    },
+    {
+      "path": "src/menu/menu-locale.catalog.v1.json",
+      "sha256": "56efe4a0f34bdb3b6719be2c432a0a8ab477ec272b3899d41fcb7bddbabe7970"
+    },
+    {
+      "path": "test/unit/pdf-export-handler.test.js",
+      "sha256": "31ea08f3a6ff44608361fe1fbc7434ff87557618e51ff8a799b015b3dbc1a73f"
+    },
+    {
+      "path": "docs/tasks/2026-11-03--writer-pdf-target-bytes.md",
+      "sha256": "97ee19d06ea8b8eeed9a9aa6370bce450fa2c230dcf97a593fd0c256183fb87c"
+    },
+    {
+      "path": "src/export/pdf/pdfExportHandler.js",
+      "sha256": "66a355d3d9a13051a90b7544a2d96b977a580e87552c3520d35735d12a709b51"
+    },
+    {
+      "path": "docs/tasks/2026-11-04--writer-pdf-zero-margins.md",
+      "sha256": "f50d2b4edc5f8286d9115e1d9142c97bb7aaea3c39585f7b77dba5b43176cd31"
+    },
+    {
+      "path": "src/preload.js",
+      "sha256": "3ee61cab2fde58f05be26dd7fe8d383d08c0628fc5d36ac30ea454ee97fd5280"
+    },
+    {
+      "path": "src/preload.bundle.cjs",
+      "sha256": "77410db0564c6df4eb743bc5c2fd77eacca2a7bb9c666d7e3e216d3408276284"
+    },
+    {
+      "path": "src/product/stage10ApplicationCommandRoute.mjs",
+      "sha256": "178eb409d26c79a0ec7c8485e7e278dccf2062cbcb25b969a03275eae786cc87"
+    },
+    {
+      "path": "test/unit/r24-s1-envelope-integration.test.js",
+      "sha256": "6448baedaafdfaadf6aa93d4abfb98d8bdf9f0bbfd162606f456f391a83dcd38"
+    },
+    {
+      "path": "docs/tasks/2026-11-04--manual-map-native-dialog-budget.md",
+      "sha256": "ee047f3257acbc74ad2eeed6c01e5393fa803443ba4bb3e2ba65e53f0187ca0a"
+    },
+    {
+      "path": "src/main/atlasLanguageAnalysisPort.cjs",
+      "sha256": "f77a01b660fc9418c3277b02b0452601e946c5e672530f208fbb805c12c36462"
+    },
+    {
+      "path": "src/main/atlasLanguageAnalysisWorker.py",
+      "sha256": "aee986442e68921ad4c79c1b2fec444b606d43f95647be41cd3fa95ebd0848ff"
+    },
+    {
+      "path": "src/main/atlasLanguageResourcesV1.json",
+      "sha256": "3fd8067be2033adf5d62a95aea101a4328a64012f92c11454822d64136ef0703"
+    },
+    {
+      "path": "scripts/build-atlas-language-resources.cjs",
+      "sha256": "603f0aeddf17a8ac6f0b5ef947abbc9eeb71753488b122e4e23cd9bf34bb7d8e"
+    },
+    {
+      "path": "test/contracts/atlas-offline-scene-analysis.contract.test.js",
+      "sha256": "8a0d2e83a1aef69c5cfcc3e8b8a3588151a14de4d50ca1a9143436e49bc7ab63"
+    },
+    {
+      "path": "test/unit/atlas-language-resource-builder.test.js",
+      "sha256": "68e5d62cba01e7bbc66e2983a931607fb1bd9a5340330bcd25f677d8bc9f8b0f"
+    },
+    {
+      "path": "docs/tasks/2026-11-04--atlas-offline-scene-analysis.md",
+      "sha256": "36be4ef03ec9f9055807a8bf7313f3de376973f6f483dfe5a00931a3bb50f859"
+    },
+    {
+      "path": "docs/OPS/STATUS/ATLAS_OFFLINE_LANGUAGE_ENGINE_DECISION_V1.json",
+      "sha256": "2bf2d259c610924b0fe0bdd7c374225f49718f2bcae8ebfc06aed9bdf6ed4e42"
+    }
+  ],
+  "guards": [
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "6ea027861345195fb7c8b77e0cc772f528b747a08a25e4991ce8642b994e0446"
+    }
+  ]
+});
+const R24_INTEROP_CURRENT_INPUTS_DELTA = R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA;
 const R24_INTEROP_CERTIFICATION_APPLICABLE_INPUTS_SUCCESSOR = Object.freeze({
   ...R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR,
   ...R24_INTEROP_CERTIFICATION_APPLICABLE_INPUTS_DELTA,

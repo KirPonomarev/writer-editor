@@ -1,0 +1,40 @@
+{
+  "taskId": "YALKEN_ATLAS_OFFLINE_SCENE_ANALYSIS_20261104",
+  "schemaVersion": "atlas.offlineLanguageEngineDecision.v1",
+  "status": "PRIVATE_IMPLEMENTATION_ADMITTED_NOT_CERTIFIED",
+  "bindingBase": "da3df41cca30a952c77d16b6056c208e4fb8c374",
+  "resourceCatalogSha256": "b66e5391bc27c486769e927ada2e2656e3c78c3bca19c597bb5bd691c08d0afa",
+  "engine": "spaCy 3.8.18",
+  "models": {
+    "ru": "3.8.0",
+    "en": "3.8.0"
+  },
+  "python": "3.14.10",
+  "numpy": "2.5.4 macOS11 arm64",
+  "evaluationDecisionSha256": "646702211addf7c184643bd0a0f2e6983259e0c471f99fe128d618ba4f175a59",
+  "compatibilitySupplementSha256": "2d970edf92cfd62de439796fa82ff5824cbcc7924ca495b9b8135107420a0400",
+  "advancedSignalsImplemented": false,
+  "languageCertification": false,
+  "releaseReady": false,
+  "all17QualificationRows": "UNKNOWN",
+  "publicBinaryDistributionAllowed": false,
+  "publicDistributionBlockers": [
+    "GNU corresponding-source closure",
+    "complete LGPL2.1 notice and obligations",
+    "signing and notarization",
+    "all remaining V6 qualification"
+  ],
+  "licenseBoundaries": [
+    "NumPy BSD and bundled OpenBLAS BSD; libgcc/libgfortran GPL3 with GCC runtime exception; libquadmath LGPL2.1-or-later",
+    "setuptools vendor autocommand LGPL3, preserved but not executed",
+    "Russian dictionary data CC-BY-SA3.0 with exact legal text and attribution"
+  ],
+  "limitations": [
+    "English common/nested entity F1 0.197139 on complete LitBank corpus",
+    "Russian exact lemma 0.825823 over 11385 GSD tokens; not RU fiction NER certification",
+    "No constrained coreference, dialogue, event extraction, roles or proposals",
+    "actual macOS12, x64 and other-platform inference unknown",
+    "Original first 16.133864s cold failure preserved"
+  ],
+  "rollback": "One scoped ordinary revert; preserve data, profiles, archives, original failures"
+}

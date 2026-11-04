@@ -1089,6 +1089,8 @@ let atlasCurrentSceneState = {
   mentions: [],
   unavailableReason: '',
 };
+let atlasLanguageAnalysisView = null;
+let atlasLanguageAnalysisState = { state: 'idle', current: null, result: null, reason: '' };
 let atlasJourneyState = {
   status: 'idle',
   lastCommandId: '',
@@ -21012,6 +21014,96 @@ function appendAtlasText(parent, className, text) {
   return element;
 }
 
+function renderAtlasLanguageAnalysis() {
+  if (!atlasLanguageAnalysisView) {
+    const section = document.createElement('section'); section.className = 'right-rail-surface';
+    section.dataset.atlasLanguageAnalysis = 'idle';
+    const title = document.createElement('h3'); title.className = 'right-rail-section__label'; title.textContent = 'Локальный разбор';
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'right-rail-atlas-action';
+    button.textContent = 'Разобрать сцену'; button.dataset.atlasLanguageAnalyze = 'true';
+    const status = document.createElement('div'); status.className = 'right-rail-atlas-state';
+    status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite'); status.setAttribute('aria-atomic', 'true');
+    const content = document.createElement('div'); content.className = 'right-rail-atlas-entity-list';
+    section.append(title, button, status, content);
+    button.addEventListener('click', () => { void requestAtlasLanguageAnalysis(); });
+    atlasLanguageAnalysisView = { section, button, status, content };
+  }
+  const view = atlasLanguageAnalysisView, scene = atlasCurrentSceneState;
+  if (atlasLanguageAnalysisState.current && !atlasLanguageAnalysisState.current()) {
+    atlasLanguageAnalysisState = { state: 'idle', current: null, result: null, reason: '' };
+  }
+  const unsaved = localDirty || localEditGeneration !== lastAckedGeneration;
+  const available = !unsaved && currentRightTab === 'atlas' && currentAtlasSurface === 'currentScene'
+    && currentProjectId && currentDocumentId && scene.projectId === currentProjectId && scene.sceneId === currentDocumentId
+    && ['ready', 'empty'].includes(scene.state) && Boolean(scene.summary?.sceneTextHash);
+  const state = atlasLanguageAnalysisState, busy = state.state === 'loading';
+  view.button.disabled = !available;
+  // Keep the initiating keyboard focus while busy; the handler also refuses
+  // duplicate intent. The retained button itself is never replaced on reply.
+  view.button.setAttribute('aria-disabled', busy ? 'true' : 'false');
+  view.section.setAttribute('aria-busy', busy ? 'true' : 'false');
+  view.section.dataset.atlasLanguageAnalysis = state.state;
+  const messages = {
+    E_ATLAS_LANGUAGE_AUTHORED_TAG_REQUIRED: 'Укажите язык сцены в Atlas.',
+    E_ATLAS_LANGUAGE_UNSUPPORTED: 'Для этого языка разбор пока недоступен.',
+    E_ATLAS_LANGUAGE_MIXED_SOURCE_UNAVAILABLE: 'Разбор сцены с несколькими языками пока недоступен.',
+    E_ATLAS_LANGUAGE_BUSY: 'Предыдущий разбор завершается. Повторите попытку.',
+    E_ATLAS_LANGUAGE_TIMEOUT: 'Разбор занял слишком много времени. Попробуйте более короткую сцену.',
+    E_ATLAS_LANGUAGE_SOURCE_INVALID: 'Для разбора нужна непустая сохранённая сцена длиной до 20 000 знаков.',
+  };
+  view.status.textContent = unsaved ? 'Сохраните сцену перед разбором.' : !available ? 'Откройте сохранённую сцену.'
+    : busy ? 'Разбираем сохранённую сцену…' : state.state === 'experimental' ? 'Экспериментальный разбор. Возможны ошибки.'
+      : state.state === 'unavailable' ? messages[state.reason] || 'Локальный разбор недоступен. Сохраните сцену и повторите попытку.'
+        : 'Разбор сохранённого текста по запросу.';
+  view.content.replaceChildren();
+  if (!available || state.state !== 'experimental' || !state.result) return view.section;
+  const entities = state.result.entities, tokens = state.result.tokens;
+  const label = document.createElement('div'); label.className = 'right-rail-section__label';
+  label.textContent = `Предполагаемые сущности · ${entities.length}`; view.content.appendChild(label);
+  const names = { PERSON: 'Персона', PER: 'Персона', GPE: 'Место', LOC: 'Место', ORG: 'Организация', DATE: 'Дата' };
+  const list = document.createElement('div'); list.setAttribute('role', 'list');
+  for (const entity of entities.slice(0, 20)) {
+    const item = document.createElement('div'); item.className = 'right-rail-atlas-state'; item.setAttribute('role', 'listitem');
+    item.textContent = `${entity.text} · ${names[entity.label] || entity.label}`; list.appendChild(item);
+  }
+  if (!entities.length) { const empty = document.createElement('div'); empty.textContent = 'Сущности не найдены.'; list.appendChild(empty); }
+  view.content.appendChild(list);
+  if (entities.length > 20) appendAtlasText(view.content, 'right-rail-atlas-state', `Показаны первые 20 из ${entities.length}.`);
+  const words = tokens.filter(token => !['SPACE', 'PUNCT'].includes(token.pos));
+  const details = document.createElement('details'), summary = document.createElement('summary');
+  summary.textContent = `Слова и начальные формы · ${words.length}`; details.appendChild(summary);
+  const preview = document.createElement('div'); preview.className = 'right-rail-atlas-state';
+  preview.textContent = words.slice(0, 24).map(token => `${token.text} → ${token.lemma}`).join('; '); details.appendChild(preview);
+  if (words.length > 24) appendAtlasText(details, 'right-rail-atlas-state', `Показаны первые 24 из ${words.length}.`);
+  view.content.appendChild(details);
+  return view.section;
+}
+
+async function requestAtlasLanguageAnalysis() {
+  if (window.__PRODUCT_PROFILE !== 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12' || atlasLanguageAnalysisState.state === 'loading'
+    || localDirty || localEditGeneration !== lastAckedGeneration || currentRightTab !== 'atlas' || currentAtlasSurface !== 'currentScene'
+    || !currentProjectId || !currentDocumentId || atlasCurrentSceneState.projectId !== currentProjectId
+    || atlasCurrentSceneState.sceneId !== currentDocumentId || !['ready', 'empty'].includes(atlasCurrentSceneState.state)) return;
+  const current = beginAtlasQueryPublication('atlasLanguageAnalysis'), projectId = currentProjectId, sceneId = currentDocumentId;
+  if (!current) return;
+  const sourceHash = atlasCurrentSceneState.summary.sceneTextHash;
+  atlasLanguageAnalysisState = { state: 'loading', current, result: null, reason: '' }; renderAtlasLanguageAnalysis();
+  let response;
+  try { response = await invokeWorkspaceQueryBridge(ATLAS_CURRENT_SCENE_QUERY_ID, { projectId, nodeId: sceneId, analyzeLanguage: true }); }
+  catch { response = { ok: false }; }
+  if (!current() || localDirty || localEditGeneration !== lastAckedGeneration) return;
+  const projection = readAtlasQueryProjection(response, 'atlasCurrentScene', projectId, sceneId);
+  const result = projection?.languageAnalysis, source = parseDocumentContent(composeDocumentContent()), live = getPlainText();
+  if (!projection || projection.summary?.sceneTextHash !== sourceHash || source.issue || typeof source.text !== 'string'
+    || !live.startsWith(source.text) || !/^\n*$/u.test(live.slice(source.text.length)) || hashCanonicalValue(source.text) !== sourceHash
+    || !result || (result.state === 'experimental' && (result.projectId !== projectId || result.sceneId !== sceneId
+      || result.certified !== false || result.releaseTrust !== false || !Array.isArray(result.tokens) || !Array.isArray(result.entities)))) {
+    atlasLanguageAnalysisState = { state: 'unavailable', current, result: null, reason: response?.error?.code || 'E_ATLAS_LANGUAGE_SOURCE_REVOKED' };
+  } else atlasLanguageAnalysisState = { state: result.state === 'experimental' ? 'experimental' : 'unavailable', current,
+    result: result.state === 'experimental' ? result : null, reason: result.reason || '' };
+  renderAtlasLanguageAnalysis();
+}
+
 function renderAtlasCurrentSceneState() {
   if (!(atlasCurrentSceneHost instanceof HTMLElement)) return;
   const state = normalizeAtlasCurrentSceneDossier(atlasCurrentSceneState);
@@ -21033,6 +21125,9 @@ function renderAtlasCurrentSceneState() {
   appendAtlasText(metrics, 'right-rail-atlas-metric', `${state.summary.mentionCount} упом.`);
   header.append(label, title, metrics);
   atlasCurrentSceneHost.appendChild(header);
+  if (typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12') {
+    atlasCurrentSceneHost.appendChild(renderAtlasLanguageAnalysis());
+  }
 
   if (state.state === 'unavailable') {
     const unavailable = document.createElement('div');
@@ -24124,6 +24219,7 @@ function markAsModified() {
 
   localEditGeneration += 1;
   localDirty = true;
+  if (atlasLanguageAnalysisView) renderAtlasLanguageAnalysis();
   // R2.4 P0: every edit's generation is signaled so the main-side autosave
   // acknowledgement fence always compares against the true latest edit.
   void invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: true, generation: localEditGeneration });

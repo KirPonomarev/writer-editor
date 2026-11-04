@@ -55,6 +55,14 @@ async function afterPack(context) {
   const arch = context.arch === 3 ? 'arm64' : context.arch === 1 ? 'x64' : '';
   buildProjectArchiveNative({ arch, outputPath: path.join(context.appOutDir, `${productFilename}.app`,
     'Contents', 'Resources', 'yalken-native', 'project-archive-fs') });
+  // Build-time path only. Runtime accepts solely the fixed packaged location
+  // and the source-pinned catalog. Absence remains explicit unavailability.
+  if (process.env.YALKEN_ATLAS_LANGUAGE_RESOURCES) {
+    if (arch !== 'arm64') throw new Error('Atlas language resources require the admitted arm64 cohort');
+    const { copyVerifiedAtlasLanguageResources } = require('./build-atlas-language-resources.cjs');
+    await copyVerifiedAtlasLanguageResources({ sourceDirectory: process.env.YALKEN_ATLAS_LANGUAGE_RESOURCES,
+      outputDirectory: path.join(context.appOutDir, `${productFilename}.app`, 'Contents', 'Resources', 'atlas-language') });
+  }
 }
 
 module.exports = afterPack;

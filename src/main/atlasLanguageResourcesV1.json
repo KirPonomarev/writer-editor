@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "atlas.languageResources.v1",
+  "platform": "darwin",
+  "arch": "arm64",
+  "minimumMacOS": "12.0",
+  "pythonVersion": "3.14.10",
+  "engineVersion": "3.8.18",
+  "modelVersions": {
+    "en": "3.8.0",
+    "ru": "3.8.0"
+  },
+  "catalogSha256": "b66e5391bc27c486769e927ada2e2656e3c78c3bca19c597bb5bd691c08d0afa",
+  "entryCount": 5941,
+  "uncompressedBytes": 240978271,
+  "inputs": [
+    {
+      "role": "wheelhouse",
+      "filename": "DEEP_EVALUATION_WHEELHOUSE_01.zip",
+      "sha256": "26be69367f7fef1fe8c90145a5c5f9d4a57632e8545a0b0a460a872036b88897",
+      "byteLength": 59024284
+    },
+    {
+      "role": "python",
+      "filename": "cpython-3.14.10+20261026-aarch64-apple-darwin-install_only_stripped.tar.gz",
+      "sha256": "95eb8c87d16af37c54e9765e31d8c56c0d8ffa9968ea0f704f73a9b83f84e9f9",
+      "byteLength": 26753457
+    },
+    {
+      "role": "numpy",
+      "filename": "numpy-2.5.4-cp314-cp314-macosx_11_0_arm64.whl",
+      "sha256": "ffa6ce09a1c6a08e9667dd9c97aa0b14184e8d18f2a14b78b2a2328c9147f076",
+      "byteLength": 12019666
+    },
+    {
+      "role": "supplierNotices",
+      "filename": "DEEP_CPYTHON_SUPPLIER_NOTICES_AND_BUILD_METADATA_01.zip",
+      "sha256": "f3bf0dd2910604f68162652660af6de7fe82c873fae459dcade5d7967b5fa49b",
+      "byteLength": 52953
+    }
+  ],
+  "privateQualificationOnly": true,
+  "certified": false,
+  "publicBinaryDistributionAllowed": false
+}

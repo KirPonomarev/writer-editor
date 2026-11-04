@@ -1,3 +1,20 @@
+# Current task — Explicit offline Atlas scene analysis
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_IMPLEMENTED_PRIVATE_COMPONENT_OBSERVED_RELEASE_NOT_READY
+BINDING_BASE_SHA: da3df41cca30a952c77d16b6056c208e4fb8c374
+TASK: YALKEN_ATLAS_OFFLINE_SCENE_ANALYSIS_20261104; sole executor, one branch and delivery chain.
+
+Current source adds one explicit saved RU/EN scene query, fixed offline port/worker/resource assembler and a read-only section in the existing dossier. No automatic authoring or language certification. Private actual four-case inference and all69 UTF16 spans match the accepted cohort: observation535e864b1e589acf5ba0dd123bd1c58100974b2559796bcc3432805257ba6a18; independent5932file+9link oracle648011306c1c8d56b60db70f64b3ef3a71db73bf139c0a915d5158eea1f4cb60. Actual sandbox controls deny outside reads/writes, network and process launch; cancellation retires its child.
+
+All59 new maintained tests passed within the actual20file1082test run61554a5df580239c46f478b82fa9c412b43bbeca3a5884bdf04ad8ea25e53b2f. That run is NOT green:1075passed/7failed/0skip/todo; six genuine Darwin alias cases reject the external T7 TMPDIR, one current DATA renderer binding needs normal regeneration. Original tests and failures remain. Native-temp declaration03 failed clean-worktree preflight before any root creation; obtain a fresh clean-candidate admission, never manufacture an OS namespace.
+
+Actual rebuilt application, ordinary authoring/analysis/Save/Quit/cold, full required gates, supported before-push guard, PR/CI/merge and literal merged proof remain obligations. All new receipts are in the verified dated atlas-offline-scene-analysis T777 folder; any future delivery claim requires a present, independently verified exact-candidate closure. This journal text grants no acceptance. Prior PR2198 closure and its historical missing-before-push-guard nonconformity remain unchanged.
+
+Original dyld failures and the first15s model diagnostic timeout remain preserved; later warm success is not a first-cold budget pass. Constrained coreference/dialogue/events/roles/proposals and RU fiction certification are absent. GNU/LGPL source/full-notice closure and signing/public distribution remain open. All17 qualification UNKNOWN, cutUNFROZEN, releaseNOT_READY; full V6/DNA5 Mac remains the goal, Black Box follows full Mac.
+
+NEXT: finalize existing current-byte companions, preserve a clean source commit, obtain genuine native-temp/app admissions and prove the actual rebuilt candidate before the guarded delivery chain.
+
 # Resume — Manual Map native dialog budget
 
 DOCUMENT_CLASS: FACTUAL_STATUS

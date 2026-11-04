@@ -19657,10 +19657,26 @@ async function readAtlasAnalyticsSourceRecord(requestedProjectId = '') {
 }
 
 async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
+  const languageAnalysisRequested = queryId === ATLAS_CURRENT_SCENE_QUERY_ID && payload?.analyzeLanguage === true;
+  const languageContext = languageAnalysisRequested ? [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(),
+    app.getPath('userData'), currentLifecycleSubjectId(), commentAuthoringSessionId, lastSignaledEditGeneration,
+    currentFilePath, currentProjectName] : null;
+  const languageContextCurrent = () => {
+    if (!languageContext) return true;
+    const now = [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(), app.getPath('userData'),
+      currentLifecycleSubjectId(), commentAuthoringSessionId, lastSignaledEditGeneration, currentFilePath, currentProjectName];
+    const profile = getWriterLocalRuntimeProfile();
+    return !isDirty && languageContext.every((value, index) => value === now[index])
+      && languageContext[0] && !languageContext[0].isDestroyed() && !languageContext[0].webContents.isDestroyed()
+      && profile.profileId === 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'
+      && evaluateWriterLocalQueryAccess({ profile, queryId }).allowed;
+  };
   const requestedProjectId = normalizeStableProjectId(payload?.projectId);
   let source;
   try {
+    if (!languageContextCurrent()) throw Object.assign(new Error('E_ATLAS_LANGUAGE_CONTEXT_REVOKED'), { code: 'E_ATLAS_LANGUAGE_CONTEXT_REVOKED' });
     source = await readAtlasAnalyticsSourceRecord(requestedProjectId);
+    if (!languageContextCurrent()) throw Object.assign(new Error('E_ATLAS_LANGUAGE_CONTEXT_REVOKED'), { code: 'E_ATLAS_LANGUAGE_CONTEXT_REVOKED' });
   } catch (error) {
     return {
       ok: false,
@@ -19683,6 +19699,9 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
   const requestKey = computeHash(JSON.stringify(canonicalizeComparableValue({ queryId, payload,
     ...(diagnosticsPolicy ? { diagnosticsPolicyHash } : {}),
     ...(pulseSnapshot ? { pulseHash, historyHeadDigest } : {}),
+    // Explicit analysis must revalidate resources and current ownership; a
+    // retained result from another lifecycle cannot satisfy a new request.
+    ...(languageAnalysisRequested ? { languageRequestNonce: crypto.randomBytes(16).toString('hex') } : {}),
   })));
   const dependencyKeys = Object.keys(source.dependencyRevisions).sort();
   const scheduled = await atlasAnalyticsScheduler.schedule({
@@ -19691,16 +19710,20 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
     requestKey,
     sourceRevision: source.sourceRevision,
     dependencyKeys,
-    run: async ({ signal }) => {
+    run: async ({ signal, jobId, sourceRevision }) => {
+      if (!languageContextCurrent()) throw Object.assign(new Error('E_ATLAS_LANGUAGE_CONTEXT_REVOKED'), { code: 'E_ATLAS_LANGUAGE_CONTEXT_REVOKED' });
       if (signal.aborted) throw Object.assign(new Error('ATLAS_ANALYTICS_JOB_CANCELLED'), { code: 'E_ATLAS_ANALYTICS_JOB_CANCELLED' });
-      const result = await (diagnosticsPolicy ? handler(payload, diagnosticsPolicy) : pulseSnapshot ? handler(payload, pulseSnapshot) : handler(payload));
+      const result = await (languageAnalysisRequested ? handler(payload, { signal, jobId, sourceRevision })
+        : diagnosticsPolicy ? handler(payload, diagnosticsPolicy) : pulseSnapshot ? handler(payload, pulseSnapshot) : handler(payload));
       if (signal.aborted) throw Object.assign(new Error('ATLAS_ANALYTICS_JOB_CANCELLED'), { code: 'E_ATLAS_ANALYTICS_JOB_CANCELLED' });
+      if (!languageContextCurrent()) throw Object.assign(new Error('E_ATLAS_LANGUAGE_CONTEXT_REVOKED'), { code: 'E_ATLAS_LANGUAGE_CONTEXT_REVOKED' });
       return result;
     },
     getCurrentRevision: async () => (
       await readAtlasAnalyticsSourceRecord(source.projectId)
     ).sourceRevision,
   });
+  if (!languageContextCurrent()) return { ok: false, error: { code: 'E_ATLAS_LANGUAGE_CONTEXT_REVOKED' } };
   if (!scheduled.ok) {
     return {
       ok: false,
@@ -20725,8 +20748,50 @@ async function handleWorkspaceAtlasDiagnosticsStageAcceptanceQuery(payload = {},
   }
 }
 
-async function handleWorkspaceAtlasCurrentSceneQuery(payload = {}) {
+let atlasLanguageAnalysisPort = null;
+function getAtlasLanguageAnalysisPort() {
+  if (!atlasLanguageAnalysisPort) {
+    const { createAtlasLanguageAnalysisPort } = require('./main/atlasLanguageAnalysisPort.cjs');
+    const manifest = require('./main/atlasLanguageResourcesV1.json');
+    atlasLanguageAnalysisPort = createAtlasLanguageAnalysisPort({
+      resourceRoot: path.join(process.resourcesPath, 'atlas-language'),
+      expectedCatalogSha256: manifest.catalogSha256,
+      expectedWorkerSha256: computeHash(fsSync.readFileSync(path.join(__dirname, 'main/atlasLanguageAnalysisWorker.py'))),
+    });
+  }
+  return atlasLanguageAnalysisPort;
+}
+
+async function handleWorkspaceAtlasCurrentSceneQuery(payload = {}, analysisJob = {}) {
+  const explicitAnalysis = isPlainObjectValue(payload) && payload.analyzeLanguage === true;
+  if (isPlainObjectValue(payload) && Object.hasOwn(payload, 'analyzeLanguage')
+    && (typeof payload.analyzeLanguage !== 'boolean'
+      || Object.keys(payload).some(key => !['projectId', 'nodeId', 'analyzeLanguage'].includes(key))
+      || ['projectId', 'nodeId'].some(key => typeof payload[key] !== 'string' || !payload[key]
+        || payload[key] !== payload[key].trim() || payload[key].length > 1000 || /[\u0000-\u001f]/u.test(payload[key])))) {
+    return { ok: false, error: { code: 'E_ATLAS_LANGUAGE_PAYLOAD_INVALID' } };
+  }
   const safePayload = normalizeAtlasCurrentScenePayload(payload);
+  const refuseAnalysis = code => { throw Object.assign(new Error(code), { code }); };
+  const context = explicitAnalysis ? [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(),
+    app.getPath('userData'), currentLifecycleSubjectId(), commentAuthoringSessionId, lastSignaledEditGeneration,
+    currentFilePath, currentProjectName] : null;
+  const assertContext = () => {
+    const profile = getWriterLocalRuntimeProfile();
+    if (!app.isPackaged || process.platform !== 'darwin' || process.arch !== 'arm64'
+      || profile.profileId !== 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'
+      || !evaluateWriterLocalQueryAccess({ profile, queryId: ATLAS_CURRENT_SCENE_QUERY_ID }).allowed
+      || !context[0] || context[0].isDestroyed() || context[0].webContents.isDestroyed()
+      || !context[1] || context[1].getProjectId?.() !== safePayload.projectId || isDirty
+      || context.some((value, index) => value !== [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(),
+        app.getPath('userData'), currentLifecycleSubjectId(), commentAuthoringSessionId, lastSignaledEditGeneration,
+        currentFilePath, currentProjectName][index])
+      || analysisJob.signal?.aborted || typeof analysisJob.jobId !== 'string' || !analysisJob.jobId
+      || !/^[a-f0-9]{64}$/u.test(analysisJob.sourceRevision || '')) refuseAnalysis('E_ATLAS_LANGUAGE_CONTEXT_REVOKED');
+  };
+  if (explicitAnalysis) {
+    try { assertContext(); } catch (error) { return { ok: false, error: { code: error.code } }; }
+  }
   const dossierModule = await loadAtlasCurrentSceneDossierModule();
   if (!safePayload.nodeId) {
     return {
@@ -20785,11 +20850,59 @@ async function handleWorkspaceAtlasCurrentSceneQuery(payload = {}) {
         ),
       };
     }
+    if (explicitAnalysis) {
+      assertContext();
+      if (resolvedNode.projectId !== safePayload.projectId || resolvedNode.nodeId !== safePayload.nodeId
+        || resolvedNode.projectRoot !== context[2] || path.resolve(documentTarget.filePath) !== path.resolve(context[7] || '')) {
+        refuseAnalysis('E_ATLAS_LANGUAGE_SCENE_REVOKED');
+      }
+      const project = coreState.data.projects[resolvedNode.projectId], scene = project.scenes[resolvedNode.nodeId];
+      const language = dossier.value.sceneLanguageTag;
+      const unavailable = reason => ({ ok: true, atlasCurrentScene: { ...dossier.value,
+        languageAnalysis: { state: 'unavailable', reason, certified: false, releaseTrust: false } } });
+      if (language?.state !== 'ready') return unavailable('E_ATLAS_LANGUAGE_AUTHORED_TAG_REQUIRED');
+      const tags = project.atlas?.languageTags;
+      for (const bucket of ['blocks', 'ranges']) {
+        if (tags?.[bucket] !== undefined && (!isPlainObjectValue(tags[bucket])
+          || Object.values(tags[bucket]).some(record => !isPlainObjectValue(record) || record.sceneId === resolvedNode.nodeId))) {
+          return unavailable('E_ATLAS_LANGUAGE_MIXED_SOURCE_UNAVAILABLE');
+        }
+      }
+      const parts = language.tag.languageCode.split('-'), languageCode = parts[0].toLowerCase();
+      if (!['ru', 'en'].includes(languageCode) || parts.some(part => /^[a-z]{4}$/iu.test(part)
+        && part.toLowerCase() !== (languageCode === 'ru' ? 'cyrl' : 'latn'))) return unavailable('E_ATLAS_LANGUAGE_UNSUPPORTED');
+      const assertCurrent = async () => {
+        assertContext();
+        const current = await readAtlasAnalyticsSourceRecord(resolvedNode.projectId);
+        assertContext();
+        if (current.sourceRevision !== analysisJob.sourceRevision) refuseAnalysis('E_ATLAS_LANGUAGE_SOURCE_REVOKED');
+      };
+      await assertCurrent();
+      let result;
+      try {
+        result = await getAtlasLanguageAnalysisPort().analyze({ projectId: resolvedNode.projectId, sceneId: resolvedNode.nodeId,
+          sourceRevision: scene.sceneRevision, sourceTextHash: computeHash(scene.text),
+          generation: analysisJob.jobId, languageCode, text: scene.text }, { signal: analysisJob.signal, assertCurrent });
+      } catch (error) {
+        await assertCurrent();
+        if (/^E_ATLAS_LANGUAGE_(?:RESOURCE|WORKER|PLATFORM|BUSY|TIMEOUT|RETIREMENT|OUTPUT|UNSUPPORTED|SOURCE_INVALID)/u.test(error?.code || '')) {
+          return unavailable(error.code);
+        }
+        throw error;
+      }
+      await assertCurrent();
+      if (result.projectId !== resolvedNode.projectId || result.sceneId !== resolvedNode.nodeId
+        || result.sourceRevision !== scene.sceneRevision || result.sourceTextHash !== computeHash(scene.text)
+        || result.generation !== analysisJob.jobId || result.languageCode !== languageCode
+        || result.certified !== false || result.releaseTrust !== false) refuseAnalysis('E_ATLAS_LANGUAGE_RESULT_IDENTITY');
+      return { ok: true, atlasCurrentScene: { ...dossier.value, languageAnalysis: result } };
+    }
     return {
       ok: true,
       atlasCurrentScene: dossier.value,
     };
   } catch (error) {
+    if (explicitAnalysis) return { ok: false, error: { code: error?.code || 'E_ATLAS_LANGUAGE_SOURCE_UNAVAILABLE' } };
     logDevError('query.atlasCurrentScene', error);
     return {
       ok: true,
@@ -38126,6 +38239,10 @@ function createWindow() {
       const canClose = await confirmDiscardChanges();
       if (!canClose || !isLifecycleExitCurrent(exitBinding)) return;
       if (mainWindow && !await prepareFullEnvironmentExit(mainWindow)) { updateStatus('Текущий вид не сохранён. Приложение оставлено открытым.'); return; }
+      if (atlasLanguageAnalysisPort) {
+        try { await atlasLanguageAnalysisPort.close(); atlasLanguageAnalysisPort = null; }
+        catch { updateStatus('Закрытие остановлено: локальный разбор ещё не подтвердил завершение.'); return; }
+      }
       if (!await confirmDiscardChanges() || !isLifecycleExitCurrent(exitBinding)) return;
 
       isWindowClosing = true;
@@ -42037,6 +42154,10 @@ app.on('before-quit', (event) => {
     const canQuit = await confirmDiscardChanges();
     if (!canQuit || !isLifecycleExitCurrent(exitBinding)) return;
     if (mainWindow && !await prepareFullEnvironmentExit(mainWindow)) { updateStatus('Текущий вид не сохранён. Приложение оставлено открытым.'); return; }
+    if (atlasLanguageAnalysisPort) {
+      try { await atlasLanguageAnalysisPort.close(); atlasLanguageAnalysisPort = null; }
+      catch { updateStatus('Закрытие остановлено: локальный разбор ещё не подтвердил завершение.'); return; }
+    }
     if (!await confirmDiscardChanges() || !isLifecycleExitCurrent(exitBinding)) return;
 
     isQuitting = true;
