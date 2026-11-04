@@ -1,3 +1,17 @@
+# Resume — Manual Map native dialog budget
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_MANUAL_MAP_NATIVE_DIALOG_BUDGET_20261104
+BASE: 4ded41f19261c7940032e46cf7817cb332b9e405; existing codex/manual-map-native-dialog-budget-20261104, own WIP only. PR2197 predecessor CLOSED, do not replay its completed delivery/native proofs.
+VERIFIED: Final handwritten Main/preload/Stage10 source, normal generated preload, identical50 and whole affected12/126pass; original11cases/312line-prefix retained. Protected generic envelope literally restored, all17protected hashes held. No actual new app/profile launch yet.
+EVIDENCE_ROOT: /Volumes/T777/Yalken/Отчёты о работе/2026-11-04--manual-map-native-dialog-budget
+EVIDENCE: MAP_DIALOG_PROTECTED_BOUNDARY_INDEPENDENT_ORACLE_03.json.gz SHA25635323a4658798f021547b2a88e92b13ad16fd53555414e091ef28ae6d374fb84; MAP_DIALOG_WHOLE_AFFECTED12_03.json.gz SHA256e59758c8ab73700db6978e74d08bbd6b48c420e3de4fa8f0877dd359780d5280; finalizer request02 and APPLIED16.552s receipt847caaef with all7 target readbacks; NOOP259ef263 has7unchanged/2134inputs. Earlier failed setup/framing/affected/source attempts remain failed and preserved.
+NEXT_STEP: Complete current bindings and missing successor composition registration, append only changed current technical witnesses, and create the ordinary C1 commit. C0 c2c46c0e8 remains unqualified: real early rows1..4 passed, row5 CERT_NAMESPACE failed E_INTEROP_WORD_PROMOTION_PIN, remaining6 not run. Composition-only real probe against literal C0 returns0; all prior verifier predicates remain exact. No R10 app or profile has been created/launched. G11 prospective native reservation is unexecuted; T11 test runtime exists with original C0 identity and must not be retagged.
+AFTER_FREEZE_REQUIREMENTS: Cheap prerequisites and separate prospective runtime admission; pure actual rebuilt native >120s Save and Cancel, independent map/manuscript/history/artifact/foreign-target reader, normal Quit/actualwait0/true cold before product push. All full baseline/E0/WP104/C1C/RTK/OSS/audits/current CI/normal merge/literal merged proof and final guardrails remain mandatory. Existing T10 test runtime may be reused only with original M5 identity9c374c43 verified, no retag or recreation.
+PROTECT: Ten old closed profiles/apps, canonical6de and foreign WIP, every raw/error/authority/frozen/retainer. All17MacUNKNOWN/fullgoalACTIVE; Deep unavailable, Word/nativeOfficePAUSED and BlackBox after fullMac.
+
+--- Historical records below retain original identities and claims ---
+
 # Resume — Canonical zero PDF margins
 
 DOCUMENT_CLASS: FACTUAL_STATUS

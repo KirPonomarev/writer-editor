@@ -30861,6 +30861,76 @@
       "approvedBy": "owner-delegated-codex:YALKEN_WRITER_PDF_ZERO_MARGINS_20261104",
       "approvedAtUtc": "2026-11-04T00:00:22.659523+00:00",
       "rationale": "Existing owner current/future routine technical-witness delegation, same zero-margin PDF chain. Actual candidate Task E0 found an extra H2 from the factual source checkpoint; only its level changed to H3 and original ten obligations stay exact. Current Task E0 now returns0. Necessary Task digest propagation only; full independent physical767source/132cert/17protected/history/source readback completed. Original failure and previous witnesses retained. Not human/native/release approval; full mandatory gates remain required."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "5cbcca092ef2a0706fbe4b5ef1a1373871e1b692a7e1f53c7c0f82cbb1835b28",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_NATIVE_DIALOG_BUDGET_20261104",
+      "approvedAtUtc": "2026-11-04T10:15:06.400334+00:00",
+      "rationale": "Standing explicit owner current and future routine technical-witness authority for sole-executor V6/DNA5 development. Exact-SHA witness for the bounded Manual Map native-dialog lifecycle correction and necessary current bindings. Genuine source RED to identical GREEN, unchanged original312-line prefix, full affected126of126 and independent source/protected17/metadata historical-byte inverses reviewed. All previous rows retained. Not human release approval, native long-dialog acceptance, signing, publication or full qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "25f7999fe715dd24d4903cabc3bc16d9c153c9d0a26aa92256b44829b901171b",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_NATIVE_DIALOG_BUDGET_20261104",
+      "approvedAtUtc": "2026-11-04T10:15:06.400334+00:00",
+      "rationale": "Standing explicit owner current and future routine technical-witness authority for sole-executor V6/DNA5 development. Exact-SHA witness for the bounded Manual Map native-dialog lifecycle correction and necessary current bindings. Genuine source RED to identical GREEN, unchanged original312-line prefix, full affected126of126 and independent source/protected17/metadata historical-byte inverses reviewed. All previous rows retained. Not human release approval, native long-dialog acceptance, signing, publication or full qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "54292a2c637b502d38b4238bcdf64d9fddd7dd38f3af184c4b08b2acfb275052",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_NATIVE_DIALOG_BUDGET_20261104",
+      "approvedAtUtc": "2026-11-04T10:15:06.400334+00:00",
+      "rationale": "Standing explicit owner current and future routine technical-witness authority for sole-executor V6/DNA5 development. Exact-SHA witness for the bounded Manual Map native-dialog lifecycle correction and necessary current bindings. Genuine source RED to identical GREEN, unchanged original312-line prefix, full affected126of126 and independent source/protected17/metadata historical-byte inverses reviewed. All previous rows retained. Not human release approval, native long-dialog acceptance, signing, publication or full qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "1a6e605ae638d9ad826c44e547559cd129e732df9523980479eb0f9f007796a1",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_NATIVE_DIALOG_BUDGET_20261104",
+      "approvedAtUtc": "2026-11-04T10:15:06.400334+00:00",
+      "rationale": "Standing explicit owner current and future routine technical-witness authority for sole-executor V6/DNA5 development. Exact-SHA witness for the bounded Manual Map native-dialog lifecycle correction and necessary current bindings. Genuine source RED to identical GREEN, unchanged original312-line prefix, full affected126of126 and independent source/protected17/metadata historical-byte inverses reviewed. All previous rows retained. Not human release approval, native long-dialog acceptance, signing, publication or full qualification."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "cc9bb5e3c860176ad2d3fadd748209c577bd44d1049a96ed1f7d8a784c2a2840",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_NATIVE_DIALOG_BUDGET_20261104",
+      "approvedAtUtc": "2026-11-04T10:15:06.400334+00:00",
+      "rationale": "Standing explicit owner current and future routine technical-witness authority for sole-executor V6/DNA5 development. Exact-SHA witness for the bounded Manual Map native-dialog lifecycle correction and necessary current bindings. Genuine source RED to identical GREEN, unchanged original312-line prefix, full affected126of126 and independent source/protected17/metadata historical-byte inverses reviewed. All previous rows retained. Not human release approval, native long-dialog acceptance, signing, publication or full qualification."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "92f9d0b9dc15522ce86c4a62b9711b733a77e8b802bff8565f07250ef369fac2",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_NATIVE_DIALOG_BUDGET_20261104",
+      "approvedAtUtc": "2026-11-04T10:15:06.400334+00:00",
+      "rationale": "Standing explicit owner current and future routine technical-witness authority for sole-executor V6/DNA5 development. Exact-SHA witness for the bounded Manual Map native-dialog lifecycle correction and necessary current bindings. Genuine source RED to identical GREEN, unchanged original312-line prefix, full affected126of126 and independent source/protected17/metadata historical-byte inverses reviewed. All previous rows retained. Not human release approval, native long-dialog acceptance, signing, publication or full qualification."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "ea42ac344414b600eb36680839a3cb524b1e4961580d9b37c3341d4bacc56f23",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_NATIVE_DIALOG_BUDGET_20261104",
+      "approvedAtUtc": "2026-11-04T10:15:06.400334+00:00",
+      "rationale": "Standing explicit owner current and future routine technical-witness authority for sole-executor V6/DNA5 development. Exact-SHA witness for the bounded Manual Map native-dialog lifecycle correction and necessary current bindings. Genuine source RED to identical GREEN, unchanged original312-line prefix, full affected126of126 and independent source/protected17/metadata historical-byte inverses reviewed. All previous rows retained. Not human release approval, native long-dialog acceptance, signing, publication or full qualification."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "4e28d9054af0d6366586f7dc2a956bfc88ff9c0624494e90910c91244145bfbd",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_NATIVE_DIALOG_BUDGET_20261104",
+      "approvedAtUtc": "2026-11-04T10:37:42.611489+00:00",
+      "rationale": "Standing explicit owner current and future routine technical-witness delegation for sole-executor V6/DNA5 development. Same-task current SHA after correction of missing inherited successor composition/list membership and truthful factual checkpoint; all old verifier predicates, product and test bytes preserved. Current seven-target finalizer no-op and independent769source/17protected/history inverses verified. All prior rows retained. Technical witness only; no human/native/release/signing/publication acceptance."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "8c78465d9a64f7220172be168eb66373de363e0d4a454f460025adccbc10bc84",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_NATIVE_DIALOG_BUDGET_20261104",
+      "approvedAtUtc": "2026-11-04T10:37:42.615666+00:00",
+      "rationale": "Standing explicit owner current and future routine technical-witness delegation for sole-executor V6/DNA5 development. Same-task current SHA after correction of missing inherited successor composition/list membership and truthful factual checkpoint; all old verifier predicates, product and test bytes preserved. Current seven-target finalizer no-op and independent769source/17protected/history inverses verified. All prior rows retained. Technical witness only; no human/native/release/signing/publication acceptance."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "2c230e9d0d3678bb2c8f13c834c7324672c74afaeb8d1e75de86733c6e9498ea",
+      "approvedBy": "owner-delegated-codex:YALKEN_MANUAL_MAP_NATIVE_DIALOG_BUDGET_20261104",
+      "approvedAtUtc": "2026-11-04T10:37:42.615882+00:00",
+      "rationale": "Standing explicit owner current and future routine technical-witness delegation for sole-executor V6/DNA5 development. Same-task current SHA after correction of missing inherited successor composition/list membership and truthful factual checkpoint; all old verifier predicates, product and test bytes preserved. Current seven-target finalizer no-op and independent769source/17protected/history inverses verified. All prior rows retained. Technical witness only; no human/native/release/signing/publication acceptance."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",

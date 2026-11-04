@@ -35825,9 +35825,31 @@ guardedProtocolHandle('ui:command-bridge', async (_, request) => {
     });
   }
 
+  // This host object is never read from the renderer payload or persisted with a command.
+  const nativeDialogCommand = commandId.startsWith('manualMap.export.');
+  const ownerWindow = nativeDialogCommand ? mainWindow : null, sender = _?.sender;
+  const nativeDialogWaitPort = nativeDialogCommand
+    && ownerWindow?.webContents === sender ? {
+      async run(openDialog) {
+        if (mainWindow !== ownerWindow || ownerWindow.isDestroyed() || sender.isDestroyed()) {
+          throw Object.assign(new Error('MANUAL_MAP_NATIVE_DIALOG_OWNER_STALE'), { code: 'E_MANUAL_MAP_NATIVE_DIALOG_OWNER_STALE' });
+        }
+        const notify = phase => {
+          if (mainWindow === ownerWindow && !ownerWindow.isDestroyed() && !sender.isDestroyed()) {
+            sender.send('ui:manual-map-native-dialog-wait', {
+              v: 1, correlationId: safeRequest.correlationId, commandId, phase,
+            });
+          }
+        };
+        notify('open');
+        try { return await openDialog(); } finally { notify('closed'); }
+      },
+    } : null;
   try {
     const result = PRODUCT_COMMAND_ID_SET.has(commandId)
-      ? await dispatchProductCommandBridge(commandId, payload)
+      ? await (nativeDialogWaitPort
+        ? dispatchProductCommandBridge(commandId, payload, { nativeDialogWaitPort })
+        : dispatchProductCommandBridge(commandId, payload))
       : await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE, invocationSource: 'ui-command-bridge' });
     if (result && result.ok === true) return makeCommandBridgeSuccess(result);
     const reason = findCommandBridgeFailureReason(result) || 'COMMAND_EXECUTION_FAILED';
@@ -40618,7 +40640,7 @@ async function buildManualMapExternalArtifactMutation({ targetPath, content, for
   };
 }
 
-async function prepareManualMapPortabilityCommand(commandId, payload, binding, record, assertCurrent) {
+async function prepareManualMapPortabilityCommand(commandId, payload, binding, record, assertCurrent, nativeDialogWaitPort = null) {
   const safePayload = normalizeManualMapPortabilityPayload(payload);
   if (commandId === 'manualMap.import.jsonRepeat') {
     const selection = await showOpenDialogWithAutonomousPath(mainWindow, {
@@ -40792,11 +40814,13 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
     }
   }
   const extension = format === 'markdown' ? 'md' : format;
-  const save = await showSaveDialogWithAutonomousPath(mainWindow, {
+  const openDialog = () => showSaveDialogWithAutonomousPath(mainWindow, {
     title: `Export Manual Map ${format.toUpperCase()}`,
     defaultPath: `manual-map.${extension}`,
     filters: [{ name: format === 'markdown' ? 'Markdown' : format === 'json' ? 'Manual Map JSON' : format === 'pdf' ? 'Portable Document Format' : 'Scalable Vector Graphics', extensions: [extension] }],
   }, `manual-map.${extension}`);
+  const save = nativeDialogWaitPort && !getAutonomousFileDialogRoot()
+    ? await nativeDialogWaitPort.run(openDialog) : await openDialog();
   await assertCurrent();
   if (!save || save.canceled || !save.filePath) {
     return manualMapPortabilityError(commandId, 'E_MANUAL_MAP_EXPORT_CANCELED', 'MANUAL_MAP_EXPORT_CANCELED');
@@ -40840,7 +40864,7 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
   };
 }
 
-async function prepareCanonicalProjectTruthCommand(commandId, payload) {
+async function prepareCanonicalProjectTruthCommand(commandId, payload, hostEffectPorts = {}) {
   const record = getProductCommandRecord(commandId);
   const spec = record ? PRODUCT_AUTHOR_DOMAIN_SCHEMAS[record.domain] : null;
   if (!record || !spec) {
@@ -40879,7 +40903,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload) {
     'manualMap.export.markdown',
     'manualMap.import.jsonRepeat',
   ].includes(commandId)
-    ? await prepareManualMapPortabilityCommand(commandId, payload, binding, record, assertCurrent)
+    ? await prepareManualMapPortabilityCommand(commandId, payload, binding, record, assertCurrent, hostEffectPorts.nativeDialogWaitPort)
     : commandId === 'manualMap.attachment.add'
       ? await prepareManualMapAttachmentCommand(commandId, payload, binding, assertCurrent)
     : null;
@@ -41183,7 +41207,7 @@ async function dispatchBlackBoxProductCommandBridge(commandId, payload = {}, rec
   });
 }
 
-async function dispatchProductCommandBridge(commandId, payload = {}) {
+async function dispatchProductCommandBridge(commandId, payload = {}, hostEffectPorts = {}) {
   const record = getProductCommandRecord(commandId);
   if (!record) {
     return makeProductCommandBridgeError(
@@ -41302,7 +41326,9 @@ async function dispatchProductCommandBridge(commandId, payload = {}) {
     return enqueueProductCommandTransaction(currentProjectName || DEFAULT_PROJECT_NAME, async () => {
       try {
         if (queueGuard) queueGuard();
-        return await activeStage10ApplicationCommandRoute.dispatch(commandId, payload);
+        return hostEffectPorts.nativeDialogWaitPort
+          ? await activeStage10ApplicationCommandRoute.dispatch(commandId, payload, hostEffectPorts)
+          : await activeStage10ApplicationCommandRoute.dispatch(commandId, payload);
       } catch (error) {
         return makeProductCommandBridgeError(
           commandId,

@@ -32,7 +32,7 @@ export function createStage10ApplicationCommandRoute(input = {}) {
   const canonicalProjectTruthPort = input.canonicalProjectTruthPort;
   return {
     schemaVersion: STAGE10_APPLICATION_COMMAND_ROUTE_SCHEMA,
-    async dispatch(commandIdInput, payloadInput = {}) {
+    async dispatch(commandIdInput, payloadInput = {}, hostEffectPorts = {}) {
       const commandId = normalizeString(commandIdInput);
       if (!ALLOWED_COMMAND_IDS.has(commandId)) {
         return typedError('E_STAGE10_APPLICATION_COMMAND_NOT_ALLOWED', commandId, 'STAGE10_APPLICATION_COMMAND_NOT_ALLOWED');
@@ -65,7 +65,9 @@ export function createStage10ApplicationCommandRoute(input = {}) {
             'CANONICAL_PROJECT_TRUTH_PORT_MISSING',
           );
         }
-        const canonicalProjectTruth = await canonicalProjectTruthPort.prepare(commandId, payload);
+        const canonicalProjectTruth = hostEffectPorts?.nativeDialogWaitPort
+          ? await canonicalProjectTruthPort.prepare(commandId, payload, hostEffectPorts)
+          : await canonicalProjectTruthPort.prepare(commandId, payload);
         if (canonicalProjectTruth?.ok === false) return canonicalProjectTruth;
         const preparedPayload = canonicalProjectTruth?.payload
           && typeof canonicalProjectTruth.payload === 'object'

@@ -1,3 +1,15 @@
+# Current task — Manual Map native dialog budget
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_PROVED_CANDIDATE_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 4ded41f19261c7940032e46cf7817cb332b9e405
+TASK: YALKEN_MANUAL_MAP_NATIVE_DIALOG_BUDGET_20261104; sole executor, existing codex/manual-map-native-dialog-budget-20261104 branch.
+CURRENT: Main/Stage10 host-only native Save lifecycle and the closed preload waiter preserve120s active execution while accounting for human dialog wait separately. Generic ipc-envelope15761774 and all17protected bytes remain literal M5. Full affected12 files pass126of126/zero skip-todo-cancel; original312-line17444-byte test prefix exact. Final independent source/ordered126/protected17 oracle35323a4658798f021547b2a88e92b13ad16fd53555414e091ef28ae6d374fb84. This is finite source proof; no fresh actual long-dialog app acceptance.
+DELIVERY: PR2197 predecessor fully CLOSED on M5 by PDF_ZERO_DELIVERY_CLOSURE_01.json.gz SHA25613f1ce439b67e2cf539dcfe1fab6d8420b30df05d2177bd7297da3e2b3b0bac5. Current C0 c2c46c0e8 has fourteen technical witnesses (seven each registry). Its actual early prerequisites stopped at CERT_NAMESPACE: new delta was omitted from the existing successor composition/list. A working composition-only causal probe reads literal C0 and passes; product/tests held. Complete necessary current bindings on C1, then separately admitted actual rebuilt >120s Save/Cancel/data/Quit/cold and all required normal delivery/merged proofs. No native/full-release acceptance.
+LIMITS: Full V6/DNA5 Writer/Atlas15cells/fourprojections/STAGE00..11/WSE/Pulse/ENV and17qualification required; all17UNKNOWN/cutUNFROZEN/releaseNOT_READY; DeepUNAVAILABLE_LOCAL_STUB_ONLY. Ten closed profiles/apps/data/raw/authority protected. Existing15moderatebuildtools/59old skips/cache errors retain identities. Word/nativeOfficePAUSED; BlackBox after fullMac. No agents/models/chats/autonomous timers/optional services.
+
+--- Historical records below retain original identities and claims ---
+
 # Current task — Canonical zero PDF margins
 
 DOCUMENT_CLASS: FACTUAL_STATUS

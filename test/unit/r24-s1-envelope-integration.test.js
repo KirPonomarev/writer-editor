@@ -310,3 +310,241 @@ test('native Word waiter: concurrent correlations, invoke errors and existing si
     assert.equal(row.scheduled.length, 3); assert.equal(row.calls.length, 4); assert.equal(row.timers, 0);
   }
 });
+
+
+// MM-POSTMERGE-10: actual preload source/bundle with only clock and native IPC ports controlled.
+const MM_WAIT_CHANNEL = 'ui:manual-map-native-dialog-wait';
+const MM_WAIT_COMMANDS = ['manualMap.export.json', 'manualMap.export.imagePdf', 'manualMap.export.markdown'];
+function mmWaitFixture(kind) {
+  const root = path.join(__dirname, '..', '..'), calls = [], timers = new Map(), scheduled = [], listeners = new Map();
+  let now = 0, next = 0, api, core;
+  const electron = { contextBridge: { exposeInMainWorld(name, value) { assert.equal(name, 'electronAPI'); api = value; } },
+    ipcRenderer: {
+      on(channel, handler) { const rows = listeners.get(channel) || new Set(); rows.add(handler); listeners.set(channel, rows); },
+      removeListener(channel, handler) { listeners.get(channel)?.delete(handler); },
+      send() {},
+      invoke(channel, envelope) { return new Promise((resolve, reject) => calls.push({ channel, envelope, resolve, reject })); },
+    } };
+  const context = vm.createContext({ Buffer, Date, Math, Promise, console, performance: { now: () => now },
+    module: { exports: {} }, exports: {},
+    setTimeout(fn, ms) { const id = ++next; timers.set(id, { fn, at: now + ms }); scheduled.push({ id, ms, at: now + ms }); return id; },
+    clearTimeout(id) { timers.delete(id); },
+    require(specifier) {
+      if (specifier === 'electron') return electron;
+      assert.equal(kind, 'source'); assert.equal(specifier, './core/ipc-envelope-v1.cjs');
+      if (!core) { const module = { exports: {} }, filename = path.join(root, 'src/core/ipc-envelope-v1.cjs');
+        vm.runInContext(`(function(module, exports) {\n${fs.readFileSync(filename, 'utf8')}\n})`, context, { filename })(module, module.exports);
+        core = module.exports; }
+      return core;
+    },
+  });
+  const filename = path.join(root, kind === 'source' ? 'src/preload.js' : 'src/preload.bundle.cjs');
+  vm.runInContext(fs.readFileSync(filename, 'utf8'), context, { filename });
+  const internal = vm.runInContext('invokeUiCommand', context);
+  return { api, calls, timers, scheduled,
+    command(alias, commandId, payload = {}, hints = {}) { return alias === 'internal' ? internal(commandId, payload)
+      : api.invokeUiCommandBridge({ ...hints, commandId, payload }); },
+    phase(index, phase, overrides = {}) { const envelope = calls[index].envelope;
+      return { v: 1, correlationId: envelope.correlationId, commandId: envelope.commandId, phase, ...overrides }; },
+    emit(packet, channel = MM_WAIT_CHANNEL) { for (const handler of [...(listeners.get(channel) || [])]) handler({}, packet); },
+    listenerCount() { return [...listeners.values()].reduce((sum, rows) => sum + rows.size, 0); },
+    async advance(ms) {
+      const target = now + ms; await waitFlush();
+      while (true) { const due = [...timers].filter(([, timer]) => timer.at <= target).sort((a, b) => a[1].at - b[1].at || a[0] - b[0])[0];
+        if (!due) break;
+        now = due[1].at; timers.delete(due[0]); due[1].fn(); await waitFlush(); }
+      now = target; await waitFlush();
+    },
+  };
+}
+for (const kind of ['source', 'bundle']) for (const alias of ['bridge', 'internal'])
+  for (const commandId of MM_WAIT_COMMANDS) for (const choice of ['save', 'cancel']) {
+    test(`Manual Map native wait: ${kind}/${alias}/${commandId}/${choice} retains original outcome beyond120s`, async () => {
+      const f = mmWaitFixture(kind), state = waitObserve(f.command(alias, commandId, { projectId: 'own-project', mapId: 'own-map' }));
+      await f.advance(30000); assert.equal(f.calls.length, 1); assert.equal(f.scheduled[0].ms, 120000);
+      assert.equal(validateIpcEnvelope(f.calls[0].envelope, f.calls[0].channel).ok, true);
+      f.emit(f.phase(0, 'open')); await f.advance(150001);
+      assert.equal(state.status, 'pending', 'actual Main native dialog is still awaiting the user after old deadline');
+      f.emit(f.phase(0, 'closed'));
+      const reply = choice === 'save' ? { ok: true, value: { result: { mapId: 'own-map', export: { localFileWritten: true } } } }
+        : { ok: false, reason: 'MANUAL_MAP_EXPORT_CANCELED' };
+      f.calls[0].resolve(reply); await waitFlush();
+      assert.equal(state.status, 'fulfilled'); assert.equal(state.value, reply, 'unaltered original Main result');
+      assert.equal(f.calls.length, 1, 'no redispatch'); assert.equal(f.timers.size, 0); assert.equal(f.listenerCount(), 0);
+    });
+  }
+for (const kind of ['source', 'bundle']) {
+  test(`Manual Map native wait: ${kind} resumes exact remainder and discards late result without renewal`, async () => {
+    const f = mmWaitFixture(kind), state = waitObserve(f.command('bridge', MM_WAIT_COMMANDS[0], {}));
+    await f.advance(20000); f.emit(f.phase(0, 'closed')); f.emit(f.phase(0, 'open'));
+    await f.advance(140000); f.emit(f.phase(0, 'open')); await f.advance(10000);
+    assert.equal(state.status, 'pending'); f.emit(f.phase(0, 'closed')); f.emit(f.phase(0, 'closed'));
+    await f.advance(99999); assert.equal(state.status, 'pending');
+    f.emit(f.phase(0, 'open')); await f.advance(1);
+    assert.equal(state.status, 'rejected'); assert.equal(state.error.code, 'E_BRIDGE_TIMEOUT');
+    const expired = waitSnapshot(state); f.emit(f.phase(0, 'closed')); f.calls[0].resolve({ ok: true, forbiddenLate: true });
+    await waitFlush(); assert.deepEqual(waitSnapshot(state), expired); assert.equal(f.calls.length, 1);
+    assert.equal(f.timers.size, 0); assert.equal(f.listenerCount(), 0);
+    assert.deepEqual(f.scheduled.map(row => row.ms), [120000, 100000], 'human wait never replenishes active budget');
+  });
+  test(`Manual Map native wait: ${kind} forged or malformed phases and renderer hints cannot suspend the deadline`, async () => {
+    const attacks = [null, [], {}, { v: 2 }, { correlationId: 'wrong-correlation' }, { commandId: 'manualMap.export.json.extra' },
+      { phase: 'OPEN' }, { phase: 'waiting' }, { extra: true }, { phase: 'closed' }];
+    for (const attack of attacks) {
+      const f = mmWaitFixture(kind), state = waitObserve(f.command('bridge', MM_WAIT_COMMANDS[0], { timeoutMs: 9999999, nativeDialog: true }, { timeoutMs: 9999999 }));
+      await f.advance(30000); f.emit(attack === null || Array.isArray(attack) || Object.keys(attack).length === 0 ? attack : f.phase(0, 'open', attack));
+      await f.advance(89999); assert.equal(state.status, 'pending'); await f.advance(1);
+      assert.equal(state.status, 'rejected'); assert.equal(state.error.code, 'E_BRIDGE_TIMEOUT');
+      assert.equal(f.calls.length, 1); assert.equal(f.listenerCount(), 0);
+      f.calls[0].resolve({ ok: false, reason: 'actual late cancellation' }); await waitFlush();
+      assert.equal(state.error.code, 'E_BRIDGE_TIMEOUT');
+    }
+    for (const commandId of [MM_WAIT_COMMANDS[0] + ' ', MM_WAIT_COMMANDS[0] + '.extra', 'manualMap.import.jsonRepeat', 'cmd.project.save']) {
+      const f = mmWaitFixture(kind), state = waitObserve(f.command('bridge', commandId, {}));
+      await f.advance(30000); f.emit(f.phase(0, 'open')); await f.advance(90000);
+      assert.equal(state.error.code, 'E_BRIDGE_TIMEOUT'); assert.equal(f.calls.length, 1); assert.equal(f.listenerCount(), 0);
+      f.calls[0].resolve({ ok: true, late: true }); await waitFlush();
+    }
+  });
+  test(`Manual Map native wait: ${kind} concurrent correlations and invoke failure clean their own waiters`, async () => {
+    const f = mmWaitFixture(kind), first = waitObserve(f.command('bridge', MM_WAIT_COMMANDS[0], { mapId: 'first' }));
+    const second = waitObserve(f.command('internal', MM_WAIT_COMMANDS[1], { mapId: 'second' }));
+    await f.advance(10000); assert.notEqual(f.calls[0].envelope.correlationId, f.calls[1].envelope.correlationId);
+    f.emit(f.phase(0, 'open')); await f.advance(30000); f.emit(f.phase(1, 'open')); await f.advance(150000);
+    assert.equal(first.status, 'pending'); assert.equal(second.status, 'pending');
+    f.emit(f.phase(1, 'closed')); const reply = { ok: true, second: true }; f.calls[1].resolve(reply); await waitFlush();
+    assert.equal(second.value, reply); assert.equal(first.status, 'pending'); assert.equal(f.listenerCount(), 1);
+    const error = Object.assign(new Error('native invoke failed'), { code: 'E_NATIVE_INVOKE_TEST' });
+    f.calls[0].reject(error); await waitFlush(); assert.equal(first.error.code, error.code);
+    assert.equal(f.calls.length, 2); assert.equal(f.timers.size, 0); assert.equal(f.listenerCount(), 0);
+  });
+}
+function mmMainFunction(source, name) {
+  const start = source.search(new RegExp(`^(?:async )?function ${name}\\(`, 'm'));
+  assert.notEqual(start, -1, name); const end = source.indexOf('\n}', start); assert.notEqual(end, -1, name);
+  return source.slice(start, end + 2);
+}
+for (const commandId of MM_WAIT_COMMANDS) for (const choice of ['save', 'cancel']) {
+  test(`Manual Map native wait: actual Main and Stage10 host port ${commandId}/${choice} preserves canonical payload`, async () => {
+    const root = path.join(__dirname, '..', '..'), { pathToFileURL } = require('node:url'), crypto = require('node:crypto');
+    const main = fs.readFileSync(path.join(root, 'src/main.js'), 'utf8');
+    const runtime = await import(pathToFileURL(path.join(root, 'src/core/runtime.mjs')).href);
+    const graph = await import(pathToFileURL(path.join(root, 'src/derived/mindmap/deriveManualMapGraph.mjs')).href);
+    const exports = await import(pathToFileURL(path.join(root, 'src/export/mindmap/v1/index.mjs')).href);
+    const imports = await import(pathToFileURL(path.join(root, 'src/import/mindmap/v1/index.mjs')).href);
+    const { createStage10ApplicationCommandRoute } = await import(pathToFileURL(path.join(root, 'src/product/stage10ApplicationCommandRoute.mjs')).href);
+    const product = require(path.join(root, 'src/shared/productCommandRegistry.cjs'));
+    const envelope = require(path.join(root, 'src/core/ipc-envelope-v1.cjs'));
+    const H = value => crypto.createHash('sha256').update(value).digest('hex'), projectId = 'native-dialog-finite', mapId = 'own-map';
+    const created = runtime.applyCoreSequence(runtime.createInitialCoreState(), [
+      { type: runtime.CORE_COMMAND_IDS.PROJECT_CREATE, payload: { projectId, title: 'Native wait finite', sceneId: 'scene-a' } },
+      { type: runtime.CORE_COMMAND_IDS.MANUAL_MAP_CREATE, payload: { projectId, mapId, title: 'Own map' } },
+      { type: runtime.CORE_COMMAND_IDS.MANUAL_MAP_NODE_ADD, payload: { projectId, mapId, nodeId: 'node-a', label: 'Café é 🧭', position: { x: 0, y: 0 } } },
+    ]); assert.equal(created.ok, true);
+    const manifestRaw = '{"projectId":"native-dialog-finite"}\n';
+    created.state.data.projects[projectId].manifestRevision = `sha256:${H(manifestRaw)}`;
+    const binding = { projectId, projectRoot: '/own/synthetic/project', manifestPath: '/own/synthetic/project/project.json', coreState: created.state, manifest: { lastCommandId: 3 } };
+    const frames = [], writes = [], prepared = []; let handler, selected, nativeCalls = 0, queues = 0, checks = 0;
+    const native = new Promise(resolve => { selected = resolve; });
+    const sender = { isDestroyed: () => false, send(channel, packet) { frames.push({ channel, packet: JSON.parse(JSON.stringify(packet)) }); } };
+    const ownerWindow = { webContents: sender, isDestroyed: () => false };
+    const context = vm.createContext({ Buffer, TextDecoder, path, console, Promise,
+      ...envelope,
+      mainWindow: ownerWindow, currentProjectName: 'Own', DEFAULT_PROJECT_NAME: 'Default', COMMAND_BUS_ROUTE: 'command.bus',
+      guardedProtocolHandle(channel, fn) { assert.equal(channel, 'ui:command-bridge'); handler = fn; },
+      UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS: new Set(MM_WAIT_COMMANDS), PRODUCT_COMMAND_ID_SET: product.PRODUCT_COMMAND_ID_SET,
+      PRODUCT_AUTHOR_DOMAIN_SCHEMAS: { manualMap: 'manualMap.author.v1' },
+      ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS: [], ATLAS_ENTITY_CORRECTION_COMMAND_IDS: [], IDEA_MEANING_AUTHORING_COMMAND_IDS: [], SCENE_LANGUAGE_TAG_COMMAND_IDS: [],
+      getProductCommandRecord: product.getProductCommandRecord, getWriterLocalRuntimeProfile: () => ({}),
+      evaluateWriterLocalCommandAccess: () => ({ allowed: true }), decideCommandEntitlement: () => ({ available: true }),
+      getProductEntitlementTier: () => 'FREE', evaluateCommandCapabilityAuthority: () => ({ ok: true }),
+      DEFAULT_AUTHORITY_PLATFORM_ID: 'macos', readAuthorityCapabilityMatrixDoc: () => ({}),
+      E_COMMAND_DISABLED_FOR_ENTITLEMENT: 'E_COMMAND_DISABLED_FOR_ENTITLEMENT',
+      isPlainObjectValue: value => value !== null && typeof value === 'object' && !Array.isArray(value),
+      cloneJsonSafe: value => JSON.parse(JSON.stringify(value)), computeHash: H,
+      captureManualMapPreparationGuard: () => async () => { checks += 1; },
+      buildProductCoreStateForCurrentProject: async () => binding, validateProductCommandAuthorDomain: () => null,
+      readProjectManifestRawAtPath: async () => ({ raw: manifestRaw }),
+      normalizeManualMapPortabilityPayload: value => JSON.parse(JSON.stringify(value)),
+      loadManualMapGraphModule: async () => graph,
+      loadManualMapExportModule: async () => exports, loadManualMapImportModule: async () => imports,
+      MANUAL_MAP_LOCAL_FILE_MAX_BYTES: 1024 * 1024, getAutonomousFileDialogRoot: () => '',
+      showSaveDialogWithAutonomousPath: async () => { nativeCalls += 1; return native; },
+      validateExternalWriteTarget: async filePath => ({ targetPath: filePath }),
+      buildManualMapExternalArtifactMutation: async input => { writes.push(input); return { nextHash: H(input.content) }; },
+      manualMapPortabilityError: (id, code, reason) => ({ ok: false, error: { code, reason } }),
+      enqueueProductCommandTransaction: async (name, fn) => { queues += 1; return fn(); },
+      makeCommandBridgeSuccess: result => ({ ok: true, value: result }), makeCommandBridgeFailure: (reason, value) => ({ ok: false, reason, value }),
+      findCommandBridgeFailureReason: value => value?.error?.reason, makeCommandBridgeException: error => { throw error; },
+    });
+    for (const name of ['makeProductCommandBridgeError', 'deriveManualMapGraphForProductCommand', 'prepareManualMapPortabilityCommand', 'prepareCanonicalProjectTruthCommand', 'dispatchProductCommandBridge'])
+      vm.runInContext(mmMainFunction(main, name), context, { filename: `actual-main-${name}` });
+    const route = createStage10ApplicationCommandRoute({
+      getBootstrap: () => ({ getProjectId: () => projectId, dispatchProjectCommand: async () => { throw Error('wrong route'); },
+        dispatchCanonicalProjectCommand: async (id, payload, truth) => { prepared.push({ id, payload, truth }); return { ok: true }; } }),
+      canonicalProjectTruthPort: { prepare: context.prepareCanonicalProjectTruthCommand },
+    });
+    context.activeStage10ApplicationCommandRoute = route;
+    const start = main.indexOf("guardedProtocolHandle('ui:command-bridge',"), end = main.indexOf('const WORKSPACE_QUERY_BRIDGE_HANDLERS', start);
+    assert.ok(start >= 0 && end > start); vm.runInContext(main.slice(start, end), context, { filename: 'actual-main-ui-command-handler' });
+    const request = createEnvelope('ui:command-bridge', commandId, { projectId, mapId });
+    const pending = handler({ sender }, request), actualOutcome = waitObserve(pending);
+    try {
+    for (let i = 0; i < 100; i += 1) await Promise.resolve();
+    assert.equal(nativeCalls, 1, JSON.stringify(waitSnapshot(actualOutcome))); assert.equal(queues, 1);
+    assert.deepEqual(frames.map(row => row.packet.phase), ['open'], 'actual Main notifies only its pending native dialog');
+    assert.equal(writes.length, 0, 'no artifact preparation before native decision');
+    selected(choice === 'save' ? { canceled: false, filePath: '/own/export/map.json' } : { canceled: true });
+    const reply = await pending; assert.deepEqual(frames.map(row => row.packet.phase), ['open', 'closed']);
+    for (const frame of frames) { assert.equal(frame.channel, MM_WAIT_CHANNEL); assert.equal(frame.packet.v, 1);
+      assert.equal(frame.packet.correlationId, request.correlationId); assert.equal(frame.packet.commandId, commandId);
+      assert.deepEqual(Object.keys(frame.packet).sort(), ['commandId', 'correlationId', 'phase', 'v']); }
+    assert.ok(checks >= 3, 'current source guard still executes after native wait');
+    assert.equal(reply.ok, choice === 'save'); assert.equal(writes.length, choice === 'save' ? 1 : 0);
+    assert.equal(prepared.length, choice === 'save' ? 1 : 0);
+    if (choice === 'save') { const serialized = JSON.stringify(prepared[0].payload);
+      assert.equal(serialized.includes('nativeDialog'), false); assert.equal(prepared[0].payload.projectId, projectId);
+      assert.equal(prepared[0].truth.publicResult.export.localFileWritten, true); }
+    } finally { selected({ canceled: true }); await pending.catch(() => {}); }
+  });
+}
+
+
+for (const kind of ['source', 'bundle']) test(`Manual Map native wait: ${kind} inherited identity with foreign own keys is refused`, async () => {
+  const f = mmWaitFixture(kind), state = waitObserve(f.command('bridge', MM_WAIT_COMMANDS[0], {}));
+  await f.advance(30000);
+  const packet = Object.assign(Object.create(f.phase(0, 'open')), { first: 1, second: 2, third: 3, fourth: 4 });
+  f.emit(packet); await f.advance(90000);
+  assert.equal(state.status, 'rejected'); assert.equal(state.error.code, 'E_BRIDGE_TIMEOUT');
+  f.calls[0].resolve({ ok: true, forbiddenLate: true }); await waitFlush();
+  assert.equal(state.status, 'rejected'); assert.equal(f.calls.length, 1); assert.equal(f.listenerCount(), 0);
+});
+
+test('Manual Map native wait: retired actual Main window refuses dialog before its effect', async () => {
+  const root = path.join(__dirname, '..', '..'), main = fs.readFileSync(path.join(root, 'src/main.js'), 'utf8');
+  const envelope = require(path.join(root, 'src/core/ipc-envelope-v1.cjs'));
+  const sender = { isDestroyed: () => false, send() { throw Error('retired window must not receive phases'); } };
+  const ownerWindow = { webContents: sender, isDestroyed: () => false };
+  let handler, capturedPort, nativeCalls = 0, release;
+  const hold = new Promise(resolve => { release = resolve; });
+  const context = vm.createContext({ ...envelope, Promise, mainWindow: ownerWindow, COMMAND_BUS_ROUTE: 'command.bus',
+    guardedProtocolHandle(channel, fn) { assert.equal(channel, 'ui:command-bridge'); handler = fn; },
+    UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS: new Set(MM_WAIT_COMMANDS), PRODUCT_COMMAND_ID_SET: new Set(MM_WAIT_COMMANDS),
+    getWriterLocalRuntimeProfile: () => ({}), getProductCommandRecord: () => ({}), evaluateWriterLocalCommandAccess: () => ({ allowed: true }),
+    async dispatchProductCommandBridge(commandId, payload, ports) {
+      capturedPort = ports?.nativeDialogWaitPort; await hold;
+      return capturedPort ? capturedPort.run(async () => { nativeCalls += 1; return { ok: true }; })
+        : { ok: false, reason: 'MISSING_HOST_PORT' };
+    },
+    makeCommandBridgeSuccess: result => ({ ok: true, value: result }), makeCommandBridgeFailure: (reason, value) => ({ ok: false, reason, value }),
+    findCommandBridgeFailureReason: value => value?.reason,
+    makeCommandBridgeException: error => ({ ok: false, reason: error.code || error.message }),
+  });
+  const start = main.indexOf("guardedProtocolHandle('ui:command-bridge',"), end = main.indexOf('const WORKSPACE_QUERY_BRIDGE_HANDLERS', start);
+  assert.ok(start >= 0 && end > start); vm.runInContext(main.slice(start, end), context, { filename: 'actual-main-ui-retired-window' });
+  const pending = handler({ sender }, createEnvelope('ui:command-bridge', MM_WAIT_COMMANDS[0], {}));
+  await waitFlush(); context.mainWindow = { webContents: { isDestroyed: () => false }, isDestroyed: () => false };
+  release(); const result = await pending;
+  assert.equal(result.ok, false); assert.equal(result.reason, 'E_MANUAL_MAP_NATIVE_DIALOG_OWNER_STALE');
+  assert.equal(nativeCalls, 0, 'no dialog on a replacement window');
+});
