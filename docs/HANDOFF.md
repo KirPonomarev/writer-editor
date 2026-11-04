@@ -1,3 +1,15 @@
+# Resume — Canonical zero PDF margins
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+BINDING_BASE_SHA: bb53dc9631c1a0a305b7784040a78299e8053e0b
+TASK: YALKEN_WRITER_PDF_ZERO_MARGINS_20261104; same registered worktree and codex/writer-pdf-zero-margins-20261104. Scope is15 paths in 2026-11-04--writer-pdf-zero-margins.md; reports/materials in matching verified T777 date folder.
+PREDECESSOR: PR2196 delivery is CLOSED by PDF_TARGET_DELIVERY_CLOSURE_01.json.gz SHA2564cee6e4a1aa52ee755e08efc4382e91be701ab48571e2d568657fc8cd6132910. Both20-job CI/raw8 and actual new merged native PDF/visual/warm-cold0/source/protected-state/final guardrails completed; do not replay them.
+VERIFIED: Core accepts0 margins; unchanged PDF normalizer/HTML emit25.4, while dimensions0 still fall back. Declarationb1f76cb3/preflight6663841b actual0, full normative/scoped factual startup6c87c7f7, fresh main/own clean branch and8 protected old profile readbacks precede this source task.
+SOURCE_PROOF: Frozen141-line append31ea08f3 ran whole163: original152 exact/passed,8 zero assertion failures plus2 parents on unchanged source. The identical163 now pass with module66a355d3; independent356516ba proves exact names, ten fail-to-ok transitions and literal inverse0961ab0f. Main/Core/UI/shared writer and all old tests remain exact.
+NEXT_STEP: Finish current bindings/witnesses and immutable candidate, run cheap mandatory prerequisites then early actual rebuilt app zero-margin UI/Save/create/Replace/Cancel, independent canonical source/profile and PDF content/geometry/all-pages/normal Quit/true cold. Only then run every full baseline/RTK/other mandatory gate and ordinary guarded push/PR/CI/merge/literal merged verification. Native zero-margin and fullMac remain unaccepted. All17UNKNOWN/cutUNFROZEN; preserve8 old profiles, all raw/errors and original T9 creation identity.
+
+--- Historical records below retain original identities and claims ---
+
 # Resume — Writer PDF target content version
 
 DOCUMENT_CLASS: FACTUAL_STATUS

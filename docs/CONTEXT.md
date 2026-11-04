@@ -1,3 +1,16 @@
+# Current task — Canonical zero PDF margins
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: FROZEN_SOURCE_PROOF_COMPLETE_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: bb53dc9631c1a0a305b7784040a78299e8053e0b
+TASK: YALKEN_WRITER_PDF_ZERO_MARGINS_20261104; sole executor, one ordinary delivery chain, existing registered worktree and codex/writer-pdf-zero-margins-20261104.
+PREDECESSOR: PDF target-byte PR2196 is fully closed at this M4; PDF_TARGET_DELIVERY_CLOSURE_01.json.gz SHA2564cee6e4a1aa52ee755e08efc4382e91be701ab48571e2d568657fc8cd6132910 binds both CI20/raw8, actual merged rebuild/PDF create-replace-cancel/all4 pages/warm-cold0, all10070 source and protected profiles/authority/retainers. Earlier pending blocks are historical.
+CAUSE: Core accepts numeric zero margins, but current PDF0961ab0f normalization and HTML substitute25.4mm; positive12.5 remains and zero page dimensions correctly fall back. Only existing PDF margin interpretation and appended regression are admitted; Main/Core/UI/shared writer remain denied.
+CURRENT: Full startup/preflight0 and taskE0 preceded tests. Frozen141 appended lines on unchanged PDF ran163 cases: all old152 pass,8 zero assertions plus2 parents fail. Identical tests now pass163of163/0skip-todo-cancel after the margin-only correction. Independent356516ba verifies all ordered cases and literal old-module inverse; test prefix1125lines remains exact. Current bindings/witnesses and immutable candidate, cheap prerequisites, early actual rebuilt native/PDF/cold, then all full mandatory gates and ordinary delivery remain pending; no native zero-margin or full-release acceptance.
+LIMITS: Full V6/DNA5 Writer/Atlas15cells/fourprojections/STAGE00..11/WSE/Pulse/ENV continues; all17MacUNKNOWN, cutUNFROZEN, releaseNOT_READY, DeepUNAVAILABLE_LOCAL_STUB_ONLY. Existing15moderatebuildtools/production0,59named unit skips and4 cache ERROR lines per old native session remain disclosed. Word/nativeOfficePAUSED; BlackBox after fullMac; no agents/models/chats/timers/optional services. Every old profile/app/data/raw remains protected.
+
+--- Historical records below retain original identities and claims ---
+
 # Current task — PDF target content version
 
 DOCUMENT_CLASS: FACTUAL_STATUS
