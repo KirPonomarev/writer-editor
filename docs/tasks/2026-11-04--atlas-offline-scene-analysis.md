@@ -47,6 +47,7 @@ One bounded scene analysis vertical with one rollback and delivery. New fixed re
 - docs/tasks/2026-11-04--atlas-offline-scene-analysis.md
 - docs/ARCH_DIFF_LOG.md
 - docs/OPS/STATUS/ATLAS_OFFLINE_LANGUAGE_ENGINE_DECISION_V1.json
+- docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json
 - docs/CONTEXT.md
 - docs/HANDOFF.md
 - docs/WORKLOG.md

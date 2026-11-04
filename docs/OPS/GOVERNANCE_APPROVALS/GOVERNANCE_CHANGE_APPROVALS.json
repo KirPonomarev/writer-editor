@@ -31064,6 +31064,34 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_OFFLINE_SCENE_ANALYSIS_20261104",
       "approvedAtUtc": "2026-11-04T23:04:18.134812+00:00",
       "rationale": "Explicit standing owner current/future ordinary technical-witness delegation. Current own successor adds only the frozen historical rename-anchor ordered composition; same466 path/SHA members, original145 delta prefix and every old verifier/history/test byte preserved. Unchanged whole consumer64cases pass with467individual corruptions and original policy/ancestry controls. Native C1/C2 evidence retains original identities; no release or public binary waiver."
+    },
+    {
+      "filePath": "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json",
+      "sha256": "deb89def11ae566183286726fa12d4f195239f47a48bcebd9afa5f2cab153da1",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_OFFLINE_SCENE_ANALYSIS_20261104",
+      "approvedAtUtc": "2026-11-04T23:20:42.966404+00:00",
+      "rationale": "Explicit standing owner current/future technical-witness delegation. One required BEHAVIOR registration for the already admitted build-time fixed private resource input; old49flags/157census/law/scanner/assertions preserved. Exact current environment/policy/DATA/certificate digests from maintained7-target producer only; no gate bypass, runtime change, license/public-binary/full-release or17-row waiver."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "1a9f0e633d965996ee5579b56fa6022781e921cdca5c447b3a75ecf9116f30f0",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_OFFLINE_SCENE_ANALYSIS_20261104",
+      "approvedAtUtc": "2026-11-04T23:20:42.966404+00:00",
+      "rationale": "Explicit standing owner current/future technical-witness delegation. One required BEHAVIOR registration for the already admitted build-time fixed private resource input; old49flags/157census/law/scanner/assertions preserved. Exact current environment/policy/DATA/certificate digests from maintained7-target producer only; no gate bypass, runtime change, license/public-binary/full-release or17-row waiver."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "53b2560adffb6dce1af075e5a86e08a215003eb16a05607c395b3abb69b0fbe2",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_OFFLINE_SCENE_ANALYSIS_20261104",
+      "approvedAtUtc": "2026-11-04T23:20:42.966404+00:00",
+      "rationale": "Explicit standing owner current/future technical-witness delegation. One required BEHAVIOR registration for the already admitted build-time fixed private resource input; old49flags/157census/law/scanner/assertions preserved. Exact current environment/policy/DATA/certificate digests from maintained7-target producer only; no gate bypass, runtime change, license/public-binary/full-release or17-row waiver."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "f376fbfd32ff8c242bdec14ecaa5168aa56dfea7b9ed3a0602f2fc035e4cca7a",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_OFFLINE_SCENE_ANALYSIS_20261104",
+      "approvedAtUtc": "2026-11-04T23:20:42.966404+00:00",
+      "rationale": "Explicit standing owner current/future technical-witness delegation. One required BEHAVIOR registration for the already admitted build-time fixed private resource input; old49flags/157census/law/scanner/assertions preserved. Exact current environment/policy/DATA/certificate digests from maintained7-target producer only; no gate bypass, runtime change, license/public-binary/full-release or17-row waiver."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",

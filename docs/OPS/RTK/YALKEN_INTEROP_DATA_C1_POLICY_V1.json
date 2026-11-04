@@ -4167,7 +4167,7 @@
       },
       {
         "path": "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json",
-        "sha256": "42db0aa53d9e020ca24891f54da793f138432678e9fa20fd95681f1bfcabaac2"
+        "sha256": "deb89def11ae566183286726fa12d4f195239f47a48bcebd9afa5f2cab153da1"
       },
       {
         "path": "scripts/ops/r24/test-mutants.mjs",
@@ -4263,7 +4263,7 @@
       },
       {
         "path": "docs/tasks/2026-11-04--atlas-offline-scene-analysis.md",
-        "sha256": "36be4ef03ec9f9055807a8bf7313f3de376973f6f483dfe5a00931a3bb50f859"
+        "sha256": "2ae15f21c473f824f8a67adfd23dd5563d864dee0662666f62e0a7069a718fb0"
       },
       {
         "path": "docs/OPS/STATUS/ATLAS_OFFLINE_LANGUAGE_ENGINE_DECISION_V1.json",
