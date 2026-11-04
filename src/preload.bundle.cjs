@@ -11,7 +11,7 @@ var __commonJS = (cb, mod) => function __require() {
 var require_ipc_envelope_v1 = __commonJS({
   "src/core/ipc-envelope-v1.cjs"(exports2, module2) {
     "use strict";
-    var IpcEnvelopeError = class extends Error {
+    var IpcEnvelopeError2 = class extends Error {
       constructor(code, detail = "") {
         super(detail ? `${code}: ${detail}` : code);
         this.code = code;
@@ -78,7 +78,7 @@ var require_ipc_envelope_v1 = __commonJS({
     }
     function createEnvelope2(channel, idFieldValue, payload, { correlationId, issuedAt } = {}) {
       const idField = BRIDGE_ID_FIELD[channel];
-      if (!idField) throw new IpcEnvelopeError("E_ENVELOPE_CHANNEL_UNKNOWN", String(channel));
+      if (!idField) throw new IpcEnvelopeError2("E_ENVELOPE_CHANNEL_UNKNOWN", String(channel));
       const envelope = {
         v: ENVELOPE_VERSION,
         correlationId: typeof correlationId === "string" && correlationId.length >= 8 ? correlationId : `corr-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`,
@@ -90,14 +90,14 @@ var require_ipc_envelope_v1 = __commonJS({
       return envelope;
     }
     function withTimeoutBudget2(invokeFactory, { timeoutMs, correlationId }) {
-      if (!Number.isInteger(timeoutMs) || timeoutMs <= 0) throw new IpcEnvelopeError("E_BRIDGE_TIMEOUT_BUDGET_INVALID");
-      if (typeof invokeFactory !== "function") throw new IpcEnvelopeError("E_BRIDGE_INVOKE_REQUIRED");
+      if (!Number.isInteger(timeoutMs) || timeoutMs <= 0) throw new IpcEnvelopeError2("E_BRIDGE_TIMEOUT_BUDGET_INVALID");
+      if (typeof invokeFactory !== "function") throw new IpcEnvelopeError2("E_BRIDGE_INVOKE_REQUIRED");
       return new Promise((resolve, reject) => {
         let settled = false;
         const timer = setTimeout(() => {
           if (settled) return;
           settled = true;
-          reject(new IpcEnvelopeError("E_BRIDGE_TIMEOUT", correlationId || ""));
+          reject(new IpcEnvelopeError2("E_BRIDGE_TIMEOUT", correlationId || ""));
         }, timeoutMs);
         Promise.resolve().then(() => invokeFactory()).then((value) => {
           if (settled) return;
@@ -115,7 +115,7 @@ var require_ipc_envelope_v1 = __commonJS({
     module2.exports = Object.freeze({
       BRIDGE_KEY_SETS,
       ENVELOPE_VERSION,
-      IpcEnvelopeError,
+      IpcEnvelopeError: IpcEnvelopeError2,
       createEnvelope: createEnvelope2,
       validateIpcEnvelope,
       withTimeoutBudget: withTimeoutBudget2
@@ -125,7 +125,7 @@ var require_ipc_envelope_v1 = __commonJS({
 
 // src/preload.js
 var { contextBridge, ipcRenderer } = require("electron");
-var { createEnvelope, withTimeoutBudget } = require_ipc_envelope_v1();
+var { createEnvelope, withTimeoutBudget, IpcEnvelopeError } = require_ipc_envelope_v1();
 var PRELOAD_WORKSPACE_QUERY_IDS = Object.freeze({
   PROJECT_TREE: "query.projectTree",
   PROJECT_LIBRARY: "query.projectLibrary"
@@ -163,12 +163,93 @@ var QUERY_BRIDGE_TIMEOUT_MS = 3e4;
 function commandBridgeTimeoutMs(commandId) {
   return commandId === "cmd.project.review.openDocxReviewPreviewSession" ? 6e5 : COMMAND_BRIDGE_TIMEOUT_MS;
 }
+var MANUAL_MAP_NATIVE_DIALOG_WAIT_CHANNEL = "ui:manual-map-native-dialog-wait";
+var MANUAL_MAP_NATIVE_DIALOG_COMMAND_IDS = Object.freeze([
+  "manualMap.export.json",
+  "manualMap.export.imagePdf",
+  "manualMap.export.markdown"
+]);
+function isManualMapNativeDialogCommand(commandId) {
+  return typeof commandId === "string" && MANUAL_MAP_NATIVE_DIALOG_COMMAND_IDS.includes(commandId);
+}
+function withManualMapNativeDialogBudget(invokeFactory, { timeoutMs, correlationId, commandId, subscribe }) {
+  if (!Number.isInteger(timeoutMs) || timeoutMs <= 0) throw new IpcEnvelopeError("E_BRIDGE_TIMEOUT_BUDGET_INVALID");
+  if (typeof invokeFactory !== "function") throw new IpcEnvelopeError("E_BRIDGE_INVOKE_REQUIRED");
+  if (!isManualMapNativeDialogCommand(commandId) || typeof correlationId !== "string" || correlationId.length < 8 || correlationId.length > 128 || typeof subscribe !== "function") {
+    throw new IpcEnvelopeError("E_NATIVE_DIALOG_WAIT_BINDING_INVALID");
+  }
+  return new Promise((resolve, reject) => {
+    let settled = false, remaining = timeoutMs, startedAt = 0, timer = null;
+    let opened = false, paused = false, unsubscribe = () => {
+    };
+    const finish = (settle, value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      try {
+        unsubscribe();
+      } catch (error) {
+        reject(error);
+        return;
+      }
+      settle(value);
+    };
+    const expire = () => finish(reject, new IpcEnvelopeError("E_BRIDGE_TIMEOUT", correlationId));
+    const arm = () => {
+      startedAt = performance.now();
+      timer = setTimeout(expire, remaining);
+    };
+    const onPhase = (packet) => {
+      if (settled || (!packet || typeof packet !== "object" || Array.isArray(packet)) || Object.keys(packet).length !== 4 || Object.keys(packet).some((key) => !["v", "correlationId", "commandId", "phase"].includes(key)) || packet.v !== 1 || packet.correlationId !== correlationId || packet.commandId !== commandId || !["open", "closed"].includes(packet.phase)) return;
+      if (packet.phase === "open" && !opened) {
+        remaining = Math.max(0, remaining - Math.max(0, performance.now() - startedAt));
+        if (remaining === 0) {
+          expire();
+          return;
+        }
+        opened = true;
+        paused = true;
+        clearTimeout(timer);
+        timer = null;
+      } else if (packet.phase === "closed" && paused) {
+        paused = false;
+        arm();
+      }
+    };
+    try {
+      arm();
+      const detach = subscribe(onPhase);
+      if (typeof detach !== "function") throw new IpcEnvelopeError("E_NATIVE_DIALOG_WAIT_SUBSCRIPTION_INVALID");
+      unsubscribe = detach;
+    } catch (error) {
+      finish(reject, error);
+      return;
+    }
+    Promise.resolve().then(invokeFactory).then((value) => finish(resolve, value), (error) => finish(reject, error));
+  });
+}
+function invokeManualMapNativeDialogCommand(envelope) {
+  return withManualMapNativeDialogBudget(
+    () => ipcRenderer.invoke(UI_COMMAND_BRIDGE_CHANNEL, envelope),
+    {
+      timeoutMs: COMMAND_BRIDGE_TIMEOUT_MS,
+      correlationId: envelope.correlationId,
+      commandId: envelope.commandId,
+      subscribe(onPhase) {
+        const listener = (_, packet) => onPhase(packet);
+        ipcRenderer.on(MANUAL_MAP_NATIVE_DIALOG_WAIT_CHANNEL, listener);
+        return () => ipcRenderer.removeListener(MANUAL_MAP_NATIVE_DIALOG_WAIT_CHANNEL, listener);
+      }
+    }
+  );
+}
 function invokeUiCommand(commandId, payload = {}) {
   const envelope = createEnvelope(
     UI_COMMAND_BRIDGE_CHANNEL,
     typeof commandId === "string" ? commandId : "",
     normalizeRequestPayload(payload)
   );
+  if (isManualMapNativeDialogCommand(envelope.commandId)) return invokeManualMapNativeDialogCommand(envelope);
   return withTimeoutBudget(
     () => ipcRenderer.invoke(UI_COMMAND_BRIDGE_CHANNEL, envelope),
     { timeoutMs: commandBridgeTimeoutMs(envelope.commandId), correlationId: envelope.correlationId }
@@ -331,6 +412,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     const commandId = typeof safeRequest.commandId === "string" ? safeRequest.commandId : "";
     const payload = safeRequest.payload && typeof safeRequest.payload === "object" && !Array.isArray(safeRequest.payload) ? safeRequest.payload : {};
     const envelope = createEnvelope(UI_COMMAND_BRIDGE_CHANNEL, commandId, payload);
+    if (isManualMapNativeDialogCommand(envelope.commandId)) return invokeManualMapNativeDialogCommand(envelope);
     return withTimeoutBudget(
       () => ipcRenderer.invoke(UI_COMMAND_BRIDGE_CHANNEL, envelope),
       { timeoutMs: commandBridgeTimeoutMs(envelope.commandId), correlationId: envelope.correlationId }

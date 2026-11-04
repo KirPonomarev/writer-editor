@@ -924,7 +924,9 @@
     "test/fixtures/menu/edit-history-native-roles.v1.json",
     "docs/tasks/2026-11-03--writer-native-history.md",
     "docs/tasks/2026-11-03--writer-pdf-target-bytes.md",
-    "docs/tasks/2026-11-04--writer-pdf-zero-margins.md"
+    "docs/tasks/2026-11-04--writer-pdf-zero-margins.md",
+    "src/product/stage10ApplicationCommandRoute.mjs",
+    "docs/tasks/2026-11-04--manual-map-native-dialog-budget.md"
   ],
   "protectedFiles": [
     {
@@ -1153,7 +1155,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "5c53c3f729e2c81b249d94beb836bd471ccdffb73348af4c8fb39f4914b2147b"
+        "sha256": "0bdd1288a6a14184abd8d3e2706b19c16b53168857a04a1f5f73468ed3415e7a"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2789,7 +2791,7 @@
       },
       {
         "path": "src/preload.js",
-        "sha256": "39a3fbe05a6f4d7844f9bedf00063b7f983976ea79a83f9029f4d29733300ea2"
+        "sha256": "3ee61cab2fde58f05be26dd7fe8d383d08c0628fc5d36ac30ea454ee97fd5280"
       },
       {
         "path": "test/contracts/rtk-parser01-namespace-atoms.contract.test.js",
@@ -2845,15 +2847,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "4b43d51679b2659d8fe3a0fcf39846e6d445d7f905ed45d69d83d423fc7cfe8f"
+        "sha256": "371708ae516139238e92cc74c5f42fa18e030b647d52b686a153a9d269830349"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "fc6ecad4123293a72c45e9174bfbbe5edbc31cc88d136ee8f94ecf5d4df261b6"
+        "sha256": "efc5cf58766a6540c3cbbc9d75305a3bf297d0f20b276777d44d5530814ad0a6"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "c5403d6a01162bbda27051a99adf0fe95f57f66def89cf034155b5595b212cf3"
+        "sha256": "c5cfd6d977e8f8fca9f051d268e009bc392349a30e712d088ffbc1392a867a70"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3097,7 +3099,7 @@
       },
       {
         "path": "test/unit/r24-s1-envelope-integration.test.js",
-        "sha256": "454b4ab3318552b6e5ae5fe0be345c7255b80461a612d3295cc0c9345e3afaee"
+        "sha256": "6448baedaafdfaadf6aa93d4abfb98d8bdf9f0bbfd162606f456f391a83dcd38"
       },
       {
         "path": "docs/tasks/2026-10-08--word-preview-native-wait-mac.md",
@@ -3393,7 +3395,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "ed83774b008494edc877c111eb5c597f3f4e9cd9067366be403aec6a2353b437"
+        "sha256": "25f7999fe715dd24d4903cabc3bc16d9c153c9d0a26aa92256b44829b901171b"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3609,7 +3611,7 @@
       },
       {
         "path": "src/preload.bundle.cjs",
-        "sha256": "741780a819134ada437c8725ffa8c9c144df11e2890ce8397897d72c082be65d"
+        "sha256": "77410db0564c6df4eb743bc5c2fd77eacca2a7bb9c666d7e3e216d3408276284"
       },
       {
         "path": "src/renderer/design-os/atlasFeatureIntegrationManifest.mjs",
@@ -4218,6 +4220,14 @@
       {
         "path": "docs/tasks/2026-11-04--writer-pdf-zero-margins.md",
         "sha256": "f50d2b4edc5f8286d9115e1d9142c97bb7aaea3c39585f7b77dba5b43176cd31"
+      },
+      {
+        "path": "src/product/stage10ApplicationCommandRoute.mjs",
+        "sha256": "178eb409d26c79a0ec7c8485e7e278dccf2062cbcb25b969a03275eae786cc87"
+      },
+      {
+        "path": "docs/tasks/2026-11-04--manual-map-native-dialog-budget.md",
+        "sha256": "8a1be5cb20dadccbb26b0e3fdd38bb02dd0aba244c4352c6cf24a23cc59ad05f"
       }
     ],
     "followupRepair": {
