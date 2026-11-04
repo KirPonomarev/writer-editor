@@ -2847,15 +2847,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "371708ae516139238e92cc74c5f42fa18e030b647d52b686a153a9d269830349"
+        "sha256": "e286f0dcc9392d92fe940e0c3aea32b1965b5436e564c2c2c6b9cf944f90de11"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "efc5cf58766a6540c3cbbc9d75305a3bf297d0f20b276777d44d5530814ad0a6"
+        "sha256": "2a6b579e86051609a3f430e6eda7183c55b9047ce8544e8095a040e9e8fa62ed"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "c5cfd6d977e8f8fca9f051d268e009bc392349a30e712d088ffbc1392a867a70"
+        "sha256": "b30b647ce74242e2580d295d50f3dd177a39a2b289f61702ea3c8e438726259a"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -4227,7 +4227,7 @@
       },
       {
         "path": "docs/tasks/2026-11-04--manual-map-native-dialog-budget.md",
-        "sha256": "8a1be5cb20dadccbb26b0e3fdd38bb02dd0aba244c4352c6cf24a23cc59ad05f"
+        "sha256": "ee047f3257acbc74ad2eeed6c01e5393fa803443ba4bb3e2ba65e53f0187ca0a"
       }
     ],
     "followupRepair": {
