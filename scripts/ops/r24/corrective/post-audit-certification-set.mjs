@@ -143591,6 +143591,10 @@ const R24_INTEROP_ATLAS_NATIVE_SOURCE_NOTICES_SUCCESSOR = Object.freeze({
 const R24_INTEROP_WRITER_TREE_REORDER_IDENTITY_SUCCESSOR = Object.freeze({
   ...R24_INTEROP_ATLAS_NATIVE_SOURCE_NOTICES_SUCCESSOR,
   ...R24_INTEROP_WRITER_TREE_REORDER_IDENTITY_DELTA,
+  bindings:Object.entries({
+    ...Object.fromEntries(R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR.bindings.map(({path,sha256})=>[path,sha256])),
+    ...Object.fromEntries(R24_INTEROP_WRITER_TREE_REORDER_IDENTITY_DELTA.bindings.map(({path,sha256})=>[path,sha256])),
+  }).map(([path,sha256])=>({path,sha256})),
 });
 
 export function verifyR24InteropWordPromotionSuccessor({candidateSha='HEAD',git=defaultGit}={}){
