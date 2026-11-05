@@ -10807,12 +10807,29 @@ async function handleMoveNode(node, targetParentNodeId, targetIndex) {
 }
 
 async function handleReorderNode(node, direction) {
-  const targetParentNodeId = typeof node.parentNodeId === 'string' ? node.parentNodeId : '';
-  const siblingIndex = Number.isInteger(node.siblingIndex) ? node.siblingIndex : -1;
-  if (!targetParentNodeId || siblingIndex < 0) return;
-  const targetIndex = direction === 'up' ? siblingIndex - 1 : direction === 'down' ? siblingIndex + 1 : siblingIndex;
-  if (targetIndex < 0) return;
-  await handleMoveNode(node, targetParentNodeId, targetIndex);
+  if (!['up', 'down'].includes(direction) || treeMutationPending
+    || !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.TREE_MOVE_NODE)
+    || !captureTreeMutationProjection()) return;
+  const nodeId = getEffectiveDocumentId(node);
+  if (!isProjectTreeDocumentId(nodeId)) return;
+  // Rendered parents and indices describe presentation groups. Resolve this
+  // intent only against the current raw product projection.
+  const stack = [treeRoot];
+  while (stack.length) {
+    const parent = stack.pop();
+    if (!parent) continue;
+    const children = Array.isArray(parent.children) ? parent.children : [];
+    const siblings = children.filter(isNavigatorMovableNode);
+    const siblingIndex = siblings.findIndex(child => getEffectiveDocumentId(child) === nodeId);
+    if (siblingIndex >= 0) {
+      const targetParentNodeId = getEffectiveDocumentId(parent);
+      const targetIndex = direction === 'up' ? siblingIndex - 1 : siblingIndex + 1;
+      if (!isProjectTreeDocumentId(targetParentNodeId) || targetIndex < 0 || targetIndex >= siblings.length) return;
+      await handleMoveNode(node, targetParentNodeId, targetIndex);
+      return;
+    }
+    stack.push(...children);
+  }
 }
 
 async function handleAddCardForNode(node) {

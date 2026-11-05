@@ -35215,14 +35215,30 @@ function dedupeRenames(renames) {
   return result;
 }
 
-async function readTreeOrderedEntries(parentPath) {
-  return (await readDirectoryEntries(parentPath)).filter(entry => entry.isDirectory || (entry.isFile && entry.name.endsWith('.txt')));
+async function readTreeOrderedEntries(parentPath, binding) {
+  const nodes = binding?.manifest?.treeIdentity?.nodes;
+  if (!nodes || typeof nodes !== 'object' || Array.isArray(nodes)
+    || typeof binding.projectRoot !== 'string' || !isPathInside(binding.projectRoot, parentPath)) {
+    throw treeCohortError('E_TREE_COHORT_OWNER_REQUIRED');
+  }
+  const owners = new Map(Object.values(nodes).filter(node => node.present !== false)
+    .map(node => [node.bindingKey, node]));
+  return (await readDirectoryEntries(parentPath))
+    .filter(entry => entry.isDirectory || (entry.isFile && entry.name.endsWith('.txt')))
+    .filter(entry => {
+      const relativePath = path.relative(binding.projectRoot, entry.path).split(path.sep).join('/');
+      const owner = owners.get(`file:${relativePath}`);
+      if (!owner) throw treeCohortError('E_TREE_COHORT_OWNER_REQUIRED');
+      // Fixed roman sections keep their names and never acquire an authored
+      // ordinal. The complete recovery inventory still includes their bytes.
+      return TREE_MOVE_ALLOWED_NODE_KINDS.has(owner.kind);
+    });
 }
 
-async function buildTreeMovePlan(nodePath, targetParentPath, targetIndex) {
+async function buildTreeMovePlan(nodePath, targetParentPath, targetIndex, binding) {
   const sourceParentPath = path.dirname(nodePath);
   const sameParent = sourceParentPath === targetParentPath;
-  const sourceEntries = await readTreeOrderedEntries(sourceParentPath);
+  const sourceEntries = await readTreeOrderedEntries(sourceParentPath, binding);
   const movingEntry = sourceEntries.find((entry) => entry.path === nodePath);
   if (!movingEntry) {
     return makeTreeMoveError('E_TREE_MOVE_NODE_NOT_FOUND', 'TREE_MOVE_NODE_NOT_FOUND');
@@ -35247,7 +35263,7 @@ async function buildTreeMovePlan(nodePath, targetParentPath, targetIndex) {
     };
   }
 
-  const targetEntries = await readTreeOrderedEntries(targetParentPath);
+  const targetEntries = await readTreeOrderedEntries(targetParentPath, binding);
   if (targetIndex > targetEntries.length) {
     return makeTreeMoveError('E_TREE_MOVE_TARGET_INDEX_INVALID', 'TREE_MOVE_TARGET_INDEX_INVALID');
   }
@@ -37902,7 +37918,7 @@ async function handleUiMoveNodeCommand(payload, options = {}) {
     if (!TREE_MOVE_ALLOWED_PARENT_KINDS.has(parent.kind)) throw treeCohortError('E_TREE_MOVE_TARGET_KIND_BLOCKED');
     if (!node.relativePath.startsWith('roman/') || !/^roman(?:\/|$)/u.test(parent.relativePath)) throw treeCohortError('E_TREE_MOVE_SCOPE_BLOCKED');
     if (node.nodePath === parent.nodePath || isPathInside(node.nodePath, parent.nodePath)) throw treeCohortError('E_TREE_MOVE_CYCLE_BLOCKED');
-    const move = await buildTreeMovePlan(node.nodePath, parent.nodePath, safe.targetIndex);
+    const move = await buildTreeMovePlan(node.nodePath, parent.nodePath, safe.targetIndex, context);
     if (!move.ok) throw treeCohortError(move.code || 'E_TREE_MOVE_PLAN_FAILED');
     const nodes = context.manifest.treeIdentity.nodes;
     const bindings = move.value.renames.map(rename => {
@@ -37924,7 +37940,7 @@ async function handleUiCopyNodeCommand(payload) {
   return runTreeCohortIntent('cmd.project.tree.copyNode', safe, async context => {
     const node = await resolveTreeCohortNode(safe.nodeId, safe.projectId, context);
     if (!['scene', 'chapter-file'].includes(node.kind) || !node.relativePath.startsWith('roman/')) throw treeCohortError('E_TREE_COPY_KIND_BLOCKED');
-    const parent = path.dirname(node.nodePath), entries = await readTreeOrderedEntries(parent);
+    const parent = path.dirname(node.nodePath), entries = await readTreeOrderedEntries(parent, context);
     const next = entries.length + 1;
     const toRelativePath = path.posix.join(path.posix.dirname(node.relativePath), `${String(next).padStart(2, '0')}_${sanitizeFilename(safe.name)}.txt`);
     return { operation: 'copy', bindings: [{ nodeId: node.nodeId, fromRelativePath: node.relativePath, toRelativePath, copy: true }] };
@@ -37941,7 +37957,7 @@ async function handleUiSceneTopologyCommand(payload, split) {
     if (!['scene', 'chapter-file'].includes(node.kind) || !node.relativePath.startsWith('roman/')) throw treeCohortError('E_TREE_TOPOLOGY_KIND_BLOCKED');
     await assertTreeTopologySelection(context, safe, node, split);
     context.guard();
-    const parent = path.dirname(node.nodePath), entries = await readTreeOrderedEntries(parent);
+    const parent = path.dirname(node.nodePath), entries = await readTreeOrderedEntries(parent, context);
     context.guard();
     const index = entries.findIndex(entry => entry.path === node.nodePath);
     if (index < 0) throw treeCohortError('E_TREE_NODE_NOT_FOUND');
@@ -38013,7 +38029,8 @@ async function handleUiReorderNodeCommand(payload) {
   }
 
   const parentPath = path.dirname(nodePath);
-  const entries = await readTreeOrderedEntries(parentPath);
+  const orderingBinding = { projectRoot: path.dirname(resolvedNode.manifestPath), manifest: resolvedNode.manifest };
+  const entries = await readTreeOrderedEntries(parentPath, orderingBinding);
   const sceneIdsBefore = getTreeNodeIdsForOrderedEntries(parentPath, entries, resolvedNode.manifest);
   const index = entries.findIndex((entry) => entry.path === nodePath);
   if (index === -1) {
@@ -38034,7 +38051,7 @@ async function handleUiReorderNodeCommand(payload) {
   });
   if (!moveResult || moveResult.ok !== true) return moveResult;
   const { manifest } = await readProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
-  const entriesAfter = await readTreeOrderedEntries(parentPath);
+  const entriesAfter = await readTreeOrderedEntries(parentPath, { ...orderingBinding, manifest });
   const sceneIdsAfter = getTreeNodeIdsForOrderedEntries(parentPath, entriesAfter, manifest);
   if (sceneIdsAfter.length > 0) {
     try {
