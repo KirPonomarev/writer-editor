@@ -1,3 +1,9 @@
+# 2026-11-05 — Canonical Writer reorder source proof
+
+- Frozen new eight-case test86df01a4 remains literal: genuine unchanged-runtime0pass8fail, corrected identical8pass. Whole affected17 originally557pass50fail due two missed captured-context callers; original processa23c7e5b and closure89d599dd remain. Cheap differentialffcc49b3 identified the omission; passing the existing guarded context at both original copy/topology sites gives607pass0fail0cancel0skip0todo in complete run8ed3b6cb. Independent semantic readbacke57a3d6c binds every actual case/argv/cwd and all16 original test files. No guard or test was weakened.
+- Maintained renderer build6515e853 changed only editor.bundle.js4e379b1ce7f2cf1d2a402d4a13d108871b0f8e8ad2291506171115a8140ee92e; preload and native helper stayed byte-identical. This is source proof, not immutable candidate/native/release acceptance. Maina696d714 and editorf102c834 are the observed source delta on binding M9.
+- NEXT: freeze current metadata and immutable candidate, cheap current actual callers, exact separately admitted rebuilt app/fresh profile21, ordinary root/nested chapter/scene Up/Down and boundaries with stable IDs/text/authored tags/fixed files/history/backup oracles, Save/Quit/cold, all mandatory full gates, guarded push/PR/CI/normal merge and exact merged proof. Full V6/DNA5 Mac/all17 remain UNKNOWN and NOT_READY; Word/nativeOfficePAUSED, BlackBox after fullMac. Drag/drop, cache and formatting remain outside this result.
+
 # 2026-11-05 — Fixed Atlas native source and full-license notices admitted
 
 - PR2200 closed on355a50e39d1f76a90f037815a90f4d71ff9b8677, closure154e07453bf170b2d1c9c53a7ad24a6689f6bb09d3038634cda6db3ecaec3b24; full REPORT_ONLY material qualification71b522b2 retained without repository/runtime mutation.

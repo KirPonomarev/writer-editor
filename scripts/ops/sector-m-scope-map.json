@@ -561,7 +561,9 @@
       "src/main/atlasLanguageAnalysisWorker.py",
       "src/main/atlasLanguageResourcesV1.json",
       "test/unit/atlas-language-resource-builder.test.js",
-      "docs/tasks/2026-11-05--atlas-native-source-notices.md"
+      "docs/tasks/2026-11-05--atlas-native-source-notices.md",
+      "test/unit/project-tree-reorder-identity.test.js",
+      "docs/tasks/2026-11-05--writer-tree-reorder-identity.md"
     ]
   },
   "allowPrefixByPhase": {
