@@ -346,6 +346,13 @@
       "semantics": "Selects one explicit existing canonical absolute writable local directory for complete test stdout/stderr/status evidence. Exclusive generated gzip artifacts are fully hashed and independently reread before brief console references. Invalid directory, missing bytes, unknown evidence and real failures stay FAIL. The key is removed from unit child environments; it cannot select test coverage, skip gates, change roots or grant product/release authority.",
       "defaultEffect": "Unset = retain the complete original TAP on stdout; no artifact writer and no test, status, cap or timeout change.",
       "registeredBy": "YALKEN_MANDATORY_TEST_SETUP_DIAGNOSTICS_20261102"
+    },
+    {
+      "name": "YALKEN_ATLAS_LANGUAGE_RESOURCES",
+      "flagClass": "BEHAVIOR",
+      "semantics": "Build-time-only absolute directory for the already admitted fixed private Atlas language-resource cohort. The after-pack assembler verifies the source-pinned catalog, every file, link and byte before copying to the fixed packaged location; wrong bytes or non-arm64 packaging fail closed. This input cannot select runtime models, bypass a check, grant a capability, enable network access or authorize public redistribution.",
+      "defaultEffect": "Unset = omit this optional private resource cohort from packaging; the existing runtime reports explicit unavailability when resources are absent. No validation, test coverage, runtime network, platform minimum or release requirement changes.",
+      "registeredBy": "YALKEN_ATLAS_OFFLINE_SCENE_ANALYSIS_20261104"
     }
   ],
   "census": [
