@@ -1,3 +1,23 @@
+# Current state — Offline Atlas bounded delivery verified on M7
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: MERGED_EXPERIMENTAL_SCENE_ANALYSIS_VERIFIED_FULL_MAC_NOT_READY
+OBSERVED_SOURCE_SHA: 3a2b27b230a10150f6f90a9a53e2b633dd61b8d6
+OBSERVED_AT: 2026-11-05
+TASK: YALKEN_ATLAS_OFFLINE_SCENE_ANALYSIS_20261104
+
+PR2199 normally merged C7 b10f39927b1847627b09d3866ee0a8d8da9bb7ad into M7 above. The full executed closure reader is ATLAS_OFFLINE_MERGED_DELIVERY_CLOSURE_READER_PROCESS_01.json.gz SHA256 dc952a06e483465dfb5069b66cd19e58bc626e3d8010de78c9c446080a9d4f4d; its independently checked source/artifact/native readback is ATLAS_OFFLINE_MERGED_DELIVERY_CLOSURE_READBACK_01.json.gz SHA256 b0c5ae45a7da3be212a623e96ca283332aeb9da6eff8bd0fcaa252cde5acb590. Both live in the verified T777 dated atlas-offline-scene-analysis report folder. This factual update does not retag an earlier failed run.
+
+On literal M7: 10080 physical source files match Git blobs; the actual rebuilt app has ASAR d7ec569b7f05a03f663e6f6c0f0bfd827f53ddb4e071922486d0b30e1f287f33 and 7243 independently checked bundle entries. The 17 relevant software processes returned their declared allowed outcomes, including 1150 positive cases across all24 affected whole files. Full npm audit actually exits1 with six moderate dev findings; production audit has no findings. All20 candidate CI jobs succeeded on C7; the observed CI checkout and M7 have the same source tree, not the same commit identity.
+
+The new M7 app/profile was exercised through ordinary native authoring: all four frozen RU/EN original/Unicode cases, cold RU reanalysis, missing/unsupported language, dirty-result clearing with Undo+Save, 17-second scene currentness, query then Quit and a separate one-worker-leaf corruption refusal. Each read-only query oracle found zero canonical additions/removals/changes; all three app exits returned0 without helpers. All seven critical saved files match across AUTHOR/COLD/BAD; complete profiles were retained and independently reread. The 17 older protected profiles remain exact; this profile count is unrelated to the17 qualification rows.
+
+Full Deep remains uncertified; advanced signals and RU fiction NER qualification are absent. GNU corresponding-source/full LGPL notice closure, signing/notary and public binary distribution remain open. The original first15s failure and old failures/skips remain preserved; zero-fork, unobserved native in-flight termination, macOS12/x64 execution and cold formatting equivalence are not claimed. All17 qualification rows remain UNKNOWN; cutUNFROZEN, full V6/DNA5 Mac NOT_READY. Word/nativeOfficePAUSED; BlackBox follows fullMac.
+
+NEXT: complete this four-document factual handoff through its ordinary delivery, then continue the admitted REPORT_ONLY exact supplier-source/notice qualification. No downloaded payload is installed or executed; no independent product-write contour opens before this handoff delivery closes.
+
+--- Historical pre-merge snapshots below retain their original bytes and claims ---
+
 # Current task — Offline Atlas baseline compatibility closure
 
 DOCUMENT_CLASS: FACTUAL_STATUS
