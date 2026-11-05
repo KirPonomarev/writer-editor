@@ -1,3 +1,19 @@
+# Resume — Writer reorder native observation and metadata completion
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_WRITER_TREE_REORDER_IDENTITY_20261105; one executor and the same unclosed delivery chain.
+BINDING_BASE_SHA: 176e65b7a7e7f97e107f9b667989743485f84e84
+OBSERVED_CANDIDATE_SHA: b1b4e8a563bb5bfe56a000186710a3ceb0cc81f4
+STATUS: C0_NATIVE_OBSERVED_CERTIFICATE_ENROLLMENT_REPAIR_PENDING
+
+Actual rebuilt C0 ASAR2c0b0004 executed10 adjacent moves and8 boundary no-ops through normal native UI. Independent final readerc75daa37195e29dd70a890e02b1468d2143054ee63778468fc2c0bea67157acf re-evaluated all18 retained cases with one corrected reference and verified all32 saved canary/tag snapshots. Normal Save, Quit and same-profile cold reopen preserved every one of90 project files and the complete roster. All20 old profiles and closed profile21 remain physical and protected. This is bounded reorder proof, not fullMac/all17 or public distribution acceptance; historical Core capsule is not retagged as a current projection. Fixed7 bindings and physical absence held; native physical cover/draft cases are not claimed.
+
+The required C0 wave stopped after7 of21 processes at E_INTEROP_WORD_PROMOTION_PIN, receipt a1edcf8817b34ea668ae40c6f6aba201e55a6e4617f17b0516c32811765864b7, index106c3f4f9f5473fc06c5542fed94a1551637706394204448b1fd160133198fbb. Diagnosis56d1e922d6bd9fe10c5ee7c16fa41710ce8f2cc27b1b1fd37417ca417f631364 independently matches all469 current bindings plus the policy guard; the new delta was omitted from the expectation list. No push or PR. Repair only additive successor enrollment with all exact hash/policy/base/ancestry predicates and historical expectations retained. Clean C0 declarationfaf2d826 and preflightc880ec24 precede this metadata edit; production and frozen test bytes remain unchanged.
+
+NEXT: finish this exact metadata enrollment, maintained current bindings and append-only witnesses; commit the next immutable candidate; complete required gates and actual rebuilt candidate proof, supported push/PR/all required CI/normal merge and exact merged checks/native. No new product contour before closure. V6/DNA5 fullMac/all17 remain UNKNOWN; Word/nativeOfficePAUSED and BlackBox after fullMac. Original failures and cache/cold typography/drag-drop limits remain retained.
+
+--- Prior factual bodies retain their complete original bytes below ---
+
 # Resume — Canonical Writer tree reorder identity
 
 DOCUMENT_CLASS: FACTUAL_STATUS

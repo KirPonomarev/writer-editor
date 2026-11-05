@@ -5,7 +5,7 @@ TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
 BINDING_BASE_SHA: 176e65b7a7e7f97e107f9b667989743485f84e84
-STATUS: SOURCE_RED_GREEN_AND_AFFECTED_607_VERIFIED_NATIVE_DELIVERY_PENDING
+STATUS: C0_NATIVE_OBSERVED_CERTIFICATE_ENROLLMENT_REPAIR_PENDING
 DOCUMENT_CLASS: PROCESS
 CLAIM_BOUNDARY: Ordinary authored Up and Down through existing canonical tree mutation; no full Mac release, drag/drop or independent visual change.
 
@@ -22,6 +22,10 @@ O: authored part/chapter/scene Up/Down changes only the intended canonical order
 SOURCE_OBSERVATION: Frozen new eight-case test86df01a4 remains literal: genuine unchanged-runtime0pass8fail, corrected identical8pass. Whole affected17 originally557pass50fail due two missed captured-context callers; original processa23c7e5b and closure89d599dd remain. Cheap differentialffcc49b3 identified the omission; passing the existing guarded context at both original copy/topology sites gives607pass0fail0cancel0skip0todo in complete run8ed3b6cb. Independent semantic readbacke57a3d6c binds every actual case/argv/cwd and all16 original test files. No guard or test was weakened.
 
 BUILT_RENDERER: Maintained renderer build6515e853 changed only editor.bundle.js4e379b1ce7f2cf1d2a402d4a13d108871b0f8e8ad2291506171115a8140ee92e; preload and native helper stayed byte-identical. This is source proof, not immutable candidate/native/release acceptance. Maina696d714 and editorf102c834 are the observed source delta on binding M9.
+
+C0_NATIVE_OBSERVATION: Exact C0 b1b4e8a563bb5bfe56a000186710a3ceb0cc81f4 actual rebuilt ASAR2c0b0004 executed10 accepted adjacent moves and8 boundary no-ops; reference processc75daa37195e29dd70a890e02b1468d2143054ee63778468fc2c0bea67157acf validates all18 retained cases and all32 complete canary/tag snapshots. Normal Save/Quit and same-profile cold reopen retained all90 project files and complete names. Outcome4042ab42e6556b98f93aab5e0a495ae4a97e9aa70abb27ab1aaa903013112801 is bounded; the historical Core capsule and absent fixed physical defaults are not broader currentness or native-byte qualifications. All21 physical profiles retained.
+
+CERTIFICATE_COMPLETION: Original required wave106c3f4f stopped7of21 at a1edcf8817b34ea668ae40c6f6aba201e55a6e4617f17b0516c32811765864b7 E_INTEROP_WORD_PROMOTION_PIN. Diagnosis56d1e922 proves the complete469 current binding set plus one policy guard matches, but the new delta is absent from the selector. Clean C0 metadata declarationfaf2d826 and preflightc880ec24 authorize only additive successor enrollment and necessary factual/current hash/witness refresh in this same delivery chain. Preserve every original predicate and failed receipt; no production, frozen test, dependency, resource or visual change. Next immutable native and all mandatory gates/ordinary delivery/merged proofs remain required.
 
 ## ARTIFACT
 

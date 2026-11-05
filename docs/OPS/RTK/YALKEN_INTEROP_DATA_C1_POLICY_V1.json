@@ -2858,15 +2858,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "1bd2d0c4919207f794f44d079da12ea5e30a08646f5ea5df6018de2dbffe48a7"
+        "sha256": "7085dc12f657d566ea06913e9138ae81791bacc99a7b66f2363089c56e5df7e9"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "9d462e315a83bf21a168cbdd1d405637afbe113938096e773b445982d646818b"
+        "sha256": "3dfa4ba696ab2f5670bdaef967b9b75b2f50c931e3f1c65e15287a5894927fca"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "7ffd16fb3782bd966f8b104899c965e98d4f4d95072b402c5f65acdba183e97a"
+        "sha256": "3246dd354fcb84d61e56b10db79a78c3937e6d0c89a30453cd30c0a9e35bff34"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -4282,7 +4282,7 @@
       },
       {
         "path": "docs/tasks/2026-11-05--writer-tree-reorder-identity.md",
-        "sha256": "7bb5c8fb44386fde92b9f116f11d2952efa04049ae5e31225cc11f11b7657e5a"
+        "sha256": "7a6de48b74c7ac57ca3a8c625c7c8315862fc9447330fdd2def63c10cb79c946"
       }
     ],
     "followupRepair": {
