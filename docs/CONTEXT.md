@@ -1,3 +1,19 @@
+# Current task — Writer custom line-height native correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_WRITER_LINE_HEIGHT_FIELD_COHERENCE_20261105; sole executor, same unclosed delivery chain.
+BINDING_BASE_SHA: de87e5bfeb191b0895fb4c5caa51164cf968b38b
+OBSERVED_CANDIDATE_SHA: ffae6ec9980c4665e74a46166d8b81a17f7c184d
+STATUS: CUSTOM_INPUT_SOURCE_23_VERIFIED_NATIVE_DELIVERY_PENDING
+
+C0 actual native default1.625, selected1.75 and cold1.75 agree with Settings and independently decoded real ENV captures; every scene byte and tree identity held. Other... opens no custom input: bundled Electron window.prompt throws unsupported. Custom1.37 and cold-custom were not executed. Original native gate failurefc67b45a remains FAIL; normal Quit/wait0 for both sessions, complete closed profile24 and all23 prior profiles retained. Source6/affected84 remain bounded evidence; no push/PR/merge/native acceptance.
+
+Source correction: existing modal replaces only custom window.prompt; applied control is restored before waiting, accepted values retain existing apply/ENV path, and stale async replies are refused. Frozen separate23 tests: original1pass22assertion-RED, identical23pass. Whole affected/modal129pass plus separately executed declared U6 full-flag1pass; original skipped row and harness failures retained. Old frozen6 held and executed in the affected set; actual native/full gates/delivery remain pending.
+
+NEXT: same line-height field result, replace only unsupported custom prompt with the existing validated transient modal, restore truthful control on cancel/error and reject stale async responses. Preserve frozen6, add separate whole custom-input RED/GREEN test, maintained enrollment/finalizer and all mandatory gates; new immutable actual native/cold before normal delivery. Correction declaration8df05056/preflightfdabcb6c passed before edits; fresh admitted T17 replaces OS-cleared old T14. FullMac/all17 and public distribution remain unaccepted; Word/nativeOffice PAUSED, BlackBox after fullMac.
+
+--- Prior factual bodies retain their complete original bytes below ---
+
 # Current task — Writer line-height field coherence
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -939,7 +939,8 @@
     "test/unit/project-tree-reorder-identity.test.js",
     "docs/tasks/2026-11-05--writer-tree-reorder-identity.md",
     "test/unit/writer-line-height-field-coherence.test.js",
-    "docs/tasks/2026-11-05--writer-line-height-field-coherence.md"
+    "docs/tasks/2026-11-05--writer-line-height-field-coherence.md",
+    "test/unit/writer-line-height-custom-input.test.js"
   ],
   "protectedFiles": [
     {
@@ -1180,7 +1181,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "716c25a1288566cb1e9a9ead4843fbda43913ff77f126d58c4d96bea64db73e3"
+        "sha256": "c785658f51278efe2844f629645e58b765d1530c017928d4325404d143ac2cd0"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1344,7 +1345,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "db20d425cfd832787f82edb7c920d30471a4d910dd638872724cd333e2fbeebd"
+        "sha256": "65a8f796a20b58ae14326b5a4d3dcfac06c341263ddb17f11c5d3674d1477bfd"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2412,7 +2413,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "b9fa18d4eda690a61e05a45bc875b396e02d894ed404f4962e08e83cd7af1ad2"
+        "sha256": "9959c381d20e017737b3838145bd80894f4c59fc5e7be6c784f9770a3cab084e"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2860,15 +2861,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "3215388c7f93b24c5b07bf73ac135fadcc5b473956e051e2869c6f4136ca4aa3"
+        "sha256": "73815d64ed0fdb2f953eda27ee12b458d89db256a64c1d49c0b005bad2ff0d0d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "b7151db7614554dc665ca74b28bca50e1894ce7a25fa82c43a1e90179fb58163"
+        "sha256": "8f1ca9c5622b0b7de4849919a54a3ef0bcc86b0f68fa915d2a1a227aba0d7731"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "4087c9a9c9ee8e83864a4eebae14d8aaf60c5c328313ebefe69c19708ec9e13a"
+        "sha256": "c2ad6df742379ab2193ac17ff0a7572d6716bd2e45895452ff78870d10b67d0a"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3408,7 +3409,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "c12c7de4bd377697ea8bce3ab6038fced0f6f8a8040ab301f0f0edb03c08675b"
+        "sha256": "48fe7f8912c42f4e01ac73dc800ed67d1439b64d5ba0c3e88e60b254147626d9"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3540,7 +3541,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "8e8d0c490d149b2dea5e64394171273ab3cfd6042feca646e77e14ea6c8331aa"
+        "sha256": "3f1d0cc9e99b2556b2d10993edee2bfc0481067791c956955902b065cbd16eaa"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4292,7 +4293,11 @@
       },
       {
         "path": "docs/tasks/2026-11-05--writer-line-height-field-coherence.md",
-        "sha256": "914b470b4b532a44a16f6c53b2fb57a90e28e729f273b258ed5f5e1b1f52ae4b"
+        "sha256": "70cdf053da944244db2687b23a93aef75401dd526c4ba01f814f673fba77fabc"
+      },
+      {
+        "path": "test/unit/writer-line-height-custom-input.test.js",
+        "sha256": "72ca0d54cfccb3b44fec3d2d08060e6a10b0c0587366efea69100375a091971d"
       }
     ],
     "followupRepair": {
