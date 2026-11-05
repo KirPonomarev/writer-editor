@@ -137770,15 +137770,15 @@ const R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "6b268ef77856307458abc09a592ba925177ab26147ef14d9d91f962ebe37619a"
+      "sha256": "2eff9b19b7342a9ca8eaa075e2c8732bc17733b5ccd1b459dda08208bae00e46"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "8d8312372d960a03333a4e081bdee3961e30c0e682ab4b5eafdc0a3ca06d6b40"
+      "sha256": "370f919f46429a189dec7b9799872232eb5faee14cda2f8c7a7e7e03055755a4"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "964a426cb6bb063443fba09ee12c185efca38c6fbd5fc185d6f788cf63f988dc"
+      "sha256": "41fa3387bd3864a0587a678333c0148082ffa61bbbcb409d1c0111b7f491df60"
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
@@ -137790,7 +137790,7 @@ const R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "5b24eb9f4b770ff5fc634647a049a62e2c9b743c2d2555217aa0b4e6aeaf624c"
+      "sha256": "f1a18f4a05de5a316d563f47e01816149c47a28da36b97f046444355e0ea3a52"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -138326,7 +138326,7 @@ const R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-04--atlas-offline-scene-analysis.md",
-      "sha256": "cc226e007c0076ea1074d6583b9957c93c0d78f95b3b47d2ee14de0662756222"
+      "sha256": "66194133a08a6ab166a03d5a24c4b3adbe24e73484fbbca6ff8dce983f2611c1"
     },
     {
       "path": "docs/OPS/STATUS/ATLAS_OFFLINE_LANGUAGE_ENGINE_DECISION_V1.json",
@@ -139620,7 +139620,7 @@ const R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "5fb3b4da6a5897ae0b7b0ec91720d8e2b3349770f6c7cedf1ca37ff21265be18"
+      "sha256": "69552f215c0ac7fff0e050c99dcde888a58d127e8963a8b8cf73ae127290872d"
     }
   ]
 });

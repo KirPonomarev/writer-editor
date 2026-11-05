@@ -14,7 +14,7 @@ The new M7 app/profile was exercised through ordinary native authoring: all four
 
 Full Deep remains uncertified; advanced signals and RU fiction NER qualification are absent. GNU corresponding-source/full LGPL notice closure, signing/notary and public binary distribution remain open. The original first15s failure and old failures/skips remain preserved; zero-fork, unobserved native in-flight termination, macOS12/x64 execution and cold formatting equivalence are not claimed. All17 qualification rows remain UNKNOWN; cutUNFROZEN, full V6/DNA5 Mac NOT_READY. Word/nativeOfficePAUSED; BlackBox follows fullMac.
 
-NEXT: complete this four-document factual handoff through its ordinary delivery, then continue the admitted REPORT_ONLY exact supplier-source/notice qualification. No downloaded payload is installed or executed; no independent product-write contour opens before this handoff delivery closes.
+NEXT: complete this factual handoff and its three refreshed current-byte companions through ordinary delivery, then continue the admitted REPORT_ONLY exact supplier-source/notice qualification. CI run41986264952 on C9 rejected four stale document hashes among777 DATA source bindings; declaration31 admits the existing finalizer's three changed outputs and six append-only technical witnesses. Four other producer targets remain exact. Original failures remain retained; no independent product-write contour opens before this handoff delivery closes.
 
 --- Historical pre-merge snapshots below retain their original bytes and claims ---
 
