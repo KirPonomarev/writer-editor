@@ -552,7 +552,15 @@
       "scripts/ops/r24/test-mutants.mjs",
       "scripts/ops/r24/mutation-context.mjs",
       "test/unit/r24-mutation-context.test.js",
-      "scripts/ops/r24/tests/mutation-boundaries.test.mjs"
+      "scripts/ops/r24/tests/mutation-boundaries.test.mjs",
+      "docs/ARCH_DIFF_LOG.md",
+      "docs/tasks/2026-11-04--atlas-offline-scene-analysis.md",
+      "scripts/after-pack.cjs",
+      "scripts/build-atlas-language-resources.cjs",
+      "src/main/atlasLanguageAnalysisPort.cjs",
+      "src/main/atlasLanguageAnalysisWorker.py",
+      "src/main/atlasLanguageResourcesV1.json",
+      "test/unit/atlas-language-resource-builder.test.js"
     ]
   },
   "allowPrefixByPhase": {

@@ -632,3 +632,19 @@ test('offline lifecycle: concurrent actual Quit and window close share retiremen
   assert.equal((await h.query({ analyzeLanguage: true })).atlasCurrentScene.languageAnalysis.reason, 'E_ATLAS_LANGUAGE_BUSY');
   assert.equal(h.ports.length, 1); h.assertNoMutation();
 });
+test('offline renderer: optional Atlas presentation failure cannot interrupt mandatory dirty and autosave notifications', () => {
+  const source = fs.readFileSync(path.join(ROOT, 'src/renderer/editor.js'), 'utf8');
+  const from = source.indexOf('function markAsModified() {'), to = source.indexOf('\nfunction normalizeFontWeightPreset(', from);
+  assert.ok(from >= 0 && to > from);
+  const signals = []; let saves = 0;
+  const ctx = vm.createContext({ flowModeState: { active: false, scenes: [] }, localEditGeneration: 9, localDirty: false,
+    atlasLanguageAnalysisView: {}, renderAtlasLanguageAnalysis() { throw new Error('synthetic optional Atlas presentation failure'); },
+    invokeSaveLifecycleSignalBridge(id, payload) { signals.push([id, JSON.parse(JSON.stringify(payload))]); },
+    scheduleAutoSave() { saves += 1; }, updateStatusText() {}, updateSaveStateText() {}, updatePerfHintText() {},
+    updateInspectorSnapshot() {}, syncVisibleAuthoringSurfacesSurface() {} });
+  vm.runInContext(source.slice(from, to) + '\nthis.mark = markAsModified;', ctx);
+  assert.throws(() => ctx.mark(), /synthetic optional Atlas presentation failure/);
+  assert.equal(ctx.localEditGeneration, 10); assert.equal(ctx.localDirty, true);
+  assert.deepEqual(signals, [['signal.localDirty.set', { state: true, generation: 10 }]]);
+  assert.equal(saves, 1, 'optional presentation must run after mandatory autosave is scheduled');
+});

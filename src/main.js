@@ -19657,7 +19657,7 @@ async function readAtlasAnalyticsSourceRecord(requestedProjectId = '') {
 }
 
 async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
-  const languageAnalysisRequested = queryId === ATLAS_CURRENT_SCENE_QUERY_ID && payload?.analyzeLanguage === true;
+  const languageAnalysisRequested = payload?.analyzeLanguage === true && queryId === ATLAS_CURRENT_SCENE_QUERY_ID;
   const languageContext = languageAnalysisRequested ? [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(),
     app.getPath('userData'), currentLifecycleSubjectId(), commentAuthoringSessionId, lastSignaledEditGeneration,
     currentFilePath, currentProjectName] : null;

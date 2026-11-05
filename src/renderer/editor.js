@@ -24219,7 +24219,6 @@ function markAsModified() {
 
   localEditGeneration += 1;
   localDirty = true;
-  if (atlasLanguageAnalysisView) renderAtlasLanguageAnalysis();
   // R2.4 P0: every edit's generation is signaled so the main-side autosave
   // acknowledgement fence always compares against the true latest edit.
   void invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: true, generation: localEditGeneration });
@@ -24228,6 +24227,7 @@ function markAsModified() {
   updateInspectorSnapshot();
   syncVisibleAuthoringSurfacesSurface();
   scheduleAutoSave();
+  if (typeof atlasLanguageAnalysisView !== 'undefined' && atlasLanguageAnalysisView) renderAtlasLanguageAnalysis();
 }
 
 function normalizeFontWeightPreset(value) {

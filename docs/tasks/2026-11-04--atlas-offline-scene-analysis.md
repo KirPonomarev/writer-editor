@@ -42,6 +42,7 @@ One bounded scene analysis vertical with one rollback and delivery. New fixed re
 - src/renderer/editor.bundle.js
 - scripts/build-atlas-language-resources.cjs
 - scripts/after-pack.cjs
+- scripts/ops/sector-m-scope-map.json
 - test/contracts/atlas-offline-scene-analysis.contract.test.js
 - test/unit/atlas-language-resource-builder.test.js
 - docs/tasks/2026-11-04--atlas-offline-scene-analysis.md
@@ -124,3 +125,9 @@ Preserve original expected/actual/seed/source/build/profile/argv/PID/actual wait
 Private component observation535e864b and independent oracle64801130 bind all5941 resource entries, four accepted-cohort RU/EN predictions and69 exact UTF16 spans. All59 new tests passed within affected run61554a5d; the complete1082 run has1075passes and7preserved failures. Six require genuine OS temporary ancestry and one needs the declared normal DATA renderer binding refresh. No original assertion is weakened. Source/runtime delivery acceptance remains external exact-candidate evidence, never this narrative.
 
 Mandatory Darwin alias checks require an independently admitted fresh child of realpath(getconf DARWIN_USER_TEMP_DIR) on the actual APFS Data volume. Never qualify the alias branch using external T7 TMPDIR, a fake prefix or a retagged root. Native-temp declaration03 failed clean-worktree preflight before effect; first preserve a clean committed source, then issue a fresh exact-head admission and new namespace. G14 remains its original M6 private assembly/test root. The original first15s model diagnostic timeout is retained and unexplained; later warm success does not qualify first cold. All full native/delivery/release obligations remain.
+
+### C6 complete baseline and bounded compatibility correction
+
+C6 actual native4pluscold and21required-software rows retain their execution identities. Its complete unfiltered490file baseline failed5of4357 with59old skips; full artifact2e7abf5d and diagnosisf132c4a1 preserve every original failure. Causala152c9b3 distinguishes the two newly introduced optional-feature dependencies from legacy caller behavior:37unchanged tests pass with correct module bindings and independently with the two production-line candidates in memory. The existing DONE scope map needs precisely8new authorised feature paths;295old entries, earlier phases/prefixes and unrelated-path rejection stay intact. This normal27th companion is within the same feature/delivery, not a scope bypass. Original1801tests and own65cases remain literal. Four own diagnostic scratch files were losslessly retained/restored/read before exact cleanup7c8fe08d; no app/project/profile or old raw removed. Fresh C7 native and all22mandatory rows are still required before the supported delivery guard; no previous failure or native proof is retagged.
+
+The optional-view failure boundary is also executed before the final correction: whole own66 has65pass/1genuineERR_ASSERTION, receipt0ef5fb16. A throwing optional view prevented the mandatory Main dirty signal and autosave scheduling. The final existing hook is guarded for absence and runs after the unchanged mandatory dirty/generation/signal/status/inspector/autosave path; presentation errors remain visible. One added meaningful boundary case is appended after all65literal prior cases. No original assertion, authoring effect or guard is weakened.

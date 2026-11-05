@@ -1,3 +1,21 @@
+# Current task — Offline Atlas baseline compatibility closure
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: COMPATIBILITY_REPAIR_AFTER_C6_BASELINE_FAILURE
+BINDING_BASE_SHA: a4282e9b9a0ee9b2ad3c04d6318aafb2b4c0bab7
+TASK: YALKEN_ATLAS_OFFLINE_SCENE_ANALYSIS_20261104; same sole executor, branch and single delivery.
+
+C6 has actual rebuilt native four RU/EN original/Unicode cases plus true cold RU reanalysis and two normal exits0, with14old profiles unchanged: ATLAS_OFFLINE_C6_NATIVE_OUTCOME_01.json.gz6af40e78. Full RTK4419, affected15file192, C1C335, WP10413 and E0176+198+40genuine kills passed at C6. Its complete490file baseline failed5of4357:4293pass/59oldskip/0todo/cancel; original18,285,357-byte stdout, artifact2e7abf5d and diagnosisf132c4a1 remain failed, not retagged.
+
+Three causes are distinguished: unused language constant read on old WSE requests, new optional Atlas-view lookup interrupting mandatory dirty/autosave in the finite real-Tiptap caller, and8missing exact feature-path registrations in the existing DONE scope map. Both unchanged original files pass37of37 when only their missing production bindings are supplied, and independently37of37 with the proposed two production lines in memory: causala152c9b3. Preserve all1801old test files/assertions, own65literal cases, earlier scope phases/prefixes and every protected source/data boundary.
+
+Four new own scratch trace files were archivedcf19097c, ALL4 physically restored and independently reread before exact cleanup7c8fe08d. Old directories/raw/data/apps/profiles remain; already absent test-target manifests were not recreated, OS-managed provenance was preserved as original metadata and never forged. Worktree was clean before declaration21/preflighta24140d5; stable remote main remainsda3df41c.
+
+
+The optional-view failure boundary is also executed before the final correction: whole own66 has65pass/1genuineERR_ASSERTION, receipt0ef5fb16. A throwing optional view prevented the mandatory Main dirty signal and autosave scheduling. The final existing hook is guarded for absence and runs after the unchanged mandatory dirty/generation/signal/status/inspector/autosave path; presentation errors remain visible. One added meaningful boundary case is appended after all65literal prior cases. No original assertion, authoring effect or guard is weakened.
+
+NEXT: complete the bounded compatibility source correction and8exact DONE registrations, preserve the original failures, regenerate required current companions, freeze C7 and obtain fresh actual native/full22gates/guarded push/PR/CI/merge/merged proof. C7 acceptance is pending. All17Mac UNKNOWN, fullDeep uncertified, public binary/licence closure open; full V6/DNA5 goal remains active, Word/nativeOfficePAUSED, BlackBox after fullMac.
+
 # Current task — Explicit offline Atlas scene analysis
 
 DOCUMENT_CLASS: FACTUAL_STATUS
