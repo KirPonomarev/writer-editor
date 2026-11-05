@@ -20749,7 +20749,10 @@ async function handleWorkspaceAtlasDiagnosticsStageAcceptanceQuery(payload = {},
 }
 
 let atlasLanguageAnalysisPort = null;
-function getAtlasLanguageAnalysisPort() {
+function getAtlasLanguageAnalysisPort(isClosing = null) {
+  if (atlasLanguageAnalysisPort?.exitFence === true || (isClosing !== null && isClosing())) {
+    throw Object.assign(new Error('E_ATLAS_LANGUAGE_BUSY'), { code: 'E_ATLAS_LANGUAGE_BUSY' });
+  }
   if (!atlasLanguageAnalysisPort) {
     const { createAtlasLanguageAnalysisPort } = require('./main/atlasLanguageAnalysisPort.cjs');
     const manifest = require('./main/atlasLanguageResourcesV1.json');
@@ -20880,7 +20883,7 @@ async function handleWorkspaceAtlasCurrentSceneQuery(payload = {}, analysisJob =
       await assertCurrent();
       let result;
       try {
-        result = await getAtlasLanguageAnalysisPort().analyze({ projectId: resolvedNode.projectId, sceneId: resolvedNode.nodeId,
+        result = await getAtlasLanguageAnalysisPort(() => isQuitting || isWindowClosing).analyze({ projectId: resolvedNode.projectId, sceneId: resolvedNode.nodeId,
           sourceRevision: scene.sceneRevision, sourceTextHash: computeHash(scene.text),
           generation: analysisJob.jobId, languageCode, text: scene.text }, { signal: analysisJob.signal, assertCurrent });
       } catch (error) {
@@ -38239,14 +38242,30 @@ function createWindow() {
       const canClose = await confirmDiscardChanges();
       if (!canClose || !isLifecycleExitCurrent(exitBinding)) return;
       if (mainWindow && !await prepareFullEnvironmentExit(mainWindow)) { updateStatus('Текущий вид не сохранён. Приложение оставлено открытым.'); return; }
-      if (app.isPackaged && atlasLanguageAnalysisPort) {
-        try { await atlasLanguageAnalysisPort.close(); atlasLanguageAnalysisPort = null; }
-        catch { updateStatus('Закрытие остановлено: локальный разбор ещё не подтвердил завершение.'); return; }
+      let languageExit = null;
+      if (app.isPackaged) {
+        const currentPort = atlasLanguageAnalysisPort;
+        if (currentPort?.exitFence === true) {
+          languageExit = currentPort; languageExit.waiters += 1;
+        } else {
+          languageExit = { exitFence: true, port: currentPort, waiters: 1, failed: false,
+            retirement: Promise.resolve().then(() => currentPort?.close()) };
+          atlasLanguageAnalysisPort = languageExit;
+        }
       }
-      if (!await confirmDiscardChanges() || !isLifecycleExitCurrent(exitBinding)) return;
-
-      isWindowClosing = true;
-      mainWindow.close();
+      try {
+        if (languageExit) {
+          try { await languageExit.retirement; }
+          catch { languageExit.failed = true; updateStatus('Закрытие остановлено: локальный разбор ещё не подтвердил завершение.'); return; }
+        }
+        if (!await confirmDiscardChanges() || !isLifecycleExitCurrent(exitBinding)) return;
+        isWindowClosing = true;
+        mainWindow.close();
+      } finally {
+        if (languageExit && --languageExit.waiters === 0 && atlasLanguageAnalysisPort === languageExit) {
+          atlasLanguageAnalysisPort = languageExit.failed ? languageExit.port : null;
+        }
+      }
     })().catch(() => {});
   });
 
@@ -42154,14 +42173,30 @@ app.on('before-quit', (event) => {
     const canQuit = await confirmDiscardChanges();
     if (!canQuit || !isLifecycleExitCurrent(exitBinding)) return;
     if (mainWindow && !await prepareFullEnvironmentExit(mainWindow)) { updateStatus('Текущий вид не сохранён. Приложение оставлено открытым.'); return; }
-    if (app.isPackaged && atlasLanguageAnalysisPort) {
-      try { await atlasLanguageAnalysisPort.close(); atlasLanguageAnalysisPort = null; }
-      catch { updateStatus('Закрытие остановлено: локальный разбор ещё не подтвердил завершение.'); return; }
+    let languageExit = null;
+    if (app.isPackaged) {
+      const currentPort = atlasLanguageAnalysisPort;
+      if (currentPort?.exitFence === true) {
+        languageExit = currentPort; languageExit.waiters += 1;
+      } else {
+        languageExit = { exitFence: true, port: currentPort, waiters: 1, failed: false,
+          retirement: Promise.resolve().then(() => currentPort?.close()) };
+        atlasLanguageAnalysisPort = languageExit;
+      }
     }
-    if (!await confirmDiscardChanges() || !isLifecycleExitCurrent(exitBinding)) return;
-
-    isQuitting = true;
-    app.quit();
+    try {
+      if (languageExit) {
+        try { await languageExit.retirement; }
+        catch { languageExit.failed = true; updateStatus('Закрытие остановлено: локальный разбор ещё не подтвердил завершение.'); return; }
+      }
+      if (!await confirmDiscardChanges() || !isLifecycleExitCurrent(exitBinding)) return;
+      isQuitting = true;
+      app.quit();
+    } finally {
+      if (languageExit && --languageExit.waiters === 0 && atlasLanguageAnalysisPort === languageExit) {
+        atlasLanguageAnalysisPort = languageExit.failed ? languageExit.port : null;
+      }
+    }
   })().catch(() => {});
 });
 

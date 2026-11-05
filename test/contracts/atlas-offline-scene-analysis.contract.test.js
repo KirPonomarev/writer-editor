@@ -534,3 +534,101 @@ test('offline scene: unpackaged runtime cannot create the private language port'
   assert.equal(result.ok, false); assert.equal(result.error.code, 'E_ATLAS_LANGUAGE_CONTEXT_REVOKED');
   assert.equal(h.calls.length, 0); h.assertNoMutation();
 });
+
+async function atlasExitReentryHarness() {
+  const h = await mainSceneHarness(), c = h.context, model = c.getAtlasLanguageAnalysisPort();
+  const source = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
+  const ports = [], exits = [], handlers = {}, retirements = [];
+  Object.assign(c, { isQuitting: false, isWindowClosing: false,
+    environmentFormSignalSerial: 0, environmentFormComposing: false, activePendingRecording: null,
+    treeEditorReplacementFence: null, projectArchiveOpenCapture: null,
+    lastAcknowledgedEditGeneration: c.lastSignaledEditGeneration, autoSaveInProgress: false,
+    activeAutoSavePromise: null, pendingReviewDocxExports: new Set(),
+    persistWindowState: async () => {}, prepareFullEnvironmentExit: async () => true, updateStatus: () => {},
+    __dirname: path.join(ROOT, 'src'), fsSync: fs,
+  });
+  c.process.resourcesPath = '/owned/app/resources';
+  c.require = name => {
+    if (name === './main/atlasLanguageResourcesV1.json') return require('../../src/main/atlasLanguageResourcesV1.json');
+    assert.equal(name, './main/atlasLanguageAnalysisPort.cjs');
+    return { createAtlasLanguageAnalysisPort: () => {
+      const port = { id: ports.length + 1, closed: false,
+        analyze: async (...args) => { assert.equal(port.closed, false); return model.analyze(...args); },
+        close: async () => { retirements.push(port.id); port.closed = true; } };
+      ports.push(port); return port;
+    } };
+  };
+  c.mainWindow.getBounds = () => ({});
+  c.mainWindow.on = (name, callback) => { assert.equal(name, 'close'); handlers.close = callback; };
+  c.mainWindow.close = () => exits.push('close');
+  c.app.on = (name, callback) => { assert.equal(name, 'before-quit'); handlers.quit = callback; };
+  c.app.quit = () => exits.push('quit');
+  c.confirmDiscardChanges = async () => true;
+  const pieces = [
+    ['let atlasLanguageAnalysisPort = null;', '\nasync function handleWorkspaceAtlasCurrentSceneQuery('],
+    ['function captureLifecycleExitBinding() {', '\nasync function observeFullEnvironmentWindowMoveResult('],
+    ["app.on('before-quit',", "app.on('window-all-closed',"],
+    ["mainWindow.on('close',", "mainWindow.webContents.on('will-prevent-unload',"],
+  ];
+  for (const [start, finish] of pieces) {
+    const from = source.indexOf(start), to = source.indexOf(finish, from);
+    assert.ok(from > 0 && to > from);
+    let body = source.slice(from, to);
+    if (start.includes('.on(')) {
+      assert.equal([...body.matchAll(/\(async \(\) => \{/g)].length, 1);
+      body = body.replace('(async () => {', 'return (async () => {');
+    }
+    vm.runInContext(body, c);
+  }
+  return { ...h, ports, exits, retirements,
+    exit: effect => handlers[effect]({ preventDefault() {} }),
+    slot: () => vm.runInContext('atlasLanguageAnalysisPort', c) };
+}
+
+for (const effect of ['quit', 'close']) for (const initiallyActive of [false, true]) for (const cancelled of [false, true]) {
+  test('offline lifecycle: actual query cannot reenter ' + effect + ' final confirmation with '
+    + (initiallyActive ? 'a retired port' : 'an empty slot') + (cancelled ? ' and can resume after cancellation' : ''), { timeout: 3000 }, async () => {
+    const h = await atlasExitReentryHarness();
+    if (initiallyActive) assert.equal((await h.query({ analyzeLanguage: true })).atlasCurrentScene.languageAnalysis.state, 'experimental');
+    let confirmations = 0, during;
+    h.context.confirmDiscardChanges = async () => {
+      confirmations += 1;
+      if (confirmations === 2) { during = await h.query({ analyzeLanguage: true }); return !cancelled; }
+      return true;
+    };
+    await h.exit(effect);
+    assert.equal(during.ok, true);
+    assert.equal(during.atlasCurrentScene.languageAnalysis.state, 'unavailable');
+    assert.equal(during.atlasCurrentScene.languageAnalysis.reason, 'E_ATLAS_LANGUAGE_BUSY');
+    assert.equal(h.ports.length, initiallyActive ? 1 : 0);
+    assert.ok(h.ports.every(port => port.closed));
+    assert.equal(h.exits.length, cancelled ? 0 : 1);
+    assert.equal(h.slot(), null);
+    const after = await h.query({ analyzeLanguage: true });
+    assert.equal(after.ok, true);
+    assert.equal(after.atlasCurrentScene.languageAnalysis.state, cancelled ? 'experimental' : 'unavailable');
+    assert.equal(h.ports.length, (initiallyActive ? 1 : 0) + (cancelled ? 1 : 0));
+    if (!cancelled) assert.equal(after.atlasCurrentScene.languageAnalysis.reason, 'E_ATLAS_LANGUAGE_BUSY');
+    h.assertNoMutation();
+  });
+}
+
+test('offline lifecycle: concurrent actual Quit and window close share retirement and deny every final-await query', { timeout: 3000 }, async () => {
+  const h = await atlasExitReentryHarness(); await h.query({ analyzeLanguage: true });
+  let confirmations = 0; const interleaved = [];
+  h.context.confirmDiscardChanges = async () => {
+    confirmations += 1;
+    if (confirmations >= 3) interleaved.push(await h.query({ analyzeLanguage: true }));
+    return true;
+  };
+  await Promise.all([h.exit('quit'), h.exit('close')]);
+  assert.ok(interleaved.length > 0);
+  for (const value of interleaved) {
+    assert.equal(value.ok, true); assert.equal(value.atlasCurrentScene.languageAnalysis.state, 'unavailable');
+    assert.equal(value.atlasCurrentScene.languageAnalysis.reason, 'E_ATLAS_LANGUAGE_BUSY');
+  }
+  assert.equal(h.ports.length, 1); assert.equal(h.ports[0].closed, true);
+  assert.deepEqual(h.retirements, [1]); assert.equal(h.exits.length, 1); assert.equal(h.slot(), null);
+  assert.equal((await h.query({ analyzeLanguage: true })).atlasCurrentScene.languageAnalysis.reason, 'E_ATLAS_LANGUAGE_BUSY');
+  assert.equal(h.ports.length, 1); h.assertNoMutation();
+});

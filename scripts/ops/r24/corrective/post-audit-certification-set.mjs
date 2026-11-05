@@ -137754,7 +137754,7 @@ const R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA = Object.freeze({
   "bindings": [
     {
       "path": "src/main.js",
-      "sha256": "c195842efa1c3cf10404c14c42b6a082c6f3686416d898d8839a48a3bfd88e91"
+      "sha256": "7741ce95796c9cd9ba87b33041cd19bea0449c28fb771dbb8157cbd8c794aae9"
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
@@ -137790,11 +137790,11 @@ const R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "da0c46905d6edba40568ac3ceddc23ef5d3a06a35510e208e3deb9a483d31bd8"
+      "sha256": "e80bd5f0cbf0a373f8a79bb4b93346e960b0134ae375e43343d69fdec53973a6"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "cae1f9e299670363e348a83439aeb5389acd5f353c78f3529ddc4fd691c42b24"
+      "sha256": "9021ece75a68ebfc6ccb1622156db7c89cccd05de31c0284eb1fc022ecadd5ea"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -137810,7 +137810,7 @@ const R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "96ae00913079806b3a863dcff5fd1eade94b48c9e25ff18529f7ff9471c6beef"
+      "sha256": "d14177a2619f5104baed84da0ed3a69cb20eeee1fd45f2e44a93a34d5882b53c"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -137858,11 +137858,11 @@ const R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "edfdea3b76ad1ff498ebafde000ea5f864abf52d0e97f483e75be82b15cdcc7a"
+      "sha256": "0f48d8fe87f2bb297fcd8dcd9604ead165aa12738b0ce533c4543745d9fbbedc"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "9a78c6528b3c95acb4bc172e6eedc939d45bb77b9f0d10cd02df3948316e8347"
+      "sha256": "68ba7cad1749fd42ca6fbecfd936b535872ac521cb05642942a921fb0b1b87ca"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -138318,7 +138318,7 @@ const R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA = Object.freeze({
     },
     {
       "path": "test/contracts/atlas-offline-scene-analysis.contract.test.js",
-      "sha256": "1ba3d401dca1660fca347c5f960810be9492793b885a3c16e0c5626e5f332726"
+      "sha256": "679c886364caa1e09be2ab48af3c58757fd40c1bbff578c0a393db68f9f4db23"
     },
     {
       "path": "test/unit/atlas-language-resource-builder.test.js",
@@ -139620,7 +139620,7 @@ const R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "9d564c9e1cbb730192bda24f457d37e86a85df6c890d811858ed138013e57e88"
+      "sha256": "dbdc6fa18a2fa2cbf177c5c3ecfb6bb502b31fe26e12c8209d36478e2a6228d8"
     }
   ]
 });
