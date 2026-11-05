@@ -38239,7 +38239,7 @@ function createWindow() {
       const canClose = await confirmDiscardChanges();
       if (!canClose || !isLifecycleExitCurrent(exitBinding)) return;
       if (mainWindow && !await prepareFullEnvironmentExit(mainWindow)) { updateStatus('Текущий вид не сохранён. Приложение оставлено открытым.'); return; }
-      if (atlasLanguageAnalysisPort) {
+      if (app.isPackaged && atlasLanguageAnalysisPort) {
         try { await atlasLanguageAnalysisPort.close(); atlasLanguageAnalysisPort = null; }
         catch { updateStatus('Закрытие остановлено: локальный разбор ещё не подтвердил завершение.'); return; }
       }
@@ -42154,7 +42154,7 @@ app.on('before-quit', (event) => {
     const canQuit = await confirmDiscardChanges();
     if (!canQuit || !isLifecycleExitCurrent(exitBinding)) return;
     if (mainWindow && !await prepareFullEnvironmentExit(mainWindow)) { updateStatus('Текущий вид не сохранён. Приложение оставлено открытым.'); return; }
-    if (atlasLanguageAnalysisPort) {
+    if (app.isPackaged && atlasLanguageAnalysisPort) {
       try { await atlasLanguageAnalysisPort.close(); atlasLanguageAnalysisPort = null; }
       catch { updateStatus('Закрытие остановлено: локальный разбор ещё не подтвердил завершение.'); return; }
     }

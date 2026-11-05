@@ -1163,7 +1163,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "50b7bcac6691a32d0cddaa8e7046957805a519334c6fad0808ac5480a303fc9b"
+        "sha256": "c195842efa1c3cf10404c14c42b6a082c6f3686416d898d8839a48a3bfd88e91"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -3403,7 +3403,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "3813ba7a69f49def409c3be067fdcb7445f120ded73a99edd85dab565a4c3c7e"
+        "sha256": "cae1f9e299670363e348a83439aeb5389acd5f353c78f3529ddc4fd691c42b24"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4255,7 +4255,7 @@
       },
       {
         "path": "test/contracts/atlas-offline-scene-analysis.contract.test.js",
-        "sha256": "8a0d2e83a1aef69c5cfcc3e8b8a3588151a14de4d50ca1a9143436e49bc7ab63"
+        "sha256": "1ba3d401dca1660fca347c5f960810be9492793b885a3c16e0c5626e5f332726"
       },
       {
         "path": "test/unit/atlas-language-resource-builder.test.js",

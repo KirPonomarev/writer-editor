@@ -464,3 +464,73 @@ test('offline scheduler: real scheduler forwards its job identity and explicit r
 });
 
 // The preceding frozen controls remain byte-exact; further cases append below.
+
+function atlasPackagedExitHarness(effect) {
+  const source = fs.readFileSync(path.join(ROOT, 'src/main.js'), 'utf8');
+  const start = effect === 'quit' ? "app.on('before-quit'," : "mainWindow.on('close',";
+  const end = effect === 'quit' ? "app.on('window-all-closed'," : "mainWindow.webContents.on('will-prevent-unload',";
+  const from = source.indexOf(start), to = source.indexOf(end, from);
+  assert.ok(from > 0 && to > from);
+  const body = source.slice(from, to);
+  assert.equal([...body.matchAll(/\(async \(\) => \{/g)].length, 1);
+  let handler, release, reject, entered, allowed = true, current = true;
+  const started = new Promise(resolve => { entered = resolve; });
+  const retired = new Promise((resolve, refuse) => { release = resolve; reject = refuse; });
+  const events = [], statuses = [], binding = Object.freeze({ id: 'owned-exit' });
+  const port = { close: async () => { events.push('port.close'); entered(); await retired; events.push('port.closed'); } };
+  const context = vm.createContext({
+    isQuitting: false, isWindowClosing: false, atlasLanguageAnalysisPort: port,
+    captureLifecycleExitBinding: () => binding,
+    isLifecycleExitCurrent: actual => actual === binding && current,
+    persistWindowState: async () => { events.push('persist'); },
+    confirmDiscardChanges: async () => { events.push('confirm'); return allowed; },
+    prepareFullEnvironmentExit: async () => true,
+    updateStatus: value => statuses.push(value),
+    mainWindow: { getBounds: () => ({}), close: () => events.push('close'),
+      on: (name, callback) => { assert.equal(name, 'close'); handler = callback; } },
+    app: { isPackaged: true, quit: () => events.push('quit'),
+      on: (name, callback) => { assert.equal(name, 'before-quit'); handler = callback; } },
+  });
+  // Observe completion of the actual callback; decisions and branch bodies stay literal.
+  vm.runInContext(body.replace('(async () => {', 'return (async () => {'), context);
+  return { context, events, statuses, port, started, release, reject,
+    exit: () => handler({ preventDefault() {} }),
+    revoke: kind => { if (kind === 'authoring') allowed = false; else current = false; } };
+}
+
+for (const effect of ['quit', 'close']) {
+  test('offline lifecycle: packaged ' + effect + ' waits for confirmed port retirement before final authoring check', { timeout: 3000 }, async () => {
+    const h = atlasPackagedExitHarness(effect), pending = h.exit(); await h.started;
+    assert.equal(h.events.includes(effect), false);
+    assert.equal(h.context.isQuitting, false); assert.equal(h.context.isWindowClosing, false);
+    h.release(); await pending;
+    assert.equal(h.context.atlasLanguageAnalysisPort, null);
+    assert.equal(h.events.filter(value => value === effect).length, 1);
+    assert.deepEqual(h.events, ['persist', 'confirm', 'port.close', 'port.closed', 'confirm', effect]);
+  });
+  test('offline lifecycle: packaged ' + effect + ' refuses unconfirmed retirement without clearing its live port', { timeout: 3000 }, async () => {
+    const h = atlasPackagedExitHarness(effect), pending = h.exit(); await h.started;
+    h.reject(Object.assign(new Error('unconfirmed'), { code: 'E_ATLAS_LANGUAGE_RETIREMENT_FAILED' })); await pending;
+    assert.equal(h.events.includes(effect), false);
+    assert.equal(h.context.atlasLanguageAnalysisPort, h.port);
+    assert.equal(h.context.isQuitting, false); assert.equal(h.context.isWindowClosing, false);
+    assert.equal(h.statuses.length, 1); assert.match(h.statuses[0], /не подтвердил завершение/u);
+  });
+  for (const kind of ['authoring', 'context']) {
+    test('offline lifecycle: packaged ' + effect + ' revalidates ' + kind + ' after retirement await', { timeout: 3000 }, async () => {
+      const h = atlasPackagedExitHarness(effect), pending = h.exit(); await h.started;
+      h.revoke(kind); h.release(); await pending;
+      assert.equal(h.context.atlasLanguageAnalysisPort, null);
+      assert.equal(h.events.includes(effect), false);
+      assert.equal(h.context.isQuitting, false); assert.equal(h.context.isWindowClosing, false);
+      assert.equal(h.events.filter(value => value === 'confirm').length, 2);
+    });
+  }
+}
+
+test('offline scene: unpackaged runtime cannot create the private language port', async () => {
+  const h = await mainSceneHarness(); h.context.app.isPackaged = false;
+  const result = await h.query({ analyzeLanguage: true });
+  assert.equal(result.ok, false); assert.equal(result.error.code, 'E_ATLAS_LANGUAGE_CONTEXT_REVOKED');
+  assert.equal(h.calls.length, 0); h.assertNoMutation();
+});
