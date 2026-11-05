@@ -2855,15 +2855,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "6b268ef77856307458abc09a592ba925177ab26147ef14d9d91f962ebe37619a"
+        "sha256": "2eff9b19b7342a9ca8eaa075e2c8732bc17733b5ccd1b459dda08208bae00e46"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "8d8312372d960a03333a4e081bdee3961e30c0e682ab4b5eafdc0a3ca06d6b40"
+        "sha256": "370f919f46429a189dec7b9799872232eb5faee14cda2f8c7a7e7e03055755a4"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "964a426cb6bb063443fba09ee12c185efca38c6fbd5fc185d6f788cf63f988dc"
+        "sha256": "41fa3387bd3864a0587a678333c0148082ffa61bbbcb409d1c0111b7f491df60"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -4263,7 +4263,7 @@
       },
       {
         "path": "docs/tasks/2026-11-04--atlas-offline-scene-analysis.md",
-        "sha256": "cc226e007c0076ea1074d6583b9957c93c0d78f95b3b47d2ee14de0662756222"
+        "sha256": "66194133a08a6ab166a03d5a24c4b3adbe24e73484fbbca6ff8dce983f2611c1"
       },
       {
         "path": "docs/OPS/STATUS/ATLAS_OFFLINE_LANGUAGE_ENGINE_DECISION_V1.json",

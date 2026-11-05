@@ -1,3 +1,18 @@
+# Resume — M7 Atlas scene-analysis proof is retained
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: 3a2b27b230a10150f6f90a9a53e2b633dd61b8d6
+OBSERVED_AT: 2026-11-05
+STATUS: BOUNDED_NATIVE_AND_DELIVERY_VERIFIED_FACTUAL_HANDOFF_FOLLOWUP
+
+PR2199 is merged; C7 remains reachable on codex/atlas-offline-scene-analysis-20261104. The follow-up branch is codex/atlas-offline-merged-handoff-20261105. Declaration29 admitted the four factual documents; current declaration31 additionally admits the three existing current-byte companions and two append-only technical witness registries after CI detected four stale doc hashes. Use the maintained finalizer and preserve all four unchanged producer targets. The verified M7 scope/receipt pins and retained C8/C9 failures are in CONTEXT and the task. Older pending/failed snapshots below are historical.
+
+The actual M7 build, AUTHOR/COLD/BAD observations, original errors and full saved profiles remain in the existing dated T777 materials/report folders; all owned app processes exited normally. Preserve all original app/profile/resource/runtime paths and old17 profile manifests. Do not relaunch or repeat the closed native/gate wave merely to update this handoff. Runtime source, tests, resource pins, frozen inputs and all17 qualification obligations are unchanged by this docs follow-up.
+
+NEXT: close this docs delivery normally, then resume YALKEN_ATLAS_OFFLINE_DISTRIBUTION_SOURCES_20261105 REPORT_ONLY under its current preflight: bound supplier provenance, exact corresponding sources and full notices without installation/execution or public binary distribution. Full Deep/all17 remain unaccepted; Word/nativeOfficePAUSED and BlackBox remains after fullMac. Continue alone under the owner's standing delegation.
+
+--- Historical pre-merge snapshots below retain their original bytes and claims ---
+
 # Current task — Offline Atlas baseline compatibility closure
 
 DOCUMENT_CLASS: FACTUAL_STATUS
