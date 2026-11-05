@@ -1,3 +1,9 @@
+# 2026-11-05 — Fixed Atlas native source and full-license notices admitted
+
+- PR2200 closed on355a50e39d1f76a90f037815a90f4d71ff9b8677, closure154e07453bf170b2d1c9c53a7ad24a6689f6bb09d3038634cda6db3ecaec3b24; full REPORT_ONLY material qualification71b522b2 retained without repository/runtime mutation.
+- Original catalog lacks full LGPL2.1, and the unchanged assembler refuses explicit notice input. Fixed source companion190625583bytes and notice archive31807bytes have complete independent58member readback; this does not close distribution/relink/full-release obligations.
+- Clean M8/remote/storage/writer, full startup/current sources, declarationc98d7176 and own-branch preflightb8b23206 precede the19path supply-only contour. TaskE0 passed and the identical frozen whole14builder cases pass after genuine original12pass/2fail RED; original3664byte test prefix/four inputs exact. Actual rebuilt/native/all required gates/full ordinary delivery remain pending.
+
 # 2026-11-05 — Offline Atlas merged proof and factual handoff
 
 - PR2199 normally merged as M7 3a2b27b230a10150f6f90a9a53e2b633dd61b8d6. The fresh rebuilt M7 app, all24 affected whole files1150 positive cases, declared17 software outcomes, four frozen native cases plus cold/refusal/currentness/dirty/Quit controls and three normal exits0 are bound by closure readback b0c5ae45a7da3be212a623e96ca283332aeb9da6eff8bd0fcaa252cde5acb590 and actual reader process dc952a06e483465dfb5069b66cd19e58bc626e3d8010de78c9c446080a9d4f4d. Complete profiles/data/source/artifact bytes were independently checked; old17 profiles remain exact. Six moderate dev audit findings and every earlier failed or skipped run retain their actual identities.

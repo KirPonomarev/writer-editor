@@ -1,3 +1,15 @@
+# 2026-11-05 — Fixed native legal/source-companion supply for the existing private Atlas cohort
+
+TASK: YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105
+BASE: 355a50e39d1f76a90f037815a90f4d71ff9b8677
+SCOPE: existing resource assembler and static catalog only; one separate fixed archive supplies six non-executable complete legal/reference files. Original four source inputs, all interpreter/model/worker/native code, command/core/UI/persistence and public capability flags remain unchanged.
+REASON: independently qualified component source material71b522b2 and full LGPL2.1 text are available, but the existing four-input assembler cannot include them. The fifth archive and immutable separate source-companion hash are fixed before parsing; no downloader, resolver, runtime archive path, executable contribution or new dependency is introduced.
+EXCEPTION: the original explicitly admitted private engine dependency exception retains its scope. Full legal texts/source materials do not waive modified-library replacement/relink, reproducibility, signing or full-release qualification. Public binary permission remains false; complete GNU/LGPL distribution obligations stay open.
+PROOF: identical frozen whole14cases now pass after genuine original-code12pass/2fail. Actual new catalog/artifact/native and complete normal delivery remain mandatory; no earlier M7 native or material report is retagged.
+ROLLBACK: one ordinary scoped revert, preserving old catalogs, source containers, all apps/profiles/data/history/authority/raw and every old registry row.
+
+--- Historical entries retain their complete original bytes below ---
+
 # ARCH_DIFF_LOG (исключения из канона)
 
 Любое исключение из `CANON.md` (и/или `docs/BIBLE.md`):

@@ -934,7 +934,8 @@
     "test/contracts/atlas-offline-scene-analysis.contract.test.js",
     "test/unit/atlas-language-resource-builder.test.js",
     "docs/tasks/2026-11-04--atlas-offline-scene-analysis.md",
-    "docs/OPS/STATUS/ATLAS_OFFLINE_LANGUAGE_ENGINE_DECISION_V1.json"
+    "docs/OPS/STATUS/ATLAS_OFFLINE_LANGUAGE_ENGINE_DECISION_V1.json",
+    "docs/tasks/2026-11-05--atlas-native-source-notices.md"
   ],
   "protectedFiles": [
     {
@@ -2407,7 +2408,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "a717142018993d788a537fa22e49aa5cb9cb59d43a366a6090cb9111e103a035"
+        "sha256": "103bbd52c0633e169c9fdad9ac53b1a2efc2c517412406ae678b2cc232adbe62"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2855,15 +2856,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "2eff9b19b7342a9ca8eaa075e2c8732bc17733b5ccd1b459dda08208bae00e46"
+        "sha256": "82794df16db390933ea9a1cdcfefa19c9d8fe23500db16d8e6054b1fb12e5690"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "370f919f46429a189dec7b9799872232eb5faee14cda2f8c7a7e7e03055755a4"
+        "sha256": "67d2c4c44a1b891ff1a867ede75ba2490fd33dbb9ffea564d5d294c10cfef628"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "41fa3387bd3864a0587a678333c0148082ffa61bbbcb409d1c0111b7f491df60"
+        "sha256": "3cb2cffb00264daf6c3fb7dcd31a60ad70a5ab115e16449d8ced6847845d9c45"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3403,7 +3404,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "4e3f0e774d977dd0b8208dd54943dccd1966e496053b546c72a933babc2806e9"
+        "sha256": "dadfc1539e9d5a4cf0bb084e1aaeb0481199a64f18ed25b7ff7f7980681c8598"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3535,7 +3536,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "c5fcd9162f08f3253a36b88742dda759ed67c4807c99f8f62ad21b119e9c30e4"
+        "sha256": "2a346596399468b0aad6355750c3654d37388c0a5894de7f62c1f0583740aa9f"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4247,11 +4248,11 @@
       },
       {
         "path": "src/main/atlasLanguageResourcesV1.json",
-        "sha256": "3fd8067be2033adf5d62a95aea101a4328a64012f92c11454822d64136ef0703"
+        "sha256": "d2f74c4d3855663fe8bef1bf6a28322de4318fb9350d2bb7c0b47238c1f8628f"
       },
       {
         "path": "scripts/build-atlas-language-resources.cjs",
-        "sha256": "603f0aeddf17a8ac6f0b5ef947abbc9eeb71753488b122e4e23cd9bf34bb7d8e"
+        "sha256": "8f743f597bd8549077216fd11e1bad0db00659d9d92b5db5b36646d93db9e028"
       },
       {
         "path": "test/contracts/atlas-offline-scene-analysis.contract.test.js",
@@ -4259,7 +4260,7 @@
       },
       {
         "path": "test/unit/atlas-language-resource-builder.test.js",
-        "sha256": "68e5d62cba01e7bbc66e2983a931607fb1bd9a5340330bcd25f677d8bc9f8b0f"
+        "sha256": "4ad57d8877033a69f938d502a20f7ed577dc98e3056d530c028828980b6d4bcb"
       },
       {
         "path": "docs/tasks/2026-11-04--atlas-offline-scene-analysis.md",
@@ -4267,7 +4268,11 @@
       },
       {
         "path": "docs/OPS/STATUS/ATLAS_OFFLINE_LANGUAGE_ENGINE_DECISION_V1.json",
-        "sha256": "2bf2d259c610924b0fe0bdd7c374225f49718f2bcae8ebfc06aed9bdf6ed4e42"
+        "sha256": "df16aea027d5067e8f3977531171b90211cb5c9f3495ed9a75d50b471c01252e"
+      },
+      {
+        "path": "docs/tasks/2026-11-05--atlas-native-source-notices.md",
+        "sha256": "9a87851145c1e361ca1593fcb3b5331b3e5967bed9c22f13039068e9d54c055d"
       }
     ],
     "followupRepair": {

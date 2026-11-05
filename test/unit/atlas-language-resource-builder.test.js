@@ -53,3 +53,47 @@ test('resource builder: refuse replacement and output within the original source
   await assert.rejects(builder().buildAtlasLanguageResources({ sourceDirectory: root, outputDirectory: path.join(root, 'nested') }), /E_ATLAS_RESOURCE_TARGET/u);
   assert.equal(hash(fs.readFileSync(path.join(root, 'protected'))), hash('original'));
 });
+
+function nativeNoticeFixture(expectedNoticeBytes, actualNoticeBytes = expectedNoticeBytes) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'atlas-native-notice-test-'));
+  const sourceDirectory = path.join(root, 'original-inputs'); fs.mkdirSync(sourceDirectory);
+  const noticeDirectory = path.join(root, 'separate-native-notices'); fs.mkdirSync(noticeDirectory);
+  const manifest = structuredClone(require('../../src/main/atlasLanguageResourcesV1.json'));
+  manifest.inputs = manifest.inputs.map(row => {
+    // These finite archives have valid pinned bytes but cannot be decoded.
+    // A rejected fifth input must be detected before any of their parsers run.
+    const bytes = Buffer.from('deliberately undecodable original archive: ' + row.role);
+    fs.writeFileSync(path.join(sourceDirectory, row.filename), bytes);
+    return { ...row, byteLength: bytes.length, sha256: hash(bytes) };
+  });
+  const filename = 'ATLAS_NATIVE_SOURCE_NOTICES_01.zip';
+  manifest.nativeNotices = { role: 'nativeNotices', filename, byteLength: expectedNoticeBytes.length,
+    sha256: hash(expectedNoticeBytes), entryCount: 7 };
+  const nativeNoticesArchive = path.join(noticeDirectory, filename);
+  fs.writeFileSync(nativeNoticesArchive, actualNoticeBytes);
+  // Load the complete production module with only immutable fixture pin data.
+  // Its actual file reader, ZIP parser and output behavior are not replaced.
+  const Module = require('node:module');
+  const filenameBuilder = require.resolve('../../scripts/build-atlas-language-resources.cjs');
+  const loaded = new Module(filenameBuilder, module);
+  loaded.filename = filenameBuilder; loaded.paths = Module._nodeModulePaths(path.dirname(filenameBuilder));
+  const originalRequire = loaded.require.bind(loaded);
+  loaded.require = name => name === '../src/main/atlasLanguageResourcesV1.json' ? manifest : originalRequire(name);
+  loaded._compile(fs.readFileSync(filenameBuilder, 'utf8'), filenameBuilder);
+  return { assembler: loaded.exports, sourceDirectory, nativeNoticesArchive,
+    outputDirectory: path.join(root, 'new-output'), actualNoticeBytes };
+}
+
+test('resource builder: refuse corrupt separate native notices before decoding original archives or creating output', async () => {
+  const fixture = nativeNoticeFixture(Buffer.from('fixed expected notice bytes'), Buffer.from('changed native notice bytes'));
+  await assert.rejects(fixture.assembler.buildAtlasLanguageResources(fixture), /E_ATLAS_RESOURCE_SOURCE_HASH/u);
+  assert.equal(fs.existsSync(fixture.outputDirectory), false);
+  assert.deepEqual(fs.readFileSync(fixture.nativeNoticesArchive), fixture.actualNoticeBytes);
+});
+
+test('resource builder: refuse traversal in the pinned native notice archive before decoding original archives or creating output', async () => {
+  const fixture = nativeNoticeFixture(archive('../escape', Buffer.from('untrusted notice')));
+  await assert.rejects(fixture.assembler.buildAtlasLanguageResources(fixture), /E_ATLAS_RESOURCE_ZIP_PATH/u);
+  assert.equal(fs.existsSync(fixture.outputDirectory), false);
+  assert.deepEqual(fs.readFileSync(fixture.nativeNoticesArchive), fixture.actualNoticeBytes);
+});
