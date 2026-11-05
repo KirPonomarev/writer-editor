@@ -739,3 +739,9 @@ Reason: the completed external-gold evaluation and compatible-wheel comparison p
 ## 2026-11-05 — Canonical Writer reorder identity, source proof pending native
 
 On176e65b7a7e7f97e107f9b667989743485f84e84, read-only source cause06fd1b1e observes a presentation-group ID and display ordinal reaching an authored tree move. The admitted bounded correction restores existing Corex ownership: current raw project projection supplies stable parent/order intent and Main independently derives movable owners under the unchanged Kernel, manifest lease, CAS, full recovery inventory and atomic transaction. Fixed roman-section owners are outside authored renumbering. This is a Tier B existing-seam correction with no schema, new port, UI design or temporary canon exception. Frozen8 and whole affected607 source cases passed after the original50 caller failures were retained and both existing captured contexts supplied. Native/full-delivery acceptance remains pending. Rollback: one ordinary scoped revert preserving every saved project/profile/history/authority byte. Task:2026-11-05--writer-tree-reorder-identity.md.
+
+## 2026-11-05 — YALKEN_WRITER_LINE_HEIGHT_FIELD_COHERENCE_20261105
+
+Existing-seam field-coherence correction admitted on M10 under declaration8e8dd0e6/preflightc6e15490. No architecture exception: Core/Kernel/persistence/ENV publication guards and visual contract remain. Preserve applied typography and remove only demonstrated control misrepresentation after frozen genuine RED. Reconciled prior closed PR2202 factual state before product write, preserving historical bodies. Normal scoped revert; current native/gates/delivery pending.
+
+Frozen new6 tests: unchanged source2pass4genuine assertion failures, identical corrected6pass. Whole affected9 inputs84pass; maintained renderer build0. Only the demonstrated three-line field reset was removed; native and full delivery remain pending.

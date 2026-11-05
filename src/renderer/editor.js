@@ -26062,9 +26062,6 @@ function applyLiteralToolbarMasterVisualDefaults() {
   if (weightSelect) {
     weightSelect.value = 'light';
   }
-  if (lineHeightSelect) {
-    lineHeightSelect.value = '1.0';
-  }
   applyFontWeight('light', false);
   if (editor) {
     editor.style.fontSize = '12px';
