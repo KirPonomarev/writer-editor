@@ -1,5 +1,5 @@
 'use strict';
-// Build-time only: four fixed archived inputs, no downloader or model resolver.
+// Build-time only: four original archives and one fixed native-notice archive.
 const fs = require('node:fs/promises');
 const constants = require('node:fs').constants;
 const path = require('node:path');
@@ -95,13 +95,24 @@ async function assertTarget(source, target) {
   if (await fs.realpath(source) !== source || await fs.realpath(path.dirname(target)) !== path.dirname(target)) throw error('TARGET_IDENTITY');
 }
 
-async function buildAtlasLanguageResources({ sourceDirectory, outputDirectory }) {
+async function buildAtlasLanguageResources({ sourceDirectory, outputDirectory, nativeNoticesArchive }) {
   await assertTarget(sourceDirectory, outputDirectory);
-  // Validate all four complete source digests before parsing any archive or
-  // creating the target. The expected catalog is pinned in our source code.
+  // Validate all five complete input digests before parsing any archive or
+  // creating the target. Keep the original four-input manifest contract.
   const sources = new Map();
   for (const input of manifest.inputs) sources.set(input.role,
     await regular(path.join(sourceDirectory, input.filename), input.byteLength, input.sha256));
+  const noticeInput = manifest.nativeNotices;
+  if (typeof nativeNoticesArchive !== 'string' || !path.isAbsolute(nativeNoticesArchive)
+    || path.resolve(nativeNoticesArchive) !== nativeNoticesArchive
+    || path.basename(nativeNoticesArchive) !== noticeInput.filename) throw error('NATIVE_NOTICE_INPUT');
+  try {
+    if (await fs.realpath(nativeNoticesArchive) !== nativeNoticesArchive) throw error('NATIVE_NOTICE_INPUT');
+  } catch { throw error('NATIVE_NOTICE_INPUT'); }
+  const nativeNoticeBytes = await regular(nativeNoticesArchive, noticeInput.byteLength, noticeInput.sha256);
+  const nativeNotices = readZip(nativeNoticeBytes);
+  if (nativeNotices.length !== noticeInput.entryCount
+    || !nativeNotices.some(row => row.path === 'index.json')) throw error('NOTICE_ROSTER');
   const files = new Map(), links = new Map(), folded = new Set();
   function add(relative, bytes, mode, target) {
     if (!safe(relative) || folded.has(relative.toLowerCase()) || relative === 'worker.py' || relative === 'catalog.json') throw error('OUTPUT_PATH');
@@ -149,6 +160,7 @@ async function buildAtlasLanguageResources({ sourceDirectory, outputDirectory })
   const supplier = readZip(sources.get('supplierNotices'));
   if (supplier.length !== 22) throw error('NOTICE_ROSTER');
   for (const row of supplier) if (row.path !== 'index.json') add('notices/supplier/' + row.path, row.bytes, 0o444);
+  for (const row of nativeNotices) if (row.path !== 'index.json') add('notices/native/' + row.path, row.bytes, 0o444);
   const entries = [
     ...[...files].map(([name, value]) => ({ path: name, kind: 'file', byteLength: value.bytes.length, sha256: sha(value.bytes), mode: value.mode })),
     ...[...links].map(([name, target]) => ({ path: name, kind: 'symlink', target })),
@@ -197,9 +209,9 @@ async function copyVerifiedAtlasLanguageResources({ sourceDirectory, outputDirec
 module.exports = { buildAtlasLanguageResources, copyVerifiedAtlasLanguageResources, readZip, crc32 };
 if (require.main === module) {
   const argv = process.argv.slice(2);
-  if (argv.length !== 4 || argv[0] !== '--source-directory' || argv[2] !== '--out') {
+  if (argv.length !== 6 || argv[0] !== '--source-directory' || argv[2] !== '--native-notices-archive' || argv[4] !== '--out') {
     process.stderr.write('E_ATLAS_RESOURCE_ARGUMENTS\n'); process.exitCode = 1;
-  } else buildAtlasLanguageResources({ sourceDirectory: argv[1], outputDirectory: argv[3] })
+  } else buildAtlasLanguageResources({ sourceDirectory: argv[1], nativeNoticesArchive: argv[3], outputDirectory: argv[5] })
     .then(result => process.stdout.write(JSON.stringify(result) + '\n'))
     .catch(cause => { process.stderr.write((cause.message?.startsWith('E_ATLAS_RESOURCE_') ? cause.message : 'E_ATLAS_RESOURCE_BUILD_FAILED') + '\n'); process.exitCode = 1; });
 }

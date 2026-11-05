@@ -3,7 +3,7 @@
   "schemaVersion": "atlas.offlineLanguageEngineDecision.v1",
   "status": "PRIVATE_IMPLEMENTATION_ADMITTED_NOT_CERTIFIED",
   "bindingBase": "da3df41cca30a952c77d16b6056c208e4fb8c374",
-  "resourceCatalogSha256": "b66e5391bc27c486769e927ada2e2656e3c78c3bca19c597bb5bd691c08d0afa",
+  "resourceCatalogSha256": "9745dc98dc03512ec7a9b088d4bf98ce49d051fdbda010a4731247eb60b4d3b3",
   "engine": "spaCy 3.8.18",
   "models": {
     "ru": "3.8.0",
@@ -20,7 +20,7 @@
   "publicBinaryDistributionAllowed": false,
   "publicDistributionBlockers": [
     "GNU corresponding-source closure",
-    "complete LGPL2.1 notice and obligations",
+    "LGPL2.1 modified-library replacement/relink and distribution obligations",
     "signing and notarization",
     "all remaining V6 qualification"
   ],
@@ -36,5 +36,7 @@
     "actual macOS12, x64 and other-platform inference unknown",
     "Original first 16.133864s cold failure preserved"
   ],
-  "rollback": "One scoped ordinary revert; preserve data, profiles, archives, original failures"
+  "rollback": "One scoped ordinary revert; preserve data, profiles, archives, original failures",
+  "nativeSourceMaterialQualificationSha256": "71b522b283406b64cb7717e8e7aea20545fdae322a962db05653f4aa50134670",
+  "nativeNoticeSupplyTaskId": "YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105"
 }

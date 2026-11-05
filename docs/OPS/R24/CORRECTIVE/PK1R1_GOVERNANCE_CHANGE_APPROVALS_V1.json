@@ -1901,4 +1901,67 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_OFFLINE_SCENE_ANALYSIS_20261104",
       "approvedAtUtc": "2026-11-05T07:30:50.783216+00:00",
       "rationale": "Standing owner current/future technical SHA witness delegation. Same verified M7 factual handoff: refresh only four doc hashes in existing DATA bindings, executable policy pin and selected current certificate hashes through the unchanged maintained finalizer. Four other targets, historical policy/certificate bodies, all runtime/tests/protected inputs and old registry rows remain exact. Original C8/C9 failures retained; this is no language, native, public distribution or full17 acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "3e79e676bf6c752d9ee2e3e412453e2ce30038b6b091837e1c166b77021759d7",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105",
+      "approvedAtUtc": "2026-11-05T09:18:14.782134+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation. One bounded fixed native-notice input and exact source-companion association for the unchanged private Atlas cohort. Existing19path task/declaration; original tests, four archives, code/models and protected17/history retained; current metadata through unchanged maintained producer. This technical hash witness grants no language, native, GNU/LGPL compliance, signing, public distribution or full17 acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "dadfc1539e9d5a4cf0bb084e1aaeb0481199a64f18ed25b7ff7f7980681c8598",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105",
+      "approvedAtUtc": "2026-11-05T09:18:14.782134+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation. One bounded fixed native-notice input and exact source-companion association for the unchanged private Atlas cohort. Existing19path task/declaration; original tests, four archives, code/models and protected17/history retained; current metadata through unchanged maintained producer. This technical hash witness grants no language, native, GNU/LGPL compliance, signing, public distribution or full17 acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "da696feb42279ba8a4eb9d9f2a6f7ec1e54a7a03e3d0929d54585419ef131c99",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105",
+      "approvedAtUtc": "2026-11-05T09:18:14.782134+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation. One bounded fixed native-notice input and exact source-companion association for the unchanged private Atlas cohort. Existing19path task/declaration; original tests, four archives, code/models and protected17/history retained; current metadata through unchanged maintained producer. This technical hash witness grants no language, native, GNU/LGPL compliance, signing, public distribution or full17 acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "8fa687fe291abcfa2afa8002bafad3962b7a7fb56ec683d2048d961689ab2119",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105",
+      "approvedAtUtc": "2026-11-05T09:18:14.782134+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation. One bounded fixed native-notice input and exact source-companion association for the unchanged private Atlas cohort. Existing19path task/declaration; original tests, four archives, code/models and protected17/history retained; current metadata through unchanged maintained producer. This technical hash witness grants no language, native, GNU/LGPL compliance, signing, public distribution or full17 acceptance."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "e845868c1c9fc0695c0dbd5464b085a0c564a26b91f86c2e238852c12b38f311",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105",
+      "approvedAtUtc": "2026-11-05T09:18:14.782134+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation. One bounded fixed native-notice input and exact source-companion association for the unchanged private Atlas cohort. Existing19path task/declaration; original tests, four archives, code/models and protected17/history retained; current metadata through unchanged maintained producer. This technical hash witness grants no language, native, GNU/LGPL compliance, signing, public distribution or full17 acceptance."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/ATLAS_OFFLINE_LANGUAGE_ENGINE_DECISION_V1.json",
+      "sha256": "df16aea027d5067e8f3977531171b90211cb5c9f3495ed9a75d50b471c01252e",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105",
+      "approvedAtUtc": "2026-11-05T09:18:14.782134+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation. One bounded fixed native-notice input and exact source-companion association for the unchanged private Atlas cohort. Existing19path task/declaration; original tests, four archives, code/models and protected17/history retained; current metadata through unchanged maintained producer. This technical hash witness grants no language, native, GNU/LGPL compliance, signing, public distribution or full17 acceptance."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "179659830453b13b6fcc6de2a1ff4a2b489d55d151a96acddbe1bc143bbe9497",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105",
+      "approvedAtUtc": "2026-11-05T09:18:14.782134+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation. One bounded fixed native-notice input and exact source-companion association for the unchanged private Atlas cohort. Existing19path task/declaration; original tests, four archives, code/models and protected17/history retained; current metadata through unchanged maintained producer. This technical hash witness grants no language, native, GNU/LGPL compliance, signing, public distribution or full17 acceptance."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "f4aaef1663b182af64e4f974bbbd6e649835ba7f0e0fad5c4fc6825edf8cc48f",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105",
+      "approvedAtUtc": "2026-11-05T09:18:14.782134+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation. One bounded fixed native-notice input and exact source-companion association for the unchanged private Atlas cohort. Existing19path task/declaration; original tests, four archives, code/models and protected17/history retained; current metadata through unchanged maintained producer. This technical hash witness grants no language, native, GNU/LGPL compliance, signing, public distribution or full17 acceptance."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "2a346596399468b0aad6355750c3654d37388c0a5894de7f62c1f0583740aa9f",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105",
+      "approvedAtUtc": "2026-11-05T09:18:14.782134+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation. One bounded fixed native-notice input and exact source-companion association for the unchanged private Atlas cohort. Existing19path task/declaration; original tests, four archives, code/models and protected17/history retained; current metadata through unchanged maintained producer. This technical hash witness grants no language, native, GNU/LGPL compliance, signing, public distribution or full17 acceptance."
     }],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}

@@ -1,3 +1,20 @@
+# Current task — Fixed Atlas native source and full-license notices
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_NEGATIVE_TESTS_VERIFIED_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 355a50e39d1f76a90f037815a90f4d71ff9b8677
+TASK: YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105; sole executor, codex/atlas-native-source-notices-20261105.
+
+PR2200 is fully closed on M8 by closure154e07453bf170b2d1c9c53a7ad24a6689f6bb09d3038634cda6db3ecaec3b24 and executed reader5aba18d83f0fa83263083467d6fb850dea88acae9df6ac76f5734771cd7b6e13. Exact20required CI successes, merged15selected current processes/170cases and10080physical sources are bounded factual/current-metadata evidence. The separate successful21st check is the existing post-close workflow. Earlier failed serialization/readers remain failed and retained. M7 runtime/native proof retains M7 identity.
+
+REPORT_ONLY component-source/full-text material qualification71b522b283406b64cb7717e8e7aea20545fdae322a962db05653f4aa50134670 is closed without repository/runtime mutation. Independent native readers verify51source-companion and7notice-input members; original23NumPy native files remain exact. The actual old catalog lacks full LGPL2.1; original builder refuses an explicit new fixed input, cause77d624c682de66ba4f109fead0095391924addf1d2b4ada0a26fdeadaff25ff9.
+
+The admitted next outcome is six exact non-executable full legal/reference files in the actual Mac artifact, retaining original four inputs/all5941entries/worker/code/models and an exact separate source-companion association. New source preflightc98d7176 and clean-branch checkb8b23206 preceded edits. Frozen whole14builder cases pass after original12pass/2fail RED; complete original3664byte test prefix held. Actual catalog/native and full required delivery remain pending. Modified-library replacement/relink, binary reproducibility, signed resources, full Deep/all17/signing/notary/public distribution remain open; fullMacNOT_READY. Word/nativeOfficePAUSED, BlackBox after fullMac.
+
+NEXT: taskE0, freeze whole builder negative tests and genuine unchanged-code RED, then the minimal fixed-notice input correction and complete actual native/gates/guarded normal delivery/merged proof.
+
+--- Previous observed states retain their complete original bytes below ---
+
 # Current state — Offline Atlas bounded delivery verified on M7
 
 DOCUMENT_CLASS: FACTUAL_STATUS

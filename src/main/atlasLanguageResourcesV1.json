@@ -9,9 +9,9 @@
     "en": "3.8.0",
     "ru": "3.8.0"
   },
-  "catalogSha256": "b66e5391bc27c486769e927ada2e2656e3c78c3bca19c597bb5bd691c08d0afa",
-  "entryCount": 5941,
-  "uncompressedBytes": 240978271,
+  "catalogSha256": "9745dc98dc03512ec7a9b088d4bf98ce49d051fdbda010a4731247eb60b4d3b3",
+  "entryCount": 5947,
+  "uncompressedBytes": 241063992,
   "inputs": [
     {
       "role": "wheelhouse",
@@ -40,5 +40,16 @@
   ],
   "privateQualificationOnly": true,
   "certified": false,
-  "publicBinaryDistributionAllowed": false
+  "publicBinaryDistributionAllowed": false,
+  "nativeNotices": {
+    "filename": "ATLAS_NATIVE_SOURCE_NOTICES_01.zip",
+    "sha256": "9234d54860409ab87b57b20f20538f91e9da01cd1bb8731d99dd2db7a776a7ad",
+    "byteLength": 31807,
+    "entryCount": 7,
+    "sourceCompanion": {
+      "filename": "ATLAS_NATIVE_DEPENDENCY_SOURCES_01.zip",
+      "sha256": "d5d5ba1c21177fb0f0d532f746970a5ef44157d1107bd8988009f7571bd75906",
+      "byteLength": 190625583
+    }
+  }
 }

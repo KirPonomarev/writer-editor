@@ -1,3 +1,16 @@
+# Resume — Fixed Atlas native full-license input
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: SOURCE_NEGATIVE_TESTS_VERIFIED_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: 355a50e39d1f76a90f037815a90f4d71ff9b8677
+TASK: YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105
+
+PR2200 delivery is closed; R13 source/full-text materials are independently qualified, not a distribution permit. Work alone on codex/atlas-native-source-notices-20261105 in the existing registered worktree. Declarationc98d71762e3390debbc4e3dc22929d8cf52008eef1f633532da7858a9514aaa5 admits19exact paths; clean-branch preflightb8b232061254873719ee4ebbf18a24e4d0b46c8d8a6730a46ecc259f88ccd363 preceded task/factual edits. Preserve original four archives,5941resource entries, worker/models,18old profiles/apps, raw failures and historical contracts.
+
+CURRENT: taskE0passed; identical frozen whole14cases pass after genuine original12pass/2fail RED. The original3664byte test prefix and four manifest inputs remain exact; source correction is bounded. NEXT: freeze current metadata/candidate, obtain exact assembly/native admissions and prove the actual six-notice artifact before full required guarded delivery. A real rebuilt app/native/cold and all required guarded delivery/merged checks remain mandatory. Full Deep/all17/public distribution are unaccepted; Word/nativeOfficePAUSED; BlackBox after fullMac.
+
+--- Previous observed states retain their complete original bytes below ---
+
 # Resume — M7 Atlas scene-analysis proof is retained
 
 DOCUMENT_CLASS: FACTUAL_STATUS

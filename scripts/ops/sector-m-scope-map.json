@@ -560,7 +560,8 @@
       "src/main/atlasLanguageAnalysisPort.cjs",
       "src/main/atlasLanguageAnalysisWorker.py",
       "src/main/atlasLanguageResourcesV1.json",
-      "test/unit/atlas-language-resource-builder.test.js"
+      "test/unit/atlas-language-resource-builder.test.js",
+      "docs/tasks/2026-11-05--atlas-native-source-notices.md"
     ]
   },
   "allowPrefixByPhase": {
