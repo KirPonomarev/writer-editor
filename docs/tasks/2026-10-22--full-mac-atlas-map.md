@@ -1,3 +1,17 @@
+# CURRENT — authored Atlas relationships follow closed Matrices delivery
+
+TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor.
+BINDING_BASE_SHA: 04d81e5631778bb6bbabd57238ec1c412f09291f
+STATUS: AUTHORED_ASSOCIATIONS_ADMITTED_TEST_FIRST_NO_PRODUCT_ACCEPTANCE
+
+Matrices delivery PR2206 is bounded CLOSED on exact M14 04d81e56, closureed0f5be2, schema-valid report003f3831:20candidate/20merged CI,698 relevant merged TAP,actual14 merged native observations and31 retained closed profiles. Original6moderate dev findings/59uncovered default skips and every failure/source/profile remain; this is not full Mac/all15/four/all17 qualification.
+
+Current P17 outcome: one explicit saved-source authored relationship, correction/retraction with retained history, immutable dossier/source navigation and real cold proof. Current registry has no such writer; WP500/book modules are pure/unwired. Declaration29e17d26/preflight163f2a2e/admissionef2dcb1a bind39paths before edits,source10091/profiles31/three old apps held. No corrected-source/native/feature acceptance yet. Full V6/DNA5/all17 stays OPEN;Office PAUSED,BlackBox after fullMac. New native roots/launches need separate admission.
+
+Existing17row/12stage/15cell/four-projection scope tables remain unchanged. Continue the one authored-associations task;no new tracker or release authority.
+
+--- All previous task/status bodies remain complete and historical below ---
+
 ## CURRENT — source-scope Matrices native observed; delivery remains pending
 
 One observation/co-occurrence outcome only: actual C0 e584022f app43.8.4/ASAR15d14a8b supports explicit book/saved scene/saved fragment, including real empty/stale/unsaved refusal and keyboard/Save/Quit/cold. Native independent reader1fba0024 and closed30baseline793811dc retain source/Atlas/tree bytes and original fixture extra-empty-draft deviation421a1053. Whole affected1697 source cases pass raw59fe270a. These are three source controls, not authored semantic relations or completed15cells/four projections/all17.

@@ -1,3 +1,16 @@
+# CURRENT HANDOFF — authored Atlas relationships
+
+TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor.
+BASE: 04d81e5631778bb6bbabd57238ec1c412f09291f
+BRANCH: codex/atlas-authored-associations-20261106
+STATE: OWN_WIP_CORE_AND_MAIN_35_OF_35_UI_NATIVE_DELIVERY_PENDING
+
+Resume from the implemented Core/Main route: whole frozen35passes,0skip/todo/fail,actual process86abf599;first actual RED35/33assertion failures be29542c and all original methods/errors stay retained. Exact source-stage2e556c39 binds this uncommitted proof. It is finite Main/Kernel/filesystem evidence,not native/app acceptance. TaskE098eadfb4 and39path declaration29e17d26/preflight163f2a2e/admissionef2dcb1a precede all edits;own scratch15aoi__o.
+
+NEXT: finish retained Relation author controls and exact saved-source navigation;then focused guards,early separately admitted actual app/cold and the one mandatory delivery chain. See CONTEXT.md for predecessor/full-Mac boundaries and2026-11-06--atlas-authored-associations.md for scope/acceptance. Matrices is closed;full V6/all17 remains OPEN.
+
+--- Older pending handoffs below are historical; do not replay closed Matrices delivery ---
+
 ## CURRENT HANDOFF: same Matrices delivery, C0 native completed before remaining expensive gates
 
 Sole task remains YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106, source C0 e584022f, original delivery/rollback M13. Whole affected1697 pass raw59fe270a; native AUTHOR/cold actual waits0, own profile30, raw native oracle1fba0024, complete closed30baseline793811dc. All original Atlas/tree/four scene bytes are literal after Undo/Save and cold; all original29 profiles and old apps held. Preserve fixture prediction3-versus-actual4 empty-draft deviation421a1053.

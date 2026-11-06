@@ -783,3 +783,17 @@ YALKEN_WRITER_CUSTOM_FONT_SIZE_INPUT_20261106; base cb0db8c9155f35a88db35928fa1e
 
 
 PROCESS_SEQUENCE_RECOVERY_20261106: Primary human39cd7a45 at2026-11-02T09:01:25.650Z accepted the preceding five process corrections808768fc, including one minimal measured test-cost optimization. Read directly from the original native message rows, not inferred from a monitor quote. The outstanding priority was delivered before font-size admission, yet this product write began first; record the sequencing deviation. Preserve every current source/WIP/branch/error/profile and healthy process. Close this one already-started font-size chain with all mandatory native/software/normal delivery proofs, then execute exactly one separately admitted causal optimization and comparable ordinary required-run effect before another product contour. No coverage/serial/gate/timeout/buffer waiver, cache/framework/service/sharding/tracker/cleanup or new infrastructure series; main effort then returns to finite V6/DNA5 user outcomes/all17 mapping. No canon override or human signature is created.
+
+
+### YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106 — prospective bounded author-data/profile compatibility
+
+At M14,new optional versioned authoredAssociations records and strict packaged Darwin V13 are in the direct-owner P17 scope. Atlas schema/defaults/V1-V12,frozen WP500/book/surface semantics,old records/unknown fields and all17qualification/authority stay protected. New command reuses the canonical Kernel/atomic manifest;no private writer. Payload/source/record CAS,history/stale/COPY/N-1 controls and actual native/delivery are required;not accepted at this entry.
+
+If unchanged existing current callers fail solely because the trusted getter legitimately advances V12->V13,admission39paths permits only exact historical constructor continuation for the new factory and literal current profile/schema/one-command expectations. Preserve every old assertion/case body/predicate and prove a narrow inverse plus complete unchanged-file execution;no arbitrary fixture bypass. This prospective compatibility allowance follows current owner autonomy and cannot approve an unrelated runtime/guard change. Original failures remain. No canon exception is taken for frozen authority or release readiness.
+
+# 2026-11-06 — Authored associations current-profile caller compatibility
+
+TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; original M14 base and39path scope unchanged.
+CAUSE: actual whole three-file graph2122cases:1739pass,383fail,0skip/todo/cancel; raw61a30fec and complete failure index retained.346 release-cut cases fail first at stale source pins;37 WP307 cases expose stale source/current profile expectations or historical constructor adapters that do not intercept the new factory.
+EXCEPTION: add only the V13 factory-name adapter to each existing historical V7–V11 selector, and replace literal current profile/schema/34→35 plus the one new command expectation. Keep every old factory, historical profile/VM meaning, original behavior assertion, negative case, query denominator and timeout unchanged. Current source tables are refreshed separately from actual bytes through the normal strict validator.
+ROLLBACK: inverse edits reconstruct exact M14 caller bytes; source binding changes retain original files and tuples. No native, release or delivery acceptance from this correction.

@@ -1,3 +1,17 @@
+# CURRENT — Matrices closed; authored Atlas relationships admitted
+
+TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor.
+BINDING_BASE_SHA: 04d81e5631778bb6bbabd57238ec1c412f09291f
+STATUS: AUTHORED_ASSOCIATIONS_ADMITTED_TEST_FIRST_NO_PRODUCT_ACCEPTANCE
+
+Matrices delivery PR2206 is bounded CLOSED on exact M14 04d81e56, closureed0f5be2, schema-valid report003f3831:20candidate/20merged CI,698 relevant merged TAP,actual14 merged native observations and31 retained closed profiles. Original6moderate dev findings/59uncovered default skips and every failure/source/profile remain; this is not full Mac/all15/four/all17 qualification.
+
+Current P17 outcome: one explicit saved-source authored relationship, correction/retraction with retained history, immutable dossier/source navigation and real cold proof. Current registry has no such writer; WP500/book modules are pure/unwired. Declaration29e17d26/preflight163f2a2e/admissionef2dcb1a bind39paths before edits,source10091/profiles31/three old apps held. No corrected-source/native/feature acceptance yet. Full V6/DNA5/all17 stays OPEN;Office PAUSED,BlackBox after fullMac. New native roots/launches need separate admission.
+
+Next: freeze actual Main/Core causal refusal, then the bounded canonical command/source/history route.
+
+--- Earlier status bodies remain complete and historical below ---
+
 ## CURRENT: Matrices C0 native observed; same-chain namespace registration correction
 
 C0 e584022f has whole29-file1697 source cases verified by raw reader59fe270a. Actual43.8.4 app/ASAR15d14a8b passed source-bound book/scene/fragment, empty/stale/unsaved refusal, keyboard/grid and ordinary Save/Quit/cold observations; independent raw native/data reader1fba0024 preserves every original Atlas/tree/four scene byte and closed30baseline793811dc. Two actual native waits return0. The original fixture3-source prediction differed because an empty default draft was opened; pre-probe source binding421a1053 explicitly retains the actual4-source universe and original mismatch.

@@ -181,6 +181,7 @@ function manualMapProfileAccess(profile, selected, optional) {
 }
 
 function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord = null } = {}) {
+  if (isWriterAtlasAssociationsProfileCandidate(profile)) return evaluateAtlasAssociationsAccess(profile, commandId, productCommandRecord);
   if (isWriterSceneLanguageTagProfileCandidate(profile)) return evaluateSceneLanguageTagCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterIdeaMeaningAuthoringProfileCandidate(profile)) return evaluateIdeaMeaningAuthoringCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasEntityCorrectionsProfileCandidate(profile)) return evaluateEntityCorrectionsCommandAccess(profile, commandId, productCommandRecord);
@@ -216,6 +217,7 @@ function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRe
 }
 
 function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
+  if (isWriterAtlasAssociationsProfileCandidate(profile)) return evaluateAtlasAssociationsAccess(profile, queryId);
   if (isWriterSceneLanguageTagProfileCandidate(profile)) return evaluateSceneLanguageTagQueryAccess(profile, queryId);
   if (isWriterIdeaMeaningAuthoringProfileCandidate(profile)) return evaluateIdeaMeaningAuthoringQueryAccess(profile, queryId);
   if (isWriterAtlasEntityCorrectionsProfileCandidate(profile)) return evaluateEntityCorrectionsQueryAccess(profile, queryId);
@@ -661,7 +663,55 @@ function evaluateSceneLanguageTagQueryAccess(profile, queryId) {
     OPTIONAL_QUERY_IDS.some(query => id === query || id.startsWith(query + '.')));
 }
 
+// V1-V12 are historical exact projections. V13 adds one author command;
+// it retains every inherited deny and grants no publication/tier authority.
+const WRITER_ATLAS_ASSOCIATIONS_PROFILE_ID = 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13';
+const WRITER_ATLAS_ASSOCIATIONS_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v13';
+const WRITER_ATLAS_ASSOCIATIONS_COMMAND_IDS = Object.freeze([...WRITER_SCENE_LANGUAGE_TAG_COMMAND_IDS, 'atlas.association.record']);
+const WRITER_ATLAS_ASSOCIATIONS_QUERY_IDS = WRITER_SCENE_LANGUAGE_TAG_QUERY_IDS;
+function createWriterAtlasAssociationsProfileProjection(options = {}) {
+  const legacy = createWriterSceneLanguageTagProfileProjection(options);
+  return legacy.active ? Object.freeze({ ...legacy, profileId: WRITER_ATLAS_ASSOCIATIONS_PROFILE_ID,
+    schemaVersion: WRITER_ATLAS_ASSOCIATIONS_PROFILE_SCHEMA_VERSION, admittedCommandIds: WRITER_ATLAS_ASSOCIATIONS_COMMAND_IDS }) : legacy;
+}
+function isWriterAtlasAssociationsProfileCandidate(profile) {
+  if (!profile || typeof profile !== 'object') return false;
+  const value = key => Object.getOwnPropertyDescriptor(profile, key)?.value;
+  return normalizeIdentity(value('profileId')).startsWith(WRITER_ATLAS_ASSOCIATIONS_PROFILE_ID)
+    || normalizeIdentity(value('schemaVersion')).startsWith(WRITER_ATLAS_ASSOCIATIONS_PROFILE_SCHEMA_VERSION)
+    || Array.isArray(value('admittedCommandIds')) && value('admittedCommandIds').includes('atlas.association.record');
+}
+function isActiveWriterAtlasAssociationsProfile(profile) {
+  if (!isPlainObject(profile) || !isWriterAtlasAssociationsProfileCandidate(profile)) return false;
+  const expected = createWriterAtlasAssociationsProfileProjection({ isPackaged: true, platform: 'darwin' });
+  return Reflect.ownKeys(profile).length === Reflect.ownKeys(expected).length && Reflect.ownKeys(expected).every(key => {
+    const d = Object.getOwnPropertyDescriptor(profile, key);
+    if (!d || !d.enumerable || !Object.hasOwn(d, 'value')) return false;
+    const value = d.value;
+    return Array.isArray(expected[key]) ? Array.isArray(value) && value.length === expected[key].length
+      && Reflect.ownKeys(value).length === value.length + 1 && expected[key].every((id, index) => {
+        const item = Object.getOwnPropertyDescriptor(value, String(index)); return item?.enumerable && Object.hasOwn(item, 'value') && item.value === id;
+      }) : value === expected[key];
+  });
+}
+function evaluateAtlasAssociationsAccess(profile, identifier, productCommandRecord) {
+  const query = productCommandRecord === undefined, id = normalizeIdentity(identifier);
+  const selected = query ? WRITER_ATLAS_ASSOCIATIONS_QUERY_IDS.includes(identifier)
+    : WRITER_ATLAS_ASSOCIATIONS_COMMAND_IDS.includes(identifier) && isPlainObject(productCommandRecord)
+      && productCommandRecord.id === identifier && productCommandRecord.domain === identifier.split('.')[0];
+  const optional = query ? OPTIONAL_QUERY_IDS.some(value => id === value || id.startsWith(value + '.'))
+    : isOptionalWriterLocalCommand(identifier, productCommandRecord) || OPTIONAL_PRODUCT_DOMAINS.some(domain => id.startsWith(domain + '.'));
+  const allowed = isActiveWriterAtlasAssociationsProfile(profile) && (!optional || selected);
+  return Object.freeze({ allowed, reason: allowed ? '' : WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED, profileId: WRITER_ATLAS_ASSOCIATIONS_PROFILE_ID });
+}
+
 module.exports = Object.freeze({
+  WRITER_ATLAS_ASSOCIATIONS_PROFILE_ID,
+  WRITER_ATLAS_ASSOCIATIONS_PROFILE_SCHEMA_VERSION,
+  WRITER_ATLAS_ASSOCIATIONS_COMMAND_IDS,
+  WRITER_ATLAS_ASSOCIATIONS_QUERY_IDS,
+  createWriterAtlasAssociationsProfileProjection,
+  isActiveWriterAtlasAssociationsProfile,
   WRITER_SCENE_LANGUAGE_TAG_PROFILE_SCHEMA_VERSION,
   WRITER_SCENE_LANGUAGE_TAG_PROFILE_ID,
   WRITER_SCENE_LANGUAGE_TAG_COMMAND_IDS,

@@ -135,8 +135,8 @@ const ATLAS_SURFACE_CONTRIBUTIONS = Object.freeze([
     slotId: 'rightRail.context.atlas.relationDossier',
     hostKind: 'rightRail',
     stateClass: 'DERIVED_STATE',
-    commandIds: ['atlas.observation.suppress', 'atlas.observation.reassign', 'atlas.evidence.reattach'],
-    capabilityIds: ['cap.atlas.observation.suppress', 'cap.atlas.observation.reassign', 'cap.atlas.evidence.reattach'],
+    commandIds: ['atlas.observation.suppress', 'atlas.observation.reassign', 'atlas.evidence.reattach', 'atlas.association.record'],
+    capabilityIds: ['cap.atlas.observation.suppress', 'cap.atlas.observation.reassign', 'cap.atlas.evidence.reattach', 'cap.atlas.association.record'],
   },
   {
     surfaceKey: 'matrices',

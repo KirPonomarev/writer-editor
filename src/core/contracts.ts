@@ -236,9 +236,56 @@ export type AtlasContinuityFactState = {
 
 export type AtlasContinuityFactLedgersState = Record<AtlasContinuityLedgerKindState, Record<string, AtlasContinuityFactState>>
 
+export type AtlasAuthoredAssociationSourceState = {
+  schemaVersion: "atlas.authoredAssociationSource.v1"
+  anchorId: string
+  sceneId: string
+  startOffset: number
+  endOffset: number
+  quote: string
+  quoteHash: string
+  sceneTextHash: string
+  sceneRevision: string
+  manifestRevision: string
+}
+export type AtlasAuthoredAssociationRevisionState = {
+  revision: number
+  commandSeq: number
+  status: "active" | "retracted"
+  associationKind: string
+  direction: "DIRECTED" | "UNDIRECTED"
+  sourceEntityId: string
+  targetEntityId: string
+  scopeKind: "BOOK" | "SCENE" | "FRAGMENT"
+  source: AtlasAuthoredAssociationSourceState
+}
+export type AtlasAuthoredAssociationState = {
+  schemaVersion: "atlas.authoredAssociation.v1"
+  id: string
+  projectId: string
+  source: "author"
+  revisions: AtlasAuthoredAssociationRevisionState[]
+}
+export type AtlasAssociationCommandPayload = {
+  projectId: string
+  associationId: string
+  expectedManifestRevision: string
+  expectedAssociationHash: string
+} & ({ operation: "retract" } | {
+  operation: "record"
+  associationKind: string
+  direction: "DIRECTED" | "UNDIRECTED"
+  sourceEntityId: string
+  targetEntityId: string
+  scopeKind: "BOOK" | "SCENE" | "FRAGMENT"
+  source: { sceneId: string; startOffset: number; endOffset: number; sceneTextHash: string }
+  expectedSceneRevision: string
+})
+
 export type AtlasAuthorDataState = {
   schemaVersion: "atlas.author.v1"
   entities: Record<string, AtlasEntityState>
+  authoredAssociations?: Record<string, AtlasAuthoredAssociationState>
   decisions?: Record<string, AtlasDecisionState>
   suppressions?: Record<string, AtlasSuppressionState>
   entityOperations?: Record<string, AtlasEntityMergeOperationState>
@@ -375,6 +422,10 @@ export type CoreCommand =
   | {
       type: "atlas.entity.create"
       payload: { projectId: string; entityId: string; name: string; entityKind?: string }
+    }
+  | {
+      type: "atlas.association.record"
+      payload: AtlasAssociationCommandPayload
     }
   | {
       type: "atlas.alias.add"

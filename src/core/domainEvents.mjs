@@ -105,6 +105,7 @@ const CORE_REDUCER_COMMANDS = Object.freeze({
   ATLAS_CALENDAR_DEFINE: 'atlas.calendar.define',
   ATLAS_SCENE_TEMPORAL_ANCHOR_SET: 'atlas.sceneTemporalAnchor.set',
   ATLAS_CONTINUITY_FACT_RECORD: 'atlas.continuityFact.record',
+  ATLAS_ASSOCIATION_RECORD: 'atlas.association.record',
   IDEA_CREATE: 'idea.create',
   IDEA_ORIGIN_LINK_ADD: 'idea.originLink.add',
   MEANING_PROMOTE: 'meaning.promote',
@@ -902,6 +903,8 @@ function commandFacts(commandType, payload) {
         },
         ...projectionInvalidated(payload, 'atlasContinuityDecisionCommitted', ['continuity']),
       ];
+    case CORE_REDUCER_COMMANDS.ATLAS_ASSOCIATION_RECORD:
+      return projectionInvalidated(payload, 'atlasAuthoredAssociationChanged', ['atlas']);
     case CORE_REDUCER_COMMANDS.IDEA_CREATE:
     case CORE_REDUCER_COMMANDS.IDEA_ORIGIN_LINK_ADD:
     case CORE_REDUCER_COMMANDS.MEANING_PROMOTE:
