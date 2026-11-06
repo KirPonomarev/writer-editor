@@ -6,6 +6,8 @@ NATIVE: new own33 C2/ASAR406c502b, all1484 official ASARabd943f7, AUTHOR/cold ac
 
 NEXT: metadata source admissiona125d643/preflightf6c729bb; current inventory60a7d509/cert945a3fb5/DATA30ada56e fail concrete old pins/missing memberships. Four exact new paths only, standard inventory/C2A/RCV and append-only current witness records, complete inherited current successor/selection; preserve old arrays/checkers/history. Then immutable candidate/all required gates/guarded push/PR/all20CI/merge/exact merged software and fresh native. All15/four/all17 remainOPEN; Office PAUSED, BlackBox after fullMac. No independent infrastructure/optimization series.
 
+CURRENT_CORRECTION: C3 inventory1627/C2A/currentpolicy/487certificate pass; DATA8ad019f4 exposes two existing original40scope paths absent from initial four-new-file membership set: contracts.ts/domainEvents.mjs. Declaration09/preflight admit exact two additions and complete950/800/489 current successor, preserving C3 delta/all predicates and all1493C2native inputs. No full software/CI/merged/native completion yet.
+
 --- Older pending handoffs below are historical; do not replay closed Matrices delivery ---
 
 ## CURRENT HANDOFF: same Matrices delivery, C0 native completed before remaining expensive gates

@@ -11,6 +11,8 @@ Current cut69pins remainsVALID/NOT_READY, all17qualification UNKNOWN. Original21
 
 NEXT: complete current inventory/C2A/RCV/source namespace/append-only witnesses, freeze delivery candidate, run all required original software gates and normal guarded PR/CI/merge/exact merged software/new native.
 
+CURRENT_CORRECTION: C3 inventory1627/C2A/currentpolicy/487certificate pass; DATA8ad019f4 exposes two existing original40scope paths absent from initial four-new-file membership set: contracts.ts/domainEvents.mjs. Declaration09/preflight admit exact two additions and complete950/800/489 current successor, preserving C3 delta/all predicates and all1493C2native inputs. No full software/CI/merged/native completion yet.
+
 --- Earlier status bodies remain complete and historical below ---
 
 ## CURRENT: Matrices C0 native observed; same-chain namespace registration correction

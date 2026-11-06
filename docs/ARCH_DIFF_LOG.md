@@ -1,3 +1,11 @@
+# 2026-11-06 — Authored-association existing source-contract memberships
+
+TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; original M14 rollback and40source paths unchanged.
+BASE: clean C3 b76db7a6a3259f7827b7f0649793b03a49d8edd6; declaration09/preflight and exact missing-path admission precede this correction.
+REASON: real C3 inventory/C2A/current policy/487certificate pass, but DATA8ad019f4 refuses SHARED_UNADMITTED_DELTA. Exact fixed-baseline diff minus948admitted paths yields only src/core/contracts.ts and src/core/domainEvents.mjs, both already explicitly authorized/implemented in original40path scope. Initial four-new-file membership assumption was incomplete.
+CHANGE: add only these two existing contract paths to DATA admission and runtime repair/current inherited certificate bindings,950/800/489. Append a complete new current successor while preserving C3 and every earlier delta/function byte. Keep fixed DATA baseline, all predicates/tests/limits and technical registry history; no native or product write. Standing delegation covers necessary technical current SHA witnesses.
+ROLLBACK: same single authored-association outcome; retain failed C3/8ad019f4 and all source/app/profile/evidence. All1493 actual C2 native inputs and closed33profiles/five apps stay protected. Full current gates/normal delivery/exact merged native remain required; no fullMac/all17 claim.
+
 # 2026-11-06 — Authored-association native source availability
 
 TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; original M14 delivery/rollback unchanged.

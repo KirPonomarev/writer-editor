@@ -955,7 +955,9 @@
     "src/core/atlas-authored-associations-v1.mjs",
     "src/derived/atlas/deriveAtlasAuthoredAssociations.mjs",
     "test/unit/atlas-authored-associations.test.js",
-    "docs/tasks/2026-11-06--atlas-authored-associations.md"
+    "docs/tasks/2026-11-06--atlas-authored-associations.md",
+    "src/core/contracts.ts",
+    "src/core/domainEvents.mjs"
   ],
   "protectedFiles": [
     {
@@ -1180,7 +1182,7 @@
   "qualifiedRuntimeRepair": {
     "id": "DOCX_IMPORT_PREVIEW_REFERENCE_REPAIR_V1",
     "bindingBaseSha": "0a45daf438c778143afad28ba02b519393a11f9b",
-    "scope": "Main-owned preview reference transport and bounded recoverable DOCX create transaction; real fenced manifest authority, v3 durable receipt, retained staging-inode ownership witnesses and owned resource recovery. Preserve all raw preservation oracles and IPC limits; runtime changes require fresh native evidence, no historical PASS carry-forward. Existing Word book Undo/Redo is prepared by Core in one private prewrite invocation (WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015); all final source/lease/CAS checks, model regeneration, journal/recovery and independent readback remain. Exact task admission and this policy/executable pair must be delivered atomically; no native acceptance. Same authored-association delivery YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106 adds only explicit source-bound Core/Kernel author intent and read-only dossier: current C2 9058b505 native AUTHOR/cold and independent681212f8 precede source-table closure. Four exact memberships only; retain every prior predicate/history/source/profile, no cell/17-row/full-Mac/publication acceptance.",
+    "scope": "Main-owned preview reference transport and bounded recoverable DOCX create transaction; real fenced manifest authority, v3 durable receipt, retained staging-inode ownership witnesses and owned resource recovery. Preserve all raw preservation oracles and IPC limits; runtime changes require fresh native evidence, no historical PASS carry-forward. Existing Word book Undo/Redo is prepared by Core in one private prewrite invocation (WORD_HISTORY_PRIVATE_PREPARATION_MAC_20261015); all final source/lease/CAS checks, model regeneration, journal/recovery and independent readback remain. Exact task admission and this policy/executable pair must be delivered atomically; no native acceptance. Same authored-association delivery YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106 adds only explicit source-bound Core/Kernel author intent and read-only dossier: current C2 9058b505 native AUTHOR/cold and independent681212f8 precede source-table closure. Four exact memberships only; retain every prior predicate/history/source/profile, no cell/17-row/full-Mac/publication acceptance. Actual C3 DATA refusal additionally locates two existing changed source contracts contracts.ts/domainEvents.mjs within the same original40path scope; include and pin both without changing the fixed baseline, checker predicates, product runtime or earlier memberships.",
     "sourceBindings": [
       {
         "path": "src/main.js",
@@ -2428,7 +2430,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "64e18d718801d04a055d8b764eab485ab0d09b2928b76a210ebee5c6129714ad"
+        "sha256": "9e3f0da708a923fa5018a4a3ea7490e9cbc00431257c35b9efc8f16797cc4644"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2876,11 +2878,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "368f5a1e7374af160852451dcd6197c8fb2eb5596e26304c6df049246dc29c43"
+        "sha256": "cc286b1dd79602d07d793934ee0e84fccfe58a9baaec1ee307c29168e37ac121"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "f98071c00ffb38bc1536280d4d0c536fd8b2f835dab592ac73b575e56a52054b"
+        "sha256": "dd63ad0b028c9ac07dc2675a8474f1e044b01be03fe143bab8c9f4cfd9ea83f2"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -4372,7 +4374,15 @@
       },
       {
         "path": "docs/tasks/2026-11-06--atlas-authored-associations.md",
-        "sha256": "1543c91f54e246b096b79d7a732b7997b9a692024e203bcaacf21788cc9280f8"
+        "sha256": "510a6280b3f99db05de5c26a41170823993d2c291dd6a810749d09431609a7fc"
+      },
+      {
+        "path": "src/core/contracts.ts",
+        "sha256": "866efeb879f4c88c168cf1d7712236edb753f69ad4784cab6f6eb4779ed70b7a"
+      },
+      {
+        "path": "src/core/domainEvents.mjs",
+        "sha256": "2c9f21ec5a07702f3e9df95a3f71f0cb35022bf93120628cc0459a019cc8cfd5"
       }
     ],
     "followupRepair": {
