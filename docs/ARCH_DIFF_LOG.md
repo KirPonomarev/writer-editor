@@ -1,3 +1,12 @@
+# 2026-11-06 — Same-PR historical Git fault-adapter compatibility
+
+TASK: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106
+BASE: C0 3e8b2692b3aa570d438ed9a1c158ae3717069093; original delivery base M12 unchanged.
+REASON: CI early admission precheck and complete direct-consumer RED expose three legacy injectors that search only the first argument after five queries became three. The intended wrong-tree and inventory faults were not injected; no executor predicate failed to enforce a supplied fault.
+EXCEPTION: standing owner authority for autonomous necessary development covers exactly three test-adapter spans plus actual-injection count assertions. This revises the task's original every-test-byte promise only for those spans. Preserve every old title, seven hostile modes, refusal assertion and all other bytes; support both old/new Git layouts. Frozen40 OPS tests,54 pin tuples,40 mutant definitions, runner/limits and all product inputs remain literal. Scope21/budget700 and native exclusion are independently declared5b142b89 and preflighted13c58aed before edits.
+PROOF: retain failed C0 CI/log7d70b913 and full five-consumer RED068bfa74; freeze exact before/after spans863da714. Whole affected GREEN and original-executor counterfactual must follow. All current-candidate mandatory gates remain required; no skip, waiver or historical evidence relabeling.
+ROLLBACK: revert this same bounded batching outcome and its three adapter changes together; retain every original source commit, failure, app, profile and raw history. No independent performance/infrastructure series.
+
 # 2026-11-06 — One previously approved test-cost correction
 
 TASK: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106

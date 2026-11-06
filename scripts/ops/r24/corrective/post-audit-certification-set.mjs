@@ -147231,19 +147231,19 @@ const R24_INTEROP_ONE_TEST_COST_HISTORICAL_GIT_READS_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "010b4cd912e3cf64f0a123a66ce585cd3c64fe0e29b51471050e17e79b1229ec"
+      "sha256": "9e364729c1066ce560718b95300f177cdcaf779409f4d98aa1d7e8d802a72e76"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "4041cb6ac4dc16043f813db5c25f2b1bb0789f40da0e8036aa567bea43dbdce1"
+      "sha256": "f4b2de00465dbe35ff1c8f4f5748b424c3482f7cdd0670d38fe56e7e1e8ac3d4"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "563db2bae9e26f8eeb86e5fc1962c891a191eadeca8fdd453e021c702524e491"
+      "sha256": "758700d14dede12b0c3d6c45a4c9588effc0bdfd79c64c02e8e5201621cdb458"
     },
     {
       "path": "docs/ARCH_DIFF_LOG.md",
-      "sha256": "d069e1cd51a7ba44e5c609a5414c28deae0be045d815a4d5da237d405487ede6"
+      "sha256": "5b695ea713eb2897bd5a59deadee2c8c1689ba6d62725b6016174ea9fa442dc7"
     },
     {
       "path": "src/product/stage10ProductWiring.mjs",
@@ -147251,11 +147251,11 @@ const R24_INTEROP_ONE_TEST_COST_HISTORICAL_GIT_READS_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "8a313d5a8b1a0a137db1c08e946eb07e88b404a7d5b155c9e720df283822587a"
+      "sha256": "d92c6a30d912f1a65ca3fb712ac4f532fc995bcb4d66a293f17c607f3e897f04"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "eaca46416db84d9f187bd1654e57b1958e5aa97b189cd5d56e29beea9190575f"
+      "sha256": "ddaeb179d8cb1a57384fa01dd01bfca1dfe8e56118276ae4331fc747ea6d2306"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -147271,7 +147271,7 @@ const R24_INTEROP_ONE_TEST_COST_HISTORICAL_GIT_READS_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "f8814fb763c4eba36358c589baf9485652dc1df85405a83103ab31f6c8d862bf"
+      "sha256": "6edb8856637f774ef121d165d52b17d114319328992d0e0193e6c5c7a0398182"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
@@ -147319,11 +147319,11 @@ const R24_INTEROP_ONE_TEST_COST_HISTORICAL_GIT_READS_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "6bc06b064dde7e98ff916121b8ffa7b5fadc170683c961c29b89e8ea95f0e7bc"
+      "sha256": "de2566945935df4dff0a6f12b0a6b70debeceae94eeac8902c8cb473505da087"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "f7ce6d0400dc49b3889537247c4a4e14f5f6264f226946ca193d5013d124092b"
+      "sha256": "00f279d9c932a3afe8e7547da1f3784c54ae21f512329dffdfaa25c68a54cfb3"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -149119,13 +149119,25 @@ const R24_INTEROP_ONE_TEST_COST_HISTORICAL_GIT_READS_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-06--one-test-cost-historical-git-reads.md",
-      "sha256": "038896e9b045776299a80a8c01b58553e662f401b8d619aeb7463704cc641861"
+      "sha256": "7ac114d94f8022c5d3a3bf0b3fb3263fcebbda8da8d152c6f2885cf748ef5020"
+    },
+    {
+      "path": "test/contracts/r24-p01-admission-preparation-compatibility.contract.test.mjs",
+      "sha256": "3f1abc474d37681121455cc979599f29b1092070148a32a980b95c193d4e4317"
+    },
+    {
+      "path": "test/contracts/r24-wp601-historical-inventory-claims.contract.test.mjs",
+      "sha256": "02676ce763dd49f1e0d63c69e546ef80cc540e9041aff11ab58ead31d406107e"
+    },
+    {
+      "path": "test/contracts/r24-wp705-historical-inventory-claims.contract.test.mjs",
+      "sha256": "10632cb557aa9790c6e7512211d2a4ba50bffa24af11bd4272b863c2a78c7353"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "72959f88818c8be5d767b36d2f845b4b157f25d0f0f13e271109c638274b4e12"
+      "sha256": "ce7892181268bd406347255ba37fc5ac013f32de7507ce9422081f3da2052d2b"
     }
   ]
 });

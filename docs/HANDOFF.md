@@ -1,3 +1,16 @@
+# Resume — same PR2205 historical Git adapter correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106; sole executor.
+BASE: original M12 39a04e4d257e1a5bda5893168238f700364c71f8; current committed C0 3e8b2692, same branch/PR2205.
+STATUS: C1_ADAPTERS_64_VERIFIED_CURRENT_BINDINGS_PENDING
+
+NEXT: complete the unchanged seven-target factory with three additional existing contract paths (480 bindings), current delegated witnesses and inverse scope review; normal corrective commit without amend/rebase/force, current mandatory wave including the exact early CI precheck and all five direct callers, guarded push to the same PR, all20 CI, normal merge and exact clean merged verification. No second product/optimization contour before closure.
+
+PROOFS: C1 declaration5b142b89/preflight13c58aed, frozen patch863da714, literal inverse6955377b, whole64 GREENbeedb6a6, independent70908798 (five positive pairs/70 real typed fault observations on both layouts), original CI precheck8675663d. C0 all22/ordinary measurements40d966cf, actual failed CI/log7d70b913 and three-failure RED068bfa74 remain distinct. Four own synthetic outputs already losslessly retained/restored/read before exact isolation640461b2/8b658f6b.29 profiles/7252 app entries protected;21 paths excluded from actual native stage/ASAR. Current source is not yet an immutable C1; no old test/native result is retagged. Full V6/DNA5/all17 open; Word/nativeOffice PAUSED, Black Box after full Mac.
+
+--- Earlier C0 resume body remains literal below ---
+
 # Resume — one measured historical Git-read cost correction
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -945,7 +945,10 @@
     "docs/tasks/2026-11-06--writer-custom-font-size-input.md",
     "test/unit/sector-m-command-surface-ui-fencing.test.js",
     "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-    "docs/tasks/2026-11-06--one-test-cost-historical-git-reads.md"
+    "docs/tasks/2026-11-06--one-test-cost-historical-git-reads.md",
+    "test/contracts/r24-p01-admission-preparation-compatibility.contract.test.mjs",
+    "test/contracts/r24-wp601-historical-inventory-claims.contract.test.mjs",
+    "test/contracts/r24-wp705-historical-inventory-claims.contract.test.mjs"
   ],
   "protectedFiles": [
     {
@@ -2418,7 +2421,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "d069e1cd51a7ba44e5c609a5414c28deae0be045d815a4d5da237d405487ede6"
+        "sha256": "5b695ea713eb2897bd5a59deadee2c8c1689ba6d62725b6016174ea9fa442dc7"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2866,15 +2869,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "010b4cd912e3cf64f0a123a66ce585cd3c64fe0e29b51471050e17e79b1229ec"
+        "sha256": "9e364729c1066ce560718b95300f177cdcaf779409f4d98aa1d7e8d802a72e76"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "4041cb6ac4dc16043f813db5c25f2b1bb0789f40da0e8036aa567bea43dbdce1"
+        "sha256": "f4b2de00465dbe35ff1c8f4f5748b424c3482f7cdd0670d38fe56e7e1e8ac3d4"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "563db2bae9e26f8eeb86e5fc1962c891a191eadeca8fdd453e021c702524e491"
+        "sha256": "758700d14dede12b0c3d6c45a4c9588effc0bdfd79c64c02e8e5201621cdb458"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3414,7 +3417,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "eaca46416db84d9f187bd1654e57b1958e5aa97b189cd5d56e29beea9190575f"
+        "sha256": "ddaeb179d8cb1a57384fa01dd01bfca1dfe8e56118276ae4331fc747ea6d2306"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4322,7 +4325,19 @@
       },
       {
         "path": "docs/tasks/2026-11-06--one-test-cost-historical-git-reads.md",
-        "sha256": "038896e9b045776299a80a8c01b58553e662f401b8d619aeb7463704cc641861"
+        "sha256": "7ac114d94f8022c5d3a3bf0b3fb3263fcebbda8da8d152c6f2885cf748ef5020"
+      },
+      {
+        "path": "test/contracts/r24-p01-admission-preparation-compatibility.contract.test.mjs",
+        "sha256": "3f1abc474d37681121455cc979599f29b1092070148a32a980b95c193d4e4317"
+      },
+      {
+        "path": "test/contracts/r24-wp601-historical-inventory-claims.contract.test.mjs",
+        "sha256": "02676ce763dd49f1e0d63c69e546ef80cc540e9041aff11ab58ead31d406107e"
+      },
+      {
+        "path": "test/contracts/r24-wp705-historical-inventory-claims.contract.test.mjs",
+        "sha256": "10632cb557aa9790c6e7512211d2a4ba50bffa24af11bd4272b863c2a78c7353"
       }
     ],
     "followupRepair": {

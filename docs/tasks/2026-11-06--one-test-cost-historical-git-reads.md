@@ -5,7 +5,7 @@ TYPE: OPS_WRITE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
 BINDING_BASE_SHA: 39a04e4d257e1a5bda5893168238f700364c71f8
-STATUS: FROZEN_40_SOURCE_CASES_VERIFIED_ORDINARY_COST_AND_DELIVERY_PENDING
+STATUS: C1_ADAPTERS_64_VERIFIED_CURRENT_BINDINGS_AND_DELIVERY_PENDING
 DOCUMENT_CLASS: PROCESS
 CLAIM_BOUNDARY: one existing OPS verifier cost correction; no product/native/release acceptance.
 
@@ -27,6 +27,9 @@ Existing scripts/ops/r24/docs-claim-lint.mjs and its original939-line test file.
 
 - scripts/ops/r24/docs-claim-lint.mjs
 - scripts/ops/r24/tests/docs-claim-lint.test.mjs
+- test/contracts/r24-p01-admission-preparation-compatibility.contract.test.mjs
+- test/contracts/r24-wp601-historical-inventory-claims.contract.test.mjs
+- test/contracts/r24-wp705-historical-inventory-claims.contract.test.mjs
 - docs/tasks/2026-11-06--one-test-cost-historical-git-reads.md
 - docs/tasks/2026-11-06--writer-custom-font-size-input.md
 - docs/CONTEXT.md
@@ -54,11 +57,13 @@ EXISTING_SEAM: OPS-only read verification, not a new product feature/process/sur
 
 Validate stamp and binding SHA before all Git IO. Resolve exactly HEAD and pinned evaluation tree in one call; require exactly two lines, valid40-hex HEAD and exact tree. Keep the same merge-base ancestry call. Read the same two fixed Git blob specs in one raw concatenation, split by UTF8 byte length of the already pinned stamp and verify the full SHA256 of both slices. Wrong refs/ancestry/bytes, missing/truncated/extra data or Git error retain E_HISTORICAL_INVENTORY_BINDING. Unrelated stamp/path keeps null. No mutable cache; repeat all checks each call. Actual fixed54 pairs total at most489395B, below unchanged4MiB/15000ms.
 
-NO_RUNTIME_MUTATION_VERIFIED_BY_DECLARATION: all18 source paths are absent from actual1491 native stage inputs and1482 ASAR leaves; no product runtime creation/copy/build/launch or profile mutation is admitted. Physically verify original app7252 entries, stage1491 inputs, all29 profiles and unrelated source before/after. Mandatory test:rtk still executes its existing maintained build path without changed inputs. Native evidence is not retagged as a new execution.
+NO_RUNTIME_MUTATION_VERIFIED_BY_DECLARATION: all21 source paths are absent from actual1491 native stage inputs and1482 ASAR leaves; no product runtime creation/copy/build/launch or profile mutation is admitted. Physically verify original app7252 entries, stage1491 inputs, all29 profiles and unrelated source before/after. Mandatory test:rtk still executes its existing maintained build path without changed inputs. Native evidence is not retagged as a new execution.
 
 Ordinary BEFORE is the retained actual preceding C0 wave on the identical M12 tree: E0193.443s,WP104406.600s,default1701.939s; frozen original receipts/raw streams are the oracle, not this narrative. Obtain a comparable actual AFTER using the unchanged official entrypoints, cases and mutation meanings. One sample is bounded measurement, not a universal speed guarantee. Keep all old expectation arrays/predicates, append only current certification enrollment; maintain exact seven-target bindings and delegated technical witnesses.
 
-Diff budget:18 declared paths maximum; at most700 substantive source/test/document lines. Canonical generated inventory/binding/certification/append-only witness rows are separately counted and proved by exact semantic/literal inverse, not arbitrary refactoring or a gate waiver. One conceptual delta, one rollback, all delivery flags true.
+Diff budget:21 declared paths maximum; at most700 substantive source/test/document lines. Canonical generated inventory/binding/certification/append-only witness rows are separately counted and proved by exact semantic/literal inverse, not arbitrary refactoring or a gate waiver. One conceptual delta, one rollback, all delivery flags true.
+
+C1 same-PR correction: C0 3e8b2692 passed all22 local rows (independent40d966cf); its exact ordinary E0/WP104/default reductions are9.6/8.3/4.7percent, one sample each. PR2205 CI42177876136 failed in the early inventory precheck: three legacy hostile Git injectors locate only args[1], so batched tree/inventory requests bypass their intended injection. Original CI log7d70b913 and complete five-consumer local RED068bfa74 preserve all three failures; the obsolete failed CI was cancelled, never accepted. Declaration5b142b89/preflight13c58aed admit only those three adapter spans and added exact injection-count assertions. Frozen patch863da714 supports both separate/batched requests, changes one selected ref/blob, and preserves every prior test title/mode/refusal assertion and all other file bytes. This is the sole narrow exception to the original every-test-byte promise; the frozen40 OPS test file e8b0d3e6 and executor remain literal. Full current C1 gates and normal delivery are still required; original C0 evidence is not retagged.
 
 ## IMPLEMENTATION_STEPS
 

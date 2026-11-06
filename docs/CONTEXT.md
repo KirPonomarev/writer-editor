@@ -1,3 +1,15 @@
+# Current — PR2205 legacy Git fault-adapter compatibility
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106; sole executor, same delivery chain.
+STATUS: C1_ADAPTERS_64_VERIFIED_CURRENT_BINDINGS_AND_DELIVERY_PENDING
+
+C0 3e8b2692 completed all22 local rows with independent40d966cf and ordinary one-sample E0/WP104/default reductions9.6/8.3/4.7percent. Its PR2205 CI42177876136 failed three old fault-injector assumptions; original log7d70b913 and whole five-file RED068bfa74 remain, obsolete run cancelled. Declaration5b142b89/preflight13c58aed admit three exact adapter changes; all prior cases/assertions and frozen40 OPS bytes remain. Whole six-file GREEN64 has beedb6a6; independent70908798 binds70 typed fault observations across original/current executors and unchanged five positive pairs. Exact original three-file CI precheck8675663d now exits0.
+
+Next maintain480 current bindings/technical witnesses and freeze C1, then execute current mandatory local/CI/merge/merged verification. Original C0 evidence is not retagged. All21 allowed paths are outside1491 native inputs/1482 ASAR leaves;29 profiles and7252 app entries stay protected. Full Mac/all17 remain open; after this same correction return directly to V6/DNA5 product outcomes.
+
+--- Earlier C0 factual body remains literal below ---
+
 # Current — one measured historical Git-read cost correction
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -20,16 +20,27 @@ test('WP705 rejects 18 hostile historical object mutations with no future or amb
   let rejected=0;
   for(const pin of pins){const input=inputs(pin);
     for(const mode of ['tree','ancestry','missing-stamp','missing-target','stamp-bytes','target-bytes','head']){
+      let injected=0;
       const git=(rootDir,args)=>{
-        if(mode==='tree'&&args[1]===pin.evaluationSha+'^{tree}')return Buffer.from('0'.repeat(40));
-        if(mode==='head'&&args[1]==='HEAD')return Buffer.from('not-a-sha');
-        if(mode==='ancestry'&&args[0]==='merge-base')throw Error('NOT_ANCESTOR');
-        if(args[0]==='show'){const target=args[1].endsWith(':'+inventory);
-          if(mode===(target?'missing-target':'missing-stamp'))throw Error('MISSING');
-          if(mode===(target?'target-bytes':'stamp-bytes'))return Buffer.from('future replacement bytes');
-        }return realGit(rootDir,args);
+        const ref=mode==='head'?'HEAD':mode==='tree'?pin.evaluationSha+'^{tree}':null;
+        if(args[0]==='rev-parse'&&ref&&args.slice(1).includes(ref)){
+          const values=realGit(rootDir,args).toString('utf8').trimEnd().split('\n');
+          assert.equal(values.length,args.length-1);injected++;
+          return Buffer.from(values.map((value,index)=>args[index+1]===ref?(mode==='head'?'not-a-sha':'0'.repeat(40)):value).join('\n')+'\n');
+        }
+        if(mode==='ancestry'&&args[0]==='merge-base'){injected++;throw Error('NOT_ANCESTOR');}
+        if(args[0]==='show'){
+          const inventoryFault=['missing-target','missing-inventory','target-bytes','inventory-bytes'].includes(mode);
+          const selected=args.slice(1).find(spec=>spec.endsWith(':'+inventory)===inventoryFault);
+          if(selected&&mode.startsWith('missing-')){injected++;throw Error('MISSING');}
+          if(selected&&mode.endsWith('-bytes'))return Buffer.concat(args.slice(1).map(spec=>{
+            if(spec===selected){injected++;return Buffer.from("future replacement bytes");}
+            return realGit(rootDir,['show',spec]);
+          }));
+        }
+        return realGit(rootDir,args);
       };
-      assert.throws(()=>verifyHistoricalInventoryClaim({...input,git}),/E_HISTORICAL_INVENTORY_BINDING/);rejected++;
+      assert.throws(()=>verifyHistoricalInventoryClaim({...input,git}),/E_HISTORICAL_INVENTORY_BINDING/);assert.equal(injected,1,'exactly one fault must reach the Git adapter: '+mode);rejected++;
     }
     assert.throws(()=>verifyHistoricalInventoryClaim({...input,stampBytes:Buffer.concat([input.stampBytes,Buffer.from(' ')])}),/E_HISTORICAL_INVENTORY_BINDING/);rejected++;
     assert.throws(()=>verifyHistoricalInventoryClaim({...input,binding:{...input.binding,sha256:'0'.repeat(64)}}),/E_HISTORICAL_INVENTORY_BINDING/);rejected++;
