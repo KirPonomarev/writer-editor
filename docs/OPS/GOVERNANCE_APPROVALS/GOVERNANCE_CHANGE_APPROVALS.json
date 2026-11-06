@@ -31677,6 +31677,27 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
       "approvedAtUtc": "2026-11-06T19:13:29.350850+00:00",
       "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Actual C4 whole original three-file run has22 exact stale current-profile/source-count failures;124 selected cases now actually pass after three V13 caller identity updates and66-to69 denominator correction, all old behavior/negative/historical-profile assertions retained. Current inventory and deterministic machine bindings refreshed,489-binding successor appended with every C4/historical byte inverse-preserved. All1493 actual C2 native inputs stay literal. Technical executor only; no independent human review, native retag, cell/full-Mac/17-row/signing/notary/publication acceptance."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "eac3acb5ce229d3054f1c8758308354d9090e7d1534cc4197e50af5b7cf5ec63",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T19:20:43.190835+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Actual immutable C5 DATA_RUNTIME_REPAIR_PIN refusal exposes three stale array-row hashes; update exactly these to already-committed test/C2A bytes, literal policy digest and489-binding successor/guard. Every800 current row independently matches; historical certificate bytes and all checker predicates/fixed baseline remain. WIP/previous-HEAD probe is not current acceptance. All1493 actual C2 native inputs remain literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication authority."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "59bfffdb763b8e85669a36aca3d1405f27d35ba3117136abf73437d485c73bb1",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T19:20:43.190835+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Actual immutable C5 DATA_RUNTIME_REPAIR_PIN refusal exposes three stale array-row hashes; update exactly these to already-committed test/C2A bytes, literal policy digest and489-binding successor/guard. Every800 current row independently matches; historical certificate bytes and all checker predicates/fixed baseline remain. WIP/previous-HEAD probe is not current acceptance. All1493 actual C2 native inputs remain literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication authority."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "9bc44fa8505870e586921c81b4e30af7f9fb64dbc7862fc51521764405e11109",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T19:20:43.190835+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Actual immutable C5 DATA_RUNTIME_REPAIR_PIN refusal exposes three stale array-row hashes; update exactly these to already-committed test/C2A bytes, literal policy digest and489-binding successor/guard. Every800 current row independently matches; historical certificate bytes and all checker predicates/fixed baseline remain. WIP/previous-HEAD probe is not current acceptance. All1493 actual C2 native inputs remain literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication authority."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",

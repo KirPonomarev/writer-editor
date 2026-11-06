@@ -1210,7 +1210,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "43b086d05e5ae7f1a7b47d906db74ad7da1baee5ab5d527ae58dcd43ca89bcac"
+        "sha256": "518dfc3a0e1e6e5f44cf328075eff47d65f408f7728d92bcdc213878e3d7a561"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -3426,7 +3426,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "1c5a38c949969deb6b374f69b9f45e7dc903311628378a942382b42abfcf3ad6"
+        "sha256": "158aaa0c4c9653da005e2dbb67e3bc9f3a9f499da60ca23e32f05268cb95bc26"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3454,7 +3454,7 @@
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
-        "sha256": "c2683d14d80674f7755178062148417e6d93b4713e0547446a907e0a8c8aa4d8"
+        "sha256": "70aba15025e71851f93d7777cb2b5bcb9f61ec6e6f5d55d623bac6917c4d6b23"
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
