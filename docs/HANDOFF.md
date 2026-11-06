@@ -1,11 +1,10 @@
-# CURRENT HANDOFF — early actual app for authored associations
+# CURRENT HANDOFF — rebuild corrected authored-association availability
 
-TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor.
-BRANCH: codex/atlas-authored-associations-20261106; original delivery/rollback M14 unchanged.
-SOURCE_STAGE: checkpoint7e6ff3c8 plus scope40 source correction, NOT_FULL_DELIVERY.
-PROOF: whole74 actual finite port/Core/Main/DOM7a003bd7 and independent99515ff1; normal bundle built, cheap historical/current constructors and strict cut prerequisites pass. This is no native/cold proof. Current input carrier3d348a72; all original2122/383FAIL and every method error preserved.
+TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor, branch unchanged, original M14 rollback.
+SOURCE: C1 577d0475 native finding corrected by four presentation-only lines. Declaration05a1c7a893/preflight5846dc56/admission50e4c90d; frozen76 b31b0c51 genuine RED86c145af, full affected135 GREENe44fc5d5 and independent52e9e4a. All original cases/predicates and authority guards retained; normal renderer build50fbc603. Source needs clean checkpoint and new native admission, no push yet.
+NATIVE: C1 own32 AUTHOR/cold actual0 and full lossless carriers ee12926e/5402d720, all earlier31profiles/three apps held. Two records/history3+1/exact-source navigation observed, but pair oracle1346d7db exits2 for delayed button availability; original failure remains. C1 app/profile32 is closed and protected, never reused or relabelled as the corrected build. Current source correction has no actual app proof yet.
 
-NEXT: freeze clean source, separately admit fresh own native32/root/build and actual UI create/correct/withdraw/history/exact source/dirty-stale/Save-Quit-cold with independent full saved-byte readback. Preserve31old profiles/three qualified apps. Only then full required gates and normal guarded delivery plus actual merged native. Current namespace/inventory/C2A/witness companions remain to finish; never rerun known-broken2122prerequisites or claim fullMac/all17 from this one result. See task40paths and CONTEXT.md for exact limits.
+NEXT: new own33 runtime/build/native dirty-source immediate-disable/retained-input/recovery/persistence and normal same-profile cold; then current companions and mandatory full software/guarded push/PR/CI/merge/exact merged actual native. No healthy broad replay before prerequisites or fullMac/all17 claim. Preserve all old raw failures,59uncovered skips and6moderate dev findings. See task40paths and CONTEXT.md for scope/limits.
 
 --- Older pending handoffs below are historical; do not replay closed Matrices delivery ---
 

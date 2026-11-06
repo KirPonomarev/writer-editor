@@ -1,3 +1,11 @@
+# 2026-11-06 — Authored-association native source availability
+
+TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; original M14 delivery/rollback unchanged.
+BASE: clean own C1 577d0475c9d7d787ba02257fd450ce1cd5f4cba7; scope40 declaration05a1c7a893/preflight5846dc56/admission50e4c90d.
+REASON: actual own32 AUTHOR/cold and independent1346d7db preserve two records/history/source but expose stale enabled Save appearance after scene edits. The synchronous action guard correctly refuses; native acceptance remains false.
+CHANGE: synchronize only the existing retained current form from actual markAsModified/onSetDirty. No new query, writer, timer, authority, source inference, dependency or scope expansion. Extend only this task's finite fixture to invoke these actual existing handlers; preserve every prior case/assertion and all old current/historical contracts. Whole76 RED/GREEN and a changed actual native artifact are required; old native execution is never retagged.
+ROLLBACK: same single authored-associations outcome; retain C1 app, closed32 and all earlier profiles/apps/evidence/errors. No canon exception or gate waiver.
+
 # 2026-11-06 — Atlas Matrices finite-host initial-state compatibility
 
 TASK: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106

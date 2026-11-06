@@ -24598,6 +24598,8 @@ function markAsModified() {
 
   localEditGeneration += 1;
   localDirty = true;
+  const associationDraft = typeof atlasAssociationAuthorDrafts === 'undefined' ? null : atlasAssociationAuthorDrafts.get(currentProjectId);
+  if (associationDraft && isAtlasAssociationPresentationCurrent(associationDraft)) syncAtlasAssociationForm(associationDraft);
   // R2.4 P0: every edit's generation is signaled so the main-side autosave
   // acknowledgement fence always compares against the true latest edit.
   void invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: true, generation: localEditGeneration });
@@ -28236,6 +28238,8 @@ if (window.electronAPI) {
     } else {
       localDirty = Boolean(message);
     }
+    const associationDraft = typeof atlasAssociationAuthorDrafts === 'undefined' ? null : atlasAssociationAuthorDrafts.get(currentProjectId);
+    if (associationDraft && isAtlasAssociationPresentationCurrent(associationDraft)) syncAtlasAssociationForm(associationDraft);
     updateSaveStateText(localDirty ? 'unsaved' : 'saved');
     if (!localDirty) void refreshManuscriptNoteReferences();
     void refreshVisibleCommentProjection();

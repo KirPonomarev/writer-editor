@@ -324,7 +324,8 @@ async function associationDomFixture(t, options = {}) {
   const registryModule = await import('../../src/renderer/commands/registry.mjs'), projectModule = await import('../../src/renderer/commands/projectCommands.mjs');
   const runnerModule = await import('../../src/renderer/commands/runCommand.mjs'), busModule = await import('../../src/renderer/commands/commandBusGuard.mjs');
   const registry = registryModule.createCommandRegistry(), transports = [], notices = [], queries = [], document = { activeElement: null };
-  let optionEnumerations = 0;
+  let optionEnumerations = 0, onSetDirty;
+  const saveSignals = [], treeRefreshes = [];
   const query = async (id, payload) => { queries.push({ id, payload: copy(payload) }); return f.h.query(id, payload); };
   projectModule.registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async request => {
     const invoke = () => f.h.command(request.commandId, structuredClone(request.payload));
@@ -368,9 +369,14 @@ async function associationDomFixture(t, options = {}) {
   const tree = await f.h.main.handleWorkspaceProjectTreeQuery({ tab: 'roman' }); assert.equal(tree.ok, true);
   const envelope = require('../../src/core/document-content-envelope-v1.cjs');
   const context = { document, HTMLElement: Element, HTMLButtonElement: Element, HTMLInputElement: Element, HTMLSelectElement: Element, Element,
-    window: { __PRODUCT_PROFILE: PROFILE, crypto: { randomUUID: crypto.randomUUID } },
+    window: { __PRODUCT_PROFILE: PROFILE, crypto: { randomUUID: crypto.randomUUID },
+      electronAPI: { onSetDirty(listener) { assert.equal(onSetDirty, undefined); onSetDirty = listener; } } },
     currentProjectId: f.projectId, currentDocumentId: f.sceneId, currentRightTab: 'atlas', currentAtlasSurface: 'relation',
     localDirty: false, localEditGeneration: 0, lastAckedGeneration: 0, currentTreeContentPublicationId: 'finite-owned-publication',
+    flowModeState: { active: false }, updateSaveStateText() {}, updatePerfHintText() {}, syncVisibleAuthoringSurfacesSurface() {}, scheduleAutoSave() {},
+    checkpointTiptapCommentEditIntents() {}, refreshManuscriptNoteReferences() {}, refreshVisibleCommentProjection() {},
+    loadTree() { treeRefreshes.push(context.localEditGeneration); },
+    async invokeSaveLifecycleSignalBridge(signal, payload) { saveSignals.push({ signal, payload: copy(payload) }); return { ok: true }; },
     atlasPublicationEpoch: 1, manualMapDraftOwnership: {}, manualMapDraftRevision: 0, atlasJourneyDraftRevision: 0,
     atlasCommandPublicationSequence: 0, atlasQueryPublicationSequences: new Map(), atlasAssociationAuthorDrafts: new Map(),
     atlasRelationDossierHost: host, atlasRelationDossierState: parent, atlasCurrentSceneState: scene,
@@ -399,14 +405,20 @@ async function associationDomFixture(t, options = {}) {
     'withEditorModeCommandPayload','dispatchUiCommand','normalizeAtlasAuthoredAssociations','getAtlasAssociationDraft','getAtlasAssociationState',
     'getAtlasAssociationSelectedRow','isAtlasAssociationPresentationCurrent','isAtlasAssociationSourceCurrent','syncAtlasAssociationForm',
     'getAtlasAssociationAuthorForm','captureAtlasAssociationSource','runAtlasAssociationCommand','renderAtlasAuthoredAssociations','openAtlasAssociationSource','guardAtlasAssociationDraftUnload',
-    'getEffectiveDocumentId','getEffectiveDocumentKind','findTreeNodeById','openDocumentNode'];
+    'getEffectiveDocumentId','getEffectiveDocumentKind','findTreeNodeById','openDocumentNode','markAsModified'];
   for (const name of names) {
     const marker = 'function ' + name + '(', start = source.indexOf(marker); if (start < 0) continue;
     const end = source.indexOf('\n}\n', start); assert.ok(end > start, name);
     vm.runInContext(source.slice(source.slice(start - 6, start) === 'async ' ? start - 6 : start, end + 2), context);
   }
+  const dirtyStart = source.indexOf('window.electronAPI.onSetDirty((message) => {');
+  const dirtyEnd = source.indexOf('\n  });', dirtyStart); assert.ok(dirtyStart >= 0 && dirtyEnd > dirtyStart);
+  assert.equal(source.indexOf('window.electronAPI.onSetDirty((message) => {', dirtyStart + 1), -1);
+  vm.runInContext(source.slice(dirtyStart, dirtyEnd + '\n  });'.length), context);
   context.renderAtlasRelationDossierState();
-  return { f, context, host, document, transports, notices, queries, optionEnumerations: () => optionEnumerations, fields: () => host.all(node => node.dataset.atlasAssociationField),
+  return { f, context, host, document, transports, notices, queries, saveSignals, treeRefreshes,
+    pushDirty: message => { assert.equal(typeof onSetDirty, 'function'); return onSetDirty(message); },
+    optionEnumerations: () => optionEnumerations, fields: () => host.all(node => node.dataset.atlasAssociationField),
     action: name => host.all(node => node.dataset.atlasAssociationAction === name)[0],
     async settled() { const deadline = Date.now() + 5000; while (context.getAtlasAssociationDraft().pending?.active) {
       assert.ok(Date.now() < deadline, 'Finite source operation completed'); await new Promise(resolve => setImmediate(resolve)); } },
@@ -586,4 +598,35 @@ test('authored association registered document-open relay cannot discard malform
     assert.deepEqual(request.payload.expectedAtlasAssociationSource,malformed);assert.equal(result.ok,false,JSON.stringify(result));
     assert.deepEqual(ui.f.h.roster(),before);assert.equal(ui.f.h.sent.filter(([channel])=>channel==='editor:set-text').length,publications);
   }
+});
+
+test('authored association actual scene edit immediately disables stale source actions without queries or losing input [FINITE_DOM_NOT_NATIVE]',async t=>{
+  const ui=await associationDomFixture(t);await fillAssociationForm(ui);const entry=ui.context.getAtlasAssociationDraft();
+  const input=ui.fields().find(node=>node.dataset.atlasAssociationField==='associationKind');input.focus();input.setSelectionRange(3,3);
+  const fields=copy(entry.fields),source=entry.source,revision=entry.revision,queries=ui.queries.length,options=ui.optionEnumerations(),before=ui.f.h.roster();
+  ui.context.markAsModified();
+  assert.equal(ui.action('record').disabled,true,'The actual scene edit updates availability before any click');
+  assert.equal(ui.action('source').disabled,true);assert.match(entry.sourceNotice.textContent,/Источник изменился/u);
+  for(let i=0;i<12;i++)ui.context.markAsModified();
+  assert.equal(ui.context.localDirty,true);assert.equal(ui.context.localEditGeneration,13);
+  assert.equal(ui.saveSignals.length,13);assert.ok(ui.saveSignals.every((row,i)=>row.signal==='signal.localDirty.set'&&row.payload.state===true&&row.payload.generation===i+1));
+  assert.deepEqual(copy(entry.fields),fields);assert.equal(entry.source,source);assert.equal(entry.revision,revision);assert.equal(entry.dirty,true);
+  assert.equal(ui.document.activeElement,input);assert.equal(input.selectionStart,3);assert.equal(input.selectionEnd,3);
+  assert.equal(ui.queries.length,queries);assert.equal(ui.transports.length,0);assert.equal(ui.optionEnumerations(),options);assert.deepEqual(ui.f.h.roster(),before);
+});
+
+test('authored association actual dirty push and saved-generation acknowledgement update source controls without reviving old evidence [FINITE_DOM_NOT_NATIVE]',async t=>{
+  const ui=await associationDomFixture(t);await fillAssociationForm(ui);const entry=ui.context.getAtlasAssociationDraft();
+  const fields=copy(entry.fields),source=entry.source,queries=ui.queries.length,before=ui.f.h.roster();
+  ui.context.localEditGeneration=1;ui.pushDirty({state:true});
+  assert.equal(ui.action('record').disabled,true);assert.equal(ui.action('source').disabled,true);
+  ui.pushDirty({state:false,ack:{kind:'SAVED',savedGeneration:0}});
+  assert.equal(ui.context.localDirty,true);assert.equal(ui.context.lastAckedGeneration,0);assert.equal(ui.action('source').disabled,true);
+  assert.equal(ui.treeRefreshes.length,0);
+  ui.pushDirty({state:false,ack:{kind:'SAVED',savedGeneration:1}});
+  assert.equal(ui.context.localDirty,false);assert.equal(ui.context.lastAckedGeneration,1);assert.deepEqual(ui.treeRefreshes,[1]);
+  assert.equal(ui.action('source').disabled,false,'A current saved scene may be selected again explicitly');
+  assert.equal(ui.action('record').disabled,true,'An acknowledgement cannot revive a fragment captured before the edit');
+  assert.deepEqual(copy(entry.fields),fields);assert.equal(entry.source,source);assert.equal(entry.dirty,true);
+  assert.equal(ui.queries.length,queries);assert.equal(ui.transports.length,0);assert.deepEqual(ui.f.h.roster(),before);
 });

@@ -1,14 +1,13 @@
-# CURRENT — authored Atlas source relay verified; native next
+# CURRENT — authored Atlas native finding corrected in source
 
-TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor.
-ORIGINAL_DELIVERY_BASE: 04d81e5631778bb6bbabd57238ec1c412f09291f; checkpoint7e6ff3c8 is unaccepted WIP.
-SOURCE_STATE: Whole74finiteCore/Main/DOM passes7a003bd7,0skip/todo/cancel; independent complete TAP and full three-version COPY/source/owner readback99515ff1. Current source carrier3d348a72; normal renderer buildc703ae42/bundle0e616562 binding. Real registered source button and malformed-token refusals execute actual Main; complete copied fixture remains on owned T21, permissions untouched.
+TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor, same40paths and original M14 delivery/rollback.
+SOURCE: clean C1 577d0475 remains reachable; current correction adds four renderer lines for retained form availability on actual edit/dirty acknowledgement. Whole76 genuine RED86c145af precedes source edit. Full affected135 pass e44fc5d5; strict independent52e9e4a proves all74old case bodies/assertions, three original caller files and exact four-line inverse. Normal renderer build50fbc603 passes. The prospective132filename contains135actual cases after old nested callers fully reach their assertions.
 
-Cheap six actual constructor selections01445b86 preserve V7–V11 and choose strict V13/35commands/12readers by default. Current cut69pins/actual profile configuration verifiesVALIDe87dc273, while release remainsNOT_READY and every qualificationUNKNOWN. Original2122caller run1739pass383fail61a30fec and all setup/product/raw errors remain retained; no masked negative is certified and full required gates still pending.
+NATIVE: actual C1/profile32 AUTHOR and same-profile COLD both exited0, no helpers. Complete73/75file carriers ee12926e/5402d720 and independent c50ad1c7/94da228c retain two records with3+1revisions, Unicode/source/history and exact navigation. Pair reader1346d7db exits2 for stale-enabled appearance until click guard; no native acceptance. Current source fixes this open finding; a changed new app is still required. C1 app/profile32 plus all31earlier profiles/three apps remain protected. Cache-directory stderr and inaccurate immediate-disabled frame label are retained explicitly; no data-loss or old-profile launch claim.
 
-Scope40 admissionf5c6602d/preflighta62376f4 preserves original M14 rollback and31old profiles/three apps. Separate new native stage/build/launch and actual app/cold have not happened. Matrices remains bounded CLOSED on its original M14; full V6/DNA5/all15/four/all17 OPEN, Office PAUSED, Black Box after fullMac.
+Current cut69pins remainsVALID/NOT_READY with all17qualification UNKNOWN. Original2122/383FAIL and every later source/method error remain. Full V6/DNA5/all15/four/all17 OPEN; Office PAUSED, Black Box after fullMac. Matrices stays bounded CLOSED on original M14.
 
-NEXT: clean source checkpoint and separate native admission/build/actual own-profile authoring/source/normal cold with independent raw oracle; then complete current companions and all mandatory delivery/merged checks.
+NEXT: freeze corrected source and separately admit new native33/build/source-availability observation and same-profile cold; then finish current namespace/inventory/C2A/witness companions and all required full delivery/merged checks.
 
 --- Earlier status bodies remain complete and historical below ---
 
