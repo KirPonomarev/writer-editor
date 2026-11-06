@@ -566,7 +566,9 @@
       "docs/tasks/2026-11-05--writer-tree-reorder-identity.md",
       "test/unit/writer-line-height-field-coherence.test.js",
       "docs/tasks/2026-11-05--writer-line-height-field-coherence.md",
-      "test/unit/writer-line-height-custom-input.test.js"
+      "test/unit/writer-line-height-custom-input.test.js",
+      "test/unit/writer-custom-font-size-input.test.js",
+      "docs/tasks/2026-11-06--writer-custom-font-size-input.md"
     ]
   },
   "allowPrefixByPhase": {

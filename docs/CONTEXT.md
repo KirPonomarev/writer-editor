@@ -1,3 +1,20 @@
+# Current task — Writer custom font-size input
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_WRITER_CUSTOM_FONT_SIZE_INPUT_20261106; sole executor, one bounded delivery.
+BINDING_BASE_SHA: cb0db8c9155f35a88db35928fa1e1536acc33042
+STATUS: FROZEN_SOURCE_29_AND_AFFECTED_172_VERIFIED_NATIVE_DELIVERY_PENDING
+
+Predecessor PR2203 is CLOSED at this M11 by WRITER_LINE_HEIGHT_DELIVERY_CLOSURE_02.json.gz SHA256 ace45f91f3bfe3d934c8c1527b7f919c9deb88d9234390760240ca848c048fcf:20 candidate/20 merged CI jobs, actual merged270 software cases and new native5 cases/3 normal exits, all26 old closed profiles held. Original three incorrect AX identifier fields remain; five exact primary tool-output byte ranges and their own native-session times validate the corrected successor. All old pending blocks below are historical, with original failures/receipts intact.
+
+Frozen testd02fdfc0 retains genuine unchanged-source1pass28fail and identical corrected29pass; full17-file affected chain passes172 with0fail/cancel/skip/todo. Existing modal now replaces unsupported prompt input and guards current identity before cmd.ui.fontSize.set. Original fencing baseline5pass and its actual post-executor4pass1 synchronous-shape failure remain; two prospective async-route/catch expectations changed, all other assertion bytes reconstruct exactly. Maintained buildf2687f20 changes only renderer bundle859b4897, with10087 other source inputs unchanged. Main clamp12..28, settings writer, full ENV, typography and original frozen line-height tests remain literal. This is source proof, not native acceptance.
+
+NEXT: complete maintained current bindings and exact immutable candidate, separately admitted actual rebuilt native/custom/cancel/cold with independent form/data/profile oracle, all mandatory gates and normal full delivery/merged verification. Declaratione80d5efc/preflightfbe3ca97 and branch admissiona7dd10bc precede writes; new finite scratch identityefdfcb98 is separate from old T17. All26 prior closed profiles/apps remain protected. FullMac/all17 stay UNKNOWN; Word/nativeOffice PAUSED and Black Box after full Mac.
+
+PROCESS_SEQUENCE: Primary owner39cd7a45 accepted all five process corrections on02November, including one measured test-cost optimization. That outstanding priority was missed before this font-size write. Preserve and fully close this one existing chain, then execute exactly one causally proved, separately admitted minimal optimization before another product outcome; ordinary comparable required-run effect and all existing coverage/predicates remain. No new infrastructure series or gate/time/buffer waiver. Primary source binding is retained in the current T777 task evidence; main resources then return to the finite V6/DNA5/17-row queue.
+
+--- Prior factual bodies retain their complete original bytes below ---
+
 # Current task — Writer custom line-height native correction
 
 DOCUMENT_CLASS: FACTUAL_STATUS

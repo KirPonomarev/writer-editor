@@ -31467,6 +31467,62 @@
       "approvedBy": "owner-delegated-codex:YALKEN_WRITER_LINE_HEIGHT_FIELD_COHERENCE_20261105",
       "approvedAtUtc": "2026-11-05T22:37:26.894167+00:00",
       "rationale": "Standing owner current/future technical SHA witness delegation for the same bounded line-height result after original native custom-input failure. One extra frozen whole test and existing modal repair; maintained current bindings and exact DONE enrollment. Preserve all original tests/entries/predicates. No independent reviewer signature, native acceptance or release permit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "f8814fb763c4eba36358c589baf9485652dc1df85405a83103ab31f6c8d862bf",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_CUSTOM_FONT_SIZE_INPUT_20261106",
+      "approvedAtUtc": "2026-11-06T02:18:58.205202+00:00",
+      "rationale": "Existing standing owner current/future technical SHA witness delegation for the bounded custom font-size input correction, maintained current metadata and exact task/test/fencing enrollment. All historical entries and verifier predicates remain literal. This records the delegated technical author, not an independent human reviewer, native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "eaca46416db84d9f187bd1654e57b1958e5aa97b189cd5d56e29beea9190575f",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_CUSTOM_FONT_SIZE_INPUT_20261106",
+      "approvedAtUtc": "2026-11-06T02:18:58.205202+00:00",
+      "rationale": "Existing standing owner current/future technical SHA witness delegation for the bounded custom font-size input correction, maintained current metadata and exact task/test/fencing enrollment. All historical entries and verifier predicates remain literal. This records the delegated technical author, not an independent human reviewer, native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "6bc06b064dde7e98ff916121b8ffa7b5fadc170683c961c29b89e8ea95f0e7bc",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_CUSTOM_FONT_SIZE_INPUT_20261106",
+      "approvedAtUtc": "2026-11-06T02:18:58.205202+00:00",
+      "rationale": "Existing standing owner current/future technical SHA witness delegation for the bounded custom font-size input correction, maintained current metadata and exact task/test/fencing enrollment. All historical entries and verifier predicates remain literal. This records the delegated technical author, not an independent human reviewer, native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "f7ce6d0400dc49b3889537247c4a4e14f5f6264f226946ca193d5013d124092b",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_CUSTOM_FONT_SIZE_INPUT_20261106",
+      "approvedAtUtc": "2026-11-06T02:18:58.205202+00:00",
+      "rationale": "Existing standing owner current/future technical SHA witness delegation for the bounded custom font-size input correction, maintained current metadata and exact task/test/fencing enrollment. All historical entries and verifier predicates remain literal. This records the delegated technical author, not an independent human reviewer, native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "fcacd0ead09cd23b7d4c951566d953dbfa80619ccb2067e6dd0f47b79b8cafce",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_CUSTOM_FONT_SIZE_INPUT_20261106",
+      "approvedAtUtc": "2026-11-06T02:18:58.205202+00:00",
+      "rationale": "Existing standing owner current/future technical SHA witness delegation for the bounded custom font-size input correction, maintained current metadata and exact task/test/fencing enrollment. All historical entries and verifier predicates remain literal. This records the delegated technical author, not an independent human reviewer, native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "35723b4b99215f999925588a0f4bd1123674d06e182dec4d9c1fed64f9d689c1",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_CUSTOM_FONT_SIZE_INPUT_20261106",
+      "approvedAtUtc": "2026-11-06T02:18:58.205202+00:00",
+      "rationale": "Existing standing owner current/future technical SHA witness delegation for the bounded custom font-size input correction, maintained current metadata and exact task/test/fencing enrollment. All historical entries and verifier predicates remain literal. This records the delegated technical author, not an independent human reviewer, native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "5b998f5968fca788375714b267d315f8f9630689c81ade8ce34ba0ac0629b998",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_CUSTOM_FONT_SIZE_INPUT_20261106",
+      "approvedAtUtc": "2026-11-06T02:18:58.205202+00:00",
+      "rationale": "Existing standing owner current/future technical SHA witness delegation for the bounded custom font-size input correction, maintained current metadata and exact task/test/fencing enrollment. All historical entries and verifier predicates remain literal. This records the delegated technical author, not an independent human reviewer, native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "5e948e72fd1cd64b6d5edeb226842273162bd45cb57f87f18b7911bf9f9497f2",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_CUSTOM_FONT_SIZE_INPUT_20261106",
+      "approvedAtUtc": "2026-11-06T02:18:58.205202+00:00",
+      "rationale": "Existing standing owner current/future technical SHA witness delegation for the bounded custom font-size input correction, maintained current metadata and exact task/test/fencing enrollment. All historical entries and verifier predicates remain literal. This records the delegated technical author, not an independent human reviewer, native acceptance, release or publication permit."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",

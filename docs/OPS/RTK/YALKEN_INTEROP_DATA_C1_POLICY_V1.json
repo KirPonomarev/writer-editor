@@ -940,7 +940,10 @@
     "docs/tasks/2026-11-05--writer-tree-reorder-identity.md",
     "test/unit/writer-line-height-field-coherence.test.js",
     "docs/tasks/2026-11-05--writer-line-height-field-coherence.md",
-    "test/unit/writer-line-height-custom-input.test.js"
+    "test/unit/writer-line-height-custom-input.test.js",
+    "test/unit/writer-custom-font-size-input.test.js",
+    "docs/tasks/2026-11-06--writer-custom-font-size-input.md",
+    "test/unit/sector-m-command-surface-ui-fencing.test.js"
   ],
   "protectedFiles": [
     {
@@ -1181,7 +1184,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "c785658f51278efe2844f629645e58b765d1530c017928d4325404d143ac2cd0"
+        "sha256": "859b48979daeb4743a0c4f0a51ffe53337f02462c95c672153def3fb76617b1c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1345,7 +1348,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "65a8f796a20b58ae14326b5a4d3dcfac06c341263ddb17f11c5d3674d1477bfd"
+        "sha256": "53b5c73621aa6416d3c1a538a43ac5cd23570bf25e1a3f80bc5aad9d866fd285"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2413,7 +2416,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "9959c381d20e017737b3838145bd80894f4c59fc5e7be6c784f9770a3cab084e"
+        "sha256": "01a1fcef7170e037102066833f603de636532179586aba88142926bf8222c191"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2861,15 +2864,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "73815d64ed0fdb2f953eda27ee12b458d89db256a64c1d49c0b005bad2ff0d0d"
+        "sha256": "314d8eb9c54a20a887f879f017bc0b9754fbb82f600cd7aa40ed080873ffeb96"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "8f1ca9c5622b0b7de4849919a54a3ef0bcc86b0f68fa915d2a1a227aba0d7731"
+        "sha256": "e8e36d2eaf6a1bc7613487217f372f80fb54a1f2e1e8a912b2adae0f6682de8b"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "c2ad6df742379ab2193ac17ff0a7572d6716bd2e45895452ff78870d10b67d0a"
+        "sha256": "42c7c2243f9ed8069c0902c06c27b43a5439d7f4bb2163c2ba0bcf69d22dbe76"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3409,7 +3412,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "48fe7f8912c42f4e01ac73dc800ed67d1439b64d5ba0c3e88e60b254147626d9"
+        "sha256": "eaca46416db84d9f187bd1654e57b1958e5aa97b189cd5d56e29beea9190575f"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3541,7 +3544,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "3f1d0cc9e99b2556b2d10993edee2bfc0481067791c956955902b065cbd16eaa"
+        "sha256": "5e948e72fd1cd64b6d5edeb226842273162bd45cb57f87f18b7911bf9f9497f2"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4293,11 +4296,23 @@
       },
       {
         "path": "docs/tasks/2026-11-05--writer-line-height-field-coherence.md",
-        "sha256": "70cdf053da944244db2687b23a93aef75401dd526c4ba01f814f673fba77fabc"
+        "sha256": "d4c1319da34eef4889ac297290460a9974524e66f46060772c6c9d07b3e3cebf"
       },
       {
         "path": "test/unit/writer-line-height-custom-input.test.js",
         "sha256": "72ca0d54cfccb3b44fec3d2d08060e6a10b0c0587366efea69100375a091971d"
+      },
+      {
+        "path": "test/unit/writer-custom-font-size-input.test.js",
+        "sha256": "d02fdfc073a69355b3f569144bd9d932a7139dcc43938425a20841ca4dbb5433"
+      },
+      {
+        "path": "docs/tasks/2026-11-06--writer-custom-font-size-input.md",
+        "sha256": "881c51b8a5e16f40f73541bc85373b62cc558ffdb7ad61ad0dda0e55935aea26"
+      },
+      {
+        "path": "test/unit/sector-m-command-surface-ui-fencing.test.js",
+        "sha256": "0e71fbedfb06b6b2a78344fc1394286586652de0cb717a0c54aa617f6ddc21ba"
       }
     ],
     "followupRepair": {
