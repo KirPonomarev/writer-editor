@@ -1,3 +1,9 @@
+# 2026-11-06 — Return to V6/DNA5: Atlas Matrices source scope
+
+- Closed the one approved OPS optimization through PR2205 normal M13 delivery:20candidate/20mergedCI,249mergedTAP,29old profiles;closure1f171b6b. Preserve failed C0CI,reader errors and9.45percent slower default baseline;no overall speedup claim.
+- Admitted one product vertical slice on clean M13:existing matrix book/current saved scene/saved fragment read scopes. Declaration466bb66f,preflight0351f867 andbranch/scratch admissiond3ae51ae follow full normative/scoped factual startup and10089source/29profile protection.
+- No executor edit or product acceptance yet. TaskE0,frozen meaningful RED/GREEN,new actual native,mandatory gates andfull normal delivery precede acceptance. No semantic relation auto-promotion or all15/all17 completion.
+
 # 2026-11-06 — PR2205 exact legacy fault-adapter correction
 
 - C0 3e8b2692 completed22 local rows and independent full raw readback40d966cf, with original40 genuine E0 kills/8200 observations, baseline4425/4366pass/59uncovered and one-sample ordinary reductions9.6/8.3/4.7percent. Guarded push and PR2205 followed.

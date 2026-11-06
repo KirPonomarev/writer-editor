@@ -936,6 +936,8 @@ let atlasSelectedRelation = {
   leftEntityId: '',
   rightEntityId: '',
 };
+let atlasMatricesSourceScope = { kind: 'BOOK' };
+let atlasMatricesScopeProjectId = '';
 let atlasMatricesState = {
   state: 'empty',
   projectId: '',
@@ -18812,6 +18814,7 @@ function normalizeAtlasMatrices(result = {}) {
     state: typeof source.state === 'string' ? source.state : 'empty',
     unavailableReason: typeof source.unavailableReason === 'string' ? source.unavailableReason : '',
     projectId: typeof source.projectId === 'string' ? source.projectId : '',
+    sourceScope: reviewSurfaceIsPlainObject(source.sourceScope) ? { ...source.sourceScope } : { kind: 'BOOK' },
     summary: {
       entityCount: Number.isInteger(summary.entityCount) ? Math.max(0, summary.entityCount) : 0,
       sceneCount: Number.isInteger(summary.sceneCount) ? Math.max(0, summary.sceneCount) : 0,
@@ -19055,6 +19058,11 @@ function handleAtlasMatrixGridKeydown(event) {
 }
 
 function handleAtlasMatrixGridClick(event) {
+  const sourceScope = event.target instanceof Element ? event.target.closest('[data-atlas-matrices-source-scope]') : null;
+  if (sourceScope instanceof HTMLElement && atlasMatricesHost instanceof HTMLElement && atlasMatricesHost.contains(sourceScope)) {
+    selectAtlasMatricesSourceScope(sourceScope.dataset.atlasMatricesSourceScope);
+    return;
+  }
   const heatmapOpen = event.target instanceof Element ? event.target.closest('[data-atlas-heatmap-open]') : null;
   if (heatmapOpen instanceof HTMLElement && atlasMatricesHost instanceof HTMLElement && atlasMatricesHost.contains(heatmapOpen)) {
     openAtlasHeatmapSurface();
@@ -19092,10 +19100,77 @@ function bindAtlasMatricesKeyboardNavigation() {
   atlasMatricesKeyboardBound = true;
 }
 
+function setAtlasMatricesScopeUnavailable(reason) {
+  atlasMatricesState = normalizeAtlasMatrices({ state: 'unavailable', unavailableReason: reason,
+    projectId: currentProjectId || '', sourceScope: atlasMatricesSourceScope });
+  renderAtlasMatricesState();
+}
+
+async function selectAtlasMatricesSourceScope(kind) {
+  if (!['BOOK', 'SCENE', 'FRAGMENT'].includes(kind) || currentRightTab !== 'atlas') return;
+  const current = beginAtlasQueryPublication('atlasMatricesSourceScope');
+  if (!current) return;
+  atlasMatricesScopeProjectId = currentProjectId;
+  atlasMatricesSourceScope = kind === 'BOOK' ? { kind } : { kind, sceneId: currentDocumentId || '', sceneTextHash: '' };
+  if (kind !== 'BOOK' && !currentDocumentId) return setAtlasMatricesScopeUnavailable('ATLAS_MATRICES_SCOPE_SCENE_NOT_FOUND');
+  if (kind !== 'BOOK' && (localDirty || localEditGeneration !== lastAckedGeneration)) return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED');
+  const selection = kind === 'FRAGMENT' ? getSelectionOffsets() : null;
+  atlasMatricesState = { ...atlasMatricesState, state: 'loading' };
+  renderAtlasMatricesState();
+  try {
+    if (kind === 'BOOK') return await refreshAtlasMatrices({ isCurrent: current });
+    const entry = { projectId: currentProjectId };
+    if (!isIdeaMeaningSceneSourceCurrent(entry)) await refreshAtlasCurrentScene({ force: true, isCurrent: current });
+    if (!current()) return;
+    if (localDirty || localEditGeneration !== lastAckedGeneration) return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED');
+    if (!isIdeaMeaningSceneSourceCurrent(entry)) return setAtlasMatricesScopeUnavailable('ATLAS_MATRICES_SCOPE_SOURCE_CHANGED');
+    const scope = { kind, sceneId: currentDocumentId, sceneTextHash: atlasCurrentSceneState.summary.sceneTextHash };
+    if (kind === 'FRAGMENT') {
+      const origin = getIdeaMeaningSceneOrigin(entry);
+      if (!origin || origin.startOffset !== selection?.start || origin.endOffset !== selection?.end) {
+        return setAtlasMatricesScopeUnavailable('ATLAS_MATRICES_SCOPE_RANGE_INVALID');
+      }
+      scope.startOffset = origin.startOffset;
+      scope.endOffset = origin.endOffset;
+    }
+    atlasMatricesSourceScope = scope;
+    return await refreshAtlasMatrices({ isCurrent: current });
+  } catch {
+    if (current()) setAtlasMatricesScopeUnavailable('ATLAS_MATRICES_QUERY_FAILED');
+  }
+}
+
+function appendAtlasMatricesSourceScopeControls() {
+  const controls = document.createElement('div');
+  controls.className = 'right-rail-atlas-action-bar';
+  controls.setAttribute('role', 'group');
+  controls.setAttribute('aria-label', 'Область наблюдений Atlas');
+  for (const [kind, label] of [['BOOK', 'Книга'], ['SCENE', 'Сцена'], ['FRAGMENT', 'Фрагмент']]) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'right-rail-atlas-action';
+    button.dataset.atlasMatricesSourceScope = kind;
+    button.setAttribute('aria-pressed', String(atlasMatricesSourceScope.kind === kind));
+    button.textContent = label;
+    button.disabled = !currentProjectId || (kind !== 'BOOK' && !currentDocumentId);
+    controls.appendChild(button);
+  }
+  atlasMatricesHost.appendChild(controls);
+  const status = document.createElement('div');
+  status.className = 'right-rail-atlas-state';
+  status.setAttribute('role', 'status');
+  status.setAttribute('aria-live', 'polite');
+  const label = { BOOK: 'вся книга', SCENE: 'сохранённая сцена', FRAGMENT: 'выделенный фрагмент сохранённой сцены' }[atlasMatricesSourceScope.kind];
+  status.textContent = `Область: ${label}. Показаны наблюдения и совместные упоминания.`;
+  atlasMatricesHost.appendChild(status);
+}
+
 function renderAtlasMatricesState() {
   if (!(atlasMatricesHost instanceof HTMLElement)) return;
   bindAtlasMatricesKeyboardNavigation();
   const state = normalizeAtlasMatrices(atlasMatricesState);
+  const focusedScope = atlasMatricesHost.contains(document.activeElement)
+    ? document.activeElement?.getAttribute('data-atlas-matrices-source-scope') : null;
   atlasMatricesHost.innerHTML = '';
   atlasMatricesHost.dataset.atlasMatricesStatus = state.state;
   applyAtlasResolvedSurfaceBinding('matrices', atlasMatricesHost, 'atlasMatricesProvider');
@@ -19113,11 +19188,23 @@ function renderAtlasMatricesState() {
   hash.textContent = state.summary.matrixHash ? state.summary.matrixHash.slice(0, 8) : state.state;
   header.append(label, title, hash);
   atlasMatricesHost.appendChild(header);
+  appendAtlasMatricesSourceScopeControls();
+  if (['BOOK', 'SCENE', 'FRAGMENT'].includes(focusedScope)) {
+    const button = atlasMatricesHost.querySelector(`[data-atlas-matrices-source-scope="${focusedScope}"]`);
+    if (button && !button.disabled) button.focus({ preventScroll: true });
+  }
 
   if (state.state === 'unavailable') {
     const unavailable = document.createElement('div');
     unavailable.className = 'right-rail-atlas-state right-rail-atlas-state--blocked';
-    unavailable.textContent = state.unavailableReason || 'ATLAS_MATRICES_UNAVAILABLE';
+    unavailable.textContent = {
+      ATLAS_SOURCE_UNSAVED: 'Сохраните сцену и снова выберите область анализа.',
+      ATLAS_MATRICES_SCOPE_INVALID: 'Область анализа недоступна. Выберите книгу или сохранённую сцену.',
+      ATLAS_MATRICES_SCOPE_SCENE_NOT_FOUND: 'Откройте сохранённую сцену и выберите её снова.',
+      ATLAS_MATRICES_SCOPE_SOURCE_CHANGED: 'Сцена изменилась. Снова выберите сцену или выделите фрагмент.',
+      ATLAS_MATRICES_SCOPE_SCENE_CHANGED: 'Открыта другая сцена. Снова выберите область анализа.',
+      ATLAS_MATRICES_SCOPE_RANGE_INVALID: 'Выделите непустой фрагмент сохранённой сцены и нажмите «Фрагмент».',
+    }[state.unavailableReason] || state.unavailableReason || 'ATLAS_MATRICES_UNAVAILABLE';
     atlasMatricesHost.appendChild(unavailable);
     return;
   }
@@ -19144,21 +19231,21 @@ function renderAtlasMatricesState() {
   heatmapButton.className = 'right-rail-atlas-action';
   heatmapButton.dataset.atlasHeatmapOpen = 'true';
   heatmapButton.disabled = state.state !== 'ready';
-  heatmapButton.textContent = atlasHeatmapExplicitOpen ? 'Refresh heatmap' : 'Open heatmap';
+  heatmapButton.textContent = (atlasHeatmapExplicitOpen ? 'Refresh heatmap' : 'Open heatmap') + (atlasMatricesSourceScope.kind === 'BOOK' ? '' : ' (book)');
   actionBar.appendChild(heatmapButton);
   const temporalLayoutButton = document.createElement('button');
   temporalLayoutButton.type = 'button';
   temporalLayoutButton.className = 'right-rail-atlas-action';
   temporalLayoutButton.dataset.atlasTemporalLayoutOpen = 'true';
   temporalLayoutButton.disabled = state.summary.sceneCount < 1;
-  temporalLayoutButton.textContent = atlasTemporalLayoutExplicitOpen ? 'Refresh timeline' : 'Open timeline';
+  temporalLayoutButton.textContent = (atlasTemporalLayoutExplicitOpen ? 'Refresh timeline' : 'Open timeline') + (atlasMatricesSourceScope.kind === 'BOOK' ? '' : ' (book)');
   actionBar.appendChild(temporalLayoutButton);
   const continuityLedgerButton = document.createElement('button');
   continuityLedgerButton.type = 'button';
   continuityLedgerButton.className = 'right-rail-atlas-action';
   continuityLedgerButton.dataset.atlasContinuityLedgerOpen = 'true';
   continuityLedgerButton.disabled = !currentProjectId;
-  continuityLedgerButton.textContent = atlasContinuityLedgerExplicitOpen ? 'Refresh ledger' : 'Open ledger';
+  continuityLedgerButton.textContent = (atlasContinuityLedgerExplicitOpen ? 'Refresh ledger' : 'Open ledger') + (atlasMatricesSourceScope.kind === 'BOOK' ? '' : ' (book)');
   actionBar.appendChild(continuityLedgerButton);
   atlasMatricesHost.appendChild(actionBar);
 
@@ -19188,8 +19275,17 @@ function renderAtlasMatricesState() {
 
 async function refreshAtlasMatrices(options = {}) {
   if (currentRightTab !== 'atlas') return;
+  if (atlasMatricesScopeProjectId !== currentProjectId) {
+    atlasMatricesSourceScope = { kind: 'BOOK' };
+    atlasMatricesScopeProjectId = currentProjectId;
+  }
   const current = beginAtlasQueryPublication('atlasMatrices', options), requestProject = currentProjectId;
   if (!current) return;
+  const sourceScope = { ...atlasMatricesSourceScope };
+  if (sourceScope.kind !== 'BOOK') {
+    if (localDirty || localEditGeneration !== lastAckedGeneration) return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED');
+    if (sourceScope.sceneId !== currentDocumentId) return setAtlasMatricesScopeUnavailable('ATLAS_MATRICES_SCOPE_SCENE_CHANGED');
+  }
   atlasMatricesState = {
     ...atlasMatricesState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -19201,10 +19297,19 @@ async function refreshAtlasMatrices(options = {}) {
     rowLimit: 8,
     columnLimit: 8,
     listLimit: 24,
+    sourceScope,
   });
-  if (!current()) return;
-  const nextState = readAtlasQueryProjection(result, 'atlasMatrices', requestProject)
+  const scopeKeys = ['kind', 'sceneId', 'sceneTextHash', 'startOffset', 'endOffset'];
+  if (!current() || !scopeKeys.every(key => sourceScope[key] === atlasMatricesSourceScope[key])) return;
+  if (sourceScope.kind !== 'BOOK' && (localDirty || localEditGeneration !== lastAckedGeneration)) {
+    return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED');
+  }
+  let nextState = readAtlasQueryProjection(result, 'atlasMatrices', requestProject)
     || { state: 'unavailable', unavailableReason: 'ATLAS_MATRICES_QUERY_FAILED', projectId: requestProject };
+  if (sourceScope.kind !== 'BOOK' && ['ready', 'empty'].includes(nextState.state)
+    && !scopeKeys.every(key => sourceScope[key] === nextState.sourceScope?.[key])) {
+    nextState = { state: 'unavailable', unavailableReason: 'ATLAS_MATRICES_SCOPE_SOURCE_CHANGED', projectId: requestProject };
+  }
   atlasMatricesState = normalizeAtlasMatrices(nextState);
   renderAtlasMatricesState();
 }

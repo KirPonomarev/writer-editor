@@ -1,3 +1,17 @@
+# Resume — Atlas Matrices saved source scope
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106; one executor.
+BASE: eb16863301ca1fd6db0008f0c57d3fdcbcd892f8
+BRANCH: codex/atlas-matrices-source-scope-20261106
+STATUS: ADMITTED_TEST_FIRST_NO_PRODUCT_ACCEPTANCE
+
+NEXT: taskE0,then freeze whole actual Core/derived/Main/renderer scope cases and genuine original-source RED before the one scoped-query fix. Preserve legacy book and whole-book heatmap/time/ledger,trust/suppression/source identity,no-loss,all29profiles/7252native entries and10089baseline bytes outside21paths. New actual source-bound native and normal full delivery/merged proof remain mandatory;no current app acceptance yet.
+
+PREDECESSOR_CLOSED: PR2205 M13 closure1f171b6b binds20candidate/20mergedCI,249mergedTAP,29profiles andschema-valid19field report405ea936. Final source/guardrailsd5d14006/16a0628f. Original failed CI and external reader expectation failures remain;default baseline9.45percent slower is explicit,no overall speedup. New declaration466bb66f/preflight0351f867/admissiond3ae51ae,scratch9af0f515,source/profiles verified before writes. Full V6/DNA5/all17 open;Word/nativeOffice PAUSED,BlackBox later. No extra optimization,agent/model/chat/service or old lease/profile reuse.
+
+--- Prior factual bodies remain complete below ---
+
 # Resume — same PR2205 historical Git adapter correction
 
 DOCUMENT_CLASS: FACTUAL_STATUS

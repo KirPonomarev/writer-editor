@@ -1,6 +1,6 @@
 import { createDerivedError, deriveView, hashCanonicalValue } from '../deriveView.mjs';
 import { deriveAtlasObservationAggregate } from './deriveAtlasObservationAggregate.mjs';
-import { deriveAtlasTemporalContinuity } from './deriveAtlasTemporalContinuity.mjs';
+import { buildAtlasTemporalContinuityFromObservationAggregate, deriveAtlasTemporalContinuity } from './deriveAtlasTemporalContinuity.mjs';
 import {
   ATLAS_ENTITY_SCENE_MATRIX_SCHEMA_VERSION,
   ATLAS_MATRICES_SCHEMA_VERSION,
@@ -479,6 +479,62 @@ function buildMatrices({ aggregate, temporal, rowLimit, columnLimit, listLimit, 
   };
 }
 
+export function normalizeAtlasMatricesSourceScope(value) {
+  if (value === undefined) return { ok: true, value: { kind: 'BOOK' } };
+  const invalid = () => ({ ok: false, error: {
+    code: 'E_ATLAS_MATRICES_SCOPE_INVALID', reason: 'ATLAS_MATRICES_SCOPE_INVALID', op: VIEW_ID,
+  } });
+  if (!isPlainObject(value) || !['BOOK', 'SCENE', 'FRAGMENT'].includes(value.kind)) return invalid();
+  const keys = value.kind === 'BOOK' ? ['kind'] : ['kind', 'sceneId', 'sceneTextHash',
+    ...(value.kind === 'FRAGMENT' ? ['startOffset', 'endOffset'] : [])];
+  if (Object.keys(value).length !== keys.length || !keys.every(key => Object.hasOwn(value, key))) return invalid();
+  if (value.kind === 'BOOK') return { ok: true, value: { kind: 'BOOK' } };
+  if (typeof value.sceneId !== 'string' || !value.sceneId || value.sceneId.length > 256 || value.sceneId.trim() !== value.sceneId
+    || typeof value.sceneTextHash !== 'string' || !/^[a-f0-9]{64}$/u.test(value.sceneTextHash)) return invalid();
+  const scope = { kind: value.kind, sceneId: value.sceneId, sceneTextHash: value.sceneTextHash };
+  if (scope.kind === 'FRAGMENT') {
+    if (!Number.isSafeInteger(value.startOffset) || !Number.isSafeInteger(value.endOffset)
+      || value.startOffset < 0 || value.endOffset <= value.startOffset) return invalid();
+    scope.startOffset = value.startOffset;
+    scope.endOffset = value.endOffset;
+  }
+  return { ok: true, value: scope };
+}
+
+function scopeMatrixSources({ coreState, aggregate, temporal, sourceScope, invalidationKey }) {
+  const scenes = coreState?.data?.projects?.[aggregate.projectId]?.scenes;
+  if (!isPlainObject(scenes) || !Object.hasOwn(scenes, sourceScope.sceneId)
+    || !isPlainObject(scenes[sourceScope.sceneId]) || typeof scenes[sourceScope.sceneId].text !== 'string') {
+    throw createDerivedError('E_ATLAS_MATRICES_SCOPE_SCENE_NOT_FOUND', VIEW_ID, 'ATLAS_MATRICES_SCOPE_SCENE_NOT_FOUND');
+  }
+  const text = scenes[sourceScope.sceneId].text;
+  if (hashCanonicalValue(text) !== sourceScope.sceneTextHash) {
+    throw createDerivedError('E_ATLAS_MATRICES_SCOPE_SOURCE_CHANGED', VIEW_ID, 'ATLAS_MATRICES_SCOPE_SOURCE_CHANGED');
+  }
+  if (sourceScope.kind === 'FRAGMENT') {
+    const splitsSurrogate = offset => offset > 0 && offset < text.length
+      && text.charCodeAt(offset - 1) >= 0xd800 && text.charCodeAt(offset - 1) <= 0xdbff
+      && text.charCodeAt(offset) >= 0xdc00 && text.charCodeAt(offset) <= 0xdfff;
+    if (sourceScope.endOffset > text.length || splitsSurrogate(sourceScope.startOffset) || splitsSurrogate(sourceScope.endOffset)) {
+      throw createDerivedError('E_ATLAS_MATRICES_SCOPE_RANGE_INVALID', VIEW_ID, 'ATLAS_MATRICES_SCOPE_RANGE_INVALID');
+    }
+  }
+  const sceneOrder = temporal.sceneOrder.filter(scene => scene.sceneId === sourceScope.sceneId);
+  if (sceneOrder.length !== 1) {
+    throw createDerivedError('E_ATLAS_MATRICES_SCOPE_SCENE_NOT_FOUND', VIEW_ID, 'ATLAS_MATRICES_SCOPE_SCENE_NOT_FOUND');
+  }
+  const observations = aggregate.observations.filter(observation => observation.sceneId === sourceScope.sceneId
+    && (sourceScope.kind !== 'FRAGMENT'
+      || (observation.startOffset >= sourceScope.startOffset && observation.endOffset <= sourceScope.endOffset)));
+  // This is a derived subset, never a rewritten Core project or author record.
+  const scopedAggregate = { projectId: aggregate.projectId, entities: aggregate.entities, observations,
+    summary: { aggregateHash: hashCanonicalValue({ parentAggregateHash: aggregate.summary.aggregateHash,
+      sourceScope, observationIds: observations.map(observation => observation.observationId) }) } };
+  return { aggregate: scopedAggregate, temporal: buildAtlasTemporalContinuityFromObservationAggregate({
+    aggregate: scopedAggregate, sceneOrder, invalidationKey,
+  }) };
+}
+
 export function deriveAtlasMatrices(input = {}) {
   const projectId = normalizeString(input?.params?.projectId);
   const languageCode = normalizeString(input?.params?.languageCode);
@@ -495,6 +551,9 @@ export function deriveAtlasMatrices(input = {}) {
       },
     };
   }
+  const explicitScope = Object.hasOwn(input.params || {}, 'sourceScope');
+  const scopeResult = normalizeAtlasMatricesSourceScope(input?.params?.sourceScope);
+  if (!scopeResult.ok) return scopeResult;
 
   return deriveView({
     viewId: VIEW_ID,
@@ -506,6 +565,7 @@ export function deriveAtlasMatrices(input = {}) {
       rowLimit,
       columnLimit,
       listLimit,
+      ...(explicitScope ? { sourceScope: scopeResult.value } : {}),
     },
     capabilitySnapshot: input.capabilitySnapshot,
     derive: ({ coreState, params, capabilitySnapshot, meta }) => {
@@ -543,15 +603,20 @@ export function deriveAtlasMatrices(input = {}) {
           temporal.error?.details || {},
         );
       }
-      if (temporal.value.summary.entityCount < 1) return emptyMatrixState(params.projectId);
-      return buildMatrices({
-        aggregate: aggregate.value,
-        temporal: temporal.value,
+      const sourceScope = params.sourceScope || { kind: 'BOOK' };
+      const sources = sourceScope.kind === 'BOOK' ? { aggregate: aggregate.value, temporal: temporal.value }
+        : scopeMatrixSources({ coreState, aggregate: aggregate.value, temporal: temporal.value,
+          sourceScope, invalidationKey: meta.invalidationKey });
+      const value = sourceScope.kind === 'BOOK' && sources.temporal.summary.entityCount < 1
+        ? emptyMatrixState(params.projectId) : buildMatrices({
+        aggregate: sources.aggregate,
+        temporal: sources.temporal,
         rowLimit: params.rowLimit,
         columnLimit: params.columnLimit,
         listLimit: params.listLimit,
         invalidationKey: meta.invalidationKey,
       });
+      return explicitScope ? { ...value, sourceScope } : value;
     },
   });
 }

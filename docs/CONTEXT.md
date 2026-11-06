@@ -1,3 +1,16 @@
+# Current — Atlas Matrices saved source scope
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106; sole executor.
+BINDING_BASE_SHA: eb16863301ca1fd6db0008f0c57d3fdcbcd892f8
+STATUS: ADMITTED_TEST_FIRST_NO_PRODUCT_ACCEPTANCE
+
+PR2205 is fully CLOSED by ONE_TEST_COST_DELIVERY_CLOSURE_01.json.gz SHA2561f171b6b7aae84acf748298acbd86489ab7a87b2f85a463fa0e9b039e9597017:20candidate/20merged CI,249merged TAP and29protected profiles. Its default single-sample baseline is9.45percent slower;no overall speedup claim. All old failures,59uncovered default skips and6moderate dev audit findings remain.
+
+Next product outcome restores explicit book/current saved scene/saved fragment scope in the existing read-only matrices. Current Main drops scope;source observation9c8d65cd is C1 execution of identical Main bytes,not new native proof. Declaration466bb66f/preflight0351f867/admissiond3ae51ae precede writes;new owned scratch9af0f515. Existing aggregate/temporal builders,query/profile/scheduler,current-scene source and selection are reused. No authored relationship,Core schema,writer or full15cell claim. Frozen RED/GREEN,new native/full delivery still required. Full V6/DNA5/all17 remains ACTIVE;Office PAUSED,BlackBox after fullMac.
+
+--- Prior factual bodies remain complete below ---
+
 # Current — PR2205 legacy Git fault-adapter compatibility
 
 DOCUMENT_CLASS: FACTUAL_STATUS
