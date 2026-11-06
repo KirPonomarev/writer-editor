@@ -1,3 +1,27 @@
+# Current — Atlas Matrices source and original callers verified
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106; sole executor.
+BINDING_BASE_SHA: 7a7f676f57976278c44ef74e481a8d7442d5839d
+STATUS: SOURCE_33_AND_588_VERIFIED_NATIVE_AND_DELIVERY_PENDING
+
+Whole frozen33source cases passa5da9507;original31file prefix remains literal. Exact existing-host two-field patch was admitted before write and inversely proved d1fb80c8;complete maintained original five files pass588of5886180ca5c,all original assertions/case bodies held. Main syntax4ba885dc andnormal renderer buildf34e1402 pass;scope9637c1ae checks10091tracked paths andonly expected bundle changes. All29old profiles/7252native entries remain literal. Original REDs,18old-host failures andtask/reader method failures stay retained.
+
+One product outcome now has source proof for explicit book/saved scene/saved fragment observation matrices;native/current metadata/immutable candidate/full required gates/normal delivery andmerged proof still pending. Current source scope adds no authored semantic relation or product writer. Full V6/DNA5/all15/all17 remains open;Office PAUSED,BlackBox after fullMac. Predecessor PR2205 closure1f171b6b remains bounded andcomplete,no further optimization series.
+
+--- Earlier factual bodies remain complete below ---
+
+# Current — Atlas Matrices source verified; existing-host amendment admitted
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106; sole executor.
+BINDING_BASE_SHA: 7a7f676f57976278c44ef74e481a8d7442d5839d
+STATUS: FROZEN_33_VERIFIED_EXISTING_HOST_COMPATIBILITY_AND_DELIVERY_PENDING
+
+The original31case file remains a literal prefix;two prospectively frozen boundary cases exposed same-generation dirty risk and unhandled read rejection. Identical whole33 now passesa5da9507;original RED352e443a and supplemental31pass2fail7a3d156e remain. Five original direct callers have588tests570pass18fail8f4ed667 from one missing two-field VM host context. External exact initializer insertion8df90f4b makes unchanged568cases pass2671b07c;this is diagnostic,not maintained/native acceptance. Clean unaccepted checkpoint7a7f676f preserves WIP. Declarationd88d0726/preflight413b4985 admit23paths and only that host initialization/traceability before edit. Runtime source guards remain;all old assertions/cases must stay literal. Native,metadata,mandatory baseline and normal delivery pending;fullMac/all17 open.
+
+--- Prior factual bodies remain complete below ---
+
 # Current — Atlas Matrices saved source scope
 
 DOCUMENT_CLASS: FACTUAL_STATUS

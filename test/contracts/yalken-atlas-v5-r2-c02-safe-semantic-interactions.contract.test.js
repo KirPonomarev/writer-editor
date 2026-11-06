@@ -369,6 +369,7 @@ function publicationHarness(transform) {
     initialDocumentAdopted: true,
     isTiptapMode: false, COMMAND_BUS_ROUTE: 'command.bus', METADATA_UPDATE_COMMAND_ID: 'cmd.project.metadata.update',
     atlasJourneyState: { status: 'idle', commandSeq: 0 }, atlasJourneyDraft: {}, atlasSelectedEntityId: '', atlasSelectedRelation: {},
+    atlasMatricesSourceScope: { kind: 'BOOK' }, atlasMatricesScopeProjectId: '',
     atlasHeatmapExplicitOpen: true, atlasTemporalLayoutExplicitOpen: true, atlasContinuityLedgerExplicitOpen: true,
     atlasContinuityRequestEpoch: 0, runCommand: {},
     manualMapPortabilityCommandState: { status: '' },

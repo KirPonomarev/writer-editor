@@ -1,3 +1,14 @@
+# 2026-11-06 — Atlas Matrices source proof and maintained renderer
+
+- Exact two-field old-host initialization follows clean preflight/taskE0;inverse d1fb80c8 preserves every original assertion/case body. Complete maintained five-file588GREEN6180ca5c;new whole33GREENa5da9507 andall original failures retained.
+- Main syntax4ba885dc andnormal buildf34e1402 pass;scope9637c1ae reads10091tracked paths,only editor.bundle.js changes during build,29old profiles/7252native entries held. Current metadata,actual immutable native/full required gates/normal delivery remain pending.
+
+# 2026-11-06 — Atlas Matrices source and exact old-host diagnosis
+
+- Original31RED has29assertions plus one missing-field probe andone capability control;no false assertion credit. First31GREENf52f66d4;two appended frozen risk cases preserve that entire prefix,produce31pass2fail7a3d156e,then identical33GREENa5da9507 after dirty/error guards. Original test/reader failures retained.
+- Original five direct files588/570/18 locate missing new state in one old finite host. Exact external two-field insertion8df90f4b makes its whole568cases pass2671b07c;all assertions and case bodies unchanged.
+- Ordinary unaccepted local checkpoint7a7f676f preserves ten WIP paths. Scope23 declarationd88d0726/preflight413b4985 prospectively admit exactly the old host initializer and traceability;no runtime guard weakening,native or delivery acceptance.
+
 # 2026-11-06 — Return to V6/DNA5: Atlas Matrices source scope
 
 - Closed the one approved OPS optimization through PR2205 normal M13 delivery:20candidate/20mergedCI,249mergedTAP,29old profiles;closure1f171b6b. Preserve failed C0CI,reader errors and9.45percent slower default baseline;no overall speedup claim.
