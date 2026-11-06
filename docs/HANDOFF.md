@@ -1,3 +1,17 @@
+# Resume — one measured historical Git-read cost correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106; sole executor.
+BASE: 39a04e4d257e1a5bda5893168238f700364c71f8
+BRANCH: codex/one-test-cost-historical-git-reads-20261106
+STATUS: SOURCE_40_VERIFIED_MANDATORY_WAVE_NOT_FROZEN
+
+NEXT: finish current477-binding enrollment/technical witnesses, review the exact scoped diff and freeze one candidate; execute unchanged ordinary E0/WP104/C1C/RTK/default and required metadata/security gates, compare retained original BEFORE, then guarded full delivery/exact merged verification. No second product write before closure; after this one optimization return directly to the finite Mac queue. Preserve every original test/pin/failure,all29 profiles and app payload; no cache/limit/gate waiver.
+
+RESUME_PROOFS: declaration3356b375, preflightsbb1f7982/f965bc83, admissione80488e0 and new synthetic scratch40fddba4; frozen test e8b0d3e6, actual RED46cc01b6/independent8370e41f, identical GREENd4343d9f; SOURCE_RED_GREEN_AND_BEFORE_01.json.gz SHA2569af8aa528df25d05434aa4a4832c59830d3b41fcd02df0641e515e48e7acb26c. Reports/materials are in the dated one-test-cost-historical-git-reads folders on verified T777. Prior font-size closuree6aa4714; original preparation/task-parser/post-prepare reader failures remain separately retained. Runtime exclusion is explicit in declaration; no app launch/build is admitted or claimed. FullMac/all17 open; Word/nativeOffice PAUSED.
+
+--- Prior factual bodies retain their complete original bytes below ---
+
 # Resume — Writer custom font-size input
 
 DOCUMENT_CLASS: FACTUAL_STATUS

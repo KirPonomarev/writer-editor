@@ -937,3 +937,96 @@ test('repository claim surface keeps current and historical C1B inventory bindin
       && binding.evaluationSha === 'd5d7ed98095d1f396d7e0f8336ad19eb8c6fc05b',
   ));
 });
+
+
+function historicalReadRegressionFixture() {
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V41.find(item => item.evaluationSha === '430d8dbb');
+  const stampSpec = `${pin.evaluationSha}:docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+  const options = { cwd: REPO_ROOT, encoding: null, maxBuffer: 4 * 1024 * 1024, timeout: 15000,
+    stdio: ['ignore', 'pipe', 'pipe'] };
+  const stampBytes = execFileSync('git', ['show', stampSpec], options);
+  const inventoryBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${INVENTORY_PATH}`], options);
+  const stamp = JSON.parse(stampBytes);
+  const binding = stamp.claimBindings.find(item => item.filePath === INVENTORY_PATH);
+  assert.equal(sha256(stampBytes), pin.stampSha256);
+  assert.equal(sha256(inventoryBytes), pin.targetSha256);
+  return { pin, stamp, stampBytes, binding, inventoryBytes, options };
+}
+
+test('historical inventory verifies the same claim in three uncached real Git reads', () => {
+  const { pin, stamp, stampBytes, binding, options } = historicalReadRegressionFixture();
+  for (const input of [stampBytes, stampBytes.toString('utf8')]) {
+    const calls = [];
+    const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes: input, binding,
+      git(rootDir, args) {
+        assert.equal(rootDir, REPO_ROOT);
+        calls.push([...args]);
+        return execFileSync('git', args, options);
+      } });
+    assert.deepEqual(result, { stampId: pin.stampId, targetPath: INVENTORY_PATH,
+      evaluationSha: pin.evaluationSha, evaluationTree: pin.evaluationTree,
+      stampSha256: pin.stampSha256, targetSha256: pin.targetSha256,
+      status: 'VERIFIED_HISTORICAL_BYTES', currentFileCoverage: false });
+    assert.equal(Object.isFrozen(result), true);
+    assert.equal(calls.length, 3, 'each invocation revalidates its refs, ancestry and both immutable byte digests');
+  }
+});
+
+test('historical inventory batching retains early refusal and every identity and blob boundary', () => {
+  const fixture = historicalReadRegressionFixture();
+  const { pin, stamp, stampBytes, binding, inventoryBytes } = fixture;
+  const input = { rootDir: REPO_ROOT, stamp, stampBytes, binding };
+  const expected = error => error.code === 'E_HISTORICAL_INVENTORY_BINDING';
+  let earlyCalls = 0;
+  const noIo = () => { earlyCalls += 1; throw new Error('unexpected Git IO'); };
+  for (const value of [Buffer.concat([stampBytes, Buffer.from('x')]), '🧭' + stampBytes]) {
+    assert.throws(() => verifyHistoricalInventoryClaim({ ...input, stampBytes: value, git: noIo }), expected);
+  }
+  assert.throws(() => verifyHistoricalInventoryClaim({ ...input, binding: { ...binding, sha256: '0'.repeat(64) }, git: noIo }), expected);
+  assert.equal(verifyHistoricalInventoryClaim({ ...input, binding: { ...binding, filePath: 'docs/OPS/R24/OTHER.json' }, git: noIo }), null);
+  assert.equal(verifyHistoricalInventoryClaim({ ...input, stamp: { stampId: 'UNPINNED' }, git: noIo }), null);
+  assert.equal(earlyCalls, 0);
+
+  const changedStamp = Buffer.from(stampBytes); changedStamp[0] ^= 1;
+  const changedInventory = Buffer.from(inventoryBytes); changedInventory[0] ^= 1;
+  function response(overrides = {}) {
+    const head = overrides.head ?? HEAD;
+    const tree = overrides.tree ?? pin.evaluationTree;
+    const stampValue = overrides.stampValue ?? stampBytes;
+    const inventoryValue = overrides.inventoryValue ?? inventoryBytes;
+    return (rootDir, args) => {
+      assert.equal(rootDir, REPO_ROOT);
+      if (overrides.throwAt === args[0]) throw new Error('original Git failure');
+      if (args[0] === 'rev-parse') {
+        return Buffer.from(args.length === 3 ? `${head}\n${tree}\n`
+          : `${args[1] === 'HEAD' ? head : tree}\n`);
+      }
+      if (args[0] === 'merge-base') {
+        assert.deepEqual(args, ['merge-base', '--is-ancestor', pin.evaluationSha, head]);
+        return Buffer.alloc(0);
+      }
+      if (args[0] === 'show') {
+        return args.length === 3 ? Buffer.concat([stampValue, inventoryValue])
+          : args[1].endsWith(INVENTORY_PATH) ? inventoryValue : stampValue;
+      }
+      assert.fail(`unexpected Git operation: ${args[0]}`);
+    };
+  }
+  for (const overrides of [
+    { head: 'not-a-head' }, { head: HEAD.toUpperCase() }, { head: HEAD + '\n' + HEAD },
+    { tree: '' }, { tree: '0'.repeat(40) }, { tree: pin.evaluationTree + '\nextra-ref' },
+    { stampValue: changedStamp }, { stampValue: stampBytes.subarray(0, stampBytes.length - 1) },
+    { inventoryValue: changedInventory }, { inventoryValue: inventoryBytes.subarray(0, inventoryBytes.length - 1) },
+    { inventoryValue: Buffer.concat([inventoryBytes, Buffer.from('trailing-byte')]) },
+    { throwAt: 'rev-parse' }, { throwAt: 'merge-base' }, { throwAt: 'show' },
+  ]) {
+    assert.throws(() => verifyHistoricalInventoryClaim({ ...input, git: response(overrides) }), expected,
+      JSON.stringify(Object.keys(overrides)));
+  }
+  let tree = pin.evaluationTree;
+  const uncached = (rootDir, args) => response({ tree })(rootDir, args);
+  assert.equal(verifyHistoricalInventoryClaim({ ...input, git: uncached }).currentFileCoverage, false);
+  tree = '0'.repeat(40);
+  assert.throws(() => verifyHistoricalInventoryClaim({ ...input, git: uncached }), expected,
+    'a previous positive result cannot authorize a later changed tree');
+});

@@ -1,3 +1,16 @@
+# Current — one measured historical Git-read cost correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106; sole executor.
+BINDING_BASE_SHA: 39a04e4d257e1a5bda5893168238f700364c71f8
+STATUS: FROZEN_40_SOURCE_CASES_VERIFIED_ORDINARY_COST_AND_DELIVERY_PENDING
+
+Font-size PR2204 is CLOSED at M12 by WRITER_CUSTOM_FONT_SIZE_DELIVERY_CLOSURE_01.json.gz SHA256e6aa471401a6dc812eb22e331bd20231e023630863e6f5eb5f6292e3557cae8b:20 candidate/20 merged CI,312 merged software and5 native cases/3 normal exits;29 physical profiles protected. Original failed profile28 and59 uncovered default skips remain.
+
+The one outstanding owner-approved cost correction changes only repeated immutable historical Git reads5→3. Frozen test e8b0d3e6 retains all939 original lines: genuine RED39pass1fail, identical GREEN40pass0fail/cancel/skip/todo; independent reader8370e41f and strict raw TAP. Ordinary required-run effect and delivery remain pending. All54 tuples,40 mutants,limits/runners/gates remain. App/stage/profiles stay literal: all18 allowed paths are outside1491 stage inputs and1482 ASAR leaves. FullMac/all17 remain UNKNOWN; Word/nativeOffice PAUSED, Black Box after full Mac. After this sole correction return directly to the finite V6/DNA5 queue.
+
+--- Prior factual bodies retain their complete original bytes below ---
+
 # Current task — Writer custom font-size input
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -943,7 +943,9 @@
     "test/unit/writer-line-height-custom-input.test.js",
     "test/unit/writer-custom-font-size-input.test.js",
     "docs/tasks/2026-11-06--writer-custom-font-size-input.md",
-    "test/unit/sector-m-command-surface-ui-fencing.test.js"
+    "test/unit/sector-m-command-surface-ui-fencing.test.js",
+    "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+    "docs/tasks/2026-11-06--one-test-cost-historical-git-reads.md"
   ],
   "protectedFiles": [
     {
@@ -2416,7 +2418,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "01a1fcef7170e037102066833f603de636532179586aba88142926bf8222c191"
+        "sha256": "d069e1cd51a7ba44e5c609a5414c28deae0be045d815a4d5da237d405487ede6"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2864,15 +2866,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "314d8eb9c54a20a887f879f017bc0b9754fbb82f600cd7aa40ed080873ffeb96"
+        "sha256": "010b4cd912e3cf64f0a123a66ce585cd3c64fe0e29b51471050e17e79b1229ec"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "e8e36d2eaf6a1bc7613487217f372f80fb54a1f2e1e8a912b2adae0f6682de8b"
+        "sha256": "4041cb6ac4dc16043f813db5c25f2b1bb0789f40da0e8036aa567bea43dbdce1"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "42c7c2243f9ed8069c0902c06c27b43a5439d7f4bb2163c2ba0bcf69d22dbe76"
+        "sha256": "563db2bae9e26f8eeb86e5fc1962c891a191eadeca8fdd453e021c702524e491"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3544,7 +3546,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "5e948e72fd1cd64b6d5edeb226842273162bd45cb57f87f18b7911bf9f9497f2"
+        "sha256": "a6e7b6db84a1765f3b65cc83f06ae4fd20df757c1db90bdc839bcc3428e6e00b"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4012,7 +4014,7 @@
       },
       {
         "path": "scripts/ops/r24/docs-claim-lint.mjs",
-        "sha256": "2e901d6eb1eeadd04af24efd0822a828b7a81123c0b4c63856edbe3bb47f5285"
+        "sha256": "cc488d0ba124de36c923ff95978fdb0ee0b614df04fc2252efce82db3a2289a5"
       },
       {
         "path": "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs",
@@ -4308,11 +4310,19 @@
       },
       {
         "path": "docs/tasks/2026-11-06--writer-custom-font-size-input.md",
-        "sha256": "881c51b8a5e16f40f73541bc85373b62cc558ffdb7ad61ad0dda0e55935aea26"
+        "sha256": "9b9dfd531558052038d2fd822ddb224a8625de5ad2ee0e0bc563e42171df63d3"
       },
       {
         "path": "test/unit/sector-m-command-surface-ui-fencing.test.js",
         "sha256": "0e71fbedfb06b6b2a78344fc1394286586652de0cb717a0c54aa617f6ddc21ba"
+      },
+      {
+        "path": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+        "sha256": "e8b0d3e650eae3cff0663b8886294044cbc9e4718b50d4772f06dc8357481b56"
+      },
+      {
+        "path": "docs/tasks/2026-11-06--one-test-cost-historical-git-reads.md",
+        "sha256": "038896e9b045776299a80a8c01b58553e662f401b8d619aeb7463704cc641861"
       }
     ],
     "followupRepair": {

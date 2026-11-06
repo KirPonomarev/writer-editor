@@ -31523,6 +31523,48 @@
       "approvedBy": "owner-delegated-codex:YALKEN_WRITER_CUSTOM_FONT_SIZE_INPUT_20261106",
       "approvedAtUtc": "2026-11-06T02:18:58.205202+00:00",
       "rationale": "Existing standing owner current/future technical SHA witness delegation for the bounded custom font-size input correction, maintained current metadata and exact task/test/fencing enrollment. All historical entries and verifier predicates remain literal. This records the delegated technical author, not an independent human reviewer, native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "72959f88818c8be5d767b36d2f845b4b157f25d0f0f13e271109c638274b4e12",
+      "approvedBy": "owner-delegated-codex:YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106",
+      "approvedAtUtc": "2026-11-06T05:45:43.288759+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation for exactly one previously approved measured historical Git-read test-cost correction and its maintained scope/bindings. Preserve all historical records, predicates, coverage and limits. This names the delegated technical executor, not an independent human reviewer, product/native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "0d155e0f37f5fe36b11de2b92df232ef32dac569b2408887a2f61b5092f47c31",
+      "approvedBy": "owner-delegated-codex:YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106",
+      "approvedAtUtc": "2026-11-06T05:45:43.292694+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation for exactly one previously approved measured historical Git-read test-cost correction and its maintained scope/bindings. Preserve all historical records, predicates, coverage and limits. This names the delegated technical executor, not an independent human reviewer, product/native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "cc488d0ba124de36c923ff95978fdb0ee0b614df04fc2252efce82db3a2289a5",
+      "approvedBy": "owner-delegated-codex:YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106",
+      "approvedAtUtc": "2026-11-06T05:45:43.292813+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation for exactly one previously approved measured historical Git-read test-cost correction and its maintained scope/bindings. Preserve all historical records, predicates, coverage and limits. This names the delegated technical executor, not an independent human reviewer, product/native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "sha256": "e8b0d3e650eae3cff0663b8886294044cbc9e4718b50d4772f06dc8357481b56",
+      "approvedBy": "owner-delegated-codex:YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106",
+      "approvedAtUtc": "2026-11-06T05:45:43.292870+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation for exactly one previously approved measured historical Git-read test-cost correction and its maintained scope/bindings. Preserve all historical records, predicates, coverage and limits. This names the delegated technical executor, not an independent human reviewer, product/native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "8a313d5a8b1a0a137db1c08e946eb07e88b404a7d5b155c9e720df283822587a",
+      "approvedBy": "owner-delegated-codex:YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106",
+      "approvedAtUtc": "2026-11-06T05:45:43.292940+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation for exactly one previously approved measured historical Git-read test-cost correction and its maintained scope/bindings. Preserve all historical records, predicates, coverage and limits. This names the delegated technical executor, not an independent human reviewer, product/native acceptance, release or publication permit."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "a6e7b6db84a1765f3b65cc83f06ae4fd20df757c1db90bdc839bcc3428e6e00b",
+      "approvedBy": "owner-delegated-codex:YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106",
+      "approvedAtUtc": "2026-11-06T05:45:43.292988+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation for exactly one previously approved measured historical Git-read test-cost correction and its maintained scope/bindings. Preserve all historical records, predicates, coverage and limits. This names the delegated technical executor, not an independent human reviewer, product/native acceptance, release or publication permit."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",

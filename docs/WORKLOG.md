@@ -1,3 +1,12 @@
+# 2026-11-06 — One approved historical Git-read cost correction
+
+- Accepted closed font-size PR2204 on M12: closuree6aa4714,20 candidate/20 merged CI,312 merged software,5 native cases/3 normal exits; all29 physical profiles and original failure28 retained. Full Mac remains open.
+- Independently reread primary owner39cd7a45 accepting five process corrections. Admitted only the outstanding single measured test-cost optimization at clean M12, with declaration3356b375/preflightsbb1f7982/f965bc83/admissione80488e0 and fresh synthetic scratch40fddba4. Checked10088 source files,29 profiles and7252 bundle entries; no competing writer.
+- Read-only cause probe observed5 equivalent3 immutable Git queries; all108 fixed blob sizes fit the original4MiB. Preserved939 original test lines, appended two regression cases and retained genuine whole-file RED39pass1fail (5 versus3), independent reader8370e41f, identical GREEN40pass without skip/todo. Ordinary speed is not yet measured.
+- Kept original preparation42f373fe, task-parser229468a6 and post-prepare expectation failure receipts. Task wording was corrected before executor edits; finalizer correctly leaves inventory/C2A/RCV/claim bytes literal and changes only DATA/certification metadata. No gate/limit/coverage change. Current chain is pending ordinary required gates and normal delivery; no second outcome started.
+
+--- Prior factual bodies retain their complete original bytes below ---
+
 # 2026-11-05 — Writer reorder native observation and certificate gate refusal
 
 DOCUMENT_CLASS: FACTUAL_STATUS

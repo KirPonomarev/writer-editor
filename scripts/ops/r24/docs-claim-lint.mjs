@@ -365,12 +365,16 @@ export function verifyHistoricalInventoryClaim({ rootDir, stamp, stampBytes, bin
   if (!pin) fail();
   const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
   try {
-    const head = git(rootDir, ['rev-parse','HEAD']).toString().trim();
-    if (!/^[a-f0-9]{40}$/.test(head)) fail();
-    if (git(rootDir, ['rev-parse',`${pin.evaluationSha}^{tree}`]).toString().trim() !== pin.evaluationTree) fail();
+    const refs = git(rootDir, ['rev-parse','HEAD',`${pin.evaluationSha}^{tree}`]).toString().trim().split('\n').map(line => line.trim());
+    const [head, tree] = refs;
+    if (refs.length !== 2 || !/^[a-f0-9]{40}$/.test(head) || tree !== pin.evaluationTree) fail();
     git(rootDir, ['merge-base','--is-ancestor',pin.evaluationSha,head]);
-    if (sha256hex(git(rootDir, ['show',`${pin.evaluationSha}:${stampPath}`])) !== pin.stampSha256) fail();
-    if (sha256hex(git(rootDir, ['show',`${pin.evaluationSha}:${INVENTORY_PATH}`])) !== pin.targetSha256) fail();
+    // Git concatenates these same two immutable blobs without framing.
+    // The already pinned stamp fixes the byte boundary; both hashes still bind.
+    const historicalBytes = git(rootDir, ['show',`${pin.evaluationSha}:${stampPath}`,`${pin.evaluationSha}:${INVENTORY_PATH}`]);
+    const stampLength = Buffer.byteLength(stampBytes);
+    if (sha256hex(historicalBytes.subarray(0, stampLength)) !== pin.stampSha256) fail();
+    if (sha256hex(historicalBytes.subarray(stampLength)) !== pin.targetSha256) fail();
   } catch { fail(); }
   return Object.freeze({ stampId: pin.stampId, targetPath: INVENTORY_PATH, evaluationSha: pin.evaluationSha,
     evaluationTree: pin.evaluationTree, stampSha256: pin.stampSha256, targetSha256: pin.targetSha256,

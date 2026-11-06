@@ -1,3 +1,14 @@
+# 2026-11-06 — One previously approved test-cost correction
+
+TASK: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106
+BASE: 39a04e4d257e1a5bda5893168238f700364c71f8
+SCOPE: existing read-only historical claim Git reads only; no product/native/design/runtime change.
+REASON: primary owner39cd7a45 accepted one bounded measured expensive-test optimization; the preceding font-size chain is now fully closed by e6aa4714. Read-only discriminator proves5 equivalent3 queries; ordinary required-run effect is still pending.
+EXCEPTION: no new canon/gate/limit/coverage waiver. Runtime revalidation is typed nonapplicable because all18 admitted paths are excluded from actual1491 stage/1482 ASAR input sets, with original app/profile physical preservation required. Historical predicate/tuple bytes remain literal. Derived canonical metadata rows are separately counted and inversely reviewed, not unbounded refactoring.
+ROLLBACK: one normal scoped revert, preserving all data/profiles/apps/raw/authority/old historical bytes; after closure return to the finite Mac queue.
+
+--- Historical entries retain their complete original bytes below ---
+
 # 2026-11-05 — Fixed native legal/source-companion supply for the existing private Atlas cohort
 
 TASK: YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105
