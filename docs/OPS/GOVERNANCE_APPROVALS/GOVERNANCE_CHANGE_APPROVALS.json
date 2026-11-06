@@ -31698,6 +31698,20 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
       "approvedAtUtc": "2026-11-06T19:20:43.190835+00:00",
       "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Actual immutable C5 DATA_RUNTIME_REPAIR_PIN refusal exposes three stale array-row hashes; update exactly these to already-committed test/C2A bytes, literal policy digest and489-binding successor/guard. Every800 current row independently matches; historical certificate bytes and all checker predicates/fixed baseline remain. WIP/previous-HEAD probe is not current acceptance. All1493 actual C2 native inputs remain literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "503eda8f55fb82626e8e6e872f8cf117e86471d3b94a221fcfdc946a0e266bb2",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T19:29:00.504604+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Actual C6 namespace contract62/64 refuses stale aggregate of4 current RCV01A bindings. Unchanged official read-only generator and independent Python sorted-key canonical JSON agree on exact new digest; only that derived scalar and current489-binding certificate change. Historical verdict/mode/authority/reviews/records and every certificate predecessor byte retained. No tests/runtime/DATA predicate change; all1493 C2 native inputs literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication acceptance."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "f9f1d9ac4036e0f92d6ee5ed837bca5aef2e0249ab190ef59c3360e087ecd9b2",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T19:29:00.504604+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Actual C6 namespace contract62/64 refuses stale aggregate of4 current RCV01A bindings. Unchanged official read-only generator and independent Python sorted-key canonical JSON agree on exact new digest; only that derived scalar and current489-binding certificate change. Historical verdict/mode/authority/reviews/records and every certificate predecessor byte retained. No tests/runtime/DATA predicate change; all1493 C2 native inputs literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication acceptance."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
