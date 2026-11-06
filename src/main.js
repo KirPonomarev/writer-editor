@@ -19787,6 +19787,7 @@ function normalizeAtlasMatricesPayload(payload = {}) {
     rowLimit: Number.isSafeInteger(Number(source.rowLimit)) ? Number(source.rowLimit) : 8,
     columnLimit: Number.isSafeInteger(Number(source.columnLimit)) ? Number(source.columnLimit) : 8,
     listLimit: Number.isSafeInteger(Number(source.listLimit)) ? Number(source.listLimit) : 24,
+    ...(Object.hasOwn(source, 'sourceScope') ? { sourceScope: source.sourceScope } : {}),
   };
 }
 
@@ -20364,6 +20365,10 @@ async function handleWorkspaceAtlasMatricesQuery(payload = {}) {
   const safePayload = normalizeAtlasMatricesPayload(payload);
   const matricesModule = await loadAtlasMatricesModule();
   try {
+    const sourceScope = matricesModule.normalizeAtlasMatricesSourceScope(safePayload.sourceScope);
+    if (!sourceScope.ok) {
+      return { ok: true, atlasMatrices: makeAtlasMatricesFallback(safePayload.projectId, sourceScope.error.reason) };
+    }
     const { projectId, coreState } = await buildAtlasOverviewCoreState();
     if (safePayload.projectId && safePayload.projectId !== projectId) {
       return {
@@ -20378,6 +20383,7 @@ async function handleWorkspaceAtlasMatricesQuery(payload = {}) {
         rowLimit: safePayload.rowLimit,
         columnLimit: safePayload.columnLimit,
         listLimit: safePayload.listLimit,
+        ...(Object.hasOwn(safePayload, 'sourceScope') ? { sourceScope: sourceScope.value } : {}),
       },
       capabilitySnapshot: {
         platformId: 'node',

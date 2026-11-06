@@ -1,3 +1,14 @@
+# Delivered historical Git-read cost correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CLOSED_BOUNDED_DELIVERY_NOT_FULL_MAC_RELEASE
+CANDIDATE_SHA: a3ac0db9a72d3b7ca89ce067eb44dee864c03e81
+MERGED_SHA: eb16863301ca1fd6db0008f0c57d3fdcbcd892f8
+
+PR2205 closed by ONE_TEST_COST_DELIVERY_CLOSURE_01.json.gz SHA2561f171b6b7aae84acf748298acbd86489ab7a87b2f85a463fa0e9b039e9597017;schema-valid19field final report405ea936. Actual20candidate/20merged CI,249merged TAP,29profile and7252native preservation. Verifier uses3instead of5uncached Git reads. C1 E0/WP104 ordinary times fell10.0/8.6percent,but default baseline was9.45percent slower;no overall speedup claim. Original failures,59default skips and6moderate dev advisories remain. Return directly to V6/DNA5 product,starting existing Atlas matrices source scope;fullMac/all17 remains open.
+
+--- Original task bytes remain complete below ---
+
 # One measured historical inventory Git-read optimization
 
 TASK_ID: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106

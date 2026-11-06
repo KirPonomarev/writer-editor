@@ -1,3 +1,26 @@
+## 2026-11-06 — Matrices actual native and same-chain certificate registration
+
+C0 e584022f: whole29-file1697 source cases pass with raw59fe270a; rebuilt43.8.4/15d14a8b and two ordinary native AUTHOR/cold waits0. Independent raw AX/source/profile oracle1fba0024 verifies12 observation rows, keyboard/refusals/recovery, all Atlas/tree/four scene bytes and closed30baseline793811dc. Extra empty draft fixture deviation and all original failures retained.
+
+Mandatory current certificate gate2459dd74 locates missing complete successor/selection, with all484 currentGit/physical hashes independently exact6a2e38ad. Prospective patch85d7da1a and clean exact-C0 declaration6c06b5b7/preflight7e179e54 precede same-scope correction. No remaining expensive E0/WP104/C1C/RTK/default has run; normal delivery and fresh merged native still required. Full Mac/all17 remain open.
+
+# 2026-11-06 — Atlas Matrices source proof and maintained renderer
+
+- Exact two-field old-host initialization follows clean preflight/taskE0;inverse d1fb80c8 preserves every original assertion/case body. Complete maintained five-file588GREEN6180ca5c;new whole33GREENa5da9507 andall original failures retained.
+- Main syntax4ba885dc andnormal buildf34e1402 pass;scope9637c1ae reads10091tracked paths,only editor.bundle.js changes during build,29old profiles/7252native entries held. Current metadata,actual immutable native/full required gates/normal delivery remain pending.
+
+# 2026-11-06 — Atlas Matrices source and exact old-host diagnosis
+
+- Original31RED has29assertions plus one missing-field probe andone capability control;no false assertion credit. First31GREENf52f66d4;two appended frozen risk cases preserve that entire prefix,produce31pass2fail7a3d156e,then identical33GREENa5da9507 after dirty/error guards. Original test/reader failures retained.
+- Original five direct files588/570/18 locate missing new state in one old finite host. Exact external two-field insertion8df90f4b makes its whole568cases pass2671b07c;all assertions and case bodies unchanged.
+- Ordinary unaccepted local checkpoint7a7f676f preserves ten WIP paths. Scope23 declarationd88d0726/preflight413b4985 prospectively admit exactly the old host initializer and traceability;no runtime guard weakening,native or delivery acceptance.
+
+# 2026-11-06 — Return to V6/DNA5: Atlas Matrices source scope
+
+- Closed the one approved OPS optimization through PR2205 normal M13 delivery:20candidate/20mergedCI,249mergedTAP,29old profiles;closure1f171b6b. Preserve failed C0CI,reader errors and9.45percent slower default baseline;no overall speedup claim.
+- Admitted one product vertical slice on clean M13:existing matrix book/current saved scene/saved fragment read scopes. Declaration466bb66f,preflight0351f867 andbranch/scratch admissiond3ae51ae follow full normative/scoped factual startup and10089source/29profile protection.
+- No executor edit or product acceptance yet. TaskE0,frozen meaningful RED/GREEN,new actual native,mandatory gates andfull normal delivery precede acceptance. No semantic relation auto-promotion or all15/all17 completion.
+
 # 2026-11-06 — PR2205 exact legacy fault-adapter correction
 
 - C0 3e8b2692 completed22 local rows and independent full raw readback40d966cf, with original40 genuine E0 kills/8200 observations, baseline4425/4366pass/59uncovered and one-sample ordinary reductions9.6/8.3/4.7percent. Guarded push and PR2205 followed.

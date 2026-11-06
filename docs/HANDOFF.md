@@ -1,3 +1,47 @@
+## CURRENT HANDOFF: same Matrices delivery, C0 native completed before remaining expensive gates
+
+Sole task remains YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106, source C0 e584022f, original delivery/rollback M13. Whole affected1697 pass raw59fe270a; native AUTHOR/cold actual waits0, own profile30, raw native oracle1fba0024, complete closed30baseline793811dc. All original Atlas/tree/four scene bytes are literal after Undo/Save and cold; all original29 profiles and old apps held. Preserve fixture prediction3-versus-actual4 empty-draft deviation421a1053.
+
+Current stop for product push is certificate registration: gate2459dd74, complete current483bindings+guard verified in actual484Git objects6a2e38ad; patch85d7da1a adds only inherited complete successor and selection membership. Declaration6c06b5b7/preflight7e179e54 admit this same23path chain on cleanC0 before edits. C1 nonpackaged changes must exclude all1491stage inputs and retain actual native sourceC0. Do not start another contour, weaken predicates, repeat healthy broad/native work, or call this full Mac. Next: finish current registration/current companions, run all remaining required gates on immutable candidate, normal full delivery and actual fresh merged verification/native.
+
+# Resume — Atlas Matrices source complete, candidate/native delivery next
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106; sole executor.
+BASE: own checkpoint7a7f676f;original M13 delivery/rollback unchanged.
+STATUS: SOURCE_33_AND_588_VERIFIED_NATIVE_AND_DELIVERY_PENDING
+
+NEXT: maintain only three necessary source memberships andcurrent483bindings with unchanged seven-target factory andappend-only technical witnesses;freeze one candidate,then separately admit actual rebuilt native scopes/keyboard/unsaved/stale/Save/Quit/cold andindependent author/evidence oracle. Full required original local/CI/merge/exact merged/native remain mandatory before closure. No new independent outcome,old-profile/lease reuse or runtime guard weakening.
+
+PROOFS: frozen33805f394f GREENa5da9507,original31prefixdce34d39;prospective same-generation-dirty/rejected-read RED7a3d156e retained. Existing-host admission03633c85/preflight413b4985/taskE01805bcaf precedes exact two-field edit;inversed1fb80c8 andmaintained full588GREEN6180ca5c. Main syntax4ba885dc,bundlebuildf34e1402,all10091source/build scope9637c1ae,29protected profiles. All original failures remain. Full Mac15cells/fourprojections/all17 unqualified;Office PAUSED,BlackBox later.
+
+--- Earlier factual bodies remain complete below ---
+
+# Resume — same Atlas scope chain, two-field existing-host compatibility
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106; sole executor.
+BASE: own unaccepted checkpoint7a7f676f;original delivery/rollback M13 eb168633 unchanged.
+STATUS: FROZEN_33_VERIFIED_EXISTING_HOST_COMPATIBILITY_AND_DELIVERY_PENDING
+
+NEXT: apply only pinned host initializer8df90f4b after amended taskE0;prove literal whole-file inverse and complete maintained588case five-file GREEN. Preserve whole33test805f394f,original31prefixdce34d39,all old assertions/runtime guards and original failures. Counterfactual whole568passed2671b07c without repo mutation. Fresh scope23 declarationd88d0726/preflight413b4985 precede host write. No product push/native acceptance yet;current metadata/actual rebuilt native/full required gates/normal delivery and exact merged verification remain mandatory. All29profiles/apps protected;single agent,no new chat/model/service. Full V6/DNA5/all17 open.
+
+--- Prior factual bodies remain complete below ---
+
+# Resume — Atlas Matrices saved source scope
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106; one executor.
+BASE: eb16863301ca1fd6db0008f0c57d3fdcbcd892f8
+BRANCH: codex/atlas-matrices-source-scope-20261106
+STATUS: ADMITTED_TEST_FIRST_NO_PRODUCT_ACCEPTANCE
+
+NEXT: taskE0,then freeze whole actual Core/derived/Main/renderer scope cases and genuine original-source RED before the one scoped-query fix. Preserve legacy book and whole-book heatmap/time/ledger,trust/suppression/source identity,no-loss,all29profiles/7252native entries and10089baseline bytes outside21paths. New actual source-bound native and normal full delivery/merged proof remain mandatory;no current app acceptance yet.
+
+PREDECESSOR_CLOSED: PR2205 M13 closure1f171b6b binds20candidate/20mergedCI,249mergedTAP,29profiles andschema-valid19field report405ea936. Final source/guardrailsd5d14006/16a0628f. Original failed CI and external reader expectation failures remain;default baseline9.45percent slower is explicit,no overall speedup. New declaration466bb66f/preflight0351f867/admissiond3ae51ae,scratch9af0f515,source/profiles verified before writes. Full V6/DNA5/all17 open;Word/nativeOffice PAUSED,BlackBox later. No extra optimization,agent/model/chat/service or old lease/profile reuse.
+
+--- Prior factual bodies remain complete below ---
+
 # Resume — same PR2205 historical Git adapter correction
 
 DOCUMENT_CLASS: FACTUAL_STATUS

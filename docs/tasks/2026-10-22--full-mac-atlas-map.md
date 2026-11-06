@@ -1,3 +1,19 @@
+## CURRENT — source-scope Matrices native observed; delivery remains pending
+
+One observation/co-occurrence outcome only: actual C0 e584022f app43.8.4/ASAR15d14a8b supports explicit book/saved scene/saved fragment, including real empty/stale/unsaved refusal and keyboard/Save/Quit/cold. Native independent reader1fba0024 and closed30baseline793811dc retain source/Atlas/tree bytes and original fixture extra-empty-draft deviation421a1053. Whole affected1697 source cases pass raw59fe270a. These are three source controls, not authored semantic relations or completed15cells/four projections/all17.
+
+The same delivery needs a missing current certificate successor/selection registration: original gate2459dd74; all483leaf+1guard Git bytes exact6a2e38ad; prospective patch85d7da1a, clean C0 declaration6c06b5b7/preflight7e179e54 before correction. Current companions, immutable full gates, normal delivery and fresh merged native remain required; no new independent product contour.
+
+# Current bounded continuation — 2026-11-06
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+OBSERVED_SOURCE_SHA: eb16863301ca1fd6db0008f0c57d3fdcbcd892f8
+CLAIM_BOUNDARY: Finite existing full-Mac queue;no release qualification promotion.
+
+The intervening delivered product receipts and one approved OPS correction remain bound to their exact SHAs. Latest PR2205 closure1f171b6b has20candidate/20mergedCI,249mergedTAP and29protected profiles;not a Mac release. Current stages04/05 concrete gap:existing matrix query derives only book and drops any narrower source descriptor. One admitted outcome now targets book/current saved scene/saved fragment observations and co-occurrences using current read-only projections;no new canonical semantic relationship or completion of any full15cell/17row denominator is implied. Actual native/full delivery is still pending for that new outcome. Frozen V2 scope and all historical bodies below remain unchanged;Deep/WSE/Pulse/ENV/final-workload/channel/audits/permit obligations remain.
+
+--- Original task and17row/12stage mapping remain complete below ---
+
 # Full macOS scope and first Atlas map availability
 
 TASK_ID: YALKEN_FULL_MAC_ATLAS_MAP_20261022

@@ -1,3 +1,11 @@
+# 2026-11-06 — Atlas Matrices finite-host initial-state compatibility
+
+TASK: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106
+BASE: clean own checkpoint7a7f676f;original M13 delivery/rollback base unchanged.
+REASON: original five-consumer run has18failures because one finite renderer host omits two new real scope-state fields. External exact two-field insertion8df90f4b makes its whole568cases pass2671b07c without changing repository files or predicates.
+EXCEPTION: declarationd88d0726/preflight413b4985 prospectively extend the same outcome to this one host initializer. Preserve every old assertion,case body,mode,fanout,roster and other byte;no runtime guard or gate weakening. The old every-test-byte protection is revised only for these two default fields. Scope23 and1800substantive-line budget;original failures retained.
+ROLLBACK: revert this one source-scope outcome and the two initializers together;preserve all data/profiles/apps/source/frozen evidence/history. Maintained whole588 and full native/delivery remain required.
+
 # 2026-11-06 — Same-PR historical Git fault-adapter compatibility
 
 TASK: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106

@@ -1,3 +1,46 @@
+## CURRENT: Matrices C0 native observed; same-chain namespace registration correction
+
+C0 e584022f has whole29-file1697 source cases verified by raw reader59fe270a. Actual43.8.4 app/ASAR15d14a8b passed source-bound book/scene/fragment, empty/stale/unsaved refusal, keyboard/grid and ordinary Save/Quit/cold observations; independent raw native/data reader1fba0024 preserves every original Atlas/tree/four scene byte and closed30baseline793811dc. Two actual native waits return0. The original fixture3-source prediction differed because an empty default draft was opened; pre-probe source binding421a1053 explicitly retains the actual4-source universe and original mismatch.
+
+Current certificate gate2459dd74 fails because the new483-leaf delta lacks a complete inherited successor/selection entry. Actual484Git/physical-object read6a2e38ad proves exact hashes and the missing registration; prospective patch85d7da1a adds only that configuration. Clean exact-C0 declaration6c06b5b7/preflight7e179e54 and separate admission precede edits. Keep all old predicates/history/native/profile bytes, native execution labelledC0, full required software/current input bridge/normal PR-CI-merge/fresh merged native still pending. Full15/four projections/all17 Mac remain open.
+
+# Current — Atlas Matrices source and original callers verified
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106; sole executor.
+BINDING_BASE_SHA: 7a7f676f57976278c44ef74e481a8d7442d5839d
+STATUS: SOURCE_33_AND_588_VERIFIED_NATIVE_AND_DELIVERY_PENDING
+
+Whole frozen33source cases passa5da9507;original31file prefix remains literal. Exact existing-host two-field patch was admitted before write and inversely proved d1fb80c8;complete maintained original five files pass588of5886180ca5c,all original assertions/case bodies held. Main syntax4ba885dc andnormal renderer buildf34e1402 pass;scope9637c1ae checks10091tracked paths andonly expected bundle changes. All29old profiles/7252native entries remain literal. Original REDs,18old-host failures andtask/reader method failures stay retained.
+
+One product outcome now has source proof for explicit book/saved scene/saved fragment observation matrices;native/current metadata/immutable candidate/full required gates/normal delivery andmerged proof still pending. Current source scope adds no authored semantic relation or product writer. Full V6/DNA5/all15/all17 remains open;Office PAUSED,BlackBox after fullMac. Predecessor PR2205 closure1f171b6b remains bounded andcomplete,no further optimization series.
+
+--- Earlier factual bodies remain complete below ---
+
+# Current — Atlas Matrices source verified; existing-host amendment admitted
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106; sole executor.
+BINDING_BASE_SHA: 7a7f676f57976278c44ef74e481a8d7442d5839d
+STATUS: FROZEN_33_VERIFIED_EXISTING_HOST_COMPATIBILITY_AND_DELIVERY_PENDING
+
+The original31case file remains a literal prefix;two prospectively frozen boundary cases exposed same-generation dirty risk and unhandled read rejection. Identical whole33 now passesa5da9507;original RED352e443a and supplemental31pass2fail7a3d156e remain. Five original direct callers have588tests570pass18fail8f4ed667 from one missing two-field VM host context. External exact initializer insertion8df90f4b makes unchanged568cases pass2671b07c;this is diagnostic,not maintained/native acceptance. Clean unaccepted checkpoint7a7f676f preserves WIP. Declarationd88d0726/preflight413b4985 admit23paths and only that host initialization/traceability before edit. Runtime source guards remain;all old assertions/cases must stay literal. Native,metadata,mandatory baseline and normal delivery pending;fullMac/all17 open.
+
+--- Prior factual bodies remain complete below ---
+
+# Current — Atlas Matrices saved source scope
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106; sole executor.
+BINDING_BASE_SHA: eb16863301ca1fd6db0008f0c57d3fdcbcd892f8
+STATUS: ADMITTED_TEST_FIRST_NO_PRODUCT_ACCEPTANCE
+
+PR2205 is fully CLOSED by ONE_TEST_COST_DELIVERY_CLOSURE_01.json.gz SHA2561f171b6b7aae84acf748298acbd86489ab7a87b2f85a463fa0e9b039e9597017:20candidate/20merged CI,249merged TAP and29protected profiles. Its default single-sample baseline is9.45percent slower;no overall speedup claim. All old failures,59uncovered default skips and6moderate dev audit findings remain.
+
+Next product outcome restores explicit book/current saved scene/saved fragment scope in the existing read-only matrices. Current Main drops scope;source observation9c8d65cd is C1 execution of identical Main bytes,not new native proof. Declaration466bb66f/preflight0351f867/admissiond3ae51ae precede writes;new owned scratch9af0f515. Existing aggregate/temporal builders,query/profile/scheduler,current-scene source and selection are reused. No authored relationship,Core schema,writer or full15cell claim. Frozen RED/GREEN,new native/full delivery still required. Full V6/DNA5/all17 remains ACTIVE;Office PAUSED,BlackBox after fullMac.
+
+--- Prior factual bodies remain complete below ---
+
 # Current — PR2205 legacy Git fault-adapter compatibility
 
 DOCUMENT_CLASS: FACTUAL_STATUS
