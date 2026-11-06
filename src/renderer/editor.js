@@ -24767,23 +24767,32 @@ function promptForCustomFontSize() {
   return normalizedSize;
 }
 
-function promptForCustomLineHeight() {
-  const currentValue = lineHeightSelect?.value && !lineHeightSelect.value.startsWith('__')
-    ? lineHeightSelect.value
-    : String(editor?.style.lineHeight || '1.0');
-  const response = window.prompt('Line height', currentValue);
-  if (response === null) return;
-  const nextValue = Number(response);
-  if (!Number.isFinite(nextValue) || nextValue <= 0) {
-    updateStatusText('Некорректный интерлиньяж');
-    if (lineHeightSelect) {
-      lineHeightSelect.value = String(editor?.style.lineHeight || '1.0');
-    }
-    return;
+async function promptForCustomLineHeight() {
+  const target = { projectId: currentProjectId, documentId: currentDocumentId, epoch: atlasPublicationEpoch,
+    editGeneration: localEditGeneration, formGeneration: fullEnvironmentFormGeneration,
+    profile: window.__PRODUCT_PROFILE, editor };
+  const isCurrent = () => currentProjectId === target.projectId && currentDocumentId === target.documentId
+    && atlasPublicationEpoch === target.epoch && localEditGeneration === target.editGeneration
+    && fullEnvironmentFormGeneration === target.formGeneration && window.__PRODUCT_PROFILE === target.profile
+    && editor === target.editor && editor?.isConnected;
+  const currentValue = String(editor?.style.lineHeight || '1.0');
+  ensureSelectHasOption(lineHeightSelect, currentValue, currentValue, '__custom_line_height__');
+  if (lineHeightSelect) lineHeightSelect.value = currentValue;
+  syncLiteralToolbarDisplays();
+  const normalize = value => ({ ok: typeof value === 'string' && Number.isFinite(Number(value))
+    && Number(value) >= 0.5 && Number(value) <= 4 });
+  let response;
+  try {
+    response = await openLinkDialog({ title: 'Интерлиньяж', initialValue: currentValue, canRemove: false,
+      fieldLabel: 'Межстрочный интервал', inputMode: 'decimal', submitLabel: 'Применить', cancelLabel: 'Отмена',
+      errorMessage: 'Введите число от 0.5 до 4.', normalize });
+  } catch (error) {
+    if (isCurrent()) updateStatusText('Не удалось открыть ввод интерлиньяжа', { visible: true });
+    throw error;
   }
-  const normalizedValue = String(Number(nextValue.toFixed(3)));
-  ensureSelectHasOption(lineHeightSelect, normalizedValue, normalizedValue, '__custom_line_height__');
-  applyLineHeight(normalizedValue);
+  if (response === null || !isCurrent()) return;
+  if (!normalize(response).ok) { updateStatusText('Некорректный интерлиньяж'); return; }
+  applyLineHeight(String(Number(Number(response).toFixed(3))));
 }
 
 function loadSavedFont() {
@@ -26010,7 +26019,7 @@ if (sizeSelect) {
 if (lineHeightSelect) {
   lineHeightSelect.addEventListener('change', (event) => {
     if (event.target.value === '__custom_line_height__') {
-      promptForCustomLineHeight();
+      void promptForCustomLineHeight().catch(error => console.error('Custom line-height input failed', error));
       return;
     }
     applyLineHeight(event.target.value);
@@ -26061,9 +26070,6 @@ function applyLiteralToolbarMasterVisualDefaults() {
   }
   if (weightSelect) {
     weightSelect.value = 'light';
-  }
-  if (lineHeightSelect) {
-    lineHeightSelect.value = '1.0';
   }
   applyFontWeight('light', false);
   if (editor) {

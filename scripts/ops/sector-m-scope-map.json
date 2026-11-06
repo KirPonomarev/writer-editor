@@ -563,7 +563,10 @@
       "test/unit/atlas-language-resource-builder.test.js",
       "docs/tasks/2026-11-05--atlas-native-source-notices.md",
       "test/unit/project-tree-reorder-identity.test.js",
-      "docs/tasks/2026-11-05--writer-tree-reorder-identity.md"
+      "docs/tasks/2026-11-05--writer-tree-reorder-identity.md",
+      "test/unit/writer-line-height-field-coherence.test.js",
+      "docs/tasks/2026-11-05--writer-line-height-field-coherence.md",
+      "test/unit/writer-line-height-custom-input.test.js"
     ]
   },
   "allowPrefixByPhase": {

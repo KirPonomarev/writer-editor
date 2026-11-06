@@ -1,3 +1,34 @@
+# Current task — Writer custom line-height native correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_WRITER_LINE_HEIGHT_FIELD_COHERENCE_20261105; sole executor, same unclosed delivery chain.
+BINDING_BASE_SHA: de87e5bfeb191b0895fb4c5caa51164cf968b38b
+OBSERVED_CANDIDATE_SHA: ffae6ec9980c4665e74a46166d8b81a17f7c184d
+STATUS: CUSTOM_INPUT_SOURCE_23_VERIFIED_NATIVE_DELIVERY_PENDING
+
+C0 actual native default1.625, selected1.75 and cold1.75 agree with Settings and independently decoded real ENV captures; every scene byte and tree identity held. Other... opens no custom input: bundled Electron window.prompt throws unsupported. Custom1.37 and cold-custom were not executed. Original native gate failurefc67b45a remains FAIL; normal Quit/wait0 for both sessions, complete closed profile24 and all23 prior profiles retained. Source6/affected84 remain bounded evidence; no push/PR/merge/native acceptance.
+
+Source correction: existing modal replaces only custom window.prompt; applied control is restored before waiting, accepted values retain existing apply/ENV path, and stale async replies are refused. Frozen separate23 tests: original1pass22assertion-RED, identical23pass. Whole affected/modal129pass plus separately executed declared U6 full-flag1pass; original skipped row and harness failures retained. Old frozen6 held and executed in the affected set; actual native/full gates/delivery remain pending.
+
+NEXT: same line-height field result, replace only unsupported custom prompt with the existing validated transient modal, restore truthful control on cancel/error and reject stale async responses. Preserve frozen6, add separate whole custom-input RED/GREEN test, maintained enrollment/finalizer and all mandatory gates; new immutable actual native/cold before normal delivery. Correction declaration8df05056/preflightfdabcb6c passed before edits; fresh admitted T17 replaces OS-cleared old T14. FullMac/all17 and public distribution remain unaccepted; Word/nativeOffice PAUSED, BlackBox after fullMac.
+
+--- Prior factual bodies retain their complete original bytes below ---
+
+# Current task — Writer line-height field coherence
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_WRITER_LINE_HEIGHT_FIELD_COHERENCE_20261105; sole executor, one current delivery chain.
+BINDING_BASE_SHA: de87e5bfeb191b0895fb4c5caa51164cf968b38b
+STATUS: SOURCE_FROZEN_6_AND_AFFECTED_84_VERIFIED_NATIVE_DELIVERY_PENDING
+
+Previous PR2202 is CLOSED on M10 by c51f1a3ae8be8cd119e2343cf14cdac0e66c3b55be761f522273a281bcbbb245: all20 merged CI jobs,747 local merged cases, literal10083-source readback and actual rebuilt native/cold with independent data/profile proof. All23 closed profiles remain physical and protected. The prior C0_PENDING blocks below are historical observations, not current delivery state; original failures/receipts remain intact.
+
+Read-only actual-function diagnosis observes applied default1.625, saved1.25 and custom1.37 retained in style/ENV while literal initialization replaces selector/display with1.0; saved1.0 and nonliteral controls agree. Both DocV2 canaries contain no line-height attribute and all31 project files held through cold. This is a field representation defect, not proven persisted typography loss. Frozen test e4b35f02 has genuine unchanged-runtime2pass4fail and identical corrected6pass; the only runtime source change removes three misleading selector-reset lines. All nine affected inputs pass84 cases with0fail/skip/todo; maintained renderer build0. Native and delivery acceptance are pending.
+
+NEXT: finish current bindings and immutable candidate, mandatory gates, separate actual native admission/build/field and cold proof, normal full delivery and exact merged verification. Preserve typography, data, guarded ENV and all original tests. Full V6/DNA5 Mac/all17/fullDeep/public distribution remain unaccepted; Word/nativeOfficePAUSED, BlackBox after fullMac.
+
+--- Prior factual bodies retain their complete original bytes below ---
+
 # Current task — Writer reorder native observation and metadata completion
 
 DOCUMENT_CLASS: FACTUAL_STATUS

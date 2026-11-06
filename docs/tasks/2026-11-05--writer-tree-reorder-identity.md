@@ -5,9 +5,10 @@ TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
 BINDING_BASE_SHA: 176e65b7a7e7f97e107f9b667989743485f84e84
-STATUS: C0_NATIVE_OBSERVED_CERTIFICATE_ENROLLMENT_REPAIR_PENDING
+STATUS: DELIVERED_M10_BOUNDED_REORDER_VERIFIED
 DOCUMENT_CLASS: PROCESS
 CLAIM_BOUNDARY: Ordinary authored Up and Down through existing canonical tree mutation; no full Mac release, drag/drop or independent visual change.
+DELIVERY_CLOSURE: PR2202 normally merged de87e5bfeb191b0895fb4c5caa51164cf968b38b; receipt c51f1a3ae8be8cd119e2343cf14cdac0e66c3b55be761f522273a281bcbbb245. All20 merged CI and747 local merged cases plus actual rebuilt native/cold verified. Historical C0 pending records below retain their original identity; fullMac/all17 remain open.
 
 ## MICRO_GOAL
 

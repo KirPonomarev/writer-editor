@@ -937,7 +937,10 @@
     "docs/OPS/STATUS/ATLAS_OFFLINE_LANGUAGE_ENGINE_DECISION_V1.json",
     "docs/tasks/2026-11-05--atlas-native-source-notices.md",
     "test/unit/project-tree-reorder-identity.test.js",
-    "docs/tasks/2026-11-05--writer-tree-reorder-identity.md"
+    "docs/tasks/2026-11-05--writer-tree-reorder-identity.md",
+    "test/unit/writer-line-height-field-coherence.test.js",
+    "docs/tasks/2026-11-05--writer-line-height-field-coherence.md",
+    "test/unit/writer-line-height-custom-input.test.js"
   ],
   "protectedFiles": [
     {
@@ -1178,7 +1181,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "4e379b1ce7f2cf1d2a402d4a13d108871b0f8e8ad2291506171115a8140ee92e"
+        "sha256": "c785658f51278efe2844f629645e58b765d1530c017928d4325404d143ac2cd0"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1342,7 +1345,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "f102c83472f678396212b6bab40f435598976e9b97ee25bf92465fecf34a9a9f"
+        "sha256": "65a8f796a20b58ae14326b5a4d3dcfac06c341263ddb17f11c5d3674d1477bfd"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2410,7 +2413,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "13b165b553416be752550942e733697887e5d9d655109a452d70f79f614ddeef"
+        "sha256": "9959c381d20e017737b3838145bd80894f4c59fc5e7be6c784f9770a3cab084e"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2858,15 +2861,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "7085dc12f657d566ea06913e9138ae81791bacc99a7b66f2363089c56e5df7e9"
+        "sha256": "73815d64ed0fdb2f953eda27ee12b458d89db256a64c1d49c0b005bad2ff0d0d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "3dfa4ba696ab2f5670bdaef967b9b75b2f50c931e3f1c65e15287a5894927fca"
+        "sha256": "8f1ca9c5622b0b7de4849919a54a3ef0bcc86b0f68fa915d2a1a227aba0d7731"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "3246dd354fcb84d61e56b10db79a78c3937e6d0c89a30453cd30c0a9e35bff34"
+        "sha256": "c2ad6df742379ab2193ac17ff0a7572d6716bd2e45895452ff78870d10b67d0a"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3406,7 +3409,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "3e81589259f3a107cfb21dec49cf38862a4d8710099d506619594a184e32942c"
+        "sha256": "48fe7f8912c42f4e01ac73dc800ed67d1439b64d5ba0c3e88e60b254147626d9"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3538,7 +3541,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "df5c48179ffffb4882f098d0824f1e61ced552d45e3d5093d297125fd4e116af"
+        "sha256": "3f1d0cc9e99b2556b2d10993edee2bfc0481067791c956955902b065cbd16eaa"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4282,7 +4285,19 @@
       },
       {
         "path": "docs/tasks/2026-11-05--writer-tree-reorder-identity.md",
-        "sha256": "7a6de48b74c7ac57ca3a8c625c7c8315862fc9447330fdd2def63c10cb79c946"
+        "sha256": "e2383974c9767511d665cd019259cf51bd1099f78258becf4e8f7b5aabd0824d"
+      },
+      {
+        "path": "test/unit/writer-line-height-field-coherence.test.js",
+        "sha256": "e4b35f02b609cb9c11e140f528459db9cdc88d901782fe6939c56b0c58f41372"
+      },
+      {
+        "path": "docs/tasks/2026-11-05--writer-line-height-field-coherence.md",
+        "sha256": "70cdf053da944244db2687b23a93aef75401dd526c4ba01f814f673fba77fabc"
+      },
+      {
+        "path": "test/unit/writer-line-height-custom-input.test.js",
+        "sha256": "72ca0d54cfccb3b44fec3d2d08060e6a10b0c0587366efea69100375a091971d"
       }
     ],
     "followupRepair": {
