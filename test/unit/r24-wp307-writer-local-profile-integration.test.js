@@ -4466,8 +4466,8 @@ async function environmentEpochSettingsRenderer(x, { actualAggregation = false }
     emit(name) { return this.listeners[name]?.({ target: this }); }
   }
   document.createElement = tag => new Element(tag); document.body = new Element('body');
-  assert.equal(x.h.main.__profile().profileId, SCENE_LANGUAGE_V12);
-  const c = { document, HTMLElement: Element, window: { __PRODUCT_PROFILE: SCENE_LANGUAGE_V12 }, console,
+  assert.equal(x.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13');
+  const c = { document, HTMLElement: Element, window: { __PRODUCT_PROFILE: 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13' }, console,
     currentProjectId: x.projectId, currentDocumentId: x.sceneId, currentTreeContentPublicationId: 'actual-main-scene',
     localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false,
     fullEnvironmentToolbarProjection: null, fullEnvironmentProjecting: false,
@@ -4901,8 +4901,8 @@ test('THEME summary valid historical V1 profile remains an actual allowed Theme 
   const f = await themeSummaryFixture(t), before = themeSummaryRemember(f); f.x.h.main.__host.revokeProfile();
   const active = f.x.h.main.__profile(); assert.equal(active.profileId, 'WRITER_LOCAL_V1');
   assert.equal(profile.evaluateWriterLocalCommandAccess({ profile: active, commandId: THEME_SUMMARY_COMMAND_ID }).allowed, true);
-  // Match the existing valid V1 Main projection with its expected caller identity; stale V12 is a different negative.
-  const frame = new URL(f.x.h.shellUrl); assert.equal(frame.searchParams.get('PRODUCT_PROFILE'), SCENE_LANGUAGE_V12);
+  // Match the existing valid V1 Main projection with its expected caller identity; a stale current caller is a different negative.
+  const frame = new URL(f.x.h.shellUrl); assert.equal(frame.searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13');
   frame.searchParams.set('PRODUCT_PROFILE', active.profileId); f.x.h.shellUrl = frame.href;
   f.c.window.__PRODUCT_PROFILE = active.profileId;
   await f.change('dark'); assertThemeSummaryApplied(f, t, 'ACTUAL_VALID_V1_POLICY_CONTROL'); assertThemeSummaryNoLoss(f, before);

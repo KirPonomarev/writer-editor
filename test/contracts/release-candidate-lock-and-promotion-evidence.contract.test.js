@@ -631,7 +631,7 @@ test('full Mac V2 protects all ordinary safety interchange review and unknown qu
 
 test('full Mac V2 uses independent current source pins and refuses each omission byte change and joint reseal', async t => {
   const input = await fullMacInputs(), paths = Object.keys(input.api.FIRST_MAC_RELEASE_V2_SOURCE_PINS);
-  assert.equal(paths.length, 66); assert.notDeepEqual(input.cut.sourceBindings, input.api.FIRST_MAC_RELEASE_SOURCE_PINS);
+  assert.equal(paths.length, 69); assert.notDeepEqual(input.cut.sourceBindings, input.api.FIRST_MAC_RELEASE_SOURCE_PINS);
   for (const source of paths) await t.test(source, child => {
     const sources = { ...input.sources, [source]: Buffer.concat([input.sources[source], Buffer.from('\n// untrusted source change\n')]) };
     fullMacRefused(child, input, 'byte changed:' + source, () => {}, /^E_FULL_MAC_SOURCE_DRIFT:/u, sources);
