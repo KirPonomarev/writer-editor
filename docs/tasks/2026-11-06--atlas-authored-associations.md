@@ -24,7 +24,7 @@ PREDECESSOR: PR2206 M14 bounded CLOSED, closureed0f5be2 and schema-valid report0
 
 One outcome: the author explicitly records a typed/directed relationship between two owned Atlas entities from a saved selection, corrects or withdraws it with full revision retention, sees saved source-bound rows, navigates to the exact source and retains the result after real cold reopen. One rollback and one delivery chain.
 
-O: Independently decoded saved records/revisions/evidence match explicit author input and actual UI, with ordinary cold retention. T: saved scene/Core -> Kernel command/CAS/atomic manifest -> immutable typed projection -> existing Relation slot. H: current Main/Core registries have no association command and compiler modules are unwired; a single additive Core command and current read adapter will persist only explicit author assertions while leaving observation/co-occurrence truth unchanged. B: all pre-existing source outside39paths,manuscript/author/history/unknown data,31old profiles andthree qualified apps. P: cheap actual current-route refusal, strict source/Main/renderer negatives and independent oracle,early native,mandatory full gates andnormal complete delivery/merged proof. I: exact M14/registered branch,39path declaration29e17d26/preflight163f2a2e/admissionef2dcb1a before first repository edit;source10091/profiles31/bundles3 already reread.
+O: Independently decoded saved records/revisions/evidence match explicit author input and actual UI, with ordinary cold retention. T: saved scene/Core -> Kernel command/CAS/atomic manifest -> immutable typed projection -> existing Relation slot. H: current Main/Core registries have no association command and compiler modules are unwired; a single additive Core command and current read adapter will persist only explicit author assertions while leaving observation/co-occurrence truth unchanged. B: all pre-existing source outside40paths,manuscript/author/history/unknown data,31old profiles andthree qualified apps. P: cheap actual current-route refusal, strict source/Main/renderer negatives and independent oracle,early native,mandatory full gates andnormal complete delivery/merged proof. I: exact M14/registered branch,39path declaration29e17d26/preflight163f2a2e/admissionef2dcb1a before first repository edit;source10091/profiles31/bundles3 already reread.
 
 ## ARTIFACT
 
@@ -44,6 +44,7 @@ Before product edits, align current CONTEXT/HANDOFF and the prior Matrices task:
 - src/main.js
 - src/derived/atlas/deriveAtlasAuthoredAssociations.mjs
 - src/renderer/editor.js
+- src/renderer/commands/projectCommands.mjs
 - src/renderer/editor.bundle.js
 - src/renderer/flags.js
 - src/renderer/commands/capabilityPolicy.mjs
@@ -74,9 +75,19 @@ Before product edits, align current CONTEXT/HANDOFF and the prior Matrices task:
 - docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
 - docs/tasks/2026-11-06--atlas-matrices-source-scope.md
 
+### SAME-OUTCOME SOURCE CALLER AMENDMENT
+
+CURRENT_SOURCE_OBSERVATION: corrected whole74passes7a003bd7 with independent full COPY/source readback99515ff1; first source-relay, selected-catalog and retained-fixture errors remain original RED9b9b893c. Normal renderer build0, cheap actual constructor and69pin/current V13 cut prerequisites pass. Actual app/cold/full gates/delivery remain unproved; preserve the fresh retained COPY root, not its directory permissions.
+
+Original delivery/rollback base and initial39path admission remain M14; own unaccepted checkpoint7e6ff3c8 (parent M14) preserves25paths and all failures. Scope40 declaration03c5ccfacd/preflighta62376f4/admissionf5c6602d, fresh remotes33551420 and physical10095source8e095006 precede the first new-caller edit. The earlier dirty preflight5d4b8a8e refused before writing that caller; no bypass/base transfer.
+
+Actual registered renderer source-button REDedb52340 exposed dropped expectedAtlasAssociationSource in the existing document-open adapter. Add exactly that forwarding field in projectCommands.mjs, preserving Plot/Idea/Meaning, IDs, bridge and every Main validation. This is the same exact-source outcome, no new command/port/capability. Native roots/launches remain unadmitted. Correct the new COPY test's observed direct-API envelope; do not weaken product expectations.
+
+The original2122caller run1739pass383fail61a30fec remains FAIL:346 first-source-pin prerequisites and37 current/historical adapter/source expectations. Fix concrete prerequisites cheaply, execute early separately admitted actual app/cold, then every existing full required gate. Masked negatives are not protection coverage; no second2122run while known prerequisites remain broken. Full15/four/all17 remains OPEN/UNKNOWN.
+
 ## DENYLIST
 
-Everything outside the exact39paths, independent improvements/refactors/formatting, dependencies/install/network/cloud/provider/daemon/timer/optional service, HTML/CSS/typography/palette/token redesign, private Core/bus/storage/IPC or renderer/platform writer, secrets/sign/notary/public distribution, owner/private project or old-profile launch/mutation/deletion. No reset/stash/clean/rebase/amend/force-push, silent base transfer or historical authority/lease/raw/frozen rewrite. Preserve all17qualification UNKNOWN and all prior predicates/tuples/skips/fixtures/errors. Never turn co-occurrence, visibility or compiler input into author authority. Do not modify frozen WP500/book/surface compiler semantics.
+Everything outside the exact40paths, independent improvements/refactors/formatting, dependencies/install/network/cloud/provider/daemon/timer/optional service, HTML/CSS/typography/palette/token redesign, private Core/bus/storage/IPC or renderer/platform writer, secrets/sign/notary/public distribution, owner/private project or old-profile launch/mutation/deletion. No reset/stash/clean/rebase/amend/force-push, silent base transfer or historical authority/lease/raw/frozen rewrite. Preserve all17qualification UNKNOWN and all prior predicates/tuples/skips/fixtures/errors. Never turn co-occurrence, visibility or compiler input into author authority. Do not modify frozen WP500/book/surface compiler semantics.
 
 Diff budget: at most4200manual changed lines overall, with at most1500runtime and1800new/changed test lines; no unrelated rewrites. Normal generated editor.bundle.js, exact schema-bounded generated bindings/inventory/certificate and their necessary current source-pin tables are excluded but must have exact hashes/membership/inverse proofs. Existing V1-V12 factories/rows and original test predicates/bodies stay intact. Only narrowly admitted historical constructor adapters and literal current V13 profile/schema/one-command expectations may be changed after a distinguishing current-caller failure and exact inverse review; no weakening, skip/todo/filter or timeout increase. ARCH_DIFF_LOG records any such narrow compatibility correction before editing it.
 
@@ -285,7 +296,7 @@ CHECK_06_POST_NATIVE: separate exact stage/build/launch admissions and rebuilt a
 
 CHECK_07_POST_REQUIRED_GATES: task E0/E0mutants, agent:guardrails, governance change detection, normal inventory/C2A, current DATA/source/cert namespace/unchanged corruption consumers and public preflight, OSS policy, strict doctor, npm audit production/full truth, cheap contracts, post-audit, WP104, C1C, official full RTK, test:electron and full npm default baseline. Capture actual argv/source/process/exit/full TAP ordered roster, all sanctioned59skip names and six inherited moderate dev audit findings remain explicit unless genuinely changed. Use current unchanged supported before-push path and all20official CI jobs on exact candidate/merged identities.
 
-CHECK_08_POST_DELIVERY: final diff/manual budget/39path scope/inverse/current companions reviewed; complete commit/push/PR/CI/normal merge, actual fetched merged SHA/tree and clean detached required checks/new native/independent outcome/source preservation. Schema-valid19field final report/closure with fullMac still OPEN; next authorized V6 gap only after this chain closes.
+CHECK_08_POST_DELIVERY: final diff/manual budget/40path scope/inverse/current companions reviewed; complete commit/push/PR/CI/normal merge, actual fetched merged SHA/tree and clean detached required checks/new native/independent outcome/source preservation. Schema-valid19field final report/closure with fullMac still OPEN; next authorized V6 gap only after this chain closes.
 
 ## STOP_CONDITION
 

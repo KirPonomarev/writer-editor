@@ -151,7 +151,7 @@ test('authored association optional records remain literal through unrelated aut
 // Reuse the entire already-maintained inert Electron fixture function only.
 // Its actual Main/Kernel/filesystem paths execute; no test declarations or
 // historical constructor options are run and no native app is launched.
-async function mainFixture(t, beforeProject, observeQueue = false) {
+async function mainFixture(t, beforeProject, observeQueue = false, preserveCopyFixture = false) {
   const source = read('test/unit/r24-wp307-writer-local-profile-integration.test.js');
   const start = source.indexOf('async function fullMacMainFixture('), end = source.indexOf('\n}\n', start);
   assert.ok(start >= 0 && end > start);
@@ -160,6 +160,11 @@ async function mainFixture(t, beforeProject, observeQueue = false) {
     const marker = '        holdProjectQueue(operation) { return enqueueProductCommandTransaction(currentProjectName || DEFAULT_PROJECT_NAME, operation); },';
     assert.equal(fixtureSource.split(marker).length,2);
     fixtureSource = fixtureSource.replace(marker, marker + '\n        observeAssociationQueue() { let calls = 0; const original = enqueueProductCommandTransaction; enqueueProductCommandTransaction = (...args) => { calls++; return original(...args); }; return () => calls; },');
+  }
+  if (preserveCopyFixture) {
+    const cleanup = "assert.equal(fs.readFileSync(markerPath, 'utf8'), marker); fs.rmSync(root, { recursive: true });";
+    assert.equal(fixtureSource.split(cleanup).length,2);
+    fixtureSource = fixtureSource.replace(cleanup, "assert.equal(fs.readFileSync(markerPath, 'utf8'), marker); t.diagnostic('OWN_SYNTHETIC_COPY_ROOT_RETAINED ' + root);");
   }
   const build = new Function('require', 'assert', 'fs', 'path', 'crypto', 'ROOT', 'read', 'module', 'finiteManualMapPdf',
     'return (' + fixtureSource + ');')(require, assert, fs, path, crypto, ROOT, read, module,
@@ -521,6 +526,7 @@ test('authored association real post-preparation source-file change refuses with
 
 test('authored association typing never enumerates the whole participant catalog or queries [FINITE_DOM_NOT_NATIVE]',async t=>{
   const ui=await associationDomFixture(t), input=ui.fields().find(node=>node.dataset.atlasAssociationField==='associationKind');
+  for(const [key,value] of [['sourceEntityId','mira'],['targetEntityId','boris']]){const field=ui.fields().find(node=>node.dataset.atlasAssociationField===key);field.value=value;await field.fire('change');}
   const before=ui.optionEnumerations();for(let i=0;i<12;i++){input.value='набирает e\u0301 🧭 '+i;await input.fire('input');}
   assert.equal(ui.optionEnumerations(),before,'Native option catalogs are refreshed only with a changed projection, never per character');assert.equal(ui.queries.length,0);assert.equal(ui.transports.length,0);
 });
@@ -547,7 +553,11 @@ test('authored association revision and byte limits refuse without trimming prio
 });
 
 test('authored association ordinary full archive COPY retains all versions and changes only the owner [FINITE_IPC_NOT_NATIVE]',async t=>{
-  const f=await mainFixture(t);assertMainApplied(await f.h.command(COMMAND,f.intent()));const before=f.manifest(),source=copy(before.atlas.authoredAssociations);
+  const f=await mainFixture(t,undefined,false,true);assertMainApplied(await f.h.command(COMMAND,f.intent()));
+  assertMainApplied(await f.h.command(COMMAND,{...f.intent(),associationKind:'защищает',expectedAssociationHash:hash(f.manifest().atlas.authoredAssociations['association-one'])}));
+  assertMainApplied(await f.h.command(COMMAND,{operation:'retract',projectId:f.projectId,associationId:'association-one',
+    expectedManifestRevision:digest(fs.readFileSync(f.manifestPath)),expectedAssociationHash:hash(f.manifest().atlas.authoredAssociations['association-one'])}));
+  const before=f.manifest(),source=copy(before.atlas.authoredAssociations);assert.equal(source['association-one'].revisions.length,3);
   const archive=path.join(f.h.root,'associations-copy.craftsman.zip'),exportId='association-copy-export';
   const preview=await f.h.command('cmd.project.exportFullArchiveV1',{requestId:exportId,outPath:archive});assert.equal(preview.ok,true,JSON.stringify(preview));
   const exported=await f.h.command('cmd.project.exportFullArchiveV1',{requestId:exportId,outPath:archive,confirmed:true});assert.equal(exported.ok,true,JSON.stringify(exported));assert.ok(fs.statSync(archive).size>0);
@@ -559,9 +569,21 @@ test('authored association ordinary full archive COPY retains all versions and c
     publishArchiveDirectory=require('../../src/main/projectArchiveDarwinPublication.cjs').createProjectArchiveDarwinPublisher({helperPath});
   }else publishArchiveDirectory=async({tempRoot,targetRoot,assertCurrent})=>{await assertCurrent();await fs.promises.rename(tempRoot,targetRoot);return{namePublished:true,directorySynced:false,publicationOutcome:'TEST_PORT_ONLY'};};
   const imported=await f.h.main.handleImportProjectArchive({...request,confirmed:true},{publishArchiveDirectory});assert.equal(imported.ok,true,JSON.stringify(imported));
-  const copyId=imported.value.projectId;assert.notEqual(copyId,f.projectId);const tree=await f.h.main.handleWorkspaceProjectTreeQuery({tab:'roman'});assert.equal(tree.projectId,copyId);
+  const copyId=imported.projectId;assert.notEqual(copyId,f.projectId);const tree=await f.h.main.handleWorkspaceProjectTreeQuery({tab:'roman'});assert.equal(tree.projectId,copyId);
   const copiedPath=path.join(f.h.documents,'craftsman','Associations copied','project.craftsman.json');const copied=JSON.parse(fs.readFileSync(copiedPath,'utf8'));
   const expected=copy(source);for(const row of Object.values(expected))row.projectId=copyId;assert.deepEqual(copied.atlas.authoredAssociations,expected);assert.deepEqual(f.manifest(),before);
   const value=(await f.h.query('query.atlasRelationDossier',{projectId:copyId})).atlasRelationDossier.authoredAssociations;assert.equal(value.total,1);assert.equal(value.rows[0].sourceState,'current');
   t.diagnostic('ACTUAL_MAIN_COPY_AND_KERNEL_OPEN; directory port '+(process.platform==='darwin'?'production Darwin helper':'generic CI test port')+'; NOT_NATIVE_APP_ACCEPTANCE');
+});
+
+test('authored association registered document-open relay cannot discard malformed expected source metadata [FINITE_DOM_NOT_NATIVE]',async t=>{
+  const ui=await associationDomFixture(t), command='cmd.project.document.open';
+  const control=await ui.context.dispatchUiCommand(command,{projectId:ui.f.projectId,nodeId:ui.f.sceneId});assert.equal(control.ok,true,JSON.stringify(control));
+  for(const malformed of [undefined,null,7,{schemaVersion:'foreign.v2'}]){
+    const before=ui.f.h.roster(),publications=ui.f.h.sent.filter(([channel])=>channel==='editor:set-text').length;
+    const result=await ui.context.dispatchUiCommand(command,{projectId:ui.f.projectId,nodeId:ui.f.sceneId,expectedAtlasAssociationSource:malformed});
+    const request=ui.transports.at(-1).request;assert.equal(Object.hasOwn(request.payload,'expectedAtlasAssociationSource'),true);
+    assert.deepEqual(request.payload.expectedAtlasAssociationSource,malformed);assert.equal(result.ok,false,JSON.stringify(result));
+    assert.deepEqual(ui.f.h.roster(),before);assert.equal(ui.f.h.sent.filter(([channel])=>channel==='editor:set-text').length,publications);
+  }
 });

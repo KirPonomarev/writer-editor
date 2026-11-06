@@ -1,13 +1,11 @@
-# CURRENT HANDOFF — authored Atlas relationships
+# CURRENT HANDOFF — early actual app for authored associations
 
 TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor.
-BASE: 04d81e5631778bb6bbabd57238ec1c412f09291f
-BRANCH: codex/atlas-authored-associations-20261106
-STATE: OWN_WIP_CORE_AND_MAIN_35_OF_35_UI_NATIVE_DELIVERY_PENDING
+BRANCH: codex/atlas-authored-associations-20261106; original delivery/rollback M14 unchanged.
+SOURCE_STAGE: checkpoint7e6ff3c8 plus scope40 source correction, NOT_FULL_DELIVERY.
+PROOF: whole74 actual finite port/Core/Main/DOM7a003bd7 and independent99515ff1; normal bundle built, cheap historical/current constructors and strict cut prerequisites pass. This is no native/cold proof. Current input carrier3d348a72; all original2122/383FAIL and every method error preserved.
 
-Resume from the implemented Core/Main route: whole frozen35passes,0skip/todo/fail,actual process86abf599;first actual RED35/33assertion failures be29542c and all original methods/errors stay retained. Exact source-stage2e556c39 binds this uncommitted proof. It is finite Main/Kernel/filesystem evidence,not native/app acceptance. TaskE098eadfb4 and39path declaration29e17d26/preflight163f2a2e/admissionef2dcb1a precede all edits;own scratch15aoi__o.
-
-NEXT: finish retained Relation author controls and exact saved-source navigation;then focused guards,early separately admitted actual app/cold and the one mandatory delivery chain. See CONTEXT.md for predecessor/full-Mac boundaries and2026-11-06--atlas-authored-associations.md for scope/acceptance. Matrices is closed;full V6/all17 remains OPEN.
+NEXT: freeze clean source, separately admit fresh own native32/root/build and actual UI create/correct/withdraw/history/exact source/dirty-stale/Save-Quit-cold with independent full saved-byte readback. Preserve31old profiles/three qualified apps. Only then full required gates and normal guarded delivery plus actual merged native. Current namespace/inventory/C2A/witness companions remain to finish; never rerun known-broken2122prerequisites or claim fullMac/all17 from this one result. See task40paths and CONTEXT.md for exact limits.
 
 --- Older pending handoffs below are historical; do not replay closed Matrices delivery ---
 

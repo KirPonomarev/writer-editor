@@ -18617,7 +18617,7 @@ function syncAtlasAssociationForm(entry) {
     for (const key of ['sourceEntityId', 'targetEntityId']) {
       const select = entry.controls[key];
       if (select.atlasAssociationCatalog === state.entities || document.activeElement === select) continue;
-      select.atlasAssociationCatalog = state.entities; select.replaceChildren();
+      select.atlasAssociationCatalog = state.entities; select.atlasAssociationOptionIds = new Set(['', ...entry.entityIds]); select.replaceChildren();
       const empty = document.createElement('option'); empty.value = ''; empty.textContent = 'Выберите участника'; select.append(empty);
       for (const row of state.entities) { const option = document.createElement('option'); option.value = row.entityId; option.textContent = row.name; select.append(option); }
     }
@@ -18626,8 +18626,9 @@ function syncAtlasAssociationForm(entry) {
     entry.sceneCatalog = state.sourceScenes; entry.sceneById = new Map(state.sourceScenes.map(row => [row.sceneId, row]));
   }
   for (const [key, control] of Object.entries(entry.controls)) {
-    if (['sourceEntityId', 'targetEntityId'].includes(key) && entry.fields[key] && ![...control.options].some(option => option.value === entry.fields[key])) {
+    if (['sourceEntityId', 'targetEntityId'].includes(key) && entry.fields[key] && !control.atlasAssociationOptionIds?.has(entry.fields[key])) {
       const option = document.createElement('option'); option.value = entry.fields[key]; option.textContent = 'Выбранный участник недоступен'; option.disabled = true; control.append(option);
+      (control.atlasAssociationOptionIds ||= new Set()).add(entry.fields[key]);
     }
     if (control.value !== entry.fields[key]) control.value = entry.fields[key];
   }
@@ -18672,6 +18673,7 @@ function getAtlasAssociationAuthorForm(entry) {
       if (!isAtlasAssociationPresentationCurrent(entry) || entry.pending?.active) return;
       entry.fields[key] = control.value; entry.dirty = true; entry.revision++; entry.status = ''; syncAtlasAssociationForm(entry);
     });
+    if (options) control.addEventListener('blur', () => { if (isAtlasAssociationPresentationCurrent(entry)) syncAtlasAssociationForm(entry); });
     control.addEventListener('keydown', event => {
       if (!options && event.key === 'Enter' && !event.isComposing && !entry.actions.record.disabled) { event.preventDefault(); void runAtlasAssociationCommand(entry, 'record'); }
     });

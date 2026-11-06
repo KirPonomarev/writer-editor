@@ -1,14 +1,14 @@
-# CURRENT — Matrices closed; authored Atlas relationships admitted
+# CURRENT — authored Atlas source relay verified; native next
 
 TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor.
-BINDING_BASE_SHA: 04d81e5631778bb6bbabd57238ec1c412f09291f
-STATUS: AUTHORED_ASSOCIATIONS_ADMITTED_TEST_FIRST_NO_PRODUCT_ACCEPTANCE
+ORIGINAL_DELIVERY_BASE: 04d81e5631778bb6bbabd57238ec1c412f09291f; checkpoint7e6ff3c8 is unaccepted WIP.
+SOURCE_STATE: Whole74finiteCore/Main/DOM passes7a003bd7,0skip/todo/cancel; independent complete TAP and full three-version COPY/source/owner readback99515ff1. Current source carrier3d348a72; normal renderer buildc703ae42/bundle0e616562 binding. Real registered source button and malformed-token refusals execute actual Main; complete copied fixture remains on owned T21, permissions untouched.
 
-Matrices delivery PR2206 is bounded CLOSED on exact M14 04d81e56, closureed0f5be2, schema-valid report003f3831:20candidate/20merged CI,698 relevant merged TAP,actual14 merged native observations and31 retained closed profiles. Original6moderate dev findings/59uncovered default skips and every failure/source/profile remain; this is not full Mac/all15/four/all17 qualification.
+Cheap six actual constructor selections01445b86 preserve V7–V11 and choose strict V13/35commands/12readers by default. Current cut69pins/actual profile configuration verifiesVALIDe87dc273, while release remainsNOT_READY and every qualificationUNKNOWN. Original2122caller run1739pass383fail61a30fec and all setup/product/raw errors remain retained; no masked negative is certified and full required gates still pending.
 
-Current P17 outcome: one explicit saved-source authored relationship, correction/retraction with retained history, immutable dossier/source navigation and real cold proof. Current registry has no such writer; WP500/book modules are pure/unwired. Declaration29e17d26/preflight163f2a2e/admissionef2dcb1a bind39paths before edits,source10091/profiles31/three old apps held. No corrected-source/native/feature acceptance yet. Full V6/DNA5/all17 stays OPEN;Office PAUSED,BlackBox after fullMac. New native roots/launches need separate admission.
+Scope40 admissionf5c6602d/preflighta62376f4 preserves original M14 rollback and31old profiles/three apps. Separate new native stage/build/launch and actual app/cold have not happened. Matrices remains bounded CLOSED on its original M14; full V6/DNA5/all15/four/all17 OPEN, Office PAUSED, Black Box after fullMac.
 
-Next: freeze actual Main/Core causal refusal, then the bounded canonical command/source/history route.
+NEXT: clean source checkpoint and separate native admission/build/actual own-profile authoring/source/normal cold with independent raw oracle; then complete current companions and all mandatory delivery/merged checks.
 
 --- Earlier status bodies remain complete and historical below ---
 

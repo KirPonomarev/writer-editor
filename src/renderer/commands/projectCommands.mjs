@@ -1677,6 +1677,8 @@ export function registerProjectCommands(registry, options = {}) {
               ? { expectedIdeaSource: input.expectedIdeaSource } : {}),
             ...(Object.hasOwn(input, 'expectedMeaningSource')
               ? { expectedMeaningSource: input.expectedMeaningSource } : {}),
+            ...(Object.hasOwn(input, 'expectedAtlasAssociationSource')
+              ? { expectedAtlasAssociationSource: input.expectedAtlasAssociationSource } : {}),
           },
         );
       } catch (error) {
