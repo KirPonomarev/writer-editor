@@ -13,6 +13,8 @@ NEXT: complete current inventory/C2A/RCV/source namespace/append-only witnesses,
 
 CURRENT_CORRECTION: C3 inventory1627/C2A/currentpolicy/487certificate pass; DATA8ad019f4 exposes two existing original40scope paths absent from initial four-new-file membership set: contracts.ts/domainEvents.mjs. Declaration09/preflight admit exact two additions and complete950/800/489 current successor, preserving C3 delta/all predicates and all1493C2native inputs. No full software/CI/merged/native completion yet.
 
+CURRENT RESUME: C7 16a986cb whole original affected 2131 pass, C1C 335 pass, RTK 4414 of 4419 with five finite Main lifecycle fixture failures. The fixture lacked the actual V13 constructor binding. Scope41 declaration7f2da7eb, clean preflightc3540b54 and admission703cd4f3 bind one additive test import plus exact existing generated companions. Fifteen focused cases pass a3dcc4c7. Full immutable candidate gates, normal delivery and fresh merged native are pending.
+
 --- Earlier status bodies remain complete and historical below ---
 
 ## CURRENT: Matrices C0 native observed; same-chain namespace registration correction

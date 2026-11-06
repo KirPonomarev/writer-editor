@@ -31712,6 +31712,83 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
       "approvedAtUtc": "2026-11-06T19:29:00.504604+00:00",
       "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Actual C6 namespace contract62/64 refuses stale aggregate of4 current RCV01A bindings. Unchanged official read-only generator and independent Python sorted-key canonical JSON agree on exact new digest; only that derived scalar and current489-binding certificate change. Historical verdict/mode/authority/reviews/records and every certificate predecessor byte retained. No tests/runtime/DATA predicate change; all1493 C2 native inputs literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "c2b53b7b93e6aca4b282b5ac288b5e3b87b30f277da44eae4f72269360d08e4f",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T20:25:32.285855+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Full C7 RTK4419 has five finite lifecycle failures; actual Main getter raises ReferenceError only because an existing VM lacks its new real factory binding. Clean41-path declaration/preflight precedes one additive real-module import; all old fixture bytes/assertions remain and15 selected actual behaviors pass. Existing inventory/C2A/official RCV individual+aggregate/current800 DATA/489 certificate companions regenerated without guard or historical-delta relaxation. All1493 actual C2 native inputs remain literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "caeb1cf06f0cedd22da3f8edf6eac7ca158116c27e456b067f0543e5e9ecf853",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T20:25:32.285855+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Full C7 RTK4419 has five finite lifecycle failures; actual Main getter raises ReferenceError only because an existing VM lacks its new real factory binding. Clean41-path declaration/preflight precedes one additive real-module import; all old fixture bytes/assertions remain and15 selected actual behaviors pass. Existing inventory/C2A/official RCV individual+aggregate/current800 DATA/489 certificate companions regenerated without guard or historical-delta relaxation. All1493 actual C2 native inputs remain literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "5db0adaf61810a1dfac1179f05c1d63940661e0a8cfc3990a338fa5719809ac3",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T20:25:32.285855+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Full C7 RTK4419 has five finite lifecycle failures; actual Main getter raises ReferenceError only because an existing VM lacks its new real factory binding. Clean41-path declaration/preflight precedes one additive real-module import; all old fixture bytes/assertions remain and15 selected actual behaviors pass. Existing inventory/C2A/official RCV individual+aggregate/current800 DATA/489 certificate companions regenerated without guard or historical-delta relaxation. All1493 actual C2 native inputs remain literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "30973c2df0c2f970aced81abb6d25791d24d5315566b6b063fdc3070db07990d",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T20:25:32.285855+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Full C7 RTK4419 has five finite lifecycle failures; actual Main getter raises ReferenceError only because an existing VM lacks its new real factory binding. Clean41-path declaration/preflight precedes one additive real-module import; all old fixture bytes/assertions remain and15 selected actual behaviors pass. Existing inventory/C2A/official RCV individual+aggregate/current800 DATA/489 certificate companions regenerated without guard or historical-delta relaxation. All1493 actual C2 native inputs remain literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication authority."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "22c30e2db20bc90518ef026ae40fe99911a63ade8009f72454e5b17a86339343",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T20:25:32.285855+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Full C7 RTK4419 has five finite lifecycle failures; actual Main getter raises ReferenceError only because an existing VM lacks its new real factory binding. Clean41-path declaration/preflight precedes one additive real-module import; all old fixture bytes/assertions remain and15 selected actual behaviors pass. Existing inventory/C2A/official RCV individual+aggregate/current800 DATA/489 certificate companions regenerated without guard or historical-delta relaxation. All1493 actual C2 native inputs remain literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication authority."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "f110a23573be299871656928397f2a2c251317035935c3c0274a83725025426e",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T20:25:32.285855+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Full C7 RTK4419 has five finite lifecycle failures; actual Main getter raises ReferenceError only because an existing VM lacks its new real factory binding. Clean41-path declaration/preflight precedes one additive real-module import; all old fixture bytes/assertions remain and15 selected actual behaviors pass. Existing inventory/C2A/official RCV individual+aggregate/current800 DATA/489 certificate companions regenerated without guard or historical-delta relaxation. All1493 actual C2 native inputs remain literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication authority."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "63fe15b69ebba10a4dc97ab4dcec19d9c344e9358950cd02652737083d94eaad",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T20:25:32.285855+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Full C7 RTK4419 has five finite lifecycle failures; actual Main getter raises ReferenceError only because an existing VM lacks its new real factory binding. Clean41-path declaration/preflight precedes one additive real-module import; all old fixture bytes/assertions remain and15 selected actual behaviors pass. Existing inventory/C2A/official RCV individual+aggregate/current800 DATA/489 certificate companions regenerated without guard or historical-delta relaxation. All1493 actual C2 native inputs remain literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication authority."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "sha256": "a6c85d4c4406709f1b3b6879efe81a95ded4473281c1fe129c309870be76628e",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T20:25:32.285855+00:00",
+      "rationale": "Standing owner current/future technical SHA witness delegation, same authored-association delivery. Full C7 RTK4419 has five finite lifecycle failures; actual Main getter raises ReferenceError only because an existing VM lacks its new real factory binding. Clean41-path declaration/preflight precedes one additive real-module import; all old fixture bytes/assertions remain and15 selected actual behaviors pass. Existing inventory/C2A/official RCV individual+aggregate/current800 DATA/489 certificate companions regenerated without guard or historical-delta relaxation. All1493 actual C2 native inputs remain literal. Technical executor only; no independent human review, native retag, full-Mac/all17/signing/notary/publication authority."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "6de963b2365aa05e3cdf294920f8429d7791d45f1b30dc0b0980042267793e9d",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T22:50:28.872305+00:00",
+      "rationale": "Current technical SHA witness under standing owner delegation for the same authored Atlas delivery. Three already-admitted task/context notes record the observed finite lifecycle fixture refusal, 41-path declaration and exact next gates. Existing DATA and certificate companions bind those factual bytes. Earlier committed and prepared approvals are retained. This is technical evidence only, with no release, signing, notarization or publication authority."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "c62bf773652f5238767ba0e43a3b3e4de319964b1b24a65fd89ac7c53f3e79a8",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T22:50:28.872305+00:00",
+      "rationale": "Current technical SHA witness under standing owner delegation for the same authored Atlas delivery. Three already-admitted task/context notes record the observed finite lifecycle fixture refusal, 41-path declaration and exact next gates. Existing DATA and certificate companions bind those factual bytes. Earlier committed and prepared approvals are retained. This is technical evidence only, with no release, signing, notarization or publication authority."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "cd20bb07dccb6dc7c304fc2bcb37ae38b6b3e7fb69c09f36920e84de8b791b41",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T22:50:28.872305+00:00",
+      "rationale": "Current technical SHA witness under standing owner delegation for the same authored Atlas delivery. Three already-admitted task/context notes record the observed finite lifecycle fixture refusal, 41-path declaration and exact next gates. Existing DATA and certificate companions bind those factual bytes. Earlier committed and prepared approvals are retained. This is technical evidence only, with no release, signing, notarization or publication authority."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",

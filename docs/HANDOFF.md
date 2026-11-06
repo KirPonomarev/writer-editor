@@ -8,6 +8,8 @@ NEXT: metadata source admissiona125d643/preflightf6c729bb; current inventory60a7
 
 CURRENT_CORRECTION: C3 inventory1627/C2A/currentpolicy/487certificate pass; DATA8ad019f4 exposes two existing original40scope paths absent from initial four-new-file membership set: contracts.ts/domainEvents.mjs. Declaration09/preflight admit exact two additions and complete950/800/489 current successor, preserving C3 delta/all predicates and all1493C2native inputs. No full software/CI/merged/native completion yet.
 
+RESUME: C7 whole RTK failure 2e0474c8, exact diagnosis d395bb66. Complete the single admitted test-context import and generated companion update, then the immutable required wave. The existing native observation remains actual C2 9058b505 with 1493 identical inputs. Earlier manual-map linked-scene navigation already entered main at aef9c207 through PR2180. Full V6 Mac remains open.
+
 --- Older pending handoffs below are historical; do not replay closed Matrices delivery ---
 
 ## CURRENT HANDOFF: same Matrices delivery, C0 native completed before remaining expensive gates

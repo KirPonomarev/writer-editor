@@ -85,6 +85,10 @@ Actual registered renderer source-button REDedb52340 exposed dropped expectedAtl
 
 The original2122caller run1739pass383fail61a30fec remains FAIL:346 first-source-pin prerequisites and37 current/historical adapter/source expectations. Fix concrete prerequisites cheaply, execute early separately admitted actual app/cold, then every existing full required gate. Masked negatives are not protection coverage; no second2122run while known prerequisites remain broken. Full15/four/all17 remains OPEN/UNKNOWN.
 
+### REQUIRED RTK CALLER AMENDMENT
+
+Exact scope41 declaration7f2da7eb, clean preflightc3540b54 and admission703cd4f3 add only test/contracts/rtk-word-scene-identity-main.contract.test.js. C7 whole RTK 2e0474c8 preserves all five fixture failures. Read-only diagnosis d395bb66 identifies the missing actual constructor. One added binding to the real V13 factory preserves every original assertion and port, and the selected fifteen behaviors pass a3dcc4c7. Current generated companions carry the existing membership and refreshed exact hashes. All 1493 native inputs match actual C2; immutable candidate tests and complete delivery remain required.
+
 ### NATIVE SOURCE-AVAILABILITY FINDING
 
 C1 577d0475 actual own profile32 AUTHOR and same-profile COLD exited0; complete73/75file readbacks and source/history/navigation oracle1346d7db retain two records with3+1revisions and exact manuscript/Atlas bytes. The oracle exits2: scene edits leave a previously enabled Save appearance until its synchronous click guard refuses the stale source. This is the original unsuccessful C1 native acceptance; later observations never retag it. A frame labelled immediate disabled is inaccurate; its raw AX and the explicit diagnosis4a086a37 take precedence. Full original native logs/cache errors and every original failed method remain retained.
@@ -310,7 +314,7 @@ CHECK_06_POST_NATIVE: separate exact stage/build/launch admissions and rebuilt a
 
 CHECK_07_POST_REQUIRED_GATES: task E0/E0mutants, agent:guardrails, governance change detection, normal inventory/C2A, current DATA/source/cert namespace/unchanged corruption consumers and public preflight, OSS policy, strict doctor, npm audit production/full truth, cheap contracts, post-audit, WP104, C1C, official full RTK, test:electron and full npm default baseline. Capture actual argv/source/process/exit/full TAP ordered roster, all sanctioned59skip names and six inherited moderate dev audit findings remain explicit unless genuinely changed. Use current unchanged supported before-push path and all20official CI jobs on exact candidate/merged identities.
 
-CHECK_08_POST_DELIVERY: final diff/manual budget/40path scope/inverse/current companions reviewed; complete commit/push/PR/CI/normal merge, actual fetched merged SHA/tree and clean detached required checks/new native/independent outcome/source preservation. Schema-valid19field final report/closure with fullMac still OPEN; next authorized V6 gap only after this chain closes.
+CHECK_08_POST_DELIVERY: final diff/manual budget/declared scope/inverse/current companions reviewed; complete commit/push/PR/CI/normal merge, actual fetched merged SHA/tree and clean detached required checks/new native/independent outcome/source preservation. Schema-valid19field final report/closure with fullMac still OPEN; next authorized V6 gap only after this chain closes.
 
 ## STOP_CONDITION
 
