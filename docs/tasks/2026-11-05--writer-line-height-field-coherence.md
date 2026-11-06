@@ -5,9 +5,11 @@ TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
 BINDING_BASE_SHA: de87e5bfeb191b0895fb4c5caa51164cf968b38b
-STATUS: CUSTOM_INPUT_SOURCE_23_VERIFIED_NATIVE_DELIVERY_PENDING
+STATUS: BOUNDED_DELIVERY_CLOSED_AT_CB0DB8C9
 DOCUMENT_CLASS: PROCESS
 CLAIM_BOUNDARY: Existing line-height field reflects applied shell form; no changed typography, manuscript, persistence, full Mac acceptance or new design.
+
+DELIVERY_CLOSURE: PR2203 normally merged at cb0db8c9155f35a88db35928fa1e1536acc33042; corrected WRITER_LINE_HEIGHT_DELIVERY_CLOSURE_02.json.gz SHA256 ace45f91f3bfe3d934c8c1527b7f919c9deb88d9234390760240ca848c048fcf binds20 candidate/20 merged CI jobs, actual merged270 software cases, new merged native5 cases/3 normal exits and all26 closed profiles held. Original source/native/test failures and three mis-transcribed AX identifier fields remain verbatim; successor five exact primary tool outputs/phase windows were independently verified. Full V6/DNA5 Mac/all17/public distribution remain unaccepted. The preparation bodies below retain their original historical wording.
 
 ## MICRO_GOAL
 

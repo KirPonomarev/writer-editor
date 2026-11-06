@@ -24751,20 +24751,30 @@ function syncLiteralToolbarDisplays() {
   }
 }
 
-function promptForCustomFontSize() {
-  const response = window.prompt('Font size (px)', String(currentFontSizePx));
-  if (response === null) return null;
-  const nextSize = Number(response);
-  if (!Number.isFinite(nextSize) || nextSize <= 0) {
-    updateStatusText('Некорректный размер шрифта');
-    if (sizeSelect) {
-      sizeSelect.value = String(currentFontSizePx);
-    }
-    return null;
+async function promptForCustomFontSize() {
+  const target = { projectId: currentProjectId, documentId: currentDocumentId, epoch: atlasPublicationEpoch,
+    editGeneration: localEditGeneration, formGeneration: fullEnvironmentFormGeneration,
+    profile: window.__PRODUCT_PROFILE, editor };
+  const isCurrent = () => currentProjectId === target.projectId && currentDocumentId === target.documentId
+    && atlasPublicationEpoch === target.epoch && localEditGeneration === target.editGeneration
+    && fullEnvironmentFormGeneration === target.formGeneration && window.__PRODUCT_PROFILE === target.profile
+    && editor === target.editor && editor?.isConnected;
+  setCurrentFontSize(currentFontSizePx);
+  const normalize = value => ({ ok: typeof value === 'string' && Number.isFinite(Number(value))
+    && Math.round(Number(value)) > 0 });
+  let response;
+  try {
+    response = await openLinkDialog({ title: 'Размер шрифта', initialValue: String(currentFontSizePx), canRemove: false,
+      fieldLabel: 'Размер шрифта (px)', inputMode: 'decimal', submitLabel: 'Применить', cancelLabel: 'Отмена',
+      errorMessage: 'Введите положительный размер шрифта.', normalize });
+  } catch (error) {
+    if (isCurrent()) updateStatusText('Не удалось открыть ввод размера шрифта', { visible: true });
+    throw error;
   }
-  const normalizedSize = Math.round(nextSize);
-  ensureSelectHasOption(sizeSelect, String(normalizedSize), String(normalizedSize), '__custom_size__');
-  return normalizedSize;
+  if (response === null || !isCurrent()) return;
+  if (!normalize(response).ok) { updateStatusText('Некорректный размер шрифта', { visible: true }); return; }
+  const normalizedSize = Math.round(Number(response));
+  return dispatchUiCommand(UI_COMMAND_IDS.FONT_SIZE_SET, { px: normalizedSize }, { isCurrentPresentation: isCurrent });
 }
 
 async function promptForCustomLineHeight() {
@@ -26003,10 +26013,7 @@ if (weightSelect) {
 if (sizeSelect) {
   sizeSelect.addEventListener('change', (event) => {
     if (event.target.value === '__custom_size__') {
-      const customSize = promptForCustomFontSize();
-      if (Number.isFinite(customSize)) {
-        void dispatchUiCommand(UI_COMMAND_IDS.FONT_SIZE_SET, { px: customSize });
-      }
+      void promptForCustomFontSize().catch(error => console.error('Custom font-size input failed', error));
       return;
     }
     const nextSize = Number(event.target.value);

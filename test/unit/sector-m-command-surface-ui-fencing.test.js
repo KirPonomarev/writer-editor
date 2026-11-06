@@ -56,8 +56,8 @@ test('command surface ui fencing: font and font-size user surfaces route through
   assert.ok(source.includes('function promptForCustomFontSize() {'))
   assert.ok(source.includes('void dispatchUiCommand(UI_COMMAND_IDS.FONT_SET, { fontFamily });'))
   assert.ok(source.includes('void dispatchUiCommand(UI_COMMAND_IDS.FONT_SIZE_SET, { px: nextSize });'))
-  assert.ok(source.includes('const customSize = promptForCustomFontSize();'))
-  assert.ok(source.includes('void dispatchUiCommand(UI_COMMAND_IDS.FONT_SIZE_SET, { px: customSize });'))
+  assert.ok(source.includes("void promptForCustomFontSize().catch(error => console.error('Custom font-size input failed', error));"))
+  assert.ok(source.includes('return dispatchUiCommand(UI_COMMAND_IDS.FONT_SIZE_SET, { px: normalizedSize }, { isCurrentPresentation: isCurrent });'))
 })
 
 test('command surface ui fencing: protected compatibility paths remain unchanged', () => {
