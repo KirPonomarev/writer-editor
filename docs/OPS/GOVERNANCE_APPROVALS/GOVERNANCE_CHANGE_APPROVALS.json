@@ -31789,6 +31789,62 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
       "approvedAtUtc": "2026-11-06T22:50:28.872305+00:00",
       "rationale": "Current technical SHA witness under standing owner delegation for the same authored Atlas delivery. Three already-admitted task/context notes record the observed finite lifecycle fixture refusal, 41-path declaration and exact next gates. Existing DATA and certificate companions bind those factual bytes. Earlier committed and prepared approvals are retained. This is technical evidence only, with no release, signing, notarization or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "46d977e81e056148cd668f18e1a901ec7141d6c55c6fa823d1d2ccbe8784bf64",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T23:39:46.697689+00:00",
+      "rationale": "Standing technical SHA delegation for the same Atlas delivery. Actual baseline identifies one exact existing capability mirror missing from DONE and an old bridge literal without the new owned expectation. Only those two bindings, factual task scope and generated metadata are corrected. All 17 original selected cases pass without weakening controls. Prior certificates and witness bytes remain. This witness conveys no release, signing, notarization or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "54e35586455ef4de25b4b1bb870af6ef0afe01da1ece8590d0eb391c2155ff91",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T23:39:46.697689+00:00",
+      "rationale": "Standing technical SHA delegation for the same Atlas delivery. Actual baseline identifies one exact existing capability mirror missing from DONE and an old bridge literal without the new owned expectation. Only those two bindings, factual task scope and generated metadata are corrected. All 17 original selected cases pass without weakening controls. Prior certificates and witness bytes remain. This witness conveys no release, signing, notarization or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "82be1c5d6730b70c62f37bdfd4ee4f216954eb6a92e7f56f2d874e92643bac88",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T23:39:46.697689+00:00",
+      "rationale": "Standing technical SHA delegation for the same Atlas delivery. Actual baseline identifies one exact existing capability mirror missing from DONE and an old bridge literal without the new owned expectation. Only those two bindings, factual task scope and generated metadata are corrected. All 17 original selected cases pass without weakening controls. Prior certificates and witness bytes remain. This witness conveys no release, signing, notarization or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "2da29438b4feaca23f6df5f4592649badba11881f50138aba3131e73a529742b",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T23:39:46.697689+00:00",
+      "rationale": "Standing technical SHA delegation for the same Atlas delivery. Actual baseline identifies one exact existing capability mirror missing from DONE and an old bridge literal without the new owned expectation. Only those two bindings, factual task scope and generated metadata are corrected. All 17 original selected cases pass without weakening controls. Prior certificates and witness bytes remain. This witness conveys no release, signing, notarization or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "ef352d4b648ecf5204c1203be8a4b41be7dfafacfd6c64556eaa74ccd1c95edb",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T23:39:46.697689+00:00",
+      "rationale": "Standing technical SHA delegation for the same Atlas delivery. Actual baseline identifies one exact existing capability mirror missing from DONE and an old bridge literal without the new owned expectation. Only those two bindings, factual task scope and generated metadata are corrected. All 17 original selected cases pass without weakening controls. Prior certificates and witness bytes remain. This witness conveys no release, signing, notarization or publication authority."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "49fac0373637278bf17a9b19685f297d6fd6abaaf6e7fc7e2aad9bc0aaddd894",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T23:39:46.697689+00:00",
+      "rationale": "Standing technical SHA delegation for the same Atlas delivery. Actual baseline identifies one exact existing capability mirror missing from DONE and an old bridge literal without the new owned expectation. Only those two bindings, factual task scope and generated metadata are corrected. All 17 original selected cases pass without weakening controls. Prior certificates and witness bytes remain. This witness conveys no release, signing, notarization or publication authority."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "b5e7bec404871d85afa645375e4b1484722f0a4e58cfb0b22cc6c79a8648de5a",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T23:39:46.697689+00:00",
+      "rationale": "Standing technical SHA delegation for the same Atlas delivery. Actual baseline identifies one exact existing capability mirror missing from DONE and an old bridge literal without the new owned expectation. Only those two bindings, factual task scope and generated metadata are corrected. All 17 original selected cases pass without weakening controls. Prior certificates and witness bytes remain. This witness conveys no release, signing, notarization or publication authority."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "056e7e4da3c4b0e6f15aaca56483b24e22e17f9c1e640b18bb0f13e98dc49794",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-06T23:39:46.697689+00:00",
+      "rationale": "Standing technical SHA delegation for the same Atlas delivery. Actual baseline identifies one exact existing capability mirror missing from DONE and an old bridge literal without the new owned expectation. Only those two bindings, factual task scope and generated metadata are corrected. All 17 original selected cases pass without weakening controls. Prior certificates and witness bytes remain. This witness conveys no release, signing, notarization or publication authority."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",

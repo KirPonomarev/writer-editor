@@ -3426,7 +3426,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "caeb1cf06f0cedd22da3f8edf6eac7ca158116c27e456b067f0543e5e9ecf853"
+        "sha256": "54e35586455ef4de25b4b1bb870af6ef0afe01da1ece8590d0eb391c2155ff91"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3558,7 +3558,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "c8c8cf54c648bc008217332f7036f670b81af0e4b9df195f530ef504e5e02201"
+        "sha256": "056e7e4da3c4b0e6f15aaca56483b24e22e17f9c1e640b18bb0f13e98dc49794"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4138,7 +4138,7 @@
       },
       {
         "path": "test/unit/sector-m-preload-tree-document-command-bridge.test.js",
-        "sha256": "0b53b7fb4ce2c851838733024310662d2a0af4d663fb5b3c43b0519a19b1f8fb"
+        "sha256": "da71dde5e2a2c81d5ee23c657a3f53a73355bdeba51b3f2b3286e4fb9db1a84c"
       },
       {
         "path": "docs/tasks/2026-11-01--idea-origin-navigation.md",
@@ -4374,7 +4374,7 @@
       },
       {
         "path": "docs/tasks/2026-11-06--atlas-authored-associations.md",
-        "sha256": "b3021ccde9becc69bb0e7745139e6474a0f6aa3e49a41e732b204006338465c5"
+        "sha256": "7efbbe2112d1bfc0a51be3055029601a12706ce28e4dd5cba10b53e8000897ee"
       },
       {
         "path": "src/core/contracts.ts",

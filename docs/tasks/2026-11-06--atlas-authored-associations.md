@@ -89,6 +89,10 @@ The original2122caller run1739pass383fail61a30fec remains FAIL:346 first-source-
 
 Exact scope41 declaration7f2da7eb, clean preflightc3540b54 and admission703cd4f3 add only test/contracts/rtk-word-scene-identity-main.contract.test.js. C7 whole RTK 2e0474c8 preserves all five fixture failures. Read-only diagnosis d395bb66 identifies the missing actual constructor. One added binding to the real V13 factory preserves every original assertion and port, and the selected fifteen behaviors pass a3dcc4c7. Current generated companions carry the existing membership and refreshed exact hashes. All 1493 native inputs match actual C2; immutable candidate tests and complete delivery remain required.
 
+### BASELINE CALLER AND SCOPE BINDINGS
+
+C8 full RTK 4419 passes e250e1d1 and Electron 35 passes 83053f17. The original default 4534-result run records three failures, 59 inherited skips and complete raw artifact 5788f23b. Scope42 preflight a92d5196 and admission 6373b069 bind one exact DONE allowlist entry for the existing packaged capability mirror and the old preload bridge test expectation for the additional owned association source field. The three whole affected files pass all 17 cases ce4ae4d2. Candidate gates and complete delivery remain required.
+
 ### NATIVE SOURCE-AVAILABILITY FINDING
 
 C1 577d0475 actual own profile32 AUTHOR and same-profile COLD exited0; complete73/75file readbacks and source/history/navigation oracle1346d7db retain two records with3+1revisions and exact manuscript/Atlas bytes. The oracle exits2: scene edits leave a previously enabled Save appearance until its synchronous click guard refuses the stale source. This is the original unsuccessful C1 native acceptance; later observations never retag it. A frame labelled immediate disabled is inaccurate; its raw AX and the explicit diagnosis4a086a37 take precedence. Full original native logs/cache errors and every original failed method remain retained.

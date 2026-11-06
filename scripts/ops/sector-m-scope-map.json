@@ -576,6 +576,7 @@
       "test/unit/atlas-matrices-source-scope.test.js",
       "docs/tasks/2026-11-06--atlas-matrices-source-scope.md",
       "src/core/atlas-authored-associations-v1.mjs",
+      "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json",
       "src/derived/atlas/deriveAtlasAuthoredAssociations.mjs",
       "test/unit/atlas-authored-associations.test.js",
       "docs/tasks/2026-11-06--atlas-authored-associations.md"
