@@ -1,13 +1,15 @@
-# CURRENT — authored Atlas native finding corrected in source
+# CURRENT — authored Atlas native observed; required delivery companions next
 
 TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor, same40paths and original M14 delivery/rollback.
-SOURCE: clean C1 577d0475 remains reachable; current correction adds four renderer lines for retained form availability on actual edit/dirty acknowledgement. Whole76 genuine RED86c145af precedes source edit. Full affected135 pass e44fc5d5; strict independent52e9e4a proves all74old case bodies/assertions, three original caller files and exact four-line inverse. Normal renderer build50fbc603 passes. The prospective132filename contains135actual cases after old nested callers fully reach their assertions.
+SOURCE: reachable C2 9058b505/tree5d3cdad0. Frozen76 actual RED86c145af and same cases GREEN; affected135 e44fc5d5 ran on corrected pre-checkpoint source with strict inverse52e9e4a, not retagged as C2. Exact C2 prelaunch whole76 passes7b5a4696. All74old cases/assertions, three old event caller files and authority guards remain literal; source adds only four form-availability lines. Normal renderer build50fbc603.
 
-NATIVE: actual C1/profile32 AUTHOR and same-profile COLD both exited0, no helpers. Complete73/75file carriers ee12926e/5402d720 and independent c50ad1c7/94da228c retain two records with3+1revisions, Unicode/source/history and exact navigation. Pair reader1346d7db exits2 for stale-enabled appearance until click guard; no native acceptance. Current source fixes this open finding; a changed new app is still required. C1 app/profile32 plus all31earlier profiles/three apps remain protected. Cache-directory stderr and inaccurate immediate-disabled frame label are retained explicitly; no data-loss or old-profile launch claim.
+NATIVE: C2 actual new own33/ASAR406c502b, all1484 official readerabd943f7, AUTHOR/cold normal waits0/no helpers. Independent681212f8 and full68/70file lossless carriers7a9b982c/8eb825a0 verify two records with3+1complete revisions, exact source/Unicode/navigation, immediate dirty-source controls, current-save acknowledgement and original scene/Atlas retention. An accidental synthetic МираБорис entity is preserved as an unrelated third row; correct participants are Мира/Борис. Original C1 unsuccessful native acceptance1346d7db, cache warnings/input mismatch/method errors remain. Closed33profiles/five apps held bydc5cae38.
 
-Current cut69pins remainsVALID/NOT_READY with all17qualification UNKNOWN. Original2122/383FAIL and every later source/method error remain. Full V6/DNA5/all15/four/all17 OPEN; Office PAUSED, Black Box after fullMac. Matrices stays bounded CLOSED on original M14.
+Metadata admissiona125d643/declaration07/preflightf6c729bb follows actual native. Cheap real gates fail inventory60a7d509 (missing new file/two current digests), certificate945a3fb5 (no current binding set), DATA30ada56e (runtime repair pin). Add only four exact current source memberships and normal generated/current tables with all historical predicates/deltas and1493native inputs protected. Native execution stays labelledC2.
 
-NEXT: freeze corrected source and separately admit new native33/build/source-availability observation and same-profile cold; then finish current namespace/inventory/C2A/witness companions and all required full delivery/merged checks.
+Current cut69pins remainsVALID/NOT_READY, all17qualification UNKNOWN. Original2122/383FAIL,59uncovered skips and6moderate dev findings retained. Full V6/DNA5/all15/four/all17 OPEN; Office PAUSED, Black Box after fullMac. Matrices bounded CLOSED on M14.
+
+NEXT: complete current inventory/C2A/RCV/source namespace/append-only witnesses, freeze delivery candidate, run all required original software gates and normal guarded PR/CI/merge/exact merged software/new native.
 
 --- Earlier status bodies remain complete and historical below ---
 

@@ -1,3 +1,9 @@
+# 2026-11-06 — Authored Atlas source/history and native correction
+
+C2 9058b505 exact whole76 passes7b5a4696; corrected pre-checkpoint135 e44fc5d5/inverse52e9e4a preserve all old cases and authority checks. Four presentation lines address the genuine C1 native finding; new own33 actual AUTHOR/cold0 and independent681212f8/full68/70file readbacks verify two records/history3+1, exact source, Unicode, dirty/ack controls and cold retention. Unrelated mistaken own entity and every original failure/warning remain; all33profiles/five apps protecteddc5cae38.
+
+Same40path metadata admissiona125d643/preflightf6c729bb follows current native before remaining expensive gates. Complete four current memberships/normal inventory-C2A-RCV/technical witnesses and inherited successor, then all mandatory software, guarded PR/CI/merge/exact merged native. No full Mac/all17 acceptance, packaged runtime edit, new tracker or independent improvement.
+
 ## 2026-11-06 — Matrices actual native and same-chain certificate registration
 
 C0 e584022f: whole29-file1697 source cases pass with raw59fe270a; rebuilt43.8.4/15d14a8b and two ordinary native AUTHOR/cold waits0. Independent raw AX/source/profile oracle1fba0024 verifies12 observation rows, keyboard/refusals/recovery, all Atlas/tree/four scene bytes and closed30baseline793811dc. Extra empty draft fixture deviation and all original failures retained.

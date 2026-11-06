@@ -77,7 +77,7 @@ Before product edits, align current CONTEXT/HANDOFF and the prior Matrices task:
 
 ### SAME-OUTCOME SOURCE CALLER AMENDMENT
 
-CURRENT_SOURCE_OBSERVATION: corrected whole74passes7a003bd7 with independent full COPY/source readback99515ff1; first source-relay, selected-catalog and retained-fixture errors remain original RED9b9b893c. Normal renderer build0, cheap actual constructor and69pin/current V13 cut prerequisites pass. Actual app/cold/full gates/delivery remain unproved; preserve the fresh retained COPY root, not its directory permissions.
+CURRENT_SOURCE_OBSERVATION: C2 9058b505 exact whole76 passes7b5a4696; earlier corrected-source135 e44fc5d5/inverse52e9e4a are not retagged. Actual new own33 AUTHOR/cold0 and independent681212f8 verify2records/history3+1/source/dirty controls/current ack/cold, with all33profiles/five apps preserved. Same40path metadata companions/full required software/normal delivery/exact merged native remain pending; original failures retained.
 
 Original delivery/rollback base and initial39path admission remain M14; own unaccepted checkpoint7e6ff3c8 (parent M14) preserves25paths and all failures. Scope40 declaration03c5ccfacd/preflighta62376f4/admissionf5c6602d, fresh remotes33551420 and physical10095source8e095006 precede the first new-caller edit. The earlier dirty preflight5d4b8a8e refused before writing that caller; no bypass/base transfer.
 
@@ -87,11 +87,13 @@ The original2122caller run1739pass383fail61a30fec remains FAIL:346 first-source-
 
 ### NATIVE SOURCE-AVAILABILITY FINDING
 
-C1 577d0475 actual own profile32 AUTHOR and same-profile COLD exited0; complete73/75file readbacks and source/history/navigation oracle1346d7db retain two records with3+1revisions and exact manuscript/Atlas bytes. The oracle exits2: scene edits leave a previously enabled Save appearance until its synchronous click guard refuses the stale source. This is an open native UI finding, not acceptance. A frame labelled immediate disabled is inaccurate; its raw AX and the explicit diagnosis4a086a37 take precedence. Full original native logs/cache errors and every original failed method remain retained.
+C1 577d0475 actual own profile32 AUTHOR and same-profile COLD exited0; complete73/75file readbacks and source/history/navigation oracle1346d7db retain two records with3+1revisions and exact manuscript/Atlas bytes. The oracle exits2: scene edits leave a previously enabled Save appearance until its synchronous click guard refuses the stale source. This is the original unsuccessful C1 native acceptance; later observations never retag it. A frame labelled immediate disabled is inaccurate; its raw AX and the explicit diagnosis4a086a37 take precedence. Full original native logs/cache errors and every original failed method remain retained.
 
 Same40path declaration05a1c7a893/preflight5846dc56/admission50e4c90d on cleanC1 precede correction. H: existing markAsModified/onSetDirty omit retained-form synchronization. P: invoke those actual maintained handlers in the finite host; immediate save/source availability must track dirty/current acknowledgement while fields/caret/history remain, no association query/command or catalog scan per character. Preserve all74old assertions/cases and native32/C1app; genuine whole-file RED precedes a narrow renderer edit. Rebuilt actual native must observe this changed behavior before product push. Original M14 rollback and one delivery chain remain unchanged.
 
 Whole76 RED86c145af has74pass/two actual handler failures; unchanged76 GREEN6db6c3f7 follows the two synchronization calls. Cheap existing56event callers16b047ac then expose absent optional form-map bindings in finite legacy hosts. Guard only that optional presentation lookup; preserve all56existing caller bytes, generation/ack logic and every product authority guard. Rerun affected whole files and76 with unchanged frozen cases before native rebuild.
+
+C2_NATIVE_CURRENT: exact C2 whole76 7b5a4696, new ASAR406c502b/all1484 officialabd943f7, actual AUTHOR/cold0 and independent681212f8 complete the bounded native finding. Full68/70file carriers7a9b982c/8eb825a0 preserve two assertions/history3+1 and original text/all three entity rows; mistaken МираБорис is an explicit retained test-input deviation, never a participant or deleted. Source controls disable before click and a saved ack cannot revive old evidence. Metadata declaration07/preflightf6c729bb/admissiona125d643 protects all1493packaged inputs/33closed profiles/five apps; only four exact current memberships/normal derived tables/witnesses and mandatory full delivery remain. Full15/four/all17 UNKNOWN.
 
 ## DENYLIST
 

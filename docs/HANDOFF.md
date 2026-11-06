@@ -1,10 +1,10 @@
-# CURRENT HANDOFF — rebuild corrected authored-association availability
+# CURRENT HANDOFF — authored Atlas native complete; same-chain source companions
 
 TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor, branch unchanged, original M14 rollback.
-SOURCE: C1 577d0475 native finding corrected by four presentation-only lines. Declaration05a1c7a893/preflight5846dc56/admission50e4c90d; frozen76 b31b0c51 genuine RED86c145af, full affected135 GREENe44fc5d5 and independent52e9e4a. All original cases/predicates and authority guards retained; normal renderer build50fbc603. Source needs clean checkpoint and new native admission, no push yet.
-NATIVE: C1 own32 AUTHOR/cold actual0 and full lossless carriers ee12926e/5402d720, all earlier31profiles/three apps held. Two records/history3+1/exact-source navigation observed, but pair oracle1346d7db exits2 for delayed button availability; original failure remains. C1 app/profile32 is closed and protected, never reused or relabelled as the corrected build. Current source correction has no actual app proof yet.
+SOURCE: C2 9058b505 exact whole76 7b5a4696; earlier corrected-source135 e44fc5d5 and strict inverse52e9e4a keep all original assertions. Current source/native inputs1493 are frozen; metadata closure must not change packaged runtime.
+NATIVE: new own33 C2/ASAR406c502b, all1484 official ASARabd943f7, AUTHOR/cold actual0/no helpers; independent681212f8/full68/70file carriers7a9b982c/8eb825a0. Exact records2/history3+1/source/Unicode/dirty availability/current ack/navigation/cold verified. Unrelated accidentally created own МираБорис row retained literally. Preserve original C1 native finding1346d7db, all raw warnings/failures and all33closed profiles/five apps dc5cae38; no old app/profile reuse or native retagging.
 
-NEXT: new own33 runtime/build/native dirty-source immediate-disable/retained-input/recovery/persistence and normal same-profile cold; then current companions and mandatory full software/guarded push/PR/CI/merge/exact merged actual native. No healthy broad replay before prerequisites or fullMac/all17 claim. Preserve all old raw failures,59uncovered skips and6moderate dev findings. See task40paths and CONTEXT.md for scope/limits.
+NEXT: metadata source admissiona125d643/preflightf6c729bb; current inventory60a7d509/cert945a3fb5/DATA30ada56e fail concrete old pins/missing memberships. Four exact new paths only, standard inventory/C2A/RCV and append-only current witness records, complete inherited current successor/selection; preserve old arrays/checkers/history. Then immutable candidate/all required gates/guarded push/PR/all20CI/merge/exact merged software and fresh native. All15/four/all17 remainOPEN; Office PAUSED, BlackBox after fullMac. No independent infrastructure/optimization series.
 
 --- Older pending handoffs below are historical; do not replay closed Matrices delivery ---
 

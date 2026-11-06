@@ -1,14 +1,14 @@
-# CURRENT — authored Atlas relationships follow closed Matrices delivery
+# CURRENT — authored Atlas relationships locally observed; full delivery pending
 
 TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor.
 BINDING_BASE_SHA: 04d81e5631778bb6bbabd57238ec1c412f09291f
-STATUS: AUTHORED_ASSOCIATIONS_ADMITTED_TEST_FIRST_NO_PRODUCT_ACCEPTANCE
+STATUS: C2_AUTHORED_NATIVE_OBSERVED_REQUIRED_DELIVERY_PENDING
 
-Matrices delivery PR2206 is bounded CLOSED on exact M14 04d81e56, closureed0f5be2, schema-valid report003f3831:20candidate/20merged CI,698 relevant merged TAP,actual14 merged native observations and31 retained closed profiles. Original6moderate dev findings/59uncovered default skips and every failure/source/profile remain; this is not full Mac/all15/four/all17 qualification.
+Matrices PR2206 remains bounded CLOSED on original M14, closureed0f5be2/report003f3831,20candidate/20mergedCI and31retained profiles. Its older pending bodies below are historical.
 
-Current P17 outcome: one explicit saved-source authored relationship, correction/retraction with retained history, immutable dossier/source navigation and real cold proof. Current registry has no such writer; WP500/book modules are pure/unwired. Declaration29e17d26/preflight163f2a2e/admissionef2dcb1a bind39paths before edits,source10091/profiles31/three old apps held. No corrected-source/native/feature acceptance yet. Full V6/DNA5/all17 stays OPEN;Office PAUSED,BlackBox after fullMac. New native roots/launches need separate admission.
+Current P17 outcome is implemented at C2 9058b505: explicit source-bound type/direction/applicability, Core/Kernel history, correction/retraction, immutable rows and exact source navigation. Exact C2 whole76 7b5a4696 and actual new own33 AUTHOR/cold waits0 precede remaining expensive checks. Independent681212f8/full68/70file readbacks verify two records/history3+1, immediate dirty-source refusal, current acknowledgement and original text/Atlas retention. Preserve unrelated mistaken native test entity and original C1 failed appearance oracle1346d7db; all33closed profiles/five apps protected dc5cae38. This is a bounded local observation, not complete delivery or Mac release.
 
-Existing17row/12stage/15cell/four-projection scope tables remain unchanged. Continue the one authored-associations task;no new tracker or release authority.
+Same40path metadata admissiona125d643 now completes current memberships/inventory/C2A/RCV/source witnesses, then all required local/CI/merge/exact merged software/new native. Original M14 rollback and all raw errors remain; no runtime write in metadata closure. Existing17row/12stage/15cell/four-projection scope tables stay unchanged and UNKNOWN. Full V6/DNA5 remainsOPEN; Office PAUSED, BlackBox after fullMac. Continue this one delivery chain before another outcome.
 
 --- All previous task/status bodies remain complete and historical below ---
 
