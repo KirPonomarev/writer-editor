@@ -1,3 +1,23 @@
+# 2026-11-06 — Same-PR historical Git fault-adapter compatibility
+
+TASK: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106
+BASE: C0 3e8b2692b3aa570d438ed9a1c158ae3717069093; original delivery base M12 unchanged.
+REASON: CI early admission precheck and complete direct-consumer RED expose three legacy injectors that search only the first argument after five queries became three. The intended wrong-tree and inventory faults were not injected; no executor predicate failed to enforce a supplied fault.
+EXCEPTION: standing owner authority for autonomous necessary development covers exactly three test-adapter spans plus actual-injection count assertions. This revises the task's original every-test-byte promise only for those spans. Preserve every old title, seven hostile modes, refusal assertion and all other bytes; support both old/new Git layouts. Frozen40 OPS tests,54 pin tuples,40 mutant definitions, runner/limits and all product inputs remain literal. Scope21/budget700 and native exclusion are independently declared5b142b89 and preflighted13c58aed before edits.
+PROOF: retain failed C0 CI/log7d70b913 and full five-consumer RED068bfa74; freeze exact before/after spans863da714. Whole affected GREEN and original-executor counterfactual must follow. All current-candidate mandatory gates remain required; no skip, waiver or historical evidence relabeling.
+ROLLBACK: revert this same bounded batching outcome and its three adapter changes together; retain every original source commit, failure, app, profile and raw history. No independent performance/infrastructure series.
+
+# 2026-11-06 — One previously approved test-cost correction
+
+TASK: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106
+BASE: 39a04e4d257e1a5bda5893168238f700364c71f8
+SCOPE: existing read-only historical claim Git reads only; no product/native/design/runtime change.
+REASON: primary owner39cd7a45 accepted one bounded measured expensive-test optimization; the preceding font-size chain is now fully closed by e6aa4714. Read-only discriminator proves5 equivalent3 queries; ordinary required-run effect is still pending.
+EXCEPTION: no new canon/gate/limit/coverage waiver. Runtime revalidation is typed nonapplicable because all18 admitted paths are excluded from actual1491 stage/1482 ASAR input sets, with original app/profile physical preservation required. Historical predicate/tuple bytes remain literal. Derived canonical metadata rows are separately counted and inversely reviewed, not unbounded refactoring.
+ROLLBACK: one normal scoped revert, preserving all data/profiles/apps/raw/authority/old historical bytes; after closure return to the finite Mac queue.
+
+--- Historical entries retain their complete original bytes below ---
+
 # 2026-11-05 — Fixed native legal/source-companion supply for the existing private Atlas cohort
 
 TASK: YALKEN_ATLAS_NATIVE_SOURCE_NOTICES_20261105

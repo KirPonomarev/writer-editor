@@ -68,14 +68,27 @@ test('P01 appends exactly one WP602 historical pin without reopening earlier imm
 test('WP602 historical pin still rejects SHA tree ancestry and object substitution',()=>{
   const{pin,input}=historicalInput();
   for(const mode of ['head','tree','ancestry','missing-stamp','missing-inventory','stamp-bytes','inventory-bytes']){
+    let injected=0;
     const git=(rootDir,args)=>{
-      if(mode==='head'&&args[1]==='HEAD')return Buffer.from('not-a-sha');
-      if(mode==='tree'&&args[1]===pin.evaluationSha+'^{tree}')return Buffer.from('0'.repeat(40));
-      if(mode==='ancestry'&&args[0]==='merge-base')throw Error('NOT_ANCESTOR');
-      if(args[0]==='show'){const target=args[1].endsWith(':'+inventory)?'inventory':'stamp';if(mode==='missing-'+target)throw Error('MISSING');if(mode===target+'-bytes')return Buffer.from('future replacement');}
+      const ref=mode==='head'?'HEAD':mode==='tree'?pin.evaluationSha+'^{tree}':null;
+      if(args[0]==='rev-parse'&&ref&&args.slice(1).includes(ref)){
+        const values=realGit(args).toString('utf8').trimEnd().split('\n');
+        assert.equal(values.length,args.length-1);injected++;
+        return Buffer.from(values.map((value,index)=>args[index+1]===ref?(mode==='head'?'not-a-sha':'0'.repeat(40)):value).join('\n')+'\n');
+      }
+      if(mode==='ancestry'&&args[0]==='merge-base'){injected++;throw Error('NOT_ANCESTOR');}
+      if(args[0]==='show'){
+        const inventoryFault=['missing-target','missing-inventory','target-bytes','inventory-bytes'].includes(mode);
+        const selected=args.slice(1).find(spec=>spec.endsWith(':'+inventory)===inventoryFault);
+        if(selected&&mode.startsWith('missing-')){injected++;throw Error('MISSING');}
+        if(selected&&mode.endsWith('-bytes'))return Buffer.concat(args.slice(1).map(spec=>{
+          if(spec===selected){injected++;return Buffer.from("future replacement");}
+          return realGit(['show',spec]);
+        }));
+      }
       return realGit(args);
     };
-    assert.throws(()=>verifyHistoricalInventoryClaim({...input,git}),/E_HISTORICAL_INVENTORY_BINDING/);
+    assert.throws(()=>verifyHistoricalInventoryClaim({...input,git}),/E_HISTORICAL_INVENTORY_BINDING/);assert.equal(injected,1,'exactly one fault must reach the Git adapter: '+mode);
   }
 });
 test('historical WP602 evidence cannot make an uncovered current inventory claim pass',t=>{

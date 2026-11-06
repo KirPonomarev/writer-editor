@@ -943,7 +943,12 @@
     "test/unit/writer-line-height-custom-input.test.js",
     "test/unit/writer-custom-font-size-input.test.js",
     "docs/tasks/2026-11-06--writer-custom-font-size-input.md",
-    "test/unit/sector-m-command-surface-ui-fencing.test.js"
+    "test/unit/sector-m-command-surface-ui-fencing.test.js",
+    "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+    "docs/tasks/2026-11-06--one-test-cost-historical-git-reads.md",
+    "test/contracts/r24-p01-admission-preparation-compatibility.contract.test.mjs",
+    "test/contracts/r24-wp601-historical-inventory-claims.contract.test.mjs",
+    "test/contracts/r24-wp705-historical-inventory-claims.contract.test.mjs"
   ],
   "protectedFiles": [
     {
@@ -2416,7 +2421,7 @@
       },
       {
         "path": "docs/ARCH_DIFF_LOG.md",
-        "sha256": "01a1fcef7170e037102066833f603de636532179586aba88142926bf8222c191"
+        "sha256": "5b695ea713eb2897bd5a59deadee2c8c1689ba6d62725b6016174ea9fa442dc7"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-return-router.contract.test.js",
@@ -2864,15 +2869,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "314d8eb9c54a20a887f879f017bc0b9754fbb82f600cd7aa40ed080873ffeb96"
+        "sha256": "9e364729c1066ce560718b95300f177cdcaf779409f4d98aa1d7e8d802a72e76"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "e8e36d2eaf6a1bc7613487217f372f80fb54a1f2e1e8a912b2adae0f6682de8b"
+        "sha256": "f4b2de00465dbe35ff1c8f4f5748b424c3482f7cdd0670d38fe56e7e1e8ac3d4"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "42c7c2243f9ed8069c0902c06c27b43a5439d7f4bb2163c2ba0bcf69d22dbe76"
+        "sha256": "758700d14dede12b0c3d6c45a4c9588effc0bdfd79c64c02e8e5201621cdb458"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3412,7 +3417,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "eaca46416db84d9f187bd1654e57b1958e5aa97b189cd5d56e29beea9190575f"
+        "sha256": "ddaeb179d8cb1a57384fa01dd01bfca1dfe8e56118276ae4331fc747ea6d2306"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3544,7 +3549,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "5e948e72fd1cd64b6d5edeb226842273162bd45cb57f87f18b7911bf9f9497f2"
+        "sha256": "a6e7b6db84a1765f3b65cc83f06ae4fd20df757c1db90bdc839bcc3428e6e00b"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4012,7 +4017,7 @@
       },
       {
         "path": "scripts/ops/r24/docs-claim-lint.mjs",
-        "sha256": "2e901d6eb1eeadd04af24efd0822a828b7a81123c0b4c63856edbe3bb47f5285"
+        "sha256": "cc488d0ba124de36c923ff95978fdb0ee0b614df04fc2252efce82db3a2289a5"
       },
       {
         "path": "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs",
@@ -4308,11 +4313,31 @@
       },
       {
         "path": "docs/tasks/2026-11-06--writer-custom-font-size-input.md",
-        "sha256": "881c51b8a5e16f40f73541bc85373b62cc558ffdb7ad61ad0dda0e55935aea26"
+        "sha256": "9b9dfd531558052038d2fd822ddb224a8625de5ad2ee0e0bc563e42171df63d3"
       },
       {
         "path": "test/unit/sector-m-command-surface-ui-fencing.test.js",
         "sha256": "0e71fbedfb06b6b2a78344fc1394286586652de0cb717a0c54aa617f6ddc21ba"
+      },
+      {
+        "path": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+        "sha256": "e8b0d3e650eae3cff0663b8886294044cbc9e4718b50d4772f06dc8357481b56"
+      },
+      {
+        "path": "docs/tasks/2026-11-06--one-test-cost-historical-git-reads.md",
+        "sha256": "7ac114d94f8022c5d3a3bf0b3fb3263fcebbda8da8d152c6f2885cf748ef5020"
+      },
+      {
+        "path": "test/contracts/r24-p01-admission-preparation-compatibility.contract.test.mjs",
+        "sha256": "3f1abc474d37681121455cc979599f29b1092070148a32a980b95c193d4e4317"
+      },
+      {
+        "path": "test/contracts/r24-wp601-historical-inventory-claims.contract.test.mjs",
+        "sha256": "02676ce763dd49f1e0d63c69e546ef80cc540e9041aff11ab58ead31d406107e"
+      },
+      {
+        "path": "test/contracts/r24-wp705-historical-inventory-claims.contract.test.mjs",
+        "sha256": "10632cb557aa9790c6e7512211d2a4ba50bffa24af11bd4272b863c2a78c7353"
       }
     ],
     "followupRepair": {

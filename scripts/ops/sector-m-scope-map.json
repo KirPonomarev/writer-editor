@@ -568,7 +568,10 @@
       "docs/tasks/2026-11-05--writer-line-height-field-coherence.md",
       "test/unit/writer-line-height-custom-input.test.js",
       "test/unit/writer-custom-font-size-input.test.js",
-      "docs/tasks/2026-11-06--writer-custom-font-size-input.md"
+      "docs/tasks/2026-11-06--writer-custom-font-size-input.md",
+      "scripts/ops/r24/docs-claim-lint.mjs",
+      "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "docs/tasks/2026-11-06--one-test-cost-historical-git-reads.md"
     ]
   },
   "allowPrefixByPhase": {

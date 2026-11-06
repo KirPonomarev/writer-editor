@@ -1,3 +1,14 @@
+# Delivered Writer custom font-size input
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: CLOSED_BOUNDED_DELIVERY_NOT_FULL_MAC_RELEASE
+CANDIDATE_SHA: 0439e01e4eefa69078410035c1dc4319b991b8cd
+MERGED_SHA: 39a04e4d257e1a5bda5893168238f700364c71f8
+
+PR2204 normal delivery closed by WRITER_CUSTOM_FONT_SIZE_DELIVERY_CLOSURE_01.json.gz SHA256e6aa471401a6dc812eb22e331bd20231e023630863e6f5eb5f6292e3557cae8b, schema-valid final report e86f8b84. Actual candidate and merged20 required CI jobs each,312 merged software cases and5 native cases/3 normal exits passed their independent raw oracles. All29 physical profiles and original failure28 remain;59 default skips are uncovered. FullMac/all17 remain open. Next: the single already accepted measured test-cost correction, then finite V6/DNA5 Mac queue.
+
+--- Original task bytes remain complete below ---
+
 # Writer custom font-size input compatibility
 
 TASK_ID: YALKEN_WRITER_CUSTOM_FONT_SIZE_INPUT_20261106

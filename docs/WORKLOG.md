@@ -1,3 +1,18 @@
+# 2026-11-06 — PR2205 exact legacy fault-adapter correction
+
+- C0 3e8b2692 completed22 local rows and independent full raw readback40d966cf, with original40 genuine E0 kills/8200 observations, baseline4425/4366pass/59uncovered and one-sample ordinary reductions9.6/8.3/4.7percent. Guarded push and PR2205 followed.
+- CI early admission precheck exposed three legacy negative-test injectors searching only the first argument; original log7d70b913 and complete five-file RED068bfa74 retained. Cancelled obsolete failed run42177876136; no CI acceptance or merge.
+- After declaration5b142b89/preflight13c58aed, froze exact three-adapter patch863da714. Preserved every prior title/mode/refusal and other bytes by inverse6955377b, adding exact actual-injection counts. Whole six-file64 GREENbeedb6a6, independent70 old/new typed faults plus five positive pairs70908798, exact three-file CI precheck8675663d all verified. Current bindings/full delivery still pending; no second task or native payload change.
+
+# 2026-11-06 — One approved historical Git-read cost correction
+
+- Accepted closed font-size PR2204 on M12: closuree6aa4714,20 candidate/20 merged CI,312 merged software,5 native cases/3 normal exits; all29 physical profiles and original failure28 retained. Full Mac remains open.
+- Independently reread primary owner39cd7a45 accepting five process corrections. Admitted only the outstanding single measured test-cost optimization at clean M12, with declaration3356b375/preflightsbb1f7982/f965bc83/admissione80488e0 and fresh synthetic scratch40fddba4. Checked10088 source files,29 profiles and7252 bundle entries; no competing writer.
+- Read-only cause probe observed5 equivalent3 immutable Git queries; all108 fixed blob sizes fit the original4MiB. Preserved939 original test lines, appended two regression cases and retained genuine whole-file RED39pass1fail (5 versus3), independent reader8370e41f, identical GREEN40pass without skip/todo. Ordinary speed is not yet measured.
+- Kept original preparation42f373fe, task-parser229468a6 and post-prepare expectation failure receipts. Task wording was corrected before executor edits; finalizer correctly leaves inventory/C2A/RCV/claim bytes literal and changes only DATA/certification metadata. No gate/limit/coverage change. Current chain is pending ordinary required gates and normal delivery; no second outcome started.
+
+--- Prior factual bodies retain their complete original bytes below ---
+
 # 2026-11-05 — Writer reorder native observation and certificate gate refusal
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -1,3 +1,30 @@
+# Resume — same PR2205 historical Git adapter correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106; sole executor.
+BASE: original M12 39a04e4d257e1a5bda5893168238f700364c71f8; current committed C0 3e8b2692, same branch/PR2205.
+STATUS: C1_ADAPTERS_64_VERIFIED_CURRENT_BINDINGS_PENDING
+
+NEXT: complete the unchanged seven-target factory with three additional existing contract paths (480 bindings), current delegated witnesses and inverse scope review; normal corrective commit without amend/rebase/force, current mandatory wave including the exact early CI precheck and all five direct callers, guarded push to the same PR, all20 CI, normal merge and exact clean merged verification. No second product/optimization contour before closure.
+
+PROOFS: C1 declaration5b142b89/preflight13c58aed, frozen patch863da714, literal inverse6955377b, whole64 GREENbeedb6a6, independent70908798 (five positive pairs/70 real typed fault observations on both layouts), original CI precheck8675663d. C0 all22/ordinary measurements40d966cf, actual failed CI/log7d70b913 and three-failure RED068bfa74 remain distinct. Four own synthetic outputs already losslessly retained/restored/read before exact isolation640461b2/8b658f6b.29 profiles/7252 app entries protected;21 paths excluded from actual native stage/ASAR. Current source is not yet an immutable C1; no old test/native result is retagged. Full V6/DNA5/all17 open; Word/nativeOffice PAUSED, Black Box after full Mac.
+
+--- Earlier C0 resume body remains literal below ---
+
+# Resume — one measured historical Git-read cost correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ONE_TEST_COST_HISTORICAL_GIT_READS_20261106; sole executor.
+BASE: 39a04e4d257e1a5bda5893168238f700364c71f8
+BRANCH: codex/one-test-cost-historical-git-reads-20261106
+STATUS: SOURCE_40_VERIFIED_MANDATORY_WAVE_NOT_FROZEN
+
+NEXT: finish current477-binding enrollment/technical witnesses, review the exact scoped diff and freeze one candidate; execute unchanged ordinary E0/WP104/C1C/RTK/default and required metadata/security gates, compare retained original BEFORE, then guarded full delivery/exact merged verification. No second product write before closure; after this one optimization return directly to the finite Mac queue. Preserve every original test/pin/failure,all29 profiles and app payload; no cache/limit/gate waiver.
+
+RESUME_PROOFS: declaration3356b375, preflightsbb1f7982/f965bc83, admissione80488e0 and new synthetic scratch40fddba4; frozen test e8b0d3e6, actual RED46cc01b6/independent8370e41f, identical GREENd4343d9f; SOURCE_RED_GREEN_AND_BEFORE_01.json.gz SHA2569af8aa528df25d05434aa4a4832c59830d3b41fcd02df0641e515e48e7acb26c. Reports/materials are in the dated one-test-cost-historical-git-reads folders on verified T777. Prior font-size closuree6aa4714; original preparation/task-parser/post-prepare reader failures remain separately retained. Runtime exclusion is explicit in declaration; no app launch/build is admitted or claimed. FullMac/all17 open; Word/nativeOffice PAUSED.
+
+--- Prior factual bodies retain their complete original bytes below ---
+
 # Resume — Writer custom font-size input
 
 DOCUMENT_CLASS: FACTUAL_STATUS
