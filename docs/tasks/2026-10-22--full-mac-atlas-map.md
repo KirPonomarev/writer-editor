@@ -1,3 +1,9 @@
+## CURRENT — source-scope Matrices native observed; delivery remains pending
+
+One observation/co-occurrence outcome only: actual C0 e584022f app43.8.4/ASAR15d14a8b supports explicit book/saved scene/saved fragment, including real empty/stale/unsaved refusal and keyboard/Save/Quit/cold. Native independent reader1fba0024 and closed30baseline793811dc retain source/Atlas/tree bytes and original fixture extra-empty-draft deviation421a1053. Whole affected1697 source cases pass raw59fe270a. These are three source controls, not authored semantic relations or completed15cells/four projections/all17.
+
+The same delivery needs a missing current certificate successor/selection registration: original gate2459dd74; all483leaf+1guard Git bytes exact6a2e38ad; prospective patch85d7da1a, clean C0 declaration6c06b5b7/preflight7e179e54 before correction. Current companions, immutable full gates, normal delivery and fresh merged native remain required; no new independent product contour.
+
 # Current bounded continuation — 2026-11-06
 
 DOCUMENT_CLASS: FACTUAL_STATUS

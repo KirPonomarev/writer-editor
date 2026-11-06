@@ -4,8 +4,8 @@ TASK_ID: YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: 7a7f676f57976278c44ef74e481a8d7442d5839d
-STATUS: SOURCE_33_AND_588_VERIFIED_NATIVE_AND_DELIVERY_PENDING
+BINDING_BASE_SHA: e584022f4d473fb8a9057bd64c751b1d086a0126
+STATUS: C1_REGISTRATION_CAUSALLY_VERIFIED_COMPANIONS_GATES_DELIVERY_PENDING
 DOCUMENT_CLASS: PROCESS
 CLAIM_BOUNDARY: Three scopes of existing observation/co-occurrence matrices; no full15 semantic cells,four-projection or full Mac qualification claim.
 
@@ -243,3 +243,11 @@ Original delivery and rollback base remains M13. Clean unaccepted checkpoint7a7f
 ### Current source verification and build
 
 Exact host patch was applied only after amended taskE01805bcaf;whole-file literal inverse d1fb80c8 reconstructs every original byte except the two production defaults. Complete maintained original five-file run6180ca5c executes588of588,no fail/cancel/skip/todo. New whole33 frozen805f394f remains source GREENa5da9507 with original31prefix literal. Full Main syntax4ba885dc and maintained renderer buildf34e1402 pass;scope proof9637c1ae checks all10091tracked paths and only editor.bundle.js changed during build. Old29profiles/7252native entries held. This remains source/build evidence,not an actual new native or full-Mac verdict. Current namespace enrollment adds exactly the existing matrix module and this task/test to inherited480bindings,with all historical bytes/predicates preserved;all required final candidate/native/delivery proofs follow.
+
+### C0 native outcome and prospective current-namespace registration correction
+
+Whole29file actual1697 source cases2793a35c/raw59fe270a and current whole33 source3a7a0082 precede actual own native AUTHOR/cold on e584022f. Build3c72aff6/ASAR15d14a8b, independent official ASAR4978e03a, raw native/data outcome1fba0024 and closed30baseline793811dc bind the real3scope controls, empty/stale/unsaved refusal, Undo/Save/reselect recovery, keyboard/grid, saved source-anchor selection and cold. All original Atlas/tree/four scene bytes retained. Original fixture prediction3 versus actual4 includes a separately opened empty default draft, explicitly preserved and rebound by pre-probe identity421a1053; no data deleted or predicate weakened.
+
+Mandatory current certificate gate2459dd74 fails before expensive remaining gates: all483currentleaves and one policy guard match484actualGit/physical objects6a2e38ad, but the new complete successor and immutable selection entry are absent. Proposed85d7da1a constructs the complete inherited/current successor and appends only it; all old names/order/base/guard/byte predicates remain. Clean exactC0 declaration6c06b5b7/preflight7e179e54 and separate admissiona809d2c3 precede this same23path nonpackaged correction. Original M13 rollback remains. Preserve all30closedprofiles and original source/native data; prove every1491native input remainsC0 literal. Native execution staysC0, with current-input/artifact bindings required for later delivery claims. Use only the unchanged current-bindings factory; ordinary technical witnesses remain delegated. Required full software, normal delivery and fresh actual merged native remain pending.
+
+Actual uncommitted production registration controlfab6e317 on frozenC0Git objects now selects all483bindings and retains cellAcceptanceAuthority=false; original gate2459dd74 and all old predicates remain. Whole certificate literal inversea3f143f7 reconstructs C0. This causal source control is not an immutableC1 verdict. All1491native inputs and30closedprofiles remainedC0 literal; next use the unchanged seven-target factory, exact technical witnesses and an immutable normal candidate before remaining full software/delivery.

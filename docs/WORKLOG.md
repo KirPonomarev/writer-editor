@@ -1,3 +1,9 @@
+## 2026-11-06 — Matrices actual native and same-chain certificate registration
+
+C0 e584022f: whole29-file1697 source cases pass with raw59fe270a; rebuilt43.8.4/15d14a8b and two ordinary native AUTHOR/cold waits0. Independent raw AX/source/profile oracle1fba0024 verifies12 observation rows, keyboard/refusals/recovery, all Atlas/tree/four scene bytes and closed30baseline793811dc. Extra empty draft fixture deviation and all original failures retained.
+
+Mandatory current certificate gate2459dd74 locates missing complete successor/selection, with all484 currentGit/physical hashes independently exact6a2e38ad. Prospective patch85d7da1a and clean exact-C0 declaration6c06b5b7/preflight7e179e54 precede same-scope correction. No remaining expensive E0/WP104/C1C/RTK/default has run; normal delivery and fresh merged native still required. Full Mac/all17 remain open.
+
 # 2026-11-06 — Atlas Matrices source proof and maintained renderer
 
 - Exact two-field old-host initialization follows clean preflight/taskE0;inverse d1fb80c8 preserves every original assertion/case body. Complete maintained five-file588GREEN6180ca5c;new whole33GREENa5da9507 andall original failures retained.

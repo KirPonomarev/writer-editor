@@ -2872,15 +2872,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "9fc6eab7566e285659f87c94643cb09b7ac7791968fd22df5cc90972ed59fd9b"
+        "sha256": "75911a1152f93f9a126cd3ee4b52f368fd791536ebe416499d6e52abe3c60e5f"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "0ebce474042f70b1747d30d260ee8ba7b110644baa925eefce86e618e225d9b5"
+        "sha256": "bdef48faf3821ac16a6f3765ceaa8895a2b329404c6223d8a50df5f513186f6b"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "29525f2ea1b633b655c98601ad00c5637bb0b7ef89b757c7c735441278aac642"
+        "sha256": "1766e5bd2f8632b365716015e7a77b79ab86c6dca50de974648da54550637b49"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3544,7 +3544,7 @@
       },
       {
         "path": "docs/tasks/2026-10-22--full-mac-atlas-map.md",
-        "sha256": "377e32ddc0ce785cfb0df26213e66d0fc1c5744be7d0084dfb1ca56e6716c662"
+        "sha256": "1a33b1f2efc96ebd28e9672be589f2a027c50384d8ab3ee89e6aa2fb1efc69e5"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-er-c03-command-reachability-command-kernel-authority.contract.test.js",
@@ -4352,7 +4352,7 @@
       },
       {
         "path": "docs/tasks/2026-11-06--atlas-matrices-source-scope.md",
-        "sha256": "09f290a5afa6c973c3f310e048a84081c00cc5db36d3ee1419e812008f391b0a"
+        "sha256": "885843bbdc7a8905b4d22072d44cb00bef0a3cd27361ff3e9f2a9f65c21d4546"
       }
     ],
     "followupRepair": {

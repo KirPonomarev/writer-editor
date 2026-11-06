@@ -1,3 +1,9 @@
+## CURRENT: Matrices C0 native observed; same-chain namespace registration correction
+
+C0 e584022f has whole29-file1697 source cases verified by raw reader59fe270a. Actual43.8.4 app/ASAR15d14a8b passed source-bound book/scene/fragment, empty/stale/unsaved refusal, keyboard/grid and ordinary Save/Quit/cold observations; independent raw native/data reader1fba0024 preserves every original Atlas/tree/four scene byte and closed30baseline793811dc. Two actual native waits return0. The original fixture3-source prediction differed because an empty default draft was opened; pre-probe source binding421a1053 explicitly retains the actual4-source universe and original mismatch.
+
+Current certificate gate2459dd74 fails because the new483-leaf delta lacks a complete inherited successor/selection entry. Actual484Git/physical-object read6a2e38ad proves exact hashes and the missing registration; prospective patch85d7da1a adds only that configuration. Clean exact-C0 declaration6c06b5b7/preflight7e179e54 and separate admission precede edits. Keep all old predicates/history/native/profile bytes, native execution labelledC0, full required software/current input bridge/normal PR-CI-merge/fresh merged native still pending. Full15/four projections/all17 Mac remain open.
+
 # Current — Atlas Matrices source and original callers verified
 
 DOCUMENT_CLASS: FACTUAL_STATUS
