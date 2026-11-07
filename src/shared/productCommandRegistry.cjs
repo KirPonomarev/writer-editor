@@ -2,6 +2,14 @@ const PRODUCT_COMMAND_SCHEMA_VERSION = 'product-command-registry.v1';
 
 const PRODUCT_COMMAND_ROWS = Object.freeze([
   {
+    key: 'ATLAS_ASSOCIATION_RECORD',
+    id: 'atlas.association.record',
+    label: 'Авторская связь Atlas',
+    group: 'atlas',
+    domain: 'atlas',
+    capabilityId: 'cap.atlas.association.record',
+  },
+  {
     key: 'ATLAS_ENTITY_CREATE',
     id: 'atlas.entity.create',
     label: 'Atlas Entity Create',

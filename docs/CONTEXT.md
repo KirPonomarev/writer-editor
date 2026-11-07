@@ -1,3 +1,22 @@
+# CURRENT — authored Atlas native observed; required delivery companions next
+
+TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor, same40paths and original M14 delivery/rollback.
+SOURCE: reachable C2 9058b505/tree5d3cdad0. Frozen76 actual RED86c145af and same cases GREEN; affected135 e44fc5d5 ran on corrected pre-checkpoint source with strict inverse52e9e4a, not retagged as C2. Exact C2 prelaunch whole76 passes7b5a4696. All74old cases/assertions, three old event caller files and authority guards remain literal; source adds only four form-availability lines. Normal renderer build50fbc603.
+
+NATIVE: C2 actual new own33/ASAR406c502b, all1484 official readerabd943f7, AUTHOR/cold normal waits0/no helpers. Independent681212f8 and full68/70file lossless carriers7a9b982c/8eb825a0 verify two records with3+1complete revisions, exact source/Unicode/navigation, immediate dirty-source controls, current-save acknowledgement and original scene/Atlas retention. An accidental synthetic МираБорис entity is preserved as an unrelated third row; correct participants are Мира/Борис. Original C1 unsuccessful native acceptance1346d7db, cache warnings/input mismatch/method errors remain. Closed33profiles/five apps held bydc5cae38.
+
+Metadata admissiona125d643/declaration07/preflightf6c729bb follows actual native. Cheap real gates fail inventory60a7d509 (missing new file/two current digests), certificate945a3fb5 (no current binding set), DATA30ada56e (runtime repair pin). Add only four exact current source memberships and normal generated/current tables with all historical predicates/deltas and1493native inputs protected. Native execution stays labelledC2.
+
+Current cut69pins remainsVALID/NOT_READY, all17qualification UNKNOWN. Original2122/383FAIL,59uncovered skips and6moderate dev findings retained. Full V6/DNA5/all15/four/all17 OPEN; Office PAUSED, Black Box after fullMac. Matrices bounded CLOSED on M14.
+
+NEXT: complete current inventory/C2A/RCV/source namespace/append-only witnesses, freeze delivery candidate, run all required original software gates and normal guarded PR/CI/merge/exact merged software/new native.
+
+CURRENT_CORRECTION: C3 inventory1627/C2A/currentpolicy/487certificate pass; DATA8ad019f4 exposes two existing original40scope paths absent from initial four-new-file membership set: contracts.ts/domainEvents.mjs. Declaration09/preflight admit exact two additions and complete950/800/489 current successor, preserving C3 delta/all predicates and all1493C2native inputs. No full software/CI/merged/native completion yet.
+
+CURRENT RESUME: C7 16a986cb whole original affected 2131 pass, C1C 335 pass, RTK 4414 of 4419 with five finite Main lifecycle fixture failures. The fixture lacked the actual V13 constructor binding. Scope41 declaration7f2da7eb, clean preflightc3540b54 and admission703cd4f3 bind one additive test import plus exact existing generated companions. Fifteen focused cases pass a3dcc4c7. Full immutable candidate gates, normal delivery and fresh merged native are pending.
+
+--- Earlier status bodies remain complete and historical below ---
+
 ## CURRENT: Matrices C0 native observed; same-chain namespace registration correction
 
 C0 e584022f has whole29-file1697 source cases verified by raw reader59fe270a. Actual43.8.4 app/ASAR15d14a8b passed source-bound book/scene/fragment, empty/stale/unsaved refusal, keyboard/grid and ordinary Save/Quit/cold observations; independent raw native/data reader1fba0024 preserves every original Atlas/tree/four scene byte and closed30baseline793811dc. Two actual native waits return0. The original fixture3-source prediction differed because an empty default draft was opened; pre-probe source binding421a1053 explicitly retains the actual4-source universe and original mismatch.

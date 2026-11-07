@@ -2,6 +2,8 @@ import { hashCanonicalValue } from './browser-safe-hash.mjs';
 import { emitCoreDomainEventsForCommandResult } from './domainEvents.mjs';
 import anchorLineageLaw from './anchor-lineage-browser-safe-v1.mjs';
 import atlasAnchorLineage from './atlas-anchor-lineage-v1.mjs';
+import { validateAtlasAssociationPayload, recordAtlasAuthoredAssociation, rebindAtlasAuthoredAssociationsForProjectCopy } from './atlas-authored-associations-v1.mjs';
+export { validateAtlasAssociationPayload };
 export {
   buildSceneOrderChangedEvent,
   hashCoreDomainEvents,
@@ -27,6 +29,7 @@ export const CORE_COMMAND_IDS = Object.freeze({
   ATLAS_CALENDAR_DEFINE: 'atlas.calendar.define',
   ATLAS_SCENE_TEMPORAL_ANCHOR_SET: 'atlas.sceneTemporalAnchor.set',
   ATLAS_CONTINUITY_FACT_RECORD: 'atlas.continuityFact.record',
+  ATLAS_ASSOCIATION_RECORD: 'atlas.association.record',
   IDEA_CREATE: 'idea.create',
   IDEA_ORIGIN_LINK_ADD: 'idea.originLink.add',
   MEANING_PROMOTE: 'meaning.promote',
@@ -62,6 +65,7 @@ const IDEA_ORIGIN_REF_SCHEMA_VERSION = 'idea.originRef.v1';
 const MEANING_AUTHOR_SCHEMA_VERSION = 'meaning.author.v1';
 
 const ATLAS_AUTHOR_KNOWN_FIELDS = Object.freeze([
+  'authoredAssociations',
   'calendarDefinitions',
   'continuityFactLedgers',
   'decisions',
@@ -238,6 +242,7 @@ function normalizeAtlasAuthorData(input) {
   }
 
   return {
+    ...(Object.hasOwn(input, 'authoredAssociations') ? { authoredAssociations: cloneJson(input.authoredAssociations) } : {}),
     schemaVersion: ATLAS_AUTHOR_SCHEMA_VERSION,
     entities: isPlainObject(input.entities) ? cloneJson(input.entities) : {},
     decisions: isPlainObject(input.decisions) ? cloneJson(input.decisions) : {},
@@ -1962,6 +1967,8 @@ function normalizeAtlasPromiseState(value) {
 // COPY changes the owning project of current authored facts, not the opaque
 // project-local fact/scene/anchor IDs or the separate historical event stream.
 export function rebindAtlasContinuityFactsForProjectCopy(atlas, sourceProjectId, projectId) {
+  try { atlas = rebindAtlasAuthoredAssociationsForProjectCopy(atlas, sourceProjectId, projectId); }
+  catch (error) { throw typedError('E_PROJECT_ARCHIVE_COPY_AUTHOR_SCOPE_INVALID', 'project.archive.copy', error.code || 'COPY_ASSOCIATION_INVALID'); }
   if (!isPlainObject(atlas) || !Object.hasOwn(atlas, 'continuityFactLedgers')) return atlas;
   const reject = reason => { throw typedError('E_PROJECT_ARCHIVE_COPY_AUTHOR_SCOPE_INVALID', 'project.archive.copy', reason); };
   if (!sourceProjectId || !projectId || sourceProjectId === projectId
@@ -1992,6 +1999,21 @@ export function rebindAtlasContinuityFactsForProjectCopy(atlas, sourceProjectId,
 
 function normalizeAtlasContinuityRelatedEntityIds(values) {
   return uniqueStringList(values).slice(0, 24);
+}
+
+function applyAtlasAssociationRecord(state, payload) {
+  try {
+    validateAtlasAssociationPayload(payload);
+    const project = state.data.projects[payload.projectId];
+    const records = recordAtlasAuthoredAssociation(project, payload, state.data.lastCommandId + 1, isGraphemeBoundaryAligned);
+    const next = cloneJson(state);
+    next.data.projects[payload.projectId].atlas.authoredAssociations = records;
+    next.data.lastCommandId += 1;
+    return ok(next);
+  } catch (error) {
+    if (typeof error?.code !== 'string' || !error.code.startsWith('E_ATLAS_ASSOCIATION_')) throw error;
+    return fail(state, error.code, 'atlas.association.record', error.message);
+  }
 }
 
 function applyAtlasContinuityFactRecord(state, payload) {
@@ -2289,7 +2311,7 @@ function collectGraphemeBoundaries(text = '') {
   return boundaries;
 }
 
-function isGraphemeBoundaryAligned(text, startOffset, endOffset) {
+export function isGraphemeBoundaryAligned(text, startOffset, endOffset) {
   const boundaries = collectGraphemeBoundaries(text);
   if (!boundaries) return null;
   return boundaries.has(startOffset) && boundaries.has(endOffset);
@@ -4149,6 +4171,9 @@ function reduceCoreStateWithoutDomainEvents(state, command, type) {
   }
   if (type === CORE_COMMAND_IDS.ATLAS_CONTINUITY_FACT_RECORD) {
     return applyAtlasContinuityFactRecord(state, command.payload || {});
+  }
+  if (type === CORE_COMMAND_IDS.ATLAS_ASSOCIATION_RECORD) {
+    return applyAtlasAssociationRecord(state, command.payload);
   }
   if (type === CORE_COMMAND_IDS.IDEA_CREATE) {
     return applyIdeaCreate(state, command.payload || {});

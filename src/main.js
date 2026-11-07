@@ -284,7 +284,7 @@ const {
   getProductCommandRecord,
 } = require('./shared/productCommandRegistry.cjs');
 const {
-  createWriterSceneLanguageTagProfileProjection,
+  createWriterAtlasAssociationsProfileProjection,
   evaluateWriterLocalCommandAccess,
   evaluateWriterLocalQueryAccess,
 } = require('./core/writer-local-profile-v1.cjs');
@@ -19668,7 +19668,7 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
     const profile = getWriterLocalRuntimeProfile();
     return !isDirty && languageContext.every((value, index) => value === now[index])
       && languageContext[0] && !languageContext[0].isDestroyed() && !languageContext[0].webContents.isDestroyed()
-      && profile.profileId === 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'
+      && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'].includes(profile.profileId)
       && evaluateWriterLocalQueryAccess({ profile, queryId }).allowed;
   };
   const requestedProjectId = normalizeStableProjectId(payload?.projectId);
@@ -19772,6 +19772,8 @@ function normalizeAtlasEntityDossierPayload(payload = {}) {
 function normalizeAtlasRelationDossierPayload(payload = {}) {
   const source = isPlainObjectValue(payload) ? payload : {};
   return {
+    authoredOffset: source.authoredOffset,
+    selectedAssociationId: source.selectedAssociationId,
     projectId: typeof source.projectId === 'string' ? source.projectId.trim() : '',
     pairId: typeof source.pairId === 'string' ? source.pairId.trim() : '',
     leftEntityId: typeof source.leftEntityId === 'string' ? source.leftEntityId.trim() : '',
@@ -20299,6 +20301,14 @@ async function handleWorkspaceAtlasEntityDossierQuery(payload = {}) {
 }
 
 async function handleWorkspaceAtlasRelationDossierQuery(payload = {}) {
+  if (getWriterLocalRuntimeProfile().profileId === 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13') {
+    if (!isPlainObjectValue(payload) || ['projectId', 'authoredOffset', 'selectedAssociationId'].some(key => {
+      const d = Object.getOwnPropertyDescriptor(payload, key);
+      return d && (!Object.hasOwn(d, 'value') || !d.enumerable || (key === 'authoredOffset'
+        ? !Number.isSafeInteger(d.value) || d.value < 0 || d.value > 10000
+        : typeof d.value !== 'string' || d.value.length > 200 || key === 'projectId' && !d.value.trim()));
+    })) return { ok: false, error: { code: 'E_ATLAS_ASSOCIATION_QUERY_INVALID' } };
+  }
   const safePayload = normalizeAtlasRelationDossierPayload(payload);
   const dossierModule = await loadAtlasRelationDossierModule();
   const relationRequest = {
@@ -20346,7 +20356,12 @@ async function handleWorkspaceAtlasRelationDossierQuery(payload = {}) {
     }
     return {
       ok: true,
-      atlasRelationDossier: dossier.value,
+      atlasRelationDossier: { ...dossier.value,
+        ...(getWriterLocalRuntimeProfile().profileId === 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13' ? {
+          authoredAssociations: (await import(pathToFileURL(path.join(__dirname, 'derived/atlas/deriveAtlasAuthoredAssociations.mjs')).href))
+            .deriveAtlasAuthoredAssociations({ coreState, params: { projectId, offset: safePayload.authoredOffset, selectedAssociationId: safePayload.selectedAssociationId } }),
+        } : {}),
+      },
     };
   } catch (error) {
     logDevError('query.atlasRelationDossier', error);
@@ -20788,7 +20803,7 @@ async function handleWorkspaceAtlasCurrentSceneQuery(payload = {}, analysisJob =
   const assertContext = () => {
     const profile = getWriterLocalRuntimeProfile();
     if (!app.isPackaged || process.platform !== 'darwin' || process.arch !== 'arm64'
-      || profile.profileId !== 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12'
+      || !['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'].includes(profile.profileId)
       || !evaluateWriterLocalQueryAccess({ profile, queryId: ATLAS_CURRENT_SCENE_QUERY_ID }).allowed
       || !context[0] || context[0].isDestroyed() || context[0].webContents.isDestroyed()
       || !context[1] || context[1].getProjectId?.() !== safePayload.projectId || isDirty
@@ -36932,6 +36947,39 @@ async function assertExpectedMeaningSourceCurrent(expected, projectId, guard, in
   return () => assertRecoverySnapshot(manifestSnapshot);
 }
 
+function normalizeExpectedAtlasAssociationSource(value, projectId, nodeId) {
+  const keys = ['schemaVersion', 'projectId', 'associationId', 'recordHash', 'manifestRevision', 'sceneRevision', 'sceneId'];
+  if (!isPlainObjectValue(value) || Reflect.ownKeys(value).length !== keys.length || keys.some(key => {
+    const d = Object.getOwnPropertyDescriptor(value, key); return !d || !d.enumerable || !Object.hasOwn(d, 'value') || typeof d.value !== 'string';
+  }) || value.schemaVersion !== 'atlas.authoredAssociationNavigation.v1' || value.projectId !== projectId || value.sceneId !== nodeId
+    || !/^tree-node-[a-f0-9]{32}$/u.test(value.sceneId) || !value.associationId || value.associationId !== value.associationId.trim()
+    || value.associationId.length > 200 || !/^[a-f0-9]{64}$/u.test(value.recordHash)
+    || !/^sha256:[a-f0-9]{64}$/u.test(value.manifestRevision) || !/^sha256:[a-f0-9]{64}$/u.test(value.sceneRevision)) return null;
+  return { ...value };
+}
+
+async function assertExpectedAtlasAssociationSourceCurrent(expected, projectId, guard) {
+  guard();
+  const manifestSnapshot = await readRecoverySnapshot(getProjectManifestPath(), guard);
+  guard();
+  const source = await buildProductCoreStateForCurrentProject();
+  guard(); assertRecoverySnapshot(manifestSnapshot);
+  const [{ readAtlasAuthoredAssociationRecords, isAtlasAuthoredAssociationEvidenceCurrent }, { hashCoreState: hash, isGraphemeBoundaryAligned }] = await Promise.all([
+    import(pathToFileURL(path.join(__dirname, 'core', 'atlas-authored-associations-v1.mjs')).href), loadCoreRuntimeModule(),
+  ]);
+  guard(); assertRecoverySnapshot(manifestSnapshot);
+  const project = source.coreState?.data?.projects?.[projectId];
+  const records = readAtlasAuthoredAssociationRecords(project?.atlas, projectId);
+  const record = Object.hasOwn(records, expected.associationId) ? records[expected.associationId] : null, latest = record?.revisions.at(-1);
+  if (source.projectId !== projectId || !record || hash(record) !== expected.recordHash || latest?.source.sceneId !== expected.sceneId
+    || !manifestSnapshot.raw || `sha256:${computeHash(manifestSnapshot.raw)}` !== expected.manifestRevision
+    || project?.scenes?.[expected.sceneId]?.sceneRevision !== expected.sceneRevision
+    || !isAtlasAuthoredAssociationEvidenceCurrent(latest.source, project.scenes[expected.sceneId], isGraphemeBoundaryAligned)) {
+    throw Object.assign(new Error('E_ATLAS_ASSOCIATION_SOURCE_STALE'), { code: 'E_ATLAS_ASSOCIATION_SOURCE_STALE' });
+  }
+  return { guard: () => assertRecoverySnapshot(manifestSnapshot), selectionRange: { start: latest.source.startOffset, end: latest.source.endOffset } };
+}
+
 async function handleUiOpenDocumentCommand(payload) {
   await editorStartupReadyPromise;
   if (!mainWindow) {
@@ -36944,6 +36992,7 @@ async function handleUiOpenDocumentCommand(payload) {
   const subject = currentLifecycleSubjectId(), generation = lastSignaledEditGeneration;
   const context = captureDocxImportPreviewContext();
   let meaningSourceGuard = () => {};
+  let associationSourceGuard = () => {}, associationSelection = null;
   const guard = () => {
     userBookmarkCapability('cmd.project.document.open');
     if (mainWindow !== window || window.isDestroyed() || window.webContents !== contents || contents.isDestroyed()
@@ -36953,25 +37002,31 @@ async function handleUiOpenDocumentCommand(payload) {
       throw Object.assign(new Error('E_PROJECT_DOCUMENT_OPEN_STALE'), { code: 'E_PROJECT_DOCUMENT_OPEN_STALE' });
     }
     meaningSourceGuard();
+    associationSourceGuard();
   };
   try {
     guard();
     const hasPlotSource = Object.hasOwn(safePayload, 'expectedPlotSource');
     const hasIdeaSource = Object.hasOwn(safePayload, 'expectedIdeaSource');
     const hasMeaningSource = Object.hasOwn(safePayload, 'expectedMeaningSource');
-    if ([hasPlotSource, hasIdeaSource, hasMeaningSource].filter(Boolean).length > 1) return { ok: false, error: 'E_DOCUMENT_SOURCE_EXPECTATION_AMBIGUOUS' };
+    const hasAssociationSource = Object.hasOwn(safePayload, 'expectedAtlasAssociationSource');
+    if ([hasPlotSource, hasIdeaSource, hasMeaningSource, hasAssociationSource].filter(Boolean).length > 1) return { ok: false, error: 'E_DOCUMENT_SOURCE_EXPECTATION_AMBIGUOUS' };
     const expectedPlotSource = hasPlotSource
       ? normalizeExpectedPlotSource(safePayload.expectedPlotSource, safePayload.projectId, safePayload.nodeId) : null;
     const expectedIdeaSource = hasIdeaSource
       ? normalizeExpectedIdeaSource(safePayload.expectedIdeaSource, safePayload.projectId, safePayload.nodeId) : null;
     const expectedMeaningSource = hasMeaningSource
       ? normalizeExpectedMeaningSource(safePayload.expectedMeaningSource, safePayload.projectId, safePayload.nodeId) : null;
+    const expectedAssociationSource = hasAssociationSource
+      ? normalizeExpectedAtlasAssociationSource(safePayload.expectedAtlasAssociationSource, safePayload.projectId, safePayload.nodeId) : null;
+    if (hasAssociationSource && !expectedAssociationSource) return { ok: false, error: 'E_ATLAS_ASSOCIATION_SOURCE_INVALID' };
     if (hasPlotSource && !expectedPlotSource) return { ok: false, error: 'E_PLOT_SOURCE_INVALID' };
     if (hasIdeaSource && !expectedIdeaSource) return { ok: false, error: 'E_IDEA_SOURCE_INVALID' };
     if (hasMeaningSource && !expectedMeaningSource) return { ok: false, error: 'E_MEANING_SOURCE_INVALID' };
     if (expectedPlotSource) await assertExpectedPlotSourceCurrent(expectedPlotSource, safePayload.projectId, guard, true);
     if (expectedIdeaSource) await assertExpectedIdeaSourceCurrent(expectedIdeaSource, safePayload.projectId, guard, true);
     if (expectedMeaningSource) await assertExpectedMeaningSourceCurrent(expectedMeaningSource, safePayload.projectId, guard, true);
+    if (expectedAssociationSource) await assertExpectedAtlasAssociationSourceCurrent(expectedAssociationSource, safePayload.projectId, guard);
     let resolvedNode;
     try {
       resolvedNode = await resolveProjectTreeNodeIdentity(safePayload.nodeId, safePayload.projectId);
@@ -36995,6 +37050,10 @@ async function handleUiOpenDocumentCommand(payload) {
     if (expectedMeaningSource) {
       meaningSourceGuard = await assertExpectedMeaningSourceCurrent(expectedMeaningSource, safePayload.projectId, guard);
       guard();
+    }
+    if (expectedAssociationSource) {
+      const checked = await assertExpectedAtlasAssociationSourceCurrent(expectedAssociationSource, safePayload.projectId, guard);
+      associationSourceGuard = checked.guard; associationSelection = checked.selectionRange; guard();
     }
     // Saving can await dialogs, recovery and another document's I/O. Resolve
     // the stable target again; a renamed/deleted target is not the old path.
@@ -37059,6 +37118,10 @@ async function handleUiOpenDocumentCommand(payload) {
         return { ok: false, error: 'E_MEANING_SOURCE_STALE' };
       }
     }
+    if (expectedAssociationSource) {
+      guard(); assertRecoverySnapshot(sourceSnapshot);
+      if (`sha256:${computeHash(sourceSnapshot.raw)}` !== expectedAssociationSource.sceneRevision) return { ok: false, error: 'E_ATLAS_ASSOCIATION_SOURCE_STALE' };
+    }
     const guardSource = () => { guard(); assertRecoverySnapshot(sourceSnapshot); plotSourceGuard(); ideaSourceGuard(); meaningSourceGuard(); };
     const contextFromPath = getDocumentContextFromPath(filePath);
     const editorPayload = await attachProjectIdToEditorPayload({
@@ -37067,6 +37130,7 @@ async function handleUiOpenDocumentCommand(payload) {
       documentId: resolvedNode.nodeId,
       kind: documentTarget.kind,
       metaEnabled: ROMAN_META_KINDS.has(documentTarget.kind),
+      ...(associationSelection ? { selectionRange: associationSelection } : {}),
     }, filePath);
     guardSource();
     if (editorPayload.projectId !== safePayload.projectId) {
@@ -38161,7 +38225,7 @@ guardedHandle('ui:open-section', async (_, payload) => {
 });
 
 function getWriterLocalRuntimeProfile() {
-  return createWriterSceneLanguageTagProfileProjection({
+  return createWriterAtlasAssociationsProfileProjection({
     isPackaged: app.isPackaged === true,
     platform: process.platform,
   });
@@ -40617,7 +40681,7 @@ function isSceneLanguagePayloadValid(commandId, payload) {
   if (commandId === 'atlas.languageTag.set' && typeof payload.languageCode !== 'string') return false;
   for (const key of ['startOffset', 'endOffset']) if (Object.hasOwn(payload, key) && !Number.isSafeInteger(payload[key])) return false;
   const bound = Object.hasOwn(payload, 'expectedManifestRevision') || Object.hasOwn(payload, 'expectedSceneRevision')
-    || getWriterLocalRuntimeProfile().profileId === 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12';
+    || ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'].includes(getWriterLocalRuntimeProfile().profileId);
   return !bound || payload.scopeKind === 'scene' && typeof payload.projectId === 'string' && Boolean(payload.projectId.trim())
     && typeof payload.sceneId === 'string' && Boolean(payload.sceneId.trim())
     && typeof payload.expectedManifestRevision === 'string' && typeof payload.expectedSceneRevision === 'string'
@@ -40627,7 +40691,7 @@ function isSceneLanguagePayloadValid(commandId, payload) {
 
 async function prepareSceneLanguageIntent(commandId, payload, binding, previousHash, guard) {
   const bound = Object.hasOwn(payload, 'expectedManifestRevision') || Object.hasOwn(payload, 'expectedSceneRevision')
-    || getWriterLocalRuntimeProfile().profileId === 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12';
+    || ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'].includes(getWriterLocalRuntimeProfile().profileId);
   if (!bound) return null;
   const refuse = code => { throw Object.assign(new Error(code), { code }); };
   if (!isSceneLanguagePayloadValid(commandId, payload)) refuse('E_PRODUCT_COMMAND_PAYLOAD_INVALID');
@@ -40706,6 +40770,45 @@ function captureManualMapPreparationGuard(commandId, record, errorFamily = 'MANU
     check();
   };
   return (binding, expectedHash) => binding === undefined ? check() : bound(binding, expectedHash);
+}
+
+function captureAtlasAssociationPreparationGuard(commandId, record) {
+  const base = captureManualMapPreparationGuard(commandId, record, 'ATLAS_ASSOCIATION');
+  const check = () => { if (isDirty) throw Object.assign(new Error('ATLAS_ASSOCIATION_SOURCE_UNSAVED'), { code: 'E_ATLAS_ASSOCIATION_SOURCE_UNSAVED' }); };
+  return (binding, hash) => { check(); const result = base(binding, hash); return result?.then ? result.then(check) : result; };
+}
+
+async function prepareAtlasAssociationIntent(payload, binding, previousHash, guard) {
+  const { validateAtlasAssociationPayload, hashCoreState: hash } = await loadCoreRuntimeModule();
+  await guard(binding, previousHash); validateAtlasAssociationPayload(payload);
+  const refuse = reason => { throw Object.assign(new Error(reason), { code: 'E_ATLAS_ASSOCIATION_' + reason }); };
+  if (payload.expectedManifestRevision !== `sha256:${previousHash}`) refuse('MANIFEST_STALE');
+  if (payload.operation === 'record') {
+    const sceneId = payload.source.sceneId, project = binding.coreState.data.projects[binding.projectId], scene = project.scenes[sceneId];
+    if (!scene || scene.sceneRevision !== payload.expectedSceneRevision) refuse('SCENE_STALE');
+    const node = collectAtlasOverviewSceneNodes(binding.roots).find(value => value.nodeId === sceneId);
+    if (!node) refuse('SCENE_STALE');
+    const target = getResolvedTreeDocumentTarget({ ...node, nodePath: typeof node.nodePath === 'string' ? node.nodePath : node.path });
+    const paths = sanitizePathFieldsWithinRoot({ target: target.filePath, current: currentFilePath }, ['target', 'current'], binding.projectRoot,
+      { mode: 'any', resolveSymlinks: true });
+    if (!paths.ok || paths.payload?.target !== paths.payload?.current) refuse('SCENE_STALE');
+  }
+  const before = binding.manifest.atlas;
+  if (!isPlainObjectValue(before)) refuse('SCHEMA_UNSUPPORTED');
+  const old = before.authoredAssociations || {}, selected = old[payload.associationId];
+  const without = (value, key) => { const result = { ...value }; delete result[key]; return result; };
+  return { assertNoLoss(nextProject) {
+    const after = nextProject.atlas, records = after?.authoredAssociations, next = records?.[payload.associationId];
+    if (!isPlainObjectValue(after) || !isPlainObjectValue(records) || hash(without(before, 'authoredAssociations')) !== hash(without(after, 'authoredAssociations'))
+      || Object.keys(records).length !== Object.keys(old).length + (selected ? 0 : 1)
+      || Object.keys(old).some(id => id !== payload.associationId && hash(old[id]) !== hash(records[id]))
+      || !isPlainObjectValue(next) || next.schemaVersion !== 'atlas.authoredAssociation.v1' || next.id !== payload.associationId
+      || next.projectId !== binding.projectId || next.source !== 'author' || !Array.isArray(next.revisions)
+      || next.revisions.length !== (selected?.revisions.length || 0) + 1
+      || hash(next.revisions.slice(0, -1)) !== hash(selected?.revisions || [])
+      || selected && hash(without(selected, 'revisions')) !== hash(without(next, 'revisions'))
+      || next.revisions.at(-1).status !== (payload.operation === 'retract' ? 'retracted' : 'active')) refuse('NO_LOSS');
+  } };
 }
 
 async function prepareManualMapAttachmentCommand(commandId, payload, binding, assertCurrent) {
@@ -41031,7 +41134,8 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload, hostEffec
     error.code = 'E_STAGE10_CANONICAL_PROJECT_TRUTH_COMMAND_NOT_SUPPORTED';
     throw error;
   }
-  const guard = record.domain === 'manualMap' ? captureManualMapPreparationGuard(commandId, record)
+  const guard = commandId === 'atlas.association.record' ? captureAtlasAssociationPreparationGuard(commandId, record)
+    : record.domain === 'manualMap' ? captureManualMapPreparationGuard(commandId, record)
     : ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId)
       ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_TEMPORAL_AUTHORING')
     : ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId)
@@ -41070,6 +41174,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload, hostEffec
   await assertCurrent();
   const sceneLanguage = SCENE_LANGUAGE_TAG_COMMAND_IDS.includes(commandId)
     ? await prepareSceneLanguageIntent(commandId, payload, binding, previousHash, guard) : null;
+  const association = commandId === 'atlas.association.record' ? await prepareAtlasAssociationIntent(payload, binding, previousHash, guard) : null;
   const publicResult = portability?.publicResult || (commandId === 'manualMap.create' ? {} : null);
   return {
     schemaVersion: 'yalken.stage10.canonicalProjectTruthCommand.v1',
@@ -41088,6 +41193,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload, hostEffec
         throw error;
       }
       if (sceneLanguage) sceneLanguage.assertNoLoss(nextProject);
+      if (association) association.assertNoLoss(nextProject);
       if (commandId === 'manualMap.create' || commandId === 'manualMap.import.jsonRepeat') {
         const appliedMap = nextProject.manualMaps?.maps?.[portability?.payload?.mapId || payload.mapId];
         if (!appliedMap?.id) throw new Error('MANUAL_MAP_RESULT_IDENTITY_MISSING');
@@ -41110,9 +41216,10 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload, hostEffec
       await assertCurrent();
       const ideaOrigin = commandId === 'idea.originLink.add' ? payload.originRef
         : commandId === 'meaning.promote' && payload.source?.kind === 'sceneOriginRef' ? payload.source.originRef : null;
-      if (commandId === 'atlas.continuityFact.record' || commandId === 'atlas.observation.reassign' || ideaOrigin || sceneLanguage) {
+      const associationSource = commandId === 'atlas.association.record' && payload.operation === 'record' ? payload.source : null;
+      if (commandId === 'atlas.continuityFact.record' || commandId === 'atlas.observation.reassign' || ideaOrigin || sceneLanguage || associationSource) {
         guard();
-        const sceneId = (ideaOrigin ? ideaOrigin.sceneId : payload.sceneId).trim();
+        const sceneId = (ideaOrigin ? ideaOrigin.sceneId : associationSource ? associationSource.sceneId : payload.sceneId).trim();
         const scene = binding.coreState.data.projects[binding.projectId].scenes[sceneId];
         const node = collectAtlasOverviewSceneNodes(binding.roots).find(value => value.nodeId === sceneId);
         if (!scene || !node) throw makeAtlasProductSceneProjectionError('E_ATLAS_PRODUCT_SCENE_TARGET_INVALID', 'ATLAS_PRODUCT_SCENE_TARGET_INVALID', sceneId);
@@ -41130,6 +41237,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload, hostEffec
         }
         guard();
         if (`sha256:${computeHash(sourceBytes)}` !== scene.sceneRevision) {
+          if (associationSource) throw Object.assign(new Error('ATLAS_ASSOCIATION_SCENE_STALE'), { code: 'E_ATLAS_ASSOCIATION_SCENE_STALE' });
           if (sceneLanguage) throw Object.assign(new Error('SCENE_LANGUAGE_TAG_SOURCE_STALE'), { code: 'E_SCENE_LANGUAGE_TAG_SOURCE_STALE' });
           if (ideaOrigin) throw Object.assign(new Error('IDEA_MEANING_AUTHORING_SOURCE_STALE'), { code: 'E_IDEA_MEANING_AUTHORING_SOURCE_STALE' });
           if (commandId === 'atlas.observation.reassign') {
@@ -41411,6 +41519,26 @@ async function dispatchProductCommandBridge(commandId, payload = {}, hostEffectP
     );
   }
 
+  let associationGuard = null;
+  if (commandId === 'atlas.association.record') {
+    try {
+      if (!app.isPackaged || process.platform !== 'darwin' || getWriterLocalRuntimeProfile().profileId !== 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13') {
+        throw Object.assign(new Error('ATLAS_ASSOCIATION_PROFILE_UNAVAILABLE'), { code: 'E_ATLAS_ASSOCIATION_PROFILE_UNAVAILABLE' });
+      }
+      associationGuard = captureAtlasAssociationPreparationGuard(commandId, record); associationGuard();
+      const descriptors = Object.getOwnPropertyDescriptors(payload), mode = descriptors.editorMode;
+      if (mode && (!mode.enumerable || !Object.hasOwn(mode, 'value') || !['tiptap', 'legacy'].includes(mode.value))) {
+        throw Object.assign(new Error('ATLAS_ASSOCIATION_PAYLOAD_INVALID'), { code: 'E_ATLAS_ASSOCIATION_PAYLOAD_INVALID' });
+      }
+      delete descriptors.editorMode;
+      const raw = Object.defineProperties(Object.create(null), descriptors);
+      const { validateAtlasAssociationPayload } = await loadCoreRuntimeModule(); associationGuard();
+      validateAtlasAssociationPayload(raw); payload = cloneJsonSafe(raw);
+    } catch (error) {
+      return makeProductCommandBridgeError(commandId, error.code || 'E_ATLAS_ASSOCIATION_PAYLOAD_INVALID', error.message || 'ATLAS_ASSOCIATION_PAYLOAD_INVALID');
+    }
+  }
+
   if (commandId === 'manualMap.export.markdown' && (Object.keys(payload).some(key => !['projectId', 'mapId', 'editorMode'].includes(key))
     || typeof payload.mapId !== 'string' || !payload.mapId.trim() || payload.mapId.length > 1000
     || payload.projectId !== undefined && (typeof payload.projectId !== 'string' || !payload.projectId.trim() || payload.projectId.length > 1000)
@@ -41474,14 +41602,14 @@ async function dispatchProductCommandBridge(commandId, payload = {}, hostEffectP
         },
       );
     }
-    const queueGuard = ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId)
+    const queueGuard = associationGuard || (ATLAS_TEMPORAL_AUTHORING_COMMAND_IDS.includes(commandId)
       ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_TEMPORAL_AUTHORING')
       : ATLAS_ENTITY_CORRECTION_COMMAND_IDS.includes(commandId)
         ? captureManualMapPreparationGuard(commandId, record, 'ATLAS_ENTITY_CORRECTION')
       : IDEA_MEANING_AUTHORING_COMMAND_IDS.includes(commandId)
         ? captureManualMapPreparationGuard(commandId, record, 'IDEA_MEANING_AUTHORING')
         : SCENE_LANGUAGE_TAG_COMMAND_IDS.includes(commandId)
-          ? captureManualMapPreparationGuard(commandId, record, 'SCENE_LANGUAGE_TAG') : null;
+          ? captureManualMapPreparationGuard(commandId, record, 'SCENE_LANGUAGE_TAG') : null);
     return enqueueProductCommandTransaction(currentProjectName || DEFAULT_PROJECT_NAME, async () => {
       try {
         if (queueGuard) queueGuard();

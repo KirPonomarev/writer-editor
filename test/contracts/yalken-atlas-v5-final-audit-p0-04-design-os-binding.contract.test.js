@@ -77,7 +77,12 @@ test('P0 04: Atlas feature integration manifest binds product, command, projecti
   assert.equal(relation.providerId, 'query.atlasRelationDossier');
   assert.equal(relation.slotId, 'rightRail.context.atlas.relationDossier');
   assert.equal(relation.dispatchAuthority, 'CommandKernel');
-  assert.deepEqual(relation.commandIds, ['atlas.observation.suppress', 'atlas.observation.reassign', 'atlas.evidence.reattach']);
+  assert.deepEqual(relation.commandIds, [
+    'atlas.observation.suppress',
+    'atlas.observation.reassign',
+    'atlas.evidence.reattach',
+    'atlas.association.record',
+  ]);
 
   const manualMap = getAtlasFeatureSurfaceBinding(result, 'manualMap');
   assert.equal(manualMap.providerId, 'query.manualMapWorkbench');

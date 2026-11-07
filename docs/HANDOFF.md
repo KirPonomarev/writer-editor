@@ -1,3 +1,17 @@
+# CURRENT HANDOFF — authored Atlas native complete; same-chain source companions
+
+TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor, branch unchanged, original M14 rollback.
+SOURCE: C2 9058b505 exact whole76 7b5a4696; earlier corrected-source135 e44fc5d5 and strict inverse52e9e4a keep all original assertions. Current source/native inputs1493 are frozen; metadata closure must not change packaged runtime.
+NATIVE: new own33 C2/ASAR406c502b, all1484 official ASARabd943f7, AUTHOR/cold actual0/no helpers; independent681212f8/full68/70file carriers7a9b982c/8eb825a0. Exact records2/history3+1/source/Unicode/dirty availability/current ack/navigation/cold verified. Unrelated accidentally created own МираБорис row retained literally. Preserve original C1 native finding1346d7db, all raw warnings/failures and all33closed profiles/five apps dc5cae38; no old app/profile reuse or native retagging.
+
+NEXT: metadata source admissiona125d643/preflightf6c729bb; current inventory60a7d509/cert945a3fb5/DATA30ada56e fail concrete old pins/missing memberships. Four exact new paths only, standard inventory/C2A/RCV and append-only current witness records, complete inherited current successor/selection; preserve old arrays/checkers/history. Then immutable candidate/all required gates/guarded push/PR/all20CI/merge/exact merged software and fresh native. All15/four/all17 remainOPEN; Office PAUSED, BlackBox after fullMac. No independent infrastructure/optimization series.
+
+CURRENT_CORRECTION: C3 inventory1627/C2A/currentpolicy/487certificate pass; DATA8ad019f4 exposes two existing original40scope paths absent from initial four-new-file membership set: contracts.ts/domainEvents.mjs. Declaration09/preflight admit exact two additions and complete950/800/489 current successor, preserving C3 delta/all predicates and all1493C2native inputs. No full software/CI/merged/native completion yet.
+
+RESUME: C7 whole RTK failure 2e0474c8, exact diagnosis d395bb66. Complete the single admitted test-context import and generated companion update, then the immutable required wave. The existing native observation remains actual C2 9058b505 with 1493 identical inputs. Earlier manual-map linked-scene navigation already entered main at aef9c207 through PR2180. Full V6 Mac remains open.
+
+--- Older pending handoffs below are historical; do not replay closed Matrices delivery ---
+
 ## CURRENT HANDOFF: same Matrices delivery, C0 native completed before remaining expensive gates
 
 Sole task remains YALKEN_ATLAS_MATRICES_SOURCE_SCOPE_20261106, source C0 e584022f, original delivery/rollback M13. Whole affected1697 pass raw59fe270a; native AUTHOR/cold actual waits0, own profile30, raw native oracle1fba0024, complete closed30baseline793811dc. All original Atlas/tree/four scene bytes are literal after Undo/Save and cold; all original29 profiles and old apps held. Preserve fixture prediction3-versus-actual4 empty-draft deviation421a1053.

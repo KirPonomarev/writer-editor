@@ -256,6 +256,7 @@
         "cap.stage10.collabApply.local": true,
         "cap.atlas.calendar.define": true,
         "cap.atlas.continuityFact.record": true,
+        "cap.atlas.association.record": true,
         "cap.atlas.entity.merge": true,
         "cap.atlas.entity.splitRestore": true,
         "cap.atlas.evidence.reattach": true,
@@ -392,6 +393,7 @@
         "cap.stage10.collabApply.local": false,
         "cap.atlas.calendar.define": false,
         "cap.atlas.continuityFact.record": false,
+        "cap.atlas.association.record": false,
         "cap.atlas.entity.merge": false,
         "cap.atlas.entity.splitRestore": false,
         "cap.atlas.evidence.reattach": false,
@@ -479,7 +481,8 @@
         "cmd.project.tree.copyNode",
         "cmd.project.tree.undoLastMutation",
         "cmd.project.tree.splitScene",
-        "cmd.project.tree.mergeNextScene"
+        "cmd.project.tree.mergeNextScene",
+        "atlas.association.record"
       ],
       "degradedFeatures": []
     },
@@ -598,6 +601,7 @@
         "cap.stage10.collabApply.local": false,
         "cap.atlas.calendar.define": false,
         "cap.atlas.continuityFact.record": false,
+        "cap.atlas.association.record": false,
         "cap.atlas.entity.merge": false,
         "cap.atlas.entity.splitRestore": false,
         "cap.atlas.evidence.reattach": false,
@@ -685,7 +689,8 @@
         "cmd.project.tree.copyNode",
         "cmd.project.tree.undoLastMutation",
         "cmd.project.tree.splitScene",
-        "cmd.project.tree.mergeNextScene"
+        "cmd.project.tree.mergeNextScene",
+        "atlas.association.record"
       ],
       "degradedFeatures": []
     }

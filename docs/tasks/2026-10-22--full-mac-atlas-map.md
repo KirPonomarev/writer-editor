@@ -1,3 +1,17 @@
+# CURRENT — authored Atlas relationships locally observed; full delivery pending
+
+TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor.
+BINDING_BASE_SHA: 04d81e5631778bb6bbabd57238ec1c412f09291f
+STATUS: C2_AUTHORED_NATIVE_OBSERVED_REQUIRED_DELIVERY_PENDING
+
+Matrices PR2206 remains bounded CLOSED on original M14, closureed0f5be2/report003f3831,20candidate/20mergedCI and31retained profiles. Its older pending bodies below are historical.
+
+Current P17 outcome is implemented at C2 9058b505: explicit source-bound type/direction/applicability, Core/Kernel history, correction/retraction, immutable rows and exact source navigation. Exact C2 whole76 7b5a4696 and actual new own33 AUTHOR/cold waits0 precede remaining expensive checks. Independent681212f8/full68/70file readbacks verify two records/history3+1, immediate dirty-source refusal, current acknowledgement and original text/Atlas retention. Preserve unrelated mistaken native test entity and original C1 failed appearance oracle1346d7db; all33closed profiles/five apps protected dc5cae38. This is a bounded local observation, not complete delivery or Mac release.
+
+Same40path metadata admissiona125d643 now completes current memberships/inventory/C2A/RCV/source witnesses, then all required local/CI/merge/exact merged software/new native. Original M14 rollback and all raw errors remain; no runtime write in metadata closure. Existing17row/12stage/15cell/four-projection scope tables stay unchanged and UNKNOWN. Full V6/DNA5 remainsOPEN; Office PAUSED, BlackBox after fullMac. Continue this one delivery chain before another outcome.
+
+--- All previous task/status bodies remain complete and historical below ---
+
 ## CURRENT — source-scope Matrices native observed; delivery remains pending
 
 One observation/co-occurrence outcome only: actual C0 e584022f app43.8.4/ASAR15d14a8b supports explicit book/saved scene/saved fragment, including real empty/stale/unsaved refusal and keyboard/Save/Quit/cold. Native independent reader1fba0024 and closed30baseline793811dc retain source/Atlas/tree bytes and original fixture extra-empty-draft deviation421a1053. Whole affected1697 source cases pass raw59fe270a. These are three source controls, not authored semantic relations or completed15cells/four projections/all17.

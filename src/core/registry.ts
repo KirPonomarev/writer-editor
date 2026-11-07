@@ -19,6 +19,7 @@ export const CORE_COMMANDS = [
   'atlas.calendar.define',
   'atlas.sceneTemporalAnchor.set',
   'atlas.continuityFact.record',
+  'atlas.association.record',
   'idea.create',
   'idea.originLink.add',
   'meaning.promote',
