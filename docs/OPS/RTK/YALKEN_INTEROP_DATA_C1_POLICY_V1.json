@@ -3464,7 +3464,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "6338117c6c3a11fae7545d773bdf708dee5fa1c0b1dcbabcb547ff5078dd3bc7"
+        "sha256": "4355cafdc9681128b37f664c8a8c2e995788d7663cb540f87ed622f9b0836d02"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3556,7 +3556,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "c2e6f9288403159fa1212dabe48325919f682dc31ca9536b6012485e514c0f7a"
+        "sha256": "e958666c4bb5feae3180933f7381b2a51e92b8e1da2130a2f9eb694d901b5d46"
       },
       {
         "path": "src/renderer/flags.js",
@@ -4444,7 +4444,7 @@
       },
       {
         "path": "docs/tasks/2026-11-07--atlas-temporal-range-display.md",
-        "sha256": "b2f31651b0be123cbf9643d7910edada5ac62ad3cb63c8fd5f3728225fe319d8"
+        "sha256": "acc3b7991abe10398d99f98d0a6bf727572b48729329a5e75d5df2391b856f9a"
       },
       {
         "path": "src/derived/atlas/deriveAtlasTemporalLayout.mjs",

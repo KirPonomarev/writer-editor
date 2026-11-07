@@ -23,6 +23,7 @@ The existing scene-time command preserves untouched fields and retains a stored 
 
 ## ALLOWLIST
 
+- docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json
 - docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
 - docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
 - docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
@@ -35,6 +36,7 @@ The existing scene-time command preserves untouched fields and retains a stored 
 - scripts/ops/r24/corrective/interop-current-certification-deltas.mjs
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
 - scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/release-candidate.mjs
 - scripts/ops/sector-m-scope-map.json
 - src/derived/atlas/deriveAtlasTemporalLayout.mjs
 - src/main.js
@@ -57,7 +59,7 @@ FEATURE_INTEGRATION_MANIFEST_V1: Core retains the authored endpoints, precision 
 
 1. Keep the original read-label checkpoint and its focused cases verbatim. Append real Main and Kernel cases for untouched ranges, note and anchor identity. Run them before the amendment and retain original RED.
 2. Resolve omitted fields within existing Main canonical preparation. Run the same cases, earlier focused and affected cases, renderer build, and source guardrails.
-3. Bind current verification inputs through exact preflight. Reuse the existing current finalizer with the fixed current literal path. Preserve archived predicates, current full row bindings, original limits, and reject silent fallback. Complete mandatory software, separately rebuilt actual Mac first and cold before product push, ordinary PR and CI, and separately rebuilt merged verification. Native launch requires safe process binding to an isolated profile.
+3. Bind current verification inputs through exact preflight. Refresh only the current Main digest in the Full-Mac V2 cut and its independent source-pin map. Preserve historical V1, all original verifier predicates and all seventeen unknown qualification rows. Reuse the existing current finalizer with the fixed current literal path. Preserve archived predicates, current full row bindings, original limits, and reject silent fallback. Complete mandatory software, separately rebuilt actual Mac first and cold before product push, ordinary PR and CI, and separately rebuilt merged verification. Native launch requires safe process binding to an isolated profile.
 
 ## CHECKS
 
@@ -82,5 +84,7 @@ AGENT_FINAL_REPORT_V1 and CODEX_OUTPUT_POLICY. Exact identity, changed paths, ex
 ## FAIL_PROTOCOL
 
 Exact b0d5d49b returned an inherited C06 digest mismatch. The retained original verification is 98c9c4c520b5d32e2f897a5044412f3bf388133840fc491019a63e01b5b5b2bc. The correction binds the single current test while preserving the original archived bytes.
+
+Exact 5b5777a8 original affected-chain verification returned 346 refusals: 342 stale current Full-Mac V2 Main-source pins and four parent failures. Original full output is 4d3427a7c4ec8b06bac95887d55772ba85ff3499c93381cb6c46e7ac55b51a19. Read-only discrimination acb9bd4b1637a9594c678f30a6d465807bd118878f2b7515fdb161658751c485 changes only the Main source bytes in memory to the prior exact source and restores VALID with all seventeen qualification rows still missing. It is diagnosis, never current acceptance. Fresh scope-23 declaration 108f176f3ffc4e380ffc9b713e6d8917abff5d73e6cf6e647246d50bb9176c6c admits the two literal current-source pin repairs. The original tests remain unchanged.
 
 Retain the actual input, unchanged test source, observed and expected outcomes, status and output. Keep synthetic Core/query, physical application and full Mac claims separate.

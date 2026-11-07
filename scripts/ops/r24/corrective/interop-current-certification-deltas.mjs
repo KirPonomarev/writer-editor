@@ -90,7 +90,7 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "b13ef465865837b4a4e113c535d31cb9102f25cf5387a0c999b2a472802967f0"
+      "sha256": "4d6e5f580636cdbcbcc9386122b7d7effb4a2c8f3aa13cdfe8b1a995215f4ff6"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -98,7 +98,7 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
-      "sha256": "6338117c6c3a11fae7545d773bdf708dee5fa1c0b1dcbabcb547ff5078dd3bc7"
+      "sha256": "4355cafdc9681128b37f664c8a8c2e995788d7663cb540f87ed622f9b0836d02"
     },
     {
       "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -122,7 +122,7 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-      "sha256": "c2e6f9288403159fa1212dabe48325919f682dc31ca9536b6012485e514c0f7a"
+      "sha256": "e958666c4bb5feae3180933f7381b2a51e92b8e1da2130a2f9eb694d901b5d46"
     },
     {
       "path": "src/renderer/flags.js",
@@ -746,7 +746,7 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-07--atlas-temporal-range-display.md",
-      "sha256": "b2f31651b0be123cbf9643d7910edada5ac62ad3cb63c8fd5f3728225fe319d8"
+      "sha256": "acc3b7991abe10398d99f98d0a6bf727572b48729329a5e75d5df2391b856f9a"
     },
     {
       "path": "src/derived/atlas/deriveAtlasTemporalLayout.mjs",
@@ -760,7 +760,7 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "e712083e6313143dc7b59977234b4a796f5355305070d939c6904cbf8586d6db"
+      "sha256": "31b64ae92668e856c3bb63394b0cde1254254bc591b1b8366fb1e47a18e1741d"
     }
   ]
 });
