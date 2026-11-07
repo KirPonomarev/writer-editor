@@ -994,6 +994,8 @@ let atlasHeatmapState = {
 };
 let atlasTemporalLayoutExplicitOpen = false;
 let atlasTemporalLayoutKeyboardBound = false;
+let atlasTemporalLayoutPublication = null;
+let atlasTemporalLayoutOpening = false;
 let atlasTemporalLayoutState = {
   state: 'empty',
   projectId: '',
@@ -20042,6 +20044,62 @@ function focusAtlasTemporalEvent(offset) {
   events[nextIndex].focus();
 }
 
+async function openAtlasTemporalLayoutScene(button) {
+  if (!(button instanceof HTMLButtonElement) || button.disabled || !atlasTemporalLayoutHost.contains(button)
+    || atlasTemporalLayoutOpening) return false;
+  const state = atlasTemporalLayoutState, projectId = state.projectId;
+  const surfaceCurrent = () => !!projectId && projectId === currentProjectId && currentRightTab === 'atlas'
+    && atlasTemporalLayoutExplicitOpen && isAtlasSurfaceActive('temporal');
+  const unavailable = (message) => {
+    if (surfaceCurrent()) updateStatusText(message, { visible: true });
+    return false;
+  };
+  if (!surfaceCurrent()) return false;
+  const clean = () => !localDirty && localEditGeneration === lastAckedGeneration;
+  if (!clean()) return unavailable('Сохраните текущую сцену перед переходом.');
+  const publication = atlasTemporalLayoutPublication;
+  const stale = 'Шкала времени устарела. Откройте её снова.';
+  const missing = 'Не удалось открыть сцену со шкалы времени.';
+  if (!publication?.() || !['ready', 'degraded'].includes(state.state)
+    || !state.summary.layoutHash || !state.summary.sourceHash) return unavailable(stale);
+  const sceneId = button.dataset.atlasTemporalSceneId;
+  const chart = button.dataset.atlasTemporalEvent === 'true';
+  if (typeof sceneId !== 'string' || !/^tree-node-[a-f0-9]{32}$/u.test(sceneId)
+    || !(chart ? state.layoutPacket.events.slice(0, 24) : state.listParity.rows.slice(0, 16)).some(row => row.sceneId === sceneId)
+    || !state.layoutPacket.events.slice(0, 24).some(row => row.sceneId === sceneId
+      && row.eventId === 'atlas-temporal-event:' + sceneId)) return unavailable(stale);
+  const canOpen = () => isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN);
+  if (!canOpen()) return unavailable(missing);
+  const tree = treeRoot;
+  const readRevision = () => treeMutationProjection?.projectId === projectId
+    && Number.isSafeInteger(treeMutationProjection.treeRevision) && treeMutationProjection.treeRevision >= 0
+    ? treeMutationProjection.treeRevision : null;
+  const treeRevision = readRevision();
+  const current = () => surfaceCurrent() && publication === atlasTemporalLayoutPublication && publication()
+    && state === atlasTemporalLayoutState && clean() && canOpen() && readRevision() === treeRevision
+    && (treeRevision !== null || treeRoot === tree);
+  atlasTemporalLayoutOpening = true;
+  try {
+    let node = findTreeNodeById(tree, sceneId);
+    if (!node) {
+      const result = await invokeWorkspaceQueryBridge(PROJECT_TREE_QUERY_ID, { tab: 'roman' });
+      if (!current()) return false;
+      if (result?.ok !== true || result.projectId !== projectId || !Number.isSafeInteger(result.treeRevision)
+        || result.treeRevision < 0 || (treeRevision !== null && result.treeRevision !== treeRevision)) return unavailable(stale);
+      node = findTreeNodeById(result.root, sceneId);
+    }
+    if (!current()) return false;
+    if (getEffectiveDocumentId(node) !== sceneId
+      || !['scene', 'chapter-file'].includes(getEffectiveDocumentKind(node))) return unavailable(missing);
+    if (await openDocumentNode(node)) return true;
+    return current() ? unavailable(missing) : false;
+  } catch {
+    return current() ? unavailable(missing) : false;
+  } finally {
+    atlasTemporalLayoutOpening = false;
+  }
+}
+
 function handleAtlasTemporalLayoutKeydown(event) {
   const target = event.target instanceof Element ? event.target.closest('[data-atlas-temporal-event]') : null;
   if (!(target instanceof HTMLElement) || !(atlasTemporalLayoutHost instanceof HTMLElement) || !atlasTemporalLayoutHost.contains(target)) return;
@@ -20051,9 +20109,7 @@ function handleAtlasTemporalLayoutKeydown(event) {
   if (event.key === 'ArrowRight') focusAtlasTemporalEvent(1);
   if (event.key === 'Home') focusAtlasTemporalEvent(-9999);
   if (event.key === 'End') focusAtlasTemporalEvent(9999);
-  if (event.key === 'Enter' || event.key === ' ') {
-    updateStatusText(`Atlas timeline scene: ${target.dataset.atlasTemporalSceneId || 'scene'}`);
-  }
+  if (!event.repeat && (event.key === 'Enter' || event.key === ' ')) void openAtlasTemporalLayoutScene(target);
 }
 
 function handleAtlasTemporalLayoutClick(event) {
@@ -20062,9 +20118,9 @@ function handleAtlasTemporalLayoutClick(event) {
     closeAtlasTemporalLayoutSurface();
     return;
   }
-  const eventButton = event.target instanceof Element ? event.target.closest('[data-atlas-temporal-event]') : null;
-  if (eventButton instanceof HTMLElement && atlasTemporalLayoutHost instanceof HTMLElement && atlasTemporalLayoutHost.contains(eventButton)) {
-    updateStatusText(`Atlas timeline scene: ${eventButton.dataset.atlasTemporalSceneId || 'scene'}`);
+  const sceneButton = event.target instanceof Element ? event.target.closest('button[data-atlas-temporal-scene-id]') : null;
+  if (sceneButton instanceof HTMLButtonElement && atlasTemporalLayoutHost instanceof HTMLElement && atlasTemporalLayoutHost.contains(sceneButton)) {
+    void openAtlasTemporalLayoutScene(sceneButton);
   }
 }
 
@@ -20237,6 +20293,7 @@ function renderAtlasTemporalLayoutState() {
 
 function closeAtlasTemporalLayoutSurface() {
   atlasTemporalLayoutExplicitOpen = false;
+  atlasTemporalLayoutPublication = null;
   setCurrentAtlasSurface('matrices', { refresh: true });
   renderAtlasTemporalLayoutState();
 }
@@ -20253,6 +20310,7 @@ async function refreshAtlasTemporalLayout(sliderValue = null, options = {}) {
   if (atlasTemporalLayoutExplicitOpen !== true) return;
   const current = beginAtlasQueryPublication('atlasTemporalLayout', options), requestProject = currentProjectId;
   if (!current) return;
+  atlasTemporalLayoutPublication = null;
   atlasTemporalLayoutState = {
     ...atlasTemporalLayoutState,
     state: currentProjectId ? 'loading' : 'empty',
@@ -20270,6 +20328,7 @@ async function refreshAtlasTemporalLayout(sliderValue = null, options = {}) {
   const nextState = readAtlasQueryProjection(result, 'atlasTemporalLayout', requestProject)
     || { state: 'unavailable', unavailableReason: 'ATLAS_TEMPORAL_LAYOUT_QUERY_FAILED', projectId: requestProject };
   atlasTemporalLayoutState = normalizeAtlasTemporalLayout(nextState);
+  atlasTemporalLayoutPublication = current;
   renderAtlasTemporalLayoutState();
 }
 

@@ -1,3 +1,7 @@
+# 2026-11-07 — Atlas Time scene navigation
+
+PR 2209 closed at 6215df37. On this base Atlas Time chart activation only reported status; the list row did not reach it. The same six focused cases go from four causal failures to all six passing with one guarded document-open intent. The maintained renderer builds. Original existing callers ran 1473 cases, one failed because the DATA policy still pins the prior bundle. Retain the failure, all earlier bindings, and the existing file limit. Current verification companions, native and full delivery remain pending.
+
 # 2026-11-07 — Atlas shared authored relationship scope
 
 PR2208 closed at `15311043` with exact merged native verification. At that source, Matrix returned saved author relationships and the other Atlas representations did not. Preserved original RED `1da942ec`. A shared Matrix projection now feeds those three workspace views in the focused proof; prior observations remain unchanged. Focused race, dirty, revoked profile and exact source activation tests pass. The maintained renderer build passes. Native candidate, required software and delivery are pending. No Full Mac qualification claimed.
