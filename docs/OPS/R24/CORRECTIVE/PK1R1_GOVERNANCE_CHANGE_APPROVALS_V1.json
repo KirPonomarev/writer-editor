@@ -2430,4 +2430,53 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
       "approvedAtUtc": "2026-11-07T01:09:30.777618+00:00",
       "rationale": "Delegated technical SHA witness for the same Atlas association correction. The DATA and certification bindings include the exact task note as well as the current contract. The original repository gates validate these digests."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "56f61bcf87e1b802c599e29a6419f897dc0a03bda479f57aa56f28aa430a5b1c",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:20:52.141466+00:00",
+      "rationale": "Delegated technical SHA witness for the existing Atlas association delivery. The finite COPY fixture uses the established Stage 10 exclusive file effect on non-Darwin CI and binds its own helper on Darwin. Both observations retain the original history, owner and Kernel-open checks."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "f6443f2ec11a8bb3cca8ed0449940640a82570c56dafd8db8ab6f3d16f0fbfb4",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:20:52.141466+00:00",
+      "rationale": "Delegated technical SHA witness for the existing Atlas association delivery. The finite COPY fixture uses the established Stage 10 exclusive file effect on non-Darwin CI and binds its own helper on Darwin. Both observations retain the original history, owner and Kernel-open checks."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "2e4c2263dc8966adb8003863433d81eabf10b3d828a193889af035a3c265faa0",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:20:52.141466+00:00",
+      "rationale": "Delegated technical SHA witness for the existing Atlas association delivery. The finite COPY fixture uses the established Stage 10 exclusive file effect on non-Darwin CI and binds its own helper on Darwin. Both observations retain the original history, owner and Kernel-open checks."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "96b9bc77abfb4f7b69c167961e6f377f18adf6dc628fcf40b5f058137c9423ef",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:20:52.141466+00:00",
+      "rationale": "Delegated technical SHA witness for the existing Atlas association delivery. The finite COPY fixture uses the established Stage 10 exclusive file effect on non-Darwin CI and binds its own helper on Darwin. Both observations retain the original history, owner and Kernel-open checks."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "26268b1f9a4d5584b6d05bd8064b53f29bd5905c98148b445232ffd9d4416208",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:20:52.141466+00:00",
+      "rationale": "Delegated technical SHA witness for the existing Atlas association delivery. The finite COPY fixture uses the established Stage 10 exclusive file effect on non-Darwin CI and binds its own helper on Darwin. Both observations retain the original history, owner and Kernel-open checks."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "b881497d2171ff1004b27aabf0a6f841e49378017c431f0104a25c2d2994d294",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:20:52.141466+00:00",
+      "rationale": "Delegated technical SHA witness for the existing Atlas association delivery. The finite COPY fixture uses the established Stage 10 exclusive file effect on non-Darwin CI and binds its own helper on Darwin. Both observations retain the original history, owner and Kernel-open checks."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "7adbfc51b2fbd8563d82a905d5d281cbcfd8c90e1d5877af64a2f0328522592d",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:20:52.141466+00:00",
+      "rationale": "Delegated technical SHA witness for the existing Atlas association delivery. The finite COPY fixture uses the established Stage 10 exclusive file effect on non-Darwin CI and binds its own helper on Darwin. Both observations retain the original history, owner and Kernel-open checks."
     }],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}

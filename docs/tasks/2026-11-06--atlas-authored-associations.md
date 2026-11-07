@@ -99,6 +99,10 @@ PR 2207 run 42319521134 reported 100 of 101 in the maintained Atlas event graph.
 
 Scope43 declaration b5c4dba1, preflight 306a0d8b and admission 0c841843 bind one explicit command expectation and one literal DONE membership. All four focused cases passed 6d557e78. The current inventory, DATA, certificate and governance companions bind the new test bytes. All four Atlas entrypoints are part of the next exact-head gate wave. Original M14 delivery base and existing PR remain the delivery chain.
 
+### FINITE COPY PUBLICATION BINDING
+
+The same PR run reported one COPY test failure in the Linux baseline. The finite host selected the Mac product profile and attempted the Darwin Stage 10 file primitive. Its original error and complete raw CI log are retained. Differential 3fd57a2b reproduced the failure and passed the original COPY history, ownership and Kernel-open assertions through the established exclusive finite file effect. Scope43 and preflight bind this test-only correction. The Darwin test uses its own built helper and the Linux CI baseline remains required.
+
 ### NATIVE SOURCE-AVAILABILITY FINDING
 
 C1 577d0475 actual own profile32 AUTHOR and same-profile COLD exited0; complete73/75file readbacks and source/history/navigation oracle1346d7db retain two records with3+1revisions and exact manuscript/Atlas bytes. The oracle exits2: scene edits leave a previously enabled Save appearance until its synchronous click guard refuses the stale source. This is the original unsuccessful C1 native acceptance; later observations never retag it. A frame labelled immediate disabled is inaccurate; its raw AX and the explicit diagnosis4a086a37 take precedence. Full original native logs/cache errors and every original failed method remain retained.

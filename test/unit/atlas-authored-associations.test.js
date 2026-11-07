@@ -576,15 +576,37 @@ test('authored association ordinary full archive COPY retains all versions and c
   const request={requestId:'association-copy-import',archivePath:archive,projectName:'Associations copied',mode:'copy',openAfterImport:true};
   const importedPreview=await f.h.main.handleImportProjectArchive(request);assert.equal(importedPreview.ok,true,JSON.stringify(importedPreview));
   let publishArchiveDirectory;
-  if(process.platform==='darwin'){
-    const helperPath=path.join(f.h.root,'association-copy-publisher');require('../../scripts/build-project-archive-native.cjs').buildProjectArchiveNative({outputPath:helperPath});
-    publishArchiveDirectory=require('../../src/main/projectArchiveDarwinPublication.cjs').createProjectArchiveDarwinPublisher({helperPath});
-  }else publishArchiveDirectory=async({tempRoot,targetRoot,assertCurrent})=>{await assertCurrent();await fs.promises.rename(tempRoot,targetRoot);return{namePublished:true,directorySynced:false,publicationOutcome:'TEST_PORT_ONLY'};};
+  let finiteFileCopies = 0;
+  if (process.platform === 'darwin') {
+    const helperPath = path.join(f.h.root, 'association-copy-publisher');
+    require('../../scripts/build-project-archive-native.cjs').buildProjectArchiveNative({ outputPath: helperPath });
+    f.h.helperPath = helperPath;
+    publishArchiveDirectory = require('../../src/main/projectArchiveDarwinPublication.cjs').createProjectArchiveDarwinPublisher({ helperPath });
+  } else {
+    publishArchiveDirectory = async ({ tempRoot, targetRoot, assertCurrent }) => {
+      await assertCurrent();
+      await fs.promises.rename(tempRoot, targetRoot);
+      return { namePublished: true, directorySynced: false, publicationOutcome: 'TEST_PORT_ONLY' };
+    };
+    f.h.filePublication = async ({ sourcePath, targetPath, assertCurrent }) => {
+      await assertCurrent();
+      await fs.promises.copyFile(sourcePath, targetPath, fs.constants.COPYFILE_EXCL);
+      finiteFileCopies += 1;
+    };
+    f.h.filePublication.assertAvailable = async ({ assertCurrent }) => {
+      await assertCurrent();
+      return { available: true, readOnly: true };
+    };
+  }
   const imported=await f.h.main.handleImportProjectArchive({...request,confirmed:true},{publishArchiveDirectory});assert.equal(imported.ok,true,JSON.stringify(imported));
   const copyId=imported.projectId;assert.notEqual(copyId,f.projectId);const tree=await f.h.main.handleWorkspaceProjectTreeQuery({tab:'roman'});assert.equal(tree.projectId,copyId);
   const copiedPath=path.join(f.h.documents,'craftsman','Associations copied','project.craftsman.json');const copied=JSON.parse(fs.readFileSync(copiedPath,'utf8'));
   const expected=copy(source);for(const row of Object.values(expected))row.projectId=copyId;assert.deepEqual(copied.atlas.authoredAssociations,expected);assert.deepEqual(f.manifest(),before);
   const value=(await f.h.query('query.atlasRelationDossier',{projectId:copyId})).atlasRelationDossier.authoredAssociations;assert.equal(value.total,1);assert.equal(value.rows[0].sourceState,'current');
+  if (process.platform !== 'darwin') {
+    assert.ok(finiteFileCopies > 0, 'The finite Stage 10 publisher wrote an exclusive file');
+    t.diagnostic('FINITE_NON_DARWIN_STAGE10_FILE_COPIES=' + finiteFileCopies);
+  }
   t.diagnostic('ACTUAL_MAIN_COPY_AND_KERNEL_OPEN; directory port '+(process.platform==='darwin'?'production Darwin helper':'generic CI test port')+'; NOT_NATIVE_APP_ACCEPTANCE');
 });
 

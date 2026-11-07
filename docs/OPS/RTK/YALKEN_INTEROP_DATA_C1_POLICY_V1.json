@@ -3427,7 +3427,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "a0f859b5c874a3f3299504482777afcec575c4ceb3db2d71f4fc5aa3373df160"
+        "sha256": "f6443f2ec11a8bb3cca8ed0449940640a82570c56dafd8db8ab6f3d16f0fbfb4"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4371,11 +4371,11 @@
       },
       {
         "path": "test/unit/atlas-authored-associations.test.js",
-        "sha256": "244cf4124b0308806cb1cd5c865c3508e54a51e52fbc2db49fdd5c2922705f55"
+        "sha256": "2a9173590a5fceeadbb8a8aba079160f33a3e4f31baabf709ad18fae5ba4c8e3"
       },
       {
         "path": "docs/tasks/2026-11-06--atlas-authored-associations.md",
-        "sha256": "c0bcad8f7bf7aba63a130fe63c8fcbdf44c43618d3eae136e47d36f85a244ab3"
+        "sha256": "def973c8aeb4291f332ca0982354ee403f270d2c268faf2ec59d6f6cb5153d6f"
       },
       {
         "path": "src/core/contracts.ts",
