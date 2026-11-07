@@ -23,17 +23,31 @@ The existing scene-time command preserves untouched fields and retains a stored 
 
 ## ALLOWLIST
 
+- docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+- docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json
+- docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
 - docs/tasks/2026-11-07--atlas-temporal-range-display.md
+- scripts/ops/r24/corrective/current-bindings-finalizer.mjs
+- scripts/ops/r24/corrective/interop-current-certification-deltas.mjs
+- scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/sector-m-scope-map.json
 - src/derived/atlas/deriveAtlasTemporalLayout.mjs
 - src/main.js
 - src/renderer/editor.bundle.js
 - src/renderer/editor.js
+- test/contracts/rtk-word-comment-return-apply.contract.test.js
 - test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js
+- test/unit/current-bindings-finalizer.test.js
 - test/unit/r24-wp307-writer-local-profile-integration.test.js
 
 ## DENYLIST
 
-Every other path under this source phase. Protect Core, command and IPC contracts, other Main and renderer behavior, dependencies, workflows, persisted schemas, history and all profiles. Keep scope on preserving a saved range during a partial edit and showing that same range. New author range controls, coordinates, qualification and current delivery metadata stay outside this source phase. Office stays paused and Black Box follows full Mac.
+Every other path under this same delivery. Protect Core, command and IPC contracts, other Main and renderer behavior, dependencies, workflows, persisted schemas, history and all profiles. Keep scope on preserving a saved range during a partial edit and showing that same range. New author range controls, coordinates and qualification stay outside this delivery. Current technical metadata uses the existing gates. The small current certification literal retains the complete inherited binding set and the existing size limits. The archived literals retain their original bytes. Office stays paused and Black Box follows full Mac.
 
 ## CONTRACT / SHAPES
 
@@ -43,7 +57,7 @@ FEATURE_INTEGRATION_MANIFEST_V1: Core retains the authored endpoints, precision 
 
 1. Keep the original read-label checkpoint and its focused cases verbatim. Append real Main and Kernel cases for untouched ranges, note and anchor identity. Run them before the amendment and retain original RED.
 2. Resolve omitted fields within existing Main canonical preparation. Run the same cases, earlier focused and affected cases, renderer build, and source guardrails.
-3. Bind current verification inputs through exact preflight. Complete mandatory software, separately rebuilt actual Mac first and cold before product push, ordinary PR and CI, and separately rebuilt merged verification. Native launch requires safe process binding to an isolated profile.
+3. Bind current verification inputs through exact preflight. Reuse the existing current finalizer with the fixed current literal path. Preserve archived predicates, current full row bindings, original limits, and reject silent fallback. Complete mandatory software, separately rebuilt actual Mac first and cold before product push, ordinary PR and CI, and separately rebuilt merged verification. Native launch requires safe process binding to an isolated profile.
 
 ## CHECKS
 
@@ -55,7 +69,7 @@ CHECK_03_POST_SOURCE: same inputs for RED and GREEN; prove both open directions,
 
 CHECK_04_POST_NATIVE: ordinary candidate and exact merged macOS build, isolated first/cold, visible list and accessible marker proof, independent physical unchanged manuscript, anchors and history.
 
-CHECK_05_POST_DELIVERY: exact metadata, required local and hosted checks, ordinary PR merge and current exact-head verification. Guardrails and scope report.
+CHECK_05_POST_DELIVERY: exact current metadata, existing and bounded companion contract negatives, required local and hosted checks, ordinary PR merge and current exact-head verification. Guardrails and scope report.
 
 ## STOP_CONDITION
 

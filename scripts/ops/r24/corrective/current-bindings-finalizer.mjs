@@ -16,6 +16,7 @@ export const TARGETS = Object.freeze([
   'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
 ]);
 const [INV, APPROVALS, MANIFEST, CLAIMS, POLICY, DATA, CERT] = TARGETS;
+const CURRENT_CERT = 'scripts/ops/r24/corrective/interop-current-certification-deltas.mjs';
 const REQUEST_VERSION = 'YALKEN_CURRENT_BINDINGS_REQUEST_V1';
 const MAX_FILE = 8 * 1024 * 1024, MAX_TOTAL = 128 * 1024 * 1024;
 const fail = (code, detail = '') => { throw new Error(`${code}${detail ? ':' + detail : ''}`); };
@@ -36,13 +37,17 @@ function paths(values, max = 128) {
   demand(Array.isArray(values) && values.length <= max && new Set(values).size === values.length, 'E_CURRENT_BINDINGS_PATH_SET');
   return values.map(relative);
 }
+function targetPaths(expectedOld) {
+  return Object.hasOwn(expectedOld || {}, CURRENT_CERT) ? [...TARGETS.slice(0, -1), CURRENT_CERT] : TARGETS;
+}
 function validateRequest(request) {
   keys(request, ['schemaVersion', 'taskId', 'expectedHead', 'bindingBaseSha', 'bindingBaseTree', 'scopeIn', 'expectedOld', 'additionalAdmittedPaths', 'additionalSourcePaths']);
   demand(request.schemaVersion === REQUEST_VERSION && /^[A-Z][A-Z0-9_]{2,127}$/u.test(request.taskId), 'E_CURRENT_BINDINGS_REQUEST_VERSION');
   demand(hex(request.expectedHead, 40) && hex(request.bindingBaseSha, 40) && hex(request.bindingBaseTree, 40), 'E_CURRENT_BINDINGS_GIT_IDENTITY');
   const scope = new Set(paths(request.scopeIn));
-  keys(request.expectedOld, TARGETS);
-  for (const p of TARGETS) demand(scope.has(p) && hex(request.expectedOld[p], 64), 'E_CURRENT_BINDINGS_TARGET_SET', p);
+  const targets = targetPaths(request.expectedOld);
+  keys(request.expectedOld, targets);
+  for (const p of targets) demand(scope.has(p) && hex(request.expectedOld[p], 64), 'E_CURRENT_BINDINGS_TARGET_SET', p);
   for (const p of [...paths(request.additionalAdmittedPaths, 32), ...paths(request.additionalSourcePaths, 32)]) {
     demand(scope.has(p), 'E_CURRENT_BINDINGS_UNDECLARED_ADDITION', p);
   }
@@ -120,7 +125,7 @@ function selectedDelta(source, request = null) {
   const seen = new Set();
   for (const row of [...value.bindings, ...value.guards]) {
     keys(row, ['path', 'sha256']); relative(row.path);
-    demand(hex(row.sha256, 64) && !seen.has(row.path) && row.path !== CERT, 'E_CURRENT_BINDINGS_DELTA_BINDINGS'); seen.add(row.path);
+    demand(hex(row.sha256, 64) && !seen.has(row.path) && row.path !== CERT && row.path !== CURRENT_CERT, 'E_CURRENT_BINDINGS_DELTA_BINDINGS'); seen.add(row.path);
   }
   demand(same(value.guards.map(row => row.path), [POLICY]), 'E_CURRENT_BINDINGS_DELTA_GUARD');
   return { value, replace: next => source.slice(0, at) + JSON.stringify(next, null, 2) + source.slice(end + 2) };
@@ -132,6 +137,12 @@ function plan(rootDir, rawRequest) {
   const request = validateRequest(rawRequest), root = path.resolve(rootDir);
   demand(fs.realpathSync(root) === root && fs.lstatSync(root).isDirectory(), 'E_CURRENT_BINDINGS_ROOT');
   const initialIdentity = identity(root, request), snapshots = new Map(), outputs = new Map(); let total = 0;
+  const targets = targetPaths(request.expectedOld), certificate = targets.at(-1);
+  const inTree = commit => git(root, ['ls-tree', '--name-only', commit, '--', CURRENT_CERT]).trimEnd() === CURRENT_CERT;
+  const baseCertificate = inTree(request.bindingBaseSha) ? CURRENT_CERT : CERT;
+  const currentPresent = fs.lstatSync(path.join(root, CURRENT_CERT), { throwIfNoEntry: false }) !== undefined;
+  demand(certificate === CURRENT_CERT ? currentPresent
+    : !currentPresent && baseCertificate === CERT && !inTree(request.expectedHead), 'E_CURRENT_BINDINGS_CERTIFICATE_CARRIER');
   const read = name => {
     relative(name);
     if (outputs.has(name)) return outputs.get(name);
@@ -145,7 +156,7 @@ function plan(rootDir, rawRequest) {
     const bytes = read(name), value = JSON.parse(bytes.toString('utf8'));
     demand(bytes.equals(style === 'pretty' ? pretty(value) : canonicalBytes(value)), 'E_CURRENT_BINDINGS_JSON_FORMAT', name); return value;
   };
-  for (const name of TARGETS) demand(sha256(read(name)) === request.expectedOld[name], 'E_CURRENT_BINDINGS_EXPECTED_OLD', name);
+  for (const name of targets) demand(sha256(read(name)) === request.expectedOld[name], 'E_CURRENT_BINDINGS_EXPECTED_OLD', name);
   const oldInventory = json(INV); demand(oldInventory.schemaVersion === 'R24_C1B_TEST_INVENTORY_V1', 'E_CURRENT_BINDINGS_INVENTORY_VERSION');
   for (const name of listTestFiles(root)) read(name);
   const inventory = buildInventory(root), validation = validateInventory(root, inventory);
@@ -178,6 +189,7 @@ function plan(rootDir, rawRequest) {
     && basePolicy.qualifiedRuntimeRepair.sourceBindings.every(row => policy.qualifiedRuntimeRepair.sourceBindings.some(next => next.path === row.path)), 'E_CURRENT_BINDINGS_POLICY_REMOVAL');
   const allowedAdmitted = new Set([...basePolicy.admittedPaths, ...request.additionalAdmittedPaths]);
   const allowedSources = new Set([...basePolicy.qualifiedRuntimeRepair.sourceBindings.map(row => row.path), ...request.additionalSourcePaths]);
+  if (certificate === CURRENT_CERT) demand(allowedAdmitted.has(CURRENT_CERT), 'E_CURRENT_BINDINGS_CERTIFICATE_CARRIER');
   for (const name of policy.admittedPaths) demand(allowedAdmitted.has(name), 'E_CURRENT_BINDINGS_UNDECLARED_POLICY_ADMITTED_PATH', name);
   for (const row of policy.qualifiedRuntimeRepair.sourceBindings) demand(allowedSources.has(row.path), 'E_CURRENT_BINDINGS_UNDECLARED_POLICY_SOURCE_PATH', row.path);
   demand(sha256(read('scripts/ops/rtk-interop-data-c1-readback.py')) === policy.rawCheckerSha256, 'E_CURRENT_BINDINGS_RAW_CHECKER_PIN');
@@ -205,19 +217,22 @@ function plan(rootDir, rawRequest) {
     && same(JSON.parse(arrays[0][1]), JSON.parse(snapshots.get(POLICY).bytes).admittedPaths), 'E_CURRENT_BINDINGS_DATA_FORMAT');
   outputs.set(DATA, Buffer.from(data.replace(pins[0][0], `export const DATA_POLICY_SHA256='${sha256(outputs.get(POLICY))}';`)
     .replace(arrays[0][0], `const DATA_ADMITTED_PATHS=${JSON.stringify(policy.admittedPaths)};`)));
-  const selected = selectedDelta(read(CERT).toString('utf8'), request);
-  const baseCert = git(root, ['show', request.bindingBaseSha + ':' + CERT]), inherited = selectedDelta(baseCert).value;
+  const selected = selectedDelta(read(certificate).toString('utf8'), request);
+  const baseCert = git(root, ['show', request.bindingBaseSha + ':' + baseCertificate]), inherited = selectedDelta(baseCert).value;
   const currentPaths = new Set(selected.value.bindings.map(row => row.path));
   for (const row of inherited.bindings) demand(currentPaths.has(row.path), 'E_CURRENT_BINDINGS_INHERITED_BINDING_MISSING', row.path);
-  for (const name of [...request.additionalAdmittedPaths, ...request.additionalSourcePaths]) {
+  // The current certificate is already an exact-pinned output. Its path is
+  // admitted in DATA without asking the literal to contain its own digest.
+  const admittedAdditions = request.additionalAdmittedPaths.filter(name => certificate !== CURRENT_CERT || name !== CURRENT_CERT);
+  for (const name of [...admittedAdditions, ...request.additionalSourcePaths]) {
     demand(currentPaths.has(name), 'E_CURRENT_BINDINGS_ADDITION_UNBOUND', name);
   }
   for (const row of [...selected.value.bindings, ...selected.value.guards]) row.sha256 = sha256(read(row.path));
-  outputs.set(CERT, Buffer.from(selected.replace(selected.value)));
+  outputs.set(certificate, Buffer.from(selected.replace(selected.value)));
   demand(same(identity(root, request), initialIdentity), 'E_CURRENT_BINDINGS_IDENTITY_CHANGED');
   for (const [name, old] of snapshots) demand(same(safeFile(root, name).record, old.record), 'E_CURRENT_BINDINGS_INPUT_CHANGED', name);
   const inputBindings = [...snapshots.values()].map(row => row.record).sort((a, b) => a.path.localeCompare(b.path, 'en-US'));
-  const changes = TARGETS.map(name => ({ path: name, beforeSha256: request.expectedOld[name], afterSha256: sha256(outputs.get(name)), bytes: outputs.get(name).length, changed: !outputs.get(name).equals(snapshots.get(name).bytes) }));
+  const changes = targets.map(name => ({ path: name, beforeSha256: request.expectedOld[name], afterSha256: sha256(outputs.get(name)), bytes: outputs.get(name).length, changed: !outputs.get(name).equals(snapshots.get(name).bytes) }));
   const proposal = { schemaVersion: 'YALKEN_CURRENT_BINDINGS_PROPOSAL_V1', authority: 'NONE_DERIVED_METADATA_ONLY', taskId: request.taskId,
     identity: initialIdentity, bindingBaseSha: request.bindingBaseSha, bindingBaseTree: request.bindingBaseTree,
     requestSha256: sha256(canonicalBytes(request)), inheritedCertificationSourceSha256: sha256(Buffer.from(baseCert)),

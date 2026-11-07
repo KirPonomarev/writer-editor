@@ -52,10 +52,13 @@ test('ordinary Word Apply admits the real candidate and rejects corrupted or mix
   assert.ok(committed.includes(renameCommitted.slice(historyStart, historyEnd)), 'complete historical carrier bytes must remain exact');
   // Expected authority is independently composed from the committed small
   // declaration over the fixed historical anchor; no verifier result is used.
-  const deltaName = committed.match(/^const R24_INTEROP_CURRENT_INPUTS_DELTA = (R24_INTEROP_\w+);$/mu)?.[1];
+  const carrier = 'scripts/ops/r24/corrective/interop-current-certification-deltas.mjs';
+  const hasCarrier = git(['ls-tree', '--name-only', candidate, '--', carrier]).toString().trim() === carrier;
+  const currentLiteral = hasCarrier ? git(['show', candidate + ':' + carrier]).toString() : committed;
+  const deltaName = currentLiteral.match(/^const R24_INTEROP_CURRENT_INPUTS_DELTA = (R24_INTEROP_\w+);$/mu)?.[1];
   let current = renameExpected;
   if (deltaName) {
-    const deltaLiteral = [...committed.matchAll(/^const (R24_INTEROP_\w+_DELTA) = Object\.freeze\((\{[\s\S]*?\})\);$/gmu)]
+    const deltaLiteral = [...currentLiteral.matchAll(/^const (R24_INTEROP_\w+_DELTA) = Object\.freeze\((\{[\s\S]*?\})\);$/gmu)]
       .find(m => m[1] === deltaName);
     assert.ok(deltaLiteral, 'current delta must be a committed closed declaration');
     const delta = JSON.parse(deltaLiteral[2]);
