@@ -1,3 +1,16 @@
+# CURRENT — Atlas: авторские связи в общих представлениях
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_AUTHORED_WORKSPACE_PARITY_MAC_20261107
+BINDING_BASE_SHA: 15311043e9bb64a36c45246951bbf2f921ff41d7
+STATUS: FOCUSED_PROOF_NATIVE_AND_DELIVERY_PENDING
+
+PR2208 закрыт на этой базе: квитанция e7095c0800976fd527d1dd7f4728859eee5c836fd93f8e0c428373209680641c. Сборка merge отдельно проверена обычным и холодным запуском; авторские связи применяются в Matrix. Полный Mac остаётся NOT_READY, все 17 строк квалификации открыты.
+
+Проба на той же базе нашла авторские связи в Matrix и их отсутствие в графе, списке и таблице. Исходный RED сохранён: 1da942ecb211caa13f8085e36c3727cbd47650ac6af779ad9d4d9ff492cb7d11. Текущий WIP подключает ту же сохранённую область к трём видам. Фокусные сценарии проверяют идентичность, отказ для позднего ответа и несохранённой сцены, исходные наблюдения и выбор источника. Штатная сборка рендерера прошла; проверка rebuilt Mac, холодного запуска и поставка впереди.
+
+--- Previous entries remain as historical status ---
+
 # CURRENT — авторские связи Atlas по области
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -3,6 +3,8 @@ import { ATLAS_SURFACE_POSTURE, ATLAS_SURFACE_VIEW } from '../core/atlas-surface
 
 export const ATLAS_SURFACE_PRESENTATION_SCHEMA_VERSION = 'yalken.renderer.atlasSurfacePresentation.v1';
 export const ATLAS_SURFACE_SPLIT_MIN_WIDTH = 1120;
+export const ATLAS_WORKSPACE_AUTHORED_KIND = 'AUTHORED_ASSOCIATION';
+const AUTHORED_SCOPE_LABELS = Object.freeze({ BOOK: 'Книга', SCENE: 'Сцена', FRAGMENT: 'Фрагмент' });
 
 function compare(left, right) { return left < right ? -1 : left > right ? 1 : 0; }
 function freezeDeep(value) {
@@ -18,8 +20,40 @@ function safeText(value, fallback = '') {
 function safeCount(value) { return Number.isInteger(value) && value >= 0 ? value : 0; }
 function normalizePosture(posture) { return Object.values(ATLAS_SURFACE_POSTURE).includes(posture) ? posture : ATLAS_SURFACE_POSTURE.MANUSCRIPT; }
 function normalizeView(view) { return Object.values(ATLAS_SURFACE_VIEW).includes(view) ? view : ATLAS_SURFACE_VIEW.GRAPH; }
-function overviewRows(overview = {}) {
-  const rows = [];
+function readAuthoredRows(projection, projectId) {
+  if (!projectId || projection?.projectId !== projectId
+    || projection.schemaVersion !== 'derived.atlas.authoredAssociationApplicability.v1'
+    || !['ready', 'empty'].includes(projection.state) || !Array.isArray(projection.rows)
+    || projection.rows.length > 48 || (projection.state === 'empty') !== (projection.rows.length === 0)
+    || !Number.isSafeInteger(projection.omittedCount) || projection.omittedCount < 0
+    || projection.total !== projection.rows.length + projection.omittedCount
+    || projection.complete !== (projection.omittedCount === 0)) return null;
+  const rows = [], ids = new Set();
+  for (const row of projection.rows) {
+    const latest = row?.latest;
+    if (!row || !safeText(row.associationId) || safeText(row.associationId) !== row.associationId
+      || ids.has(row.associationId) || row.sourceState !== 'current' || row.entityState !== 'current'
+      || latest?.status !== 'active' || !Object.hasOwn(AUTHORED_SCOPE_LABELS, latest.scopeKind)
+      || !['DIRECTED', 'UNDIRECTED'].includes(latest.direction) || !safeText(latest.associationKind)
+      || !safeText(latest.sourceEntityId) || !safeText(latest.targetEntityId)) return null;
+    ids.add(row.associationId);
+    const direction = latest.direction === 'DIRECTED' ? ' → ' : ' ↔ ';
+    const participants = safeText(row.sourceName, latest.sourceEntityId) + direction + safeText(row.targetName, latest.targetEntityId);
+    rows.push({
+      rowId: 'authored-association:' + row.associationId,
+      kind: ATLAS_WORKSPACE_AUTHORED_KIND,
+      associationId: row.associationId,
+      sourceEntityId: latest.sourceEntityId,
+      targetEntityId: latest.targetEntityId,
+      title: participants + ' · ' + safeText(latest.associationKind),
+      subtitle: 'Авторская связь · ' + AUTHORED_SCOPE_LABELS[latest.scopeKind] + ' · ' + safeText(row.sceneTitle, 'Сохранённый источник'),
+      status: 'Подтверждена автором',
+    });
+  }
+  return { rows, total: projection.total, omittedCount: projection.omittedCount };
+}
+function overviewRows(overview = {}, authoredRows = []) {
+  const rows = [...authoredRows];
   for (const entity of Array.isArray(overview.topEntities) ? overview.topEntities : []) {
     const sourceId = safeText(entity?.entityId, 'unknown-entity');
     rows.push({
@@ -78,14 +112,16 @@ export function buildAtlasSurfacePresentation(input = {}) {
     ? ATLAS_SURFACE_POSTURE.MANUSCRIPT
     : requestedPosture;
   const view = normalizeView(input.view);
-  const rows = overviewRows(input.overview);
+  const authored = readAuthoredRows(input.authoredAssociations, input.overview?.projectId);
+  const rows = overviewRows(input.overview, authored?.rows);
   const rowIds = rows.map((row) => row.rowId);
   const sharedRowSetDigest = `sha256:${hashCanonicalValue(rowIds)}`;
   const selectedRowId = rowIds.includes(input.selectedRowId) ? input.selectedRowId : (rowIds[0] || '');
   const summary = input.overview?.summary && typeof input.overview.summary === 'object' ? input.overview.summary : {};
   return freezeDeep({
     schemaVersion: ATLAS_SURFACE_PRESENTATION_SCHEMA_VERSION,
-    state: input.overview?.state === 'unavailable' ? 'unavailable' : rows.length ? 'ready' : 'empty',
+    state: input.overview?.state === 'unavailable' && !authored?.rows.length ? 'unavailable' : rows.length ? 'ready' : 'empty',
+    ...(authored ? { authoredAssociationSummary: { total: authored.total, omittedCount: authored.omittedCount } } : {}),
     requestedPosture,
     posture,
     responsiveFallbackApplied: posture !== requestedPosture,

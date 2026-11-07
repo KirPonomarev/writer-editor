@@ -1,3 +1,17 @@
+# Current handoff — Atlas author relationships across workspace views
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_AUTHORED_WORKSPACE_PARITY_MAC_20261107
+BASE: 15311043e9bb64a36c45246951bbf2f921ff41d7
+BRANCH: codex/atlas-author-workspace-parity-20261107
+STATUS: FOCUSED_PROOF_NATIVE_AND_DELIVERY_PENDING
+
+One bounded P17 contour: one existing Matrix result also feeds Graph, List and Table. Keep observed rows separate and use the existing guarded source command. Exact pre-edit admission 6986c76bf3922291177c6abf8263b6992cdf0ac2922461da4db399dad752d33d, exact original RED 1da942ecb211caa13f8085e36c3727cbd47650ac6af779ad9d4d9ff492cb7d11. Matrix's preceding closed delivery is PR2208. Focused working tests and the maintained renderer build passed.
+
+NEXT: finish exact current technical bindings, required gates and actual rebuilt Mac plus same-profile cold, then guarded product push, CI, merge and new exact merged verification. Full Mac, remaining Atlas cells and all 17 qualification rows remain open. Keep old profiles, authored data, failures, skips and Office pause; Black Box after Full Mac.
+
+--- Previous handoffs remain historical ---
+
 # CURRENT HANDOFF — применимые авторские связи Atlas
 
 DOCUMENT_CLASS: FACTUAL_STATUS

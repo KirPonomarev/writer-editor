@@ -1,3 +1,7 @@
+# 2026-11-07 — Atlas shared authored relationship scope
+
+PR2208 closed at `15311043` with exact merged native verification. At that source, Matrix returned saved author relationships and the other Atlas representations did not. Preserved original RED `1da942ec`. A shared Matrix projection now feeds those three workspace views in the focused proof; prior observations remain unchanged. Focused race, dirty, revoked profile and exact source activation tests pass. The maintained renderer build passes. Native candidate, required software and delivery are pending. No Full Mac qualification claimed.
+
 # 2026-11-06 — Authored Atlas source/history and native correction
 
 C2 9058b505 exact whole76 passes7b5a4696; corrected pre-checkpoint135 e44fc5d5/inverse52e9e4a preserve all old cases and authority checks. Four presentation lines address the genuine C1 native finding; new own33 actual AUTHOR/cold0 and independent681212f8/full68/70file readbacks verify two records/history3+1, exact source, Unicode, dirty/ack controls and cold retention. Unrelated mistaken own entity and every original failure/warning remain; all33profiles/five apps protecteddc5cae38.
