@@ -958,7 +958,9 @@
     "docs/tasks/2026-11-06--atlas-authored-associations.md",
     "src/core/contracts.ts",
     "src/core/domainEvents.mjs",
-    "test/contracts/yalken-atlas-v5-final-audit-p0-04-design-os-binding.contract.test.js"
+    "test/contracts/yalken-atlas-v5-final-audit-p0-04-design-os-binding.contract.test.js",
+    "test/unit/atlas-authored-association-applicability.test.js",
+    "docs/tasks/2026-11-07--atlas-association-applicability.md"
   ],
   "protectedFiles": [
     {
@@ -1187,7 +1189,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "b02f49e23cddcafc5d142aedb02bd210ec06515a1d715180c521125a2726e8e6"
+        "sha256": "d5a90ae3bdf17d0e9e632ce08c707c8cded6966c102f83cc69fec696b4193afb"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1199,7 +1201,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "cd721ecb150b209cb5d9a24e8390f5d1926d3f265b0cb87d4a32aa2975ec11af"
+        "sha256": "59ee3125b6499f64e509949c14712de6eeda530b04add9d97b67ac20a06de434"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1363,7 +1365,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "fbab620d8886d1e09180fd536d321e1299d47470f509efe8a107bbed392313c9"
+        "sha256": "7c603bfa6ca778698ab304c56185d3295fbaf1c7deadf8df7d6355cbbbf51c7a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2879,15 +2881,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "62bedd4a47ec2d3624f0a6a3e711f35f3767deaa7ed923090d0264d583009760"
+        "sha256": "d0fe49d32bf4bc76a15b3355289a7dc66ff611cc87398d9c60e87737ec4e9e4e"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "797e861c44d116c5bf105c77dabdd01c849b5e9e98edf7413fd15d229950d6a8"
+        "sha256": "6ed53667e82e201e3eeef472511633d02ee0b20e18a00d6ddbaade1d344cd72c"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "59bd6b51f4cc5b4b03fe2dbb61f84b3e6ec9bfc8b53107aa12205b5c1eff013d"
+        "sha256": "b0d4937375e7b476d79dcbc4b27bc282d159d3ee636598f43a711bdc76a00945"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3427,7 +3429,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "f6443f2ec11a8bb3cca8ed0449940640a82570c56dafd8db8ab6f3d16f0fbfb4"
+        "sha256": "06f8d64a077398cf1e2355ddc3a54da85f606d87c6ce113a1e156c4afbb71130"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3559,7 +3561,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "a507b9e3618aa0d98bbf92762675cde5612104ab2960c002722d53e35fdaea32"
+        "sha256": "b832e24af05d338195327dbe9eae123307ef12492eb7c6260be3ae70333b4840"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4351,7 +4353,7 @@
       },
       {
         "path": "src/derived/atlas/deriveAtlasMatrices.mjs",
-        "sha256": "93eb2d8d342245ee1a6d8fc6ec0e3500da39aea537894b44885fa48181e9cdbf"
+        "sha256": "e3ab9c3a5c99daee243d1355e791cf9fbd47986abe87c818ed52269d0060e1cd"
       },
       {
         "path": "test/unit/atlas-matrices-source-scope.test.js",
@@ -4367,11 +4369,11 @@
       },
       {
         "path": "src/derived/atlas/deriveAtlasAuthoredAssociations.mjs",
-        "sha256": "d5d7eb210960319c1f042fd65b89cc1990f23d972d9ee1c49bc1239013f31500"
+        "sha256": "0bb00e205505663d0b4986a97fdbe382ca45809ba05d158e50c6fb56f1b61954"
       },
       {
         "path": "test/unit/atlas-authored-associations.test.js",
-        "sha256": "2a9173590a5fceeadbb8a8aba079160f33a3e4f31baabf709ad18fae5ba4c8e3"
+        "sha256": "df24b0877475e02c233e82924c6ff4038c6597774b4c508a38c261f4e60c427d"
       },
       {
         "path": "docs/tasks/2026-11-06--atlas-authored-associations.md",
@@ -4388,6 +4390,14 @@
       {
         "path": "test/contracts/yalken-atlas-v5-final-audit-p0-04-design-os-binding.contract.test.js",
         "sha256": "2c35c6f895d5b4217831d9d383f35dd3c9013d9436e2337486350f29c347c6b3"
+      },
+      {
+        "path": "test/unit/atlas-authored-association-applicability.test.js",
+        "sha256": "08894495d4183a5afd5f04cc7d5050dbb95bf71333a55fe28e8c8663283e9482"
+      },
+      {
+        "path": "docs/tasks/2026-11-07--atlas-association-applicability.md",
+        "sha256": "543281e76c0a4f966f4ad877597ea4984c25b483e717f66ba258abb85e8637cd"
       }
     ],
     "followupRepair": {
