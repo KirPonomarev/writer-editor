@@ -1,3 +1,16 @@
+# CURRENT — авторские связи Atlas по области
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_ASSOCIATION_APPLICABILITY_MAC_20261107
+BINDING_BASE_SHA: 2d7f0c8e70a07f11c22a8d00a4fc551220b9c3b7
+STATUS: ADMITTED_TEST_FIRST
+
+PR2207 закрыт на этом merge-коммите. Квитанция 0f68e60ed337656bafbc0b275d6f4cf2a6156d52f4c83ecadbe2d62618e87922 связывает 20 из 20 проверок CI на кандидате и на merge, 18 локальных процессов на merge и новую фактическую сборку. Два обычных запуска одного профиля дали выход 0. Независимый ридер подтвердил две записи с историей 3 и 1, сохранность текста и точное выделение источника.
+
+Следующий результат P17 — применимые авторские связи для книги, сохранённой сцены и фрагмента в существующей Matrix. Проба 0f92ebd0ee16fdcd8cdc6befb210072e81fc9a5ef9e3206e6db704c946b4bc9e подтверждает исходный пробел. Декларация b7fffeee67cd295101116f23913dd9f9c8024cbff8125d5d81e121b242cdd775, preflight 50a5558670699efae82c1d8824039fb7ca1371a5d5cbc3c96b2e3e4cc74ec41b и admission 157e47d8e96362c29a3f7f3af224a7a5d1098332609965f521bec674cbeb354b пройдены до исходных правок. Полная квалификация Mac, 15 аналитических ячеек и четыре проекции открыты.
+
+--- Previous entries remain as historical status ---
+
 # CURRENT — authored Atlas native observed; required delivery companions next
 
 TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor, same40paths and original M14 delivery/rollback.

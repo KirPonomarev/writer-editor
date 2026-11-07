@@ -404,7 +404,7 @@ async function associationDomFixture(t, options = {}) {
   const names = ['normalizeAtlasRelationDossier','renderAtlasRelationDossierState','captureAtlasPublication','isIdeaMeaningSceneSourceCurrent','getIdeaMeaningSceneOrigin',
     'withEditorModeCommandPayload','dispatchUiCommand','normalizeAtlasAuthoredAssociations','getAtlasAssociationDraft','getAtlasAssociationState',
     'getAtlasAssociationSelectedRow','isAtlasAssociationPresentationCurrent','isAtlasAssociationSourceCurrent','syncAtlasAssociationForm',
-    'getAtlasAssociationAuthorForm','captureAtlasAssociationSource','runAtlasAssociationCommand','renderAtlasAuthoredAssociations','openAtlasAssociationSource','guardAtlasAssociationDraftUnload',
+    'getAtlasAssociationAuthorForm','captureAtlasAssociationSource','runAtlasAssociationCommand','renderAtlasAuthoredAssociations','openAtlasAssociationSource','navigateAtlasAssociationSource','guardAtlasAssociationDraftUnload',
     'getEffectiveDocumentId','getEffectiveDocumentKind','findTreeNodeById','openDocumentNode','markAsModified'];
   for (const name of names) {
     const marker = 'function ' + name + '(', start = source.indexOf(marker); if (start < 0) continue;
