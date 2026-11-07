@@ -1,3 +1,17 @@
+# CURRENT HANDOFF — Atlas Time author input
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_TEMPORAL_EXPLICIT_AUTHOR_INPUT_MAC_20261107
+BASE: 837ee63404b3f2eb2a9d3a68d25b509b2c71c5e1
+BRANCH: codex/atlas-temporal-author-input-20261107
+STATUS: FOCUSED_SOURCE_VERIFIED_CURRENT_BINDINGS_PENDING
+
+Exact pre-edit admission 853c38c0c12e73c12d5bffc8e41092289e7914afdfdd7abed81b2bae339b5b9d and actual task E0 6aabe59963765f838e462c31bc0a61e9d440936afb8f978369889a185d018cfb precede source work. The original and expanded RED runs are retained. The unchanged seven expanded cases passed through the production renderer and real Core reducer, and the maintained bundle rebuilt. The open scene owns the anchor draft, including the date's calendar ID. The project owns the calendar definition draft. Whole-day validation preserves explicit zero and refuses incomplete or stale submissions.
+
+NEXT: bind current technical verification inputs and run mandatory checks. Rebuild and verify the native candidate and cold reopen before push, then repeat on the actual merge. Preserve protected profiles, source, existing authored values, and earlier receipts. All 17 Full Mac qualification rows remain open. Office stays paused and Black Box follows Full Mac.
+
+--- Previous handoffs remain historical ---
+
 # CURRENT HANDOFF — Atlas Time scene navigation
 
 DOCUMENT_CLASS: FACTUAL_STATUS

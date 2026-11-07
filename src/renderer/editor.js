@@ -1129,12 +1129,9 @@ let atlasJourneyDraft = {
   correctionIntent: null,
 };
 let atlasTemporalAuthorDraft = {
-  calendarId: 'calendar-r3-c02-story',
-  calendarName: 'R3 C02 story calendar',
-  storyDate: '2026-07-31',
-  narrativeDay: '0',
-  note: 'R3 C02 visible temporal anchor',
-  anchorId: '',
+  projectId: '',
+  calendar: {},
+  scenes: new Map(),
 };
 let atlasContinuityAuthorDraft = {
   ledgerKind: 'promise',
@@ -16926,6 +16923,7 @@ function makeAtlasSurfaceCommandButton(label, commandId, payload, options = {}) 
   }
   button.addEventListener('click', () => {
     const nextPayload = typeof payload === 'function' ? payload() : payload;
+    if (nextPayload === null) return;
     void runAtlasSurfaceProductCommand(commandId, nextPayload, options);
   });
   return button;
@@ -17179,8 +17177,7 @@ function ensureAtlasSurfaceDraftId(draftRef, fieldName, prefix, assignDraft) {
   return id;
 }
 
-function exactAtlasCalendarRange(calendarId, dateValue) {
-  const value = (dateValue || '').trim() || '2026-07-31';
+function exactAtlasCalendarRange(calendarId, value) {
   return {
     rangeKind: 'exact',
     start: { pointKind: 'calendarDate', calendarId, value },
@@ -17188,49 +17185,62 @@ function exactAtlasCalendarRange(calendarId, dateValue) {
   };
 }
 
-function exactAtlasNarrativeRange(dayValue) {
-  const dayIndex = Number.parseInt(String(dayValue || '0'), 10);
-  const safeDay = Number.isSafeInteger(dayIndex) ? dayIndex : 0;
+function exactAtlasNarrativeRange(dayIndex) {
   return {
     rangeKind: 'exact',
-    start: { pointKind: 'ordinalDay', dayIndex: safeDay },
-    end: { pointKind: 'ordinalDay', dayIndex: safeDay },
+    start: { pointKind: 'ordinalDay', dayIndex },
+    end: { pointKind: 'ordinalDay', dayIndex },
   };
 }
 
-function getAtlasTemporalCalendarPayload() {
+function readAtlasTemporalWholeDay(value) {
+  if (!/^[+-]?\d+$/u.test(value)) return null;
+  const day = Number(value);
+  return Number.isSafeInteger(day) ? day : null;
+}
+
+function getAtlasTemporalCalendarPayload(draft, reject) {
+  const calendarId = (draft.calendarId || '').trim();
+  const name = (draft.calendarName || '').trim();
+  if (!calendarId || !name) return reject('Enter a calendar ID and name.');
+  const offset = (draft.offsetDays || '').trim();
+  const offsetDays = readAtlasTemporalWholeDay(offset);
+  if (offset && offsetDays === null) return reject('Enter a whole number of days for the conversion offset.');
   return {
-    calendarId: atlasTemporalAuthorDraft.calendarId || 'calendar-r3-c02-story',
-    name: atlasTemporalAuthorDraft.calendarName || 'R3 C02 story calendar',
+    calendarId,
+    name,
     calendarKind: 'fictional',
-    calendarSystem: 'r3-c02-local-story',
-    dayZeroLabel: 'R3 C02 day zero',
-    conversionRules: [
-      {
-        ruleId: 'rule-r3-c02-story-to-narrative',
-        ruleKind: 'dayOffset',
-        sourceScale: 'story-day',
-        targetScale: 'narrative-day',
-        offsetDays: 0,
-        precision: 'approximate',
-      },
-    ],
+    calendarSystem: 'local-story',
+    conversionRules: [{
+      ruleId: 'story-to-narrative',
+      sourceScale: 'story-day',
+      targetScale: 'narrative-day',
+      ...(offsetDays === null
+        ? { ruleKind: 'unsupported', precision: 'unsupported', reason: 'No conversion was supplied' }
+        : { ruleKind: 'dayOffset', precision: 'approximate', offsetDays }),
+    }],
   };
 }
 
-function getAtlasTemporalAnchorPayload() {
-  const calendarId = atlasTemporalAuthorDraft.calendarId || 'calendar-r3-c02-story';
+function getAtlasTemporalAnchorPayload(sceneId, draft, reject) {
+  const storyDate = (draft.storyDate || '').trim();
+  const narrativeDay = (draft.narrativeDay || '').trim();
+  const calendarId = (draft.storyCalendarId || '').trim();
+  if (!storyDate && !narrativeDay) return reject('Enter a story date or a narrative day.');
+  if (storyDate && !calendarId) return reject('Enter the calendar ID for the story date.');
+  const dayIndex = readAtlasTemporalWholeDay(narrativeDay);
+  if (narrativeDay && dayIndex === null) return reject('Enter a whole number for the narrative day.');
+  draft.anchorId ||= makeStableUiId('atlas-temporal-anchor');
   return {
-    sceneId: atlasCurrentSceneState.sceneId || currentDocumentId || '',
-    anchorId: ensureAtlasSurfaceDraftId(
-      atlasTemporalAuthorDraft,
-      'anchorId',
-      'atlas-temporal-anchor',
-      (next) => { atlasTemporalAuthorDraft = next; },
-    ),
-    storyRange: exactAtlasCalendarRange(calendarId, atlasTemporalAuthorDraft.storyDate),
-    narrativeRange: exactAtlasNarrativeRange(atlasTemporalAuthorDraft.narrativeDay),
-    note: atlasTemporalAuthorDraft.note || 'R3 C02 visible temporal anchor',
+    sceneId,
+    anchorId: draft.anchorId,
+    storyRange: storyDate
+      ? exactAtlasCalendarRange(calendarId, storyDate)
+      : { rangeKind: 'unknown', precisionNote: 'Story date not supplied' },
+    narrativeRange: dayIndex === null
+      ? { rangeKind: 'unknown', precisionNote: 'Narrative day not supplied' }
+      : exactAtlasNarrativeRange(dayIndex),
+    note: (draft.note || '').trim(),
   };
 }
 
@@ -17284,13 +17294,6 @@ function formatAtlasJourneyMentionOption(mention) {
   return `${entity?.name || mention.entityId} · ${mention.startOffset}–${mention.endOffset} · ${mention.context?.before || ''} [${quote}] ${mention.context?.after || ''}`;
 }
 
-function setAtlasTemporalDraftField(fieldName, value) {
-  atlasTemporalAuthorDraft = {
-    ...atlasTemporalAuthorDraft,
-    [fieldName]: value,
-  };
-}
-
 function setAtlasContinuityDraftField(fieldName, value) {
   atlasContinuityAuthorDraft = {
     ...atlasContinuityAuthorDraft,
@@ -17307,55 +17310,70 @@ function setAtlasReportsDraftField(fieldName, value) {
 
 function appendAtlasTemporalAuthorControls(parent) {
   const section = appendAtlasOverviewSection(parent, 'Author controls', { open: true });
+  const projectId = currentProjectId;
+  const documentKind = currentDocumentKind;
+  const sceneId = documentKind === 'scene' || documentKind === 'chapter-file' ? currentDocumentId : null;
+  if (atlasTemporalAuthorDraft.projectId !== projectId) {
+    atlasTemporalAuthorDraft = { projectId, calendar: {}, scenes: new Map() };
+  }
+  const { calendar, scenes } = atlasTemporalAuthorDraft;
+  const scene = scenes.get(sceneId) || {};
+  const isCurrent = captureAtlasPublication(
+    () => currentRightTab === 'atlas' && isAtlasSurfaceActive('temporal') && atlasTemporalLayoutExplicitOpen
+      && documentKind === currentDocumentKind && parent === atlasTemporalLayoutHost && parent.contains(section),
+    false,
+    false,
+  );
+  const reject = (message) => {
+    updateStatusText(message, { visible: true });
+    return null;
+  };
   const fields = document.createElement('div');
   fields.className = 'right-rail-atlas-journey-fields';
-  appendAtlasSurfaceField(fields, {
-    datasetName: 'atlasTemporalField',
-    fieldName: 'calendarId',
-    label: 'Calendar id',
-    placeholder: 'calendar-story',
-  }, atlasTemporalAuthorDraft, setAtlasTemporalDraftField);
-  appendAtlasSurfaceField(fields, {
-    datasetName: 'atlasTemporalField',
-    fieldName: 'calendarName',
-    label: 'Calendar name',
-    placeholder: 'Story calendar',
-  }, atlasTemporalAuthorDraft, setAtlasTemporalDraftField);
-  appendAtlasSurfaceField(fields, {
-    datasetName: 'atlasTemporalField',
-    fieldName: 'storyDate',
-    label: 'Story date',
-    placeholder: '2026-07-31',
-  }, atlasTemporalAuthorDraft, setAtlasTemporalDraftField);
-  appendAtlasSurfaceField(fields, {
-    datasetName: 'atlasTemporalField',
-    fieldName: 'narrativeDay',
-    label: 'Narrative day',
-    placeholder: '0',
-  }, atlasTemporalAuthorDraft, setAtlasTemporalDraftField);
-  appendAtlasSurfaceField(fields, {
-    datasetName: 'atlasTemporalField',
-    fieldName: 'note',
-    label: 'Note',
-    placeholder: 'Anchor note',
-  }, atlasTemporalAuthorDraft, setAtlasTemporalDraftField);
+  for (const [fieldName, label, placeholder] of [
+    ['calendarId', 'Calendar ID to define', 'calendar-story'],
+    ['calendarName', 'Calendar name', 'Story calendar'],
+    ['offsetDays', 'Approximate conversion offset (days, optional)', 'No conversion when blank'],
+  ]) {
+    const input = appendAtlasSurfaceField(fields, { datasetName: 'atlasTemporalField', fieldName, label, placeholder },
+      calendar, (key, value) => {
+        if (projectId && isCurrent()) calendar[key] = value;
+      });
+    input.disabled = !projectId;
+  }
+  for (const [fieldName, label, placeholder] of [
+    ['storyCalendarId', 'Calendar ID for story date', 'An existing calendar ID'],
+    ['storyDate', 'Story date (optional)', 'Unknown when blank'],
+    ['narrativeDay', 'Narrative day (optional)', 'Unknown when blank'],
+    ['note', 'Note (optional)', 'Anchor note'],
+  ]) {
+    const input = appendAtlasSurfaceField(fields, { datasetName: 'atlasTemporalField', fieldName, label, placeholder },
+      scene, (key, value) => {
+        if (!projectId || !sceneId || !isCurrent()) return;
+        scene[key] = value;
+        scenes.set(sceneId, scene);
+      });
+    input.disabled = !projectId || !sceneId;
+  }
   section.appendChild(fields);
 
   const actions = document.createElement('div');
   actions.className = 'right-rail-atlas-action-bar';
-  actions.appendChild(makeAtlasSurfaceCommandButton('Define calendar', 'atlas.calendar.define', getAtlasTemporalCalendarPayload, {
+  const calendarPayload = () => projectId && isCurrent() ? getAtlasTemporalCalendarPayload(calendar, reject) : null;
+  const anchorPayload = () => projectId && sceneId && isCurrent() ? getAtlasTemporalAnchorPayload(sceneId, scene, reject) : null;
+  actions.appendChild(makeAtlasSurfaceCommandButton('Define calendar', 'atlas.calendar.define', calendarPayload, {
     actionDatasetName: 'atlasTemporalAction',
     actionId: 'define-calendar',
     statusLabel: 'Atlas calendar',
-    disabled: !currentProjectId,
-    reason: currentProjectId ? '' : 'Project is not open',
+    disabled: !projectId,
+    reason: projectId ? '' : 'Project is not open',
   }));
-  actions.appendChild(makeAtlasSurfaceCommandButton('Set scene time', 'atlas.sceneTemporalAnchor.set', getAtlasTemporalAnchorPayload, {
+  actions.appendChild(makeAtlasSurfaceCommandButton('Set scene time', 'atlas.sceneTemporalAnchor.set', anchorPayload, {
     actionDatasetName: 'atlasTemporalAction',
     actionId: 'set-scene-time',
     statusLabel: 'Atlas temporal anchor',
-    disabled: !currentProjectId || !(atlasCurrentSceneState.sceneId || currentDocumentId),
-    reason: (atlasCurrentSceneState.sceneId || currentDocumentId) ? '' : 'Open a scene first',
+    disabled: !projectId || !sceneId,
+    reason: sceneId ? '' : 'Open a scene first',
   }));
   section.appendChild(actions);
 }

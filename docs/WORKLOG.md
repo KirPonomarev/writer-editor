@@ -1,3 +1,7 @@
+# 2026-11-07 — Explicit Atlas Time input
+
+PR 2210 closed at 837ee634. Exact source and Core reproduced unintended writes from cleared fields and a previous scene ID. The existing Time form now uses the open scene and explicit inputs, including its own date calendar and a separately labeled optional conversion offset. Original RED 1d9569b8 and expanded RED f7da64b6 remain. The same seven expanded cases passed at 8d375775, with no skipped case, and the maintained bundle built at 842dcbd9. Current verification bindings, actual native acceptance and delivery are pending.
+
 # 2026-11-07 — Atlas Time scene navigation
 
 PR 2209 closed at 6215df37. On this base Atlas Time chart activation only reported status; the list row did not reach it. The same six focused cases go from four causal failures to all six passing with one guarded document-open intent. The maintained renderer builds. Original existing callers ran 1473 cases, one failed because the DATA policy still pins the prior bundle. Retain the failure, all earlier bindings, and the existing file limit. Current verification companions, native and full delivery remain pending.
