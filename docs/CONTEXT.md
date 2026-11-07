@@ -1,3 +1,16 @@
+# CURRENT — Авторское время в Atlas
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_TEMPORAL_EXPLICIT_AUTHOR_INPUT_MAC_20261107
+BINDING_BASE_SHA: 837ee63404b3f2eb2a9d3a68d25b509b2c71c5e1
+STATUS: FOCUSED_SOURCE_VERIFIED_CURRENT_BINDINGS_PENDING
+
+PR 2210 закрыт на этой базе. Квитанция b75c9332d86d7710019490819b989858ae6e7e6d9c7fa8c22fe6d46a681423f9 связывает 20 заданий CI на каждом SHA, отдельную сборку merge и два обычных запуска. Сохранённая сцена открывается из графика и списка Time. Полный Mac остаётся NOT_READY, все 17 строк квалификации открыты.
+
+Исходная форма отправляла демонстрационные значения при пустом вводе и могла адресовать предыдущую сцену. Исправление связывает форму с открытым документом. Автор отдельно задаёт календарь даты. Пустой сдвиг означает недоступное преобразование, пустая сторона якоря остаётся неизвестной. Семь тех же проверок после исходных отказов проходят через реальный Core, рендерер собран. Квитанции f7da64b66d6087e47a7c02f089c969cc6d3ac73989df4b277ea7dc7240a1b8fb и 8d3757755f0f7c7e1bdbba4a343972ee20358328d15bca33e46c8e83351e3052. Проверка rebuilt Mac и поставка впереди.
+
+--- Previous entries remain as historical status ---
+
 # CURRENT — Atlas Time: открыть сохранённую сцену
 
 DOCUMENT_CLASS: FACTUAL_STATUS
