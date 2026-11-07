@@ -1,4 +1,4 @@
-# Atlas Time — точность сохранённых диапазонов
+# Atlas Time — сохранность авторских диапазонов
 
 TASK_ID: YALKEN_ATLAS_TEMPORAL_RANGE_DISPLAY_MAC_20261107
 TYPE: CORE
@@ -15,39 +15,43 @@ OWNER_AUTHORITY: V6 P17 and DNA5, sole executor, normal delivery and isolated na
 
 ## MICRO_GOAL
 
-Make the existing Atlas Time list, slider text and accessible marker name distinguish the precision, known side of an open bound and calendar identity in an authored range. On the exact base, the reducer preserves each distinction and the temporal layout collapses them. The original in-memory probe is pinned by c3dab5da12353f04f86f4f94d18b0f5558ec612baa2a1409089e4db2a5b9e984.
+Preserve the author's saved range when only the other dimension is edited and show it accurately in Atlas Time. The exact Main and Kernel probe wrote an unknown story range in place of the saved open bound, erased the old note and changed the anchor ID. Synthetic physical RED is pinned by 24ec7938c6ffca2a12b132429e300d179a4867d669aa1ee3b0c85ae7de4c2e95. Local checkpoint 30aa94de94ecb87292153ebc9160c3b30c55218f preserves the first read-label proof.
 
 ## ARTIFACT
 
-An existing Time projection with honest labels for exact, approximate, open and unknown ranges. Day zero remains explicit. Equal date strings in different authored calendars carry their calendar IDs. List, slider text and the accessible marker use the same label. The existing slot, renderer and design contract apply directly. Local reference is native-fluency-typographic-sharpness.md.
+The existing scene-time command preserves untouched fields and retains a stored anchor's identity. The Time projection shows honest labels for exact, approximate, open and unknown ranges. Day zero remains explicit. Equal date strings in different authored calendars carry their calendar IDs. List, slider text and the accessible marker use the same label. The existing slot, renderer and design contract apply directly. Local reference is native-fluency-typographic-sharpness.md.
 
 ## ALLOWLIST
 
 - docs/tasks/2026-11-07--atlas-temporal-range-display.md
 - src/derived/atlas/deriveAtlasTemporalLayout.mjs
+- src/main.js
+- src/renderer/editor.bundle.js
+- src/renderer/editor.js
 - test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js
+- test/unit/r24-wp307-writer-local-profile-integration.test.js
 
 ## DENYLIST
 
-Every other path under this source phase. Protect Core, Main, command and IPC contracts, renderer, dependencies, workflows, manifests, history and all profiles. Keep scope on range read labels. Author input, timeline coordinates, release qualification and current verification metadata need their own exact applicable scope decisions. Office stays paused and Black Box follows full Mac.
+Every other path under this source phase. Protect Core, command and IPC contracts, other Main and renderer behavior, dependencies, workflows, persisted schemas, history and all profiles. Keep scope on preserving a saved range during a partial edit and showing that same range. New author range controls, coordinates, qualification and current delivery metadata stay outside this source phase. Office stays paused and Black Box follows full Mac.
 
 ## CONTRACT / SHAPES
 
-FEATURE_INTEGRATION_MANIFEST_V1: Core retains the authored endpoints, precision and calendar. The existing guarded Atlas temporal query publishes a derived layout packet. Its string labels are consumed by the existing interface and accessibility text. There is no product write. Preserve project and scene identity, explicit-open and capability policy, query immutability, and bounded list parity. Read-only formatters do not parse or convert calendars. The full source phase preflight and exact base evidence are held under f6bd8faad28d77992ef65521950354af69b604a951b672f8e5e2d95373794d25.
+FEATURE_INTEGRATION_MANIFEST_V1: Core retains the authored endpoints, precision and calendar. The existing guarded Atlas temporal query publishes a derived layout packet. Its string labels are consumed by the existing interface and accessibility text. The existing author form records omission hints only for untouched fields. Existing Main canonical preparation validates a closed hint list, fills those fields from its current guarded Core binding and removes the hint before Core. Existing anchor ID and untouched note remain canonical. Explicit clearing and fresh unknown keep their established semantics. The only product writer remains the existing Command Kernel and Stage10 route. Preserve project and scene identity, manifest revalidation, query immutability and bounded list parity. The full source phase preflight and exact base evidence are held under f6bd8faad28d77992ef65521950354af69b604a951b672f8e5e2d95373794d25.
 
 ## IMPLEMENTATION_STEPS
 
-1. Keep existing contract cases verbatim. Append cases through actual Core and temporal query. Run the unchanged base and record original RED.
-2. Format the existing read projection only. Run the same cases, affected neighbors and source guardrails. Preserve the recorded base behavior outside the labels.
+1. Keep the original read-label checkpoint and its focused cases verbatim. Append real Main and Kernel cases for untouched ranges, note and anchor identity. Run them before the amendment and retain original RED.
+2. Resolve omitted fields within existing Main canonical preparation. Run the same cases, earlier focused and affected cases, renderer build, and source guardrails.
 3. Bind current verification inputs through exact preflight. Complete mandatory software, separately rebuilt actual Mac first and cold before product push, ordinary PR and CI, and separately rebuilt merged verification. Native launch requires safe process binding to an isolated profile.
 
 ## CHECKS
 
-CHECK_01_PRE_WRITE: clean exact base and worktree identity, volume and writer verification, bootstrap, architecture preflight and declared three-path phase. CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
+CHECK_01_PRE_WRITE: clean exact base and worktree identity, volume and writer verification, bootstrap, architecture preflight and declared current source phase. CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ.
 
 CHECK_02_POST_TASK: run E0 before test or runtime edits.
 
-CHECK_03_POST_SOURCE: same inputs for RED and GREEN; prove both open directions, one-sided and bounded approximation, unknown, exact calendar identity and explicit day zero. Verify unchanged Core and source bytes, layout list parity, accessible marker and existing route behavior.
+CHECK_03_POST_SOURCE: same inputs for RED and GREEN; prove both open directions, one-sided and bounded approximation, unknown, exact calendar identity and explicit day zero. Verify unchanged Core and manuscript, layout list parity and accessible marker. On the production command route prove untouched data and ID survive, explicit clear still works, and a malformed hint or stale anchor hash refuses without writes.
 
 CHECK_04_POST_NATIVE: ordinary candidate and exact merged macOS build, isolated first/cold, visible list and accessible marker proof, independent physical unchanged manuscript, anchors and history.
 
