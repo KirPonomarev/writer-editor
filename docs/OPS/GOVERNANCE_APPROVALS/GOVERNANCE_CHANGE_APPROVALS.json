@@ -32069,6 +32069,62 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_ASSOCIATION_APPLICABILITY_MAC_20261107",
       "approvedAtUtc": "2026-11-07T05:40:48.973816+00:00",
       "rationale": "Standing delegated technical witness for current Full Mac scope digests and their DATA and certification mirrors. The 17 qualification rows retain their unknown status."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "ef50a9010394441d80a2c774f517f82243ce666f258f0f6e8817b5fabd910570",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_WORKSPACE_PARITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T08:38:23.889517+00:00",
+      "rationale": "Standing owner delegation for exact current technical verification of the existing Atlas workspace delivery. Prior approval records, release authority and all 17 qualification states remain unchanged."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "4b642136ca5539ae65272ceae641afe8ff35da1699d736d8d3404ed353882e00",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_WORKSPACE_PARITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T08:38:23.889517+00:00",
+      "rationale": "Standing owner delegation for exact current technical verification of the existing Atlas workspace delivery. Prior approval records, release authority and all 17 qualification states remain unchanged."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "8f193dae9943a8bccaab238e628c00b281f7dc6f805684e6038137b1b93e392c",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_WORKSPACE_PARITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T08:38:23.889517+00:00",
+      "rationale": "Standing owner delegation for exact current technical verification of the existing Atlas workspace delivery. Prior approval records, release authority and all 17 qualification states remain unchanged."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "556e4d3fe6ece5b6341551ddd45aafc773defe2542341d596c3b2b155cd51823",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_WORKSPACE_PARITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T08:38:23.889517+00:00",
+      "rationale": "Standing owner delegation for exact current technical verification of the existing Atlas workspace delivery. Prior approval records, release authority and all 17 qualification states remain unchanged."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "835b6386ed8cfa11e6459d08f9e7b477a08d4c177b4f4554c7b4a7d9ed1c2c8f",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_WORKSPACE_PARITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T08:38:23.889517+00:00",
+      "rationale": "Standing owner delegation for exact current technical verification of the existing Atlas workspace delivery. Prior approval records, release authority and all 17 qualification states remain unchanged."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "f64b8c09833def530299fee9ae21c21a70ba74a3109d9b56f141de3286fb41ba",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_WORKSPACE_PARITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T08:38:23.889517+00:00",
+      "rationale": "Standing owner delegation for exact current technical verification of the existing Atlas workspace delivery. Prior approval records, release authority and all 17 qualification states remain unchanged."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "5388ba21c02c9676eb2a56375634f5dd5fce5ba010e0cb91ada1fb6230e9dbcb",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_WORKSPACE_PARITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T08:38:23.889517+00:00",
+      "rationale": "Standing owner delegation for exact current technical verification of the existing Atlas workspace delivery. Prior approval records, release authority and all 17 qualification states remain unchanged."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "c73609711204b2916a8d28aca04e4002ff8ea004002099f9428c16c256b2c1f7",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_WORKSPACE_PARITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T08:38:23.889517+00:00",
+      "rationale": "Standing owner delegation for exact current technical verification of the existing Atlas workspace delivery. Prior approval records, release authority and all 17 qualification states remain unchanged."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
