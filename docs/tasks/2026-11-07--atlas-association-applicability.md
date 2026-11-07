@@ -25,6 +25,8 @@ O. Scope-specific author rows, explicit state/count and exact source action in t
 
 One existing-seam read-only product and interface contour. One changed user outcome and one ordinary rollback. The declaration, source readback and branch authority are pinned by 157e47d8e96362c29a3f7f3af224a7a5d1098332609965f521bec674cbeb354b. Current Matrix surface, existing navigation command, local CSS and tokens remain the interface baseline. New materials and evidence go to the dated T777 folders. Owned APFS scratch is declared in the worktree identity. New actual native roots require separate admission.
 
+The mandatory affected chain on C1 isolated two stale source digests in the current Full Mac V2 scope check. The read-only differential e544a68caecbe3524c416fd4d95e52f1fb2044528f1b165bb9c2cfe432a398ad identified the exact Atlas applicability projector and Main bytes. This task mirrors their current digests in the existing V2 cut and verifier. The 17 qualification rows, readiness predicates, authorities and historical V1 remain protected.
+
 ## ALLOWLIST
 
 - docs/ARCH_DIFF_LOG.md
@@ -39,7 +41,9 @@ One existing-seam read-only product and interface contour. One changed user outc
 - docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json
 - docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json
 - docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json
 - scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- scripts/ops/release-candidate.mjs
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/sector-m-scope-map.json
 - src/derived/atlas/deriveAtlasAuthoredAssociations.mjs

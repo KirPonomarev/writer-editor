@@ -168857,7 +168857,7 @@ const R24_INTEROP_ATLAS_AUTHORED_ASSOCIATION_APPLICABILITY_20261107_DELTA = Obje
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "94192e06a751a67bc56ee03d9d8cc739451fb7b3dae12c3fd574ba25b1d1f376"
+      "sha256": "2dd8c9427b960979e4dbbecfb0487f3878e1e9c3ed36c1dced6d143f0b6077f8"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -168865,11 +168865,11 @@ const R24_INTEROP_ATLAS_AUTHORED_ASSOCIATION_APPLICABILITY_20261107_DELTA = Obje
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
-      "sha256": "8495bbf16f4ecabeb7b1d510c38c9a2e2b77371d6ba8675d7cef37e72651ceac"
+      "sha256": "6338117c6c3a11fae7545d773bdf708dee5fa1c0b1dcbabcb547ff5078dd3bc7"
     },
     {
       "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-      "sha256": "2ab87428245616dcf827a9a4f87622ea74f1f529bff4af390a42bd06b3de19dc"
+      "sha256": "c2e6f9288403159fa1212dabe48325919f682dc31ca9536b6012485e514c0f7a"
     },
     {
       "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
@@ -170785,13 +170785,13 @@ const R24_INTEROP_ATLAS_AUTHORED_ASSOCIATION_APPLICABILITY_20261107_DELTA = Obje
     },
     {
       "path": "docs/tasks/2026-11-07--atlas-association-applicability.md",
-      "sha256": "543281e76c0a4f966f4ad877597ea4984c25b483e717f66ba258abb85e8637cd"
+      "sha256": "1ba39fcdc8c1583a4cc0f1ed944b47b2dd4ed1be9395fce64b8dbe9936956e0f"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "e080b90f030f11aecfbf74110741ac4e850b3f5e8955983ddb38f24ce015f2c3"
+      "sha256": "bb2a39623cbb6d1af0aaaeb2144f246b601a53ef7dc17cb52bedaa00e88bb376"
     }
   ]
 });

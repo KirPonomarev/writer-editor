@@ -32034,6 +32034,41 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_ASSOCIATION_APPLICABILITY_MAC_20261107",
       "approvedAtUtc": "2026-11-07T04:45:58.068809+00:00",
       "rationale": "Standing delegated technical SHA witness for the saved Atlas applicability projection. This exact current input belongs to docs/tasks/2026-11-07--atlas-association-applicability.md. Product or release acceptance is separate."
+    },
+    {
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "sha256": "c2e6f9288403159fa1212dabe48325919f682dc31ca9536b6012485e514c0f7a",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_ASSOCIATION_APPLICABILITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T05:40:48.973816+00:00",
+      "rationale": "Standing delegated technical witness for current Full Mac scope digests and their DATA and certification mirrors. The 17 qualification rows retain their unknown status."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "bb2a39623cbb6d1af0aaaeb2144f246b601a53ef7dc17cb52bedaa00e88bb376",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_ASSOCIATION_APPLICABILITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T05:40:48.973816+00:00",
+      "rationale": "Standing delegated technical witness for current Full Mac scope digests and their DATA and certification mirrors. The 17 qualification rows retain their unknown status."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "e80a527e740d6b34841b5b922ebfbd3706364f3703336b98f0303e05735fe8d8",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_ASSOCIATION_APPLICABILITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T05:40:48.973816+00:00",
+      "rationale": "Standing delegated technical witness for current Full Mac scope digests and their DATA and certification mirrors. The 17 qualification rows retain their unknown status."
+    },
+    {
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "sha256": "6338117c6c3a11fae7545d773bdf708dee5fa1c0b1dcbabcb547ff5078dd3bc7",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_ASSOCIATION_APPLICABILITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T05:40:48.973816+00:00",
+      "rationale": "Standing delegated technical witness for current Full Mac scope digests and their DATA and certification mirrors. The 17 qualification rows retain their unknown status."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "2dd8c9427b960979e4dbbecfb0487f3878e1e9c3ed36c1dced6d143f0b6077f8",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_ASSOCIATION_APPLICABILITY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T05:40:48.973816+00:00",
+      "rationale": "Standing delegated technical witness for current Full Mac scope digests and their DATA and certification mirrors. The 17 qualification rows retain their unknown status."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
