@@ -1,3 +1,16 @@
+# CURRENT — Atlas Time: открыть сохранённую сцену
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_TEMPORAL_SCENE_SOURCE_MAC_20261107
+BINDING_BASE_SHA: 6215df3799b3ea2334fffc62b059c875ed919096
+STATUS: FOCUSED_SOURCE_VERIFIED_CURRENT_BINDINGS_PENDING
+
+PR 2209 закрыт на этой базе, квитанция a81a1480809a691f2f7bbfd5cd6ddf15c8682210f18760e7f5220b9e92b79ffd. Все 20 заданий CI на кандидате и на merge прошли; на merge 21 локальная проверка и 3711 тестовых случаев, отдельная сборка и два запуска одного изолированного профиля. Нативные Graph/List/Table/Matrix, мышь, клавиатура и точный источник подтверждены. Полный Mac остаётся NOT_READY, 17 строк приёмки открыты.
+
+На текущем исходнике действие события Time лишь выводит статус; у списка нет подключения к этому действию. Следующий узкий результат: открыть сохранённую сцену через существующую команду с защитой актуальности, доступности и несохранённого текста. Preflight и admission 04154542ba0f7fe38a8ed9fee6f4090c431681f644c32dd4c688b5b44ecd6f7d до правок. Шесть точных сценариев прошли; новый рендерер собран. Из 1473 существующих проверок единственный отказ WP307 — предыдущий хеш bundle в DATA policy. Нативная приёмка и поставка ещё впереди.
+
+--- Previous entries remain as historical status ---
+
 # CURRENT — Atlas: авторские связи в общих представлениях
 
 DOCUMENT_CLASS: FACTUAL_STATUS

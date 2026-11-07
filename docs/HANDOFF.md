@@ -1,3 +1,17 @@
+# CURRENT HANDOFF — Atlas Time scene navigation
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_TEMPORAL_SCENE_SOURCE_MAC_20261107
+BASE: 6215df3799b3ea2334fffc62b059c875ed919096
+BRANCH: codex/atlas-temporal-scene-source-20261107
+STATUS: FOCUSED_SOURCE_VERIFIED_CURRENT_BINDINGS_PENDING
+
+Previous PR 2209 is closed: a81a1480809a691f2f7bbfd5cd6ddf15c8682210f18760e7f5220b9e92b79ffd, exact merged native 4e42b6da7d1962dd9e7ce40464d2c7e7e50533db9d77e801ce190a09bd22b07e. The current handler probe shows no document-open call for chart activation, and the existing list is outside that handler. Use the same existing timeline and canonical document-open seam; leave authoring data, derived semantics, Main and existing layouts protected.
+
+NEXT: maintain exact current DATA/inventory/certification companions without replacing historical blocks, then recheck original callers and run the rebuilt native and full delivery. Actual E0, focused 6, and renderer build passed. The one refusal among 1473 old cases is the literal current bundle digest in DATA policy. Admission 04154542ba0f7fe38a8ed9fee6f4090c431681f644c32dd4c688b5b44ecd6f7d; no new profile, build or acceptance yet. All 17 full Mac rows remain open; Office paused and Black Box after full Mac.
+
+--- Previous handoffs remain historical ---
+
 # Current handoff — Atlas author relationships across workspace views
 
 DOCUMENT_CLASS: FACTUAL_STATUS

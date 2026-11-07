@@ -964,7 +964,9 @@
     "docs/tasks/2026-11-07--atlas-author-workspace-parity.md",
     "src/renderer/atlasSurfacePresentationModel.mjs",
     "src/renderer/atlasDossierLayoutPresentationModel.mjs",
-    "test/unit/atlas-authored-association-workspace.test.js"
+    "test/unit/atlas-authored-association-workspace.test.js",
+    "docs/tasks/2026-11-07--atlas-temporal-scene-source.md",
+    "test/unit/atlas-temporal-scene-source.test.js"
   ],
   "protectedFiles": [
     {
@@ -1205,7 +1207,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "ad126be496e0946bae587bdce0b39a7544e938127582195bfcac4354e4514304"
+        "sha256": "719509d1216b388c93c06ee295f04c2cdbe3f55402772476e444b13449e311fd"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1369,7 +1371,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "76486d355559cd066ff8a6546591d4b094ec87a741c653f190c692d683d674aa"
+        "sha256": "d42b4e29a97f3a3e3a38ba1bcce0f7d4122ed7b90ce90b554b032b14cb893ee6"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2885,15 +2887,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "5ac2ff1dbc6ad775bd89372f4172caa0fc3ab3477881acfabeca783dd7525b1f"
+        "sha256": "d89e7a0e7385b328197e3c32c62117e0cbafcf7fdf9f8fb1858684375c02371e"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "3e88c6e4c64a521e4b057987e367cfe6dd6b7265bce2324dde2404e7f9ab7c7a"
+        "sha256": "95ffeba044a5c19e2ead316800a70c4e71a748a6c8afc1bc55ed31c41220a2fe"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "f9f031d92257b510e2c56a1515a1ef62018469590dec065075b440f5e7272182"
+        "sha256": "094a65a9537a5878ef9e37efd3da48291fc07f9374dc4cf6ecf44dfcddfd4135"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3433,7 +3435,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "4b642136ca5539ae65272ceae641afe8ff35da1699d736d8d3404ed353882e00"
+        "sha256": "1399dfe98f3ee6f83ad90ecab768de981eadf347bd2906a4c946a8c5b17aa691"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3565,7 +3567,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "c73609711204b2916a8d28aca04e4002ff8ea004002099f9428c16c256b2c1f7"
+        "sha256": "6a92ff0c816c5864c010cf91c2b94f57716bd14376ce2199e63ff6d51cdfbef5"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4418,6 +4420,14 @@
       {
         "path": "test/unit/atlas-authored-association-workspace.test.js",
         "sha256": "93cef2e371e303ebda8702db0fcfedf1fc4f02af1c4076d3392fad3353ead7b1"
+      },
+      {
+        "path": "docs/tasks/2026-11-07--atlas-temporal-scene-source.md",
+        "sha256": "f4e1d496f5125b23f7a660883ffa3a068c0fe1cd25622b35f1037752c316eceb"
+      },
+      {
+        "path": "test/unit/atlas-temporal-scene-source.test.js",
+        "sha256": "dd21829396eb5c13ca0067b3deaeb3255e6c04cd74ce1046d63367dcfc6df2a9"
       }
     ],
     "followupRepair": {

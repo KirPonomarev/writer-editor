@@ -32125,6 +32125,62 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_WORKSPACE_PARITY_MAC_20261107",
       "approvedAtUtc": "2026-11-07T08:38:23.889517+00:00",
       "rationale": "Standing owner delegation for exact current technical verification of the existing Atlas workspace delivery. Prior approval records, release authority and all 17 qualification states remain unchanged."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "50e7560889644fffe60531ee555d00e72ad17ca49e1efca0e9cbf78b319d7d12",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_SCENE_SOURCE_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T11:29:07.488347+00:00",
+      "rationale": "Standing owner delegation for exact technical verification of the Atlas Time scene navigation delivery. Preserve all prior witnesses and release qualification states."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "1399dfe98f3ee6f83ad90ecab768de981eadf347bd2906a4c946a8c5b17aa691",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_SCENE_SOURCE_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T11:29:07.488347+00:00",
+      "rationale": "Standing owner delegation for exact technical verification of the Atlas Time scene navigation delivery. Preserve all prior witnesses and release qualification states."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "c3cffb9fb91850d9bf408b0516454f232a85f595ae8d2adb4c8cea47a713bed8",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_SCENE_SOURCE_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T11:29:07.488347+00:00",
+      "rationale": "Standing owner delegation for exact technical verification of the Atlas Time scene navigation delivery. Preserve all prior witnesses and release qualification states."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "ce3344aad780d2396fb568467629704d166e8f29e70bd01df583fe2ab1615474",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_SCENE_SOURCE_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T11:29:07.488347+00:00",
+      "rationale": "Standing owner delegation for exact technical verification of the Atlas Time scene navigation delivery. Preserve all prior witnesses and release qualification states."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "d807ae249c0ea1492ba9df4834c6c3a393ec1307ba37c359fd45c949de9a1c2b",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_SCENE_SOURCE_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T11:29:07.488347+00:00",
+      "rationale": "Standing owner delegation for exact technical verification of the Atlas Time scene navigation delivery. Preserve all prior witnesses and release qualification states."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "6637aa2719c9d7ff8371910f5f21c7ddd15418367af8eea5d52495edd821f449",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_SCENE_SOURCE_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T11:29:07.488347+00:00",
+      "rationale": "Standing owner delegation for exact technical verification of the Atlas Time scene navigation delivery. Preserve all prior witnesses and release qualification states."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "b65036737b2b3fa128703e0bcf2fc7e2e65babe0f012ea2df59bc9b44a5fe700",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_SCENE_SOURCE_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T11:29:07.488347+00:00",
+      "rationale": "Standing owner delegation for exact technical verification of the Atlas Time scene navigation delivery. Preserve all prior witnesses and release qualification states."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "6a92ff0c816c5864c010cf91c2b94f57716bd14376ce2199e63ff6d51cdfbef5",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_SCENE_SOURCE_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T11:29:07.488347+00:00",
+      "rationale": "Standing owner delegation for exact technical verification of the Atlas Time scene navigation delivery. Preserve all prior witnesses and release qualification states."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
