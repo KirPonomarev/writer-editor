@@ -93,6 +93,12 @@ Exact scope41 declaration7f2da7eb, clean preflightc3540b54 and admission703cd4f3
 
 C8 full RTK 4419 passes e250e1d1 and Electron 35 passes 83053f17. The original default 4534-result run records three failures, 59 inherited skips and complete raw artifact 5788f23b. Scope42 preflight a92d5196 and admission 6373b069 bind one exact DONE allowlist entry for the existing packaged capability mirror and the old preload bridge test expectation for the additional owned association source field. The three whole affected files pass all 17 cases ce4ae4d2. Candidate gates and complete delivery remain required.
 
+### MAINTAINED ATLAS CI CONTRACT BINDING
+
+PR 2207 run 42319521134 reported 100 of 101 in the maintained Atlas event graph. The relation dossier contract expected the original three commands. Whole-file RED 1c691ff9 reproduced that exact difference. The next three Atlas entrypoints passed separately on C9 and their skipped CI steps remain recorded in the original run.
+
+Scope43 declaration b5c4dba1, preflight 306a0d8b and admission 0c841843 bind one explicit command expectation and one literal DONE membership. All four focused cases passed 6d557e78. The current inventory, DATA, certificate and governance companions bind the new test bytes. All four Atlas entrypoints are part of the next exact-head gate wave. Original M14 delivery base and existing PR remain the delivery chain.
+
 ### NATIVE SOURCE-AVAILABILITY FINDING
 
 C1 577d0475 actual own profile32 AUTHOR and same-profile COLD exited0; complete73/75file readbacks and source/history/navigation oracle1346d7db retain two records with3+1revisions and exact manuscript/Atlas bytes. The oracle exits2: scene edits leave a previously enabled Save appearance until its synchronous click guard refuses the stale source. This is the original unsuccessful C1 native acceptance; later observations never retag it. A frame labelled immediate disabled is inaccurate; its raw AX and the explicit diagnosis4a086a37 take precedence. Full original native logs/cache errors and every original failed method remain retained.

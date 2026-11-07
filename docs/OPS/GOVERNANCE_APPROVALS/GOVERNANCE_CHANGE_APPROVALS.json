@@ -31845,6 +31845,90 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
       "approvedAtUtc": "2026-11-06T23:39:46.697689+00:00",
       "rationale": "Standing technical SHA delegation for the same Atlas delivery. Actual baseline identifies one exact existing capability mirror missing from DONE and an old bridge literal without the new owned expectation. Only those two bindings, factual task scope and generated metadata are corrected. All 17 original selected cases pass without weakening controls. Prior certificates and witness bytes remain. This witness conveys no release, signing, notarization or publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "24b4f33b288a10b87b3be56e0d24974b2573f083905858ce3394af73548bfa52",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:07:35.083755+00:00",
+      "rationale": "Delegated technical SHA witness for the existing authored Atlas association delivery. The maintained CI contract includes atlas.association.record in the exact relation dossier command list. The 43-path preflight and all four focused cases verify this correction. Authority is limited to the exact source binding."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "a0f859b5c874a3f3299504482777afcec575c4ceb3db2d71f4fc5aa3373df160",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:07:35.083755+00:00",
+      "rationale": "Delegated technical SHA witness for the existing authored Atlas association delivery. The maintained CI contract includes atlas.association.record in the exact relation dossier command list. The 43-path preflight and all four focused cases verify this correction. Authority is limited to the exact source binding."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "e59413625d3231c491ba32e9dabd4482340826165baff96d1a4bbb4a56371d20",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:07:35.083755+00:00",
+      "rationale": "Delegated technical SHA witness for the existing authored Atlas association delivery. The maintained CI contract includes atlas.association.record in the exact relation dossier command list. The 43-path preflight and all four focused cases verify this correction. Authority is limited to the exact source binding."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "ca63d4f1a8888144c27eb34a51ee13bccd76328a9f152179b5b2c75b4046fc22",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:07:35.083755+00:00",
+      "rationale": "Delegated technical SHA witness for the existing authored Atlas association delivery. The maintained CI contract includes atlas.association.record in the exact relation dossier command list. The 43-path preflight and all four focused cases verify this correction. Authority is limited to the exact source binding."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "174f2c8a5f179c73782b73c822b87db8905dd24a7c59eebf98ab8df21eeeabf6",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:07:35.083755+00:00",
+      "rationale": "Delegated technical SHA witness for the existing authored Atlas association delivery. The maintained CI contract includes atlas.association.record in the exact relation dossier command list. The 43-path preflight and all four focused cases verify this correction. Authority is limited to the exact source binding."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "2f25e9597abeac70e28caf76c87c5ff26f479e6f7b18d8a9516391c5443761a0",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:07:35.083755+00:00",
+      "rationale": "Delegated technical SHA witness for the existing authored Atlas association delivery. The maintained CI contract includes atlas.association.record in the exact relation dossier command list. The 43-path preflight and all four focused cases verify this correction. Authority is limited to the exact source binding."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "c2815d5c51b2a9c924d093c77b4ccc3d4b6f4919fae8c8ecc37c8e1670eb9d60",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:07:35.083755+00:00",
+      "rationale": "Delegated technical SHA witness for the existing authored Atlas association delivery. The maintained CI contract includes atlas.association.record in the exact relation dossier command list. The 43-path preflight and all four focused cases verify this correction. Authority is limited to the exact source binding."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "a507b9e3618aa0d98bbf92762675cde5612104ab2960c002722d53e35fdaea32",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:07:35.083755+00:00",
+      "rationale": "Delegated technical SHA witness for the existing authored Atlas association delivery. The maintained CI contract includes atlas.association.record in the exact relation dossier command list. The 43-path preflight and all four focused cases verify this correction. Authority is limited to the exact source binding."
+    },
+    {
+      "filePath": "test/contracts/yalken-atlas-v5-final-audit-p0-04-design-os-binding.contract.test.js",
+      "sha256": "2c35c6f895d5b4217831d9d383f35dd3c9013d9436e2337486350f29c347c6b3",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:07:35.083755+00:00",
+      "rationale": "Delegated technical SHA witness for the existing authored Atlas association delivery. The maintained CI contract includes atlas.association.record in the exact relation dossier command list. The 43-path preflight and all four focused cases verify this correction. Authority is limited to the exact source binding."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "15cb93c6ad6c6af110b86d9ffd5926f3b0654f8c1f1f4b49ded68edb90eee8aa",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:09:30.777618+00:00",
+      "rationale": "Delegated technical SHA witness for the same Atlas association correction. The DATA and certification bindings include the exact task note as well as the current contract. The original repository gates validate these digests."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "b8b093e5db406173ea015ec0eae8c5b8a37579cf8b22407e9601bd7ff3962a41",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:09:30.777618+00:00",
+      "rationale": "Delegated technical SHA witness for the same Atlas association correction. The DATA and certification bindings include the exact task note as well as the current contract. The original repository gates validate these digests."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "b56d3af45f85eaca6873427f4ce4a2faa3f4a1ed3e04d64227f09b50772e1bb9",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106",
+      "approvedAtUtc": "2026-11-07T01:09:30.777618+00:00",
+      "rationale": "Delegated technical SHA witness for the same Atlas association correction. The DATA and certification bindings include the exact task note as well as the current contract. The original repository gates validate these digests."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
