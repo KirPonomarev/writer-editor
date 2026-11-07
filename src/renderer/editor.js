@@ -156,7 +156,9 @@ import {
 import {
   assertAtlasSurfacePresentationParity,
   ATLAS_SURFACE_POSTURE,
+  ATLAS_SURFACE_SPLIT_MIN_WIDTH,
   ATLAS_SURFACE_VIEW,
+  ATLAS_WORKSPACE_AUTHORED_KIND,
   buildAtlasSurfacePresentation,
 } from './atlasSurfacePresentationModel.mjs';
 import { normalizeWseStateEvidencePresentation, wseRowEvidence } from './atlasWseStateEvidencePresentationModel.mjs';
@@ -940,6 +942,7 @@ let atlasSelectedRelation = {
 };
 let atlasMatricesSourceScope = { kind: 'BOOK' };
 let atlasMatricesScopeProjectId = '';
+let atlasWorkspaceAssociationPublication = null;
 let atlasMatricesState = {
   state: 'empty',
   projectId: '',
@@ -13715,6 +13718,10 @@ function refreshActiveAtlasSurface(options = {}) {
   if (currentRightTab !== 'atlas') return;
   const surface = normalizeAtlasSurface(currentAtlasSurface);
   syncAtlasSurfaceCompositionState();
+  const authoredWorkspace = window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13' && isAtlasWorkspaceAuthoredVisible();
+  if (authoredWorkspace && surface !== 'matrices' && surface !== 'relation') {
+    void refreshAtlasWorkspaceAssociations(options);
+  }
   if (options.currentScene === false && (surface === 'currentScene' || surface === 'journey')) return;
   if (surface === 'journey') {
     renderAtlasJourneyState();
@@ -13739,7 +13746,7 @@ function refreshActiveAtlasSurface(options = {}) {
     return refreshAtlasRelationDossier(options);
   }
   if (surface === 'matrices') {
-    return refreshAtlasMatrices(options);
+    return authoredWorkspace ? refreshAtlasWorkspaceAssociations(options) : refreshAtlasMatrices(options);
   }
   if (surface === 'reports') {
     return refreshAtlasReportsSavedQueries(options);
@@ -13766,6 +13773,7 @@ function refreshActiveAtlasSurface(options = {}) {
 }
 
 function setCurrentAtlasSurface(surfaceId, options = {}) {
+  const previous = currentAtlasSurface;
   currentAtlasSurface = normalizeAtlasSurface(surfaceId);
   if (ATLAS_DEFERRED_SURFACE_IDS.includes(currentAtlasSurface)) {
     if (currentAtlasSurface === 'heatmap') atlasHeatmapExplicitOpen = true;
@@ -13779,6 +13787,9 @@ function setCurrentAtlasSurface(surfaceId, options = {}) {
   }
   if (options.refresh !== false) {
     refreshActiveAtlasSurface();
+  } else if (previous !== currentAtlasSurface && currentAtlasSurface !== 'relation'
+    && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13' && isAtlasWorkspaceAuthoredVisible()) {
+    void refreshAtlasWorkspaceAssociations();
   }
 }
 
@@ -13848,7 +13859,12 @@ function syncRightRailCompositionState(tab) {
 function applyRightTab(tab) {
   tab = normalizeRightTab(tab);
   const environmentChanged = currentRightTab !== tab;
+  const hideAuthoredWorkspace = environmentChanged && tab !== 'atlas' && isAtlasWorkspaceAuthoredVisible();
   currentRightTab = tab;
+  if (hideAuthoredWorkspace) {
+    atlasWorkspaceAssociationPublication = null;
+    renderAtlasWorkspaceState();
+  }
   if (environmentChanged) noteFullEnvironmentFormChanged();
   syncRightRailCompositionState(tab);
   if (tab === 'inspector') {
@@ -14131,19 +14147,28 @@ function renderAtlasWorkspaceGraph(presentation) {
   host.setAttribute('aria-label', `Atlas graph, ${presentation.rowCount} items. Equivalent list and table views are available.`);
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 1000 700');
-  svg.setAttribute('role', 'img');
+  svg.setAttribute('role', presentation.authoredAssociationSummary?.total ? 'group' : 'img');
   svg.setAttribute('aria-label', `Atlas shared-row graph with ${presentation.rowCount} nodes`);
   const rowsById = new Map(presentation.rows.map((row) => [row.rowId, row]));
-  for (let index = 1; index < presentation.graphNodes.length; index += 1) {
-    const previous = presentation.graphNodes[index - 1];
-    const current = presentation.graphNodes[index];
+  const nodesById = new Map(presentation.graphNodes.map(node => [node.rowId, node]));
+  const appendLine = (from, to, associationId = '') => {
+    if (!from || !to) return;
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.classList.add('atlas-workspace__graph-line');
-    line.setAttribute('x1', String(previous.x));
-    line.setAttribute('y1', String(previous.y));
-    line.setAttribute('x2', String(current.x));
-    line.setAttribute('y2', String(current.y));
+    if (associationId) line.dataset.atlasAuthoredEdge = associationId;
+    line.setAttribute('x1', String(from.x));
+    line.setAttribute('y1', String(from.y));
+    line.setAttribute('x2', String(to.x));
+    line.setAttribute('y2', String(to.y));
     svg.appendChild(line);
+  };
+  const observationNodes = presentation.graphNodes.filter(node => rowsById.get(node.rowId)?.kind !== ATLAS_WORKSPACE_AUTHORED_KIND);
+  for (let index = 1; index < observationNodes.length; index += 1) appendLine(observationNodes[index - 1], observationNodes[index]);
+  for (const row of presentation.rows) {
+    if (row.kind !== ATLAS_WORKSPACE_AUTHORED_KIND) continue;
+    const association = nodesById.get(row.rowId);
+    appendLine(nodesById.get('entity:' + row.sourceEntityId), association, row.associationId);
+    appendLine(association, nodesById.get('entity:' + row.targetEntityId), row.associationId);
   }
   for (const node of presentation.graphNodes) {
     const row = rowsById.get(node.rowId);
@@ -14155,7 +14180,8 @@ function renderAtlasWorkspaceGraph(presentation) {
     group.setAttribute('transform', `translate(${node.x} ${node.y})`);
     group.setAttribute('tabindex', '0');
     group.setAttribute('role', 'button');
-    group.setAttribute('aria-label', `${row.kind}: ${row.title}. ${row.subtitle}`);
+    const label = row.kind === ATLAS_WORKSPACE_AUTHORED_KIND ? 'Авторская связь' : row.kind;
+    group.setAttribute('aria-label', `${label}: ${row.title}. ${row.subtitle}`);
     group.setAttribute('aria-pressed', row.rowId === presentation.selectedRowId ? 'true' : 'false');
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle.setAttribute('r', node.selected ? '10' : node.detail === 'DOT' ? '5' : node.detail === 'EVIDENCE_COUNT' && node.evidenceCount > 0 ? '8' : '7');
@@ -14173,7 +14199,7 @@ function renderAtlasWorkspaceGraph(presentation) {
   return host;
 }
 
-function renderAtlasWorkspaceDossier(presentation) {
+function renderAtlasWorkspaceDossier(presentation, authoredSource) {
   const dossier = presentation.dossier;
   const panel = document.createElement('aside');
   panel.className = 'atlas-workspace__dossier';
@@ -14190,6 +14216,10 @@ function renderAtlasWorkspaceDossier(presentation) {
   meta.textContent = dossier.meta;
   panel.append(eyebrow, title, meta);
   if (dossier.state !== 'ready') return panel;
+  if (authoredSource) {
+    panel.appendChild(authoredSource);
+    return panel;
+  }
 
   const links = document.createElement('div');
   links.className = 'atlas-workspace__dossier-links';
@@ -14252,7 +14282,7 @@ function renderAtlasWorkspaceList(presentation) {
     meta.textContent = row.subtitle;
     const kind = document.createElement('span');
     kind.className = 'atlas-workspace__row-kind';
-    kind.textContent = row.kind;
+    kind.textContent = row.kind === ATLAS_WORKSPACE_AUTHORED_KIND ? 'Авторская' : row.kind;
     main.append(title, meta);
     button.append(main, kind);
     item.appendChild(button);
@@ -14284,7 +14314,8 @@ function renderAtlasWorkspaceTable(presentation) {
     tableRow.setAttribute('role', 'row');
     tableRow.setAttribute('tabindex', '0');
     tableRow.setAttribute('aria-selected', row.rowId === presentation.selectedRowId ? 'true' : 'false');
-    for (const [value, muted] of [[row.title, false], [row.kind, true], [row.subtitle, true], [row.status, true]]) {
+    const kind = row.kind === ATLAS_WORKSPACE_AUTHORED_KIND ? 'Авторская связь' : row.kind;
+    for (const [value, muted] of [[row.title, false], [kind, true], [row.subtitle, true], [row.status, true]]) {
       const cell = document.createElement('span');
       cell.className = `atlas-workspace__table-cell${muted ? ' atlas-workspace__table-cell--muted' : ''}`;
       cell.setAttribute('role', 'cell');
@@ -14320,10 +14351,75 @@ function syncAtlasWorkspaceLayout(presentation) {
   }
 }
 
+function isAtlasWorkspaceAuthoredVisible() {
+  return currentRightTab === 'atlas' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'
+    && (atlasSurfacePosture === ATLAS_SURFACE_POSTURE.FULL
+      || atlasSurfacePosture === ATLAS_SURFACE_POSTURE.SPLIT && window.innerWidth >= ATLAS_SURFACE_SPLIT_MIN_WIDTH);
+}
+
+function getAtlasWorkspaceAuthoredProjection() {
+  const projection = atlasMatricesState.authoredAssociationApplicability;
+  return projection?.projectId === currentProjectId && atlasWorkspaceAssociationPublication?.()
+    && isAtlasWorkspaceAuthoredVisible() && !localDirty && localEditGeneration === lastAckedGeneration
+    && (projection.sourceScope?.kind === 'BOOK' || projection.sourceScope?.sceneId === currentDocumentId) ? projection : null;
+}
+
+function describeAtlasWorkspaceAuthoredState(presentation, projection) {
+  const counts = presentation.authoredAssociationSummary;
+  if (counts?.omittedCount) return `Авторские связи: показано ${counts.total - counts.omittedCount} из ${counts.total}.`;
+  if (counts) return counts.total ? `Авторские связи: ${counts.total}.` : 'В этой области нет действующих авторских связей.';
+  if (localDirty || localEditGeneration !== lastAckedGeneration) return 'Сохраните сцену и снова выберите область.';
+  if (atlasMatricesState.state === 'loading') return 'Загрузка авторских связей…';
+  const reason = projection?.reason || atlasMatricesState.unavailableReason;
+  if (['ATLAS_MATRICES_SCOPE_RANGE_INVALID', 'ATLAS_AUTHORED_ASSOCIATION_SCOPE_RANGE_INVALID'].includes(reason)) {
+    return 'Выделите сохранённый текст и снова выберите «Фрагмент».';
+  }
+  return 'Авторские связи недоступны. Снова выберите область.';
+}
+
+function createAtlasWorkspaceAuthoredSource(row, projection) {
+  const source = projection?.rows.find(item => item.associationId === row.associationId);
+  if (!source || typeof source.latest?.source?.sceneId !== 'string'
+    || !/^[a-f0-9]{64}$/u.test(source.recordHash || '') || !/^sha256:[a-f0-9]{64}$/u.test(source.sceneRevision || '')
+    || !/^sha256:[a-f0-9]{64}$/u.test(projection.manifestRevision || '')) return null;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'atlas-workspace__deep-link';
+  button.dataset.atlasWorkspaceAuthoredSource = source.associationId;
+  button.textContent = 'Открыть источник';
+  button.setAttribute('aria-label', 'Открыть источник · ' + row.title + ' · ' + source.sceneTitle);
+  button.disabled = !isNavigatorContextCommandAvailable(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN);
+  button.addEventListener('click', async () => {
+    const context = captureAtlasPublication(), posture = atlasSurfacePosture;
+    const current = () => button.isConnected && !button.disabled && context() && atlasSurfacePosture === posture
+      && atlasSurfaceSelectedRowId === row.rowId && getAtlasWorkspaceAuthoredProjection() === projection;
+    if (!current()) return;
+    try {
+      if (await navigateAtlasAssociationSource(source, projection.projectId, projection.manifestRevision, source.sceneRevision, current)) {
+        if (atlasSurfacePosture === posture && isAtlasWorkspaceAuthoredVisible() && currentProjectId === projection.projectId
+          && currentDocumentId === source.latest.source.sceneId) {
+          if (posture === ATLAS_SURFACE_POSTURE.FULL) setAtlasSurfacePosture(ATLAS_SURFACE_POSTURE.MANUSCRIPT);
+          focusEditorSurface('current');
+        }
+        return;
+      }
+    } catch (error) {
+      console.error('ATLAS_ASSOCIATION_NAVIGATION_FAILED', error);
+    }
+    if (current()) updateStatusText('Источник не открыт. Снова выберите область.', { visible: true });
+  });
+  return button;
+}
+
 function renderAtlasWorkspaceState() {
   if (!(atlasWorkspace instanceof HTMLElement) || !(atlasWorkspaceContent instanceof HTMLElement)) return;
+  const showAuthored = isAtlasWorkspaceAuthoredVisible();
+  const authoredAssociations = showAuthored ? getAtlasWorkspaceAuthoredProjection() : null;
+  const overview = normalizeAtlasOverview(showAuthored && atlasOverviewState.projectId !== currentProjectId
+    ? { projectId: currentProjectId } : atlasOverviewState);
   const presentation = assertAtlasSurfacePresentationParity(buildAtlasSurfacePresentation({
-    overview: normalizeAtlasOverview(atlasOverviewState),
+    overview,
+    authoredAssociations,
     posture: atlasSurfacePosture,
     view: atlasSurfaceView,
     selectedRowId: atlasSurfaceSelectedRowId,
@@ -14361,7 +14457,11 @@ function renderAtlasWorkspaceState() {
     button.setAttribute('aria-selected', active ? 'true' : 'false');
     button.tabIndex = active ? 0 : -1;
   }
+  const focused = atlasWorkspaceContent.contains(document.activeElement) ? document.activeElement : null;
+  const focusScope = focused?.getAttribute('data-atlas-matrices-source-scope');
+  const focusRow = focused?.getAttribute('data-atlas-row-id');
   atlasWorkspaceContent.innerHTML = '';
+  if (showAuthored) appendAtlasMatricesSourceScopeControls(atlasWorkspaceContent, describeAtlasWorkspaceAuthoredState(presentation, authoredAssociations));
   const body = document.createElement('div');
   body.className = 'atlas-workspace__body';
   const canvas = document.createElement('div');
@@ -14377,16 +14477,28 @@ function renderAtlasWorkspaceState() {
   } else {
     canvas.appendChild(renderAtlasWorkspaceTable(presentation));
   }
-  body.append(canvas, renderAtlasWorkspaceDossier(dossierPresentation));
+  const selected = presentation.rows.find(row => row.rowId === presentation.selectedRowId);
+  const source = selected?.kind === ATLAS_WORKSPACE_AUTHORED_KIND ? createAtlasWorkspaceAuthoredSource(selected, authoredAssociations) : null;
+  body.append(canvas, renderAtlasWorkspaceDossier(dossierPresentation, source));
   atlasWorkspaceContent.appendChild(body);
+  if (focusScope || focusRow) {
+    const focusAttribute = focusScope ? 'data-atlas-matrices-source-scope' : 'data-atlas-row-id';
+    const next = Array.from(atlasWorkspaceContent.querySelectorAll('[' + focusAttribute + ']'))
+      .find(element => element.getAttribute(focusAttribute) === (focusScope || focusRow));
+    if (next && !next.disabled) next.focus({ preventScroll: true });
+  }
 }
 
 function setAtlasSurfacePosture(posture, options = {}) {
   if (!Object.values(ATLAS_SURFACE_POSTURE).includes(posture)) return false;
   const previous = atlasSurfacePosture;
+  const wasAuthoredVisible = isAtlasWorkspaceAuthoredVisible();
   atlasSurfacePosture = posture;
+  const authoredVisible = isAtlasWorkspaceAuthoredVisible();
+  if (wasAuthoredVisible !== authoredVisible) atlasWorkspaceAssociationPublication = null;
   renderAtlasOverviewState();
   renderAtlasWorkspaceState();
+  if (!wasAuthoredVisible && authoredVisible) void refreshAtlasWorkspaceAssociations();
   if (posture === ATLAS_SURFACE_POSTURE.MANUSCRIPT && previous !== posture && !currentDocumentId && !currentDocumentTitle) showWriterHomeSurface();
   if (options.focus === true) requestAnimationFrame(() => atlasWorkspace?.querySelector('[data-atlas-view]')?.focus({ preventScroll: true }));
   return true;
@@ -18991,6 +19103,9 @@ function renderAtlasRelationDossierState() {
 
 async function refreshAtlasRelationDossier(options = {}) {
   if (currentRightTab !== 'atlas') return;
+  if (window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13' && isAtlasWorkspaceAuthoredVisible()) {
+    void refreshAtlasWorkspaceAssociations(options);
+  }
   const current = beginAtlasQueryPublication('atlasRelationDossier', options), requestProject = currentProjectId;
   if (!current) return;
   const selection = atlasSelectedRelation;
@@ -19329,7 +19444,9 @@ function handleAtlasMatrixGridKeydown(event) {
 function handleAtlasMatrixGridClick(event) {
   const sourceScope = event.target instanceof Element ? event.target.closest('[data-atlas-matrices-source-scope]') : null;
   if (sourceScope instanceof HTMLElement && atlasMatricesHost instanceof HTMLElement && atlasMatricesHost.contains(sourceScope)) {
-    selectAtlasMatricesSourceScope(sourceScope.dataset.atlasMatricesSourceScope);
+    const render = window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13' && isAtlasWorkspaceAuthoredVisible()
+      ? renderAtlasMatricesAndWorkspace : renderAtlasMatricesState;
+    selectAtlasMatricesSourceScope(sourceScope.dataset.atlasMatricesSourceScope, { render });
     return;
   }
   const heatmapOpen = event.target instanceof Element ? event.target.closest('[data-atlas-heatmap-open]') : null;
@@ -19369,51 +19486,64 @@ function bindAtlasMatricesKeyboardNavigation() {
   atlasMatricesKeyboardBound = true;
 }
 
-function setAtlasMatricesScopeUnavailable(reason) {
+function setAtlasMatricesScopeUnavailable(reason, render = renderAtlasMatricesState) {
   atlasMatricesState = normalizeAtlasMatrices({ state: 'unavailable', unavailableReason: reason,
     projectId: currentProjectId || '', sourceScope: atlasMatricesSourceScope });
-  renderAtlasMatricesState();
+  render();
 }
 
-async function selectAtlasMatricesSourceScope(kind) {
+function renderAtlasMatricesAndWorkspace(current = null) {
+  atlasWorkspaceAssociationPublication = current;
+  if (currentAtlasSurface === 'matrices') renderAtlasMatricesState();
+  if (isAtlasWorkspaceAuthoredVisible()) renderAtlasWorkspaceState();
+}
+
+function refreshAtlasWorkspaceAssociations(options = {}) {
+  const isCurrent = () => (currentAtlasSurface === 'matrices' || isAtlasWorkspaceAuthoredVisible())
+    && (!options.isCurrent || options.isCurrent());
+  return refreshAtlasMatrices({ ...options, isCurrent, render: renderAtlasMatricesAndWorkspace });
+}
+
+async function selectAtlasMatricesSourceScope(kind, { render = renderAtlasMatricesState, isCurrent } = {}) {
   if (!['BOOK', 'SCENE', 'FRAGMENT'].includes(kind) || currentRightTab !== 'atlas') return;
-  const current = beginAtlasQueryPublication('atlasMatricesSourceScope');
+  const current = beginAtlasQueryPublication('atlasMatricesSourceScope', { isCurrent });
   if (!current) return;
+  const unavailable = reason => setAtlasMatricesScopeUnavailable(reason, render);
   atlasMatricesScopeProjectId = currentProjectId;
   atlasMatricesSourceScope = kind === 'BOOK' ? { kind } : { kind, sceneId: currentDocumentId || '', sceneTextHash: '' };
-  if (kind !== 'BOOK' && !currentDocumentId) return setAtlasMatricesScopeUnavailable('ATLAS_MATRICES_SCOPE_SCENE_NOT_FOUND');
-  if (kind !== 'BOOK' && (localDirty || localEditGeneration !== lastAckedGeneration)) return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED');
+  if (kind !== 'BOOK' && !currentDocumentId) return unavailable('ATLAS_MATRICES_SCOPE_SCENE_NOT_FOUND');
+  if (kind !== 'BOOK' && (localDirty || localEditGeneration !== lastAckedGeneration)) return unavailable('ATLAS_SOURCE_UNSAVED');
   const selection = kind === 'FRAGMENT' ? getSelectionOffsets() : null;
   atlasMatricesState = { ...atlasMatricesState, state: 'loading' };
-  renderAtlasMatricesState();
+  render();
   try {
-    if (kind === 'BOOK') return await refreshAtlasMatrices({ isCurrent: current });
+    if (kind === 'BOOK') return await refreshAtlasMatrices({ isCurrent: current, render });
     const entry = { projectId: currentProjectId };
     if (!isIdeaMeaningSceneSourceCurrent(entry)) await refreshAtlasCurrentScene({ force: true, isCurrent: current });
     if (!current()) return;
-    if (localDirty || localEditGeneration !== lastAckedGeneration) return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED');
-    if (!isIdeaMeaningSceneSourceCurrent(entry)) return setAtlasMatricesScopeUnavailable('ATLAS_MATRICES_SCOPE_SOURCE_CHANGED');
+    if (localDirty || localEditGeneration !== lastAckedGeneration) return unavailable('ATLAS_SOURCE_UNSAVED');
+    if (!isIdeaMeaningSceneSourceCurrent(entry)) return unavailable('ATLAS_MATRICES_SCOPE_SOURCE_CHANGED');
     const scope = { kind, sceneId: currentDocumentId, sceneTextHash: atlasCurrentSceneState.summary.sceneTextHash };
     if (kind === 'FRAGMENT') {
       const origin = getIdeaMeaningSceneOrigin(entry);
       if (!origin || origin.startOffset !== selection?.start || origin.endOffset !== selection?.end) {
-        return setAtlasMatricesScopeUnavailable('ATLAS_MATRICES_SCOPE_RANGE_INVALID');
+        return unavailable('ATLAS_MATRICES_SCOPE_RANGE_INVALID');
       }
       scope.startOffset = origin.startOffset;
       scope.endOffset = origin.endOffset;
     }
     atlasMatricesSourceScope = scope;
-    return await refreshAtlasMatrices({ isCurrent: current });
+    return await refreshAtlasMatrices({ isCurrent: current, render });
   } catch {
-    if (current()) setAtlasMatricesScopeUnavailable('ATLAS_MATRICES_QUERY_FAILED');
+    if (current()) unavailable('ATLAS_MATRICES_QUERY_FAILED');
   }
 }
 
-function appendAtlasMatricesSourceScopeControls() {
+function appendAtlasMatricesSourceScopeControls(host = atlasMatricesHost, authoredStatus = '') {
   const controls = document.createElement('div');
   controls.className = 'right-rail-atlas-action-bar';
   controls.setAttribute('role', 'group');
-  controls.setAttribute('aria-label', 'Область наблюдений Atlas');
+  controls.setAttribute('aria-label', authoredStatus ? 'Область авторских связей Atlas' : 'Область наблюдений Atlas');
   for (const [kind, label] of [['BOOK', 'Книга'], ['SCENE', 'Сцена'], ['FRAGMENT', 'Фрагмент']]) {
     const button = document.createElement('button');
     button.type = 'button';
@@ -19424,14 +19554,14 @@ function appendAtlasMatricesSourceScopeControls() {
     button.disabled = !currentProjectId || (kind !== 'BOOK' && !currentDocumentId);
     controls.appendChild(button);
   }
-  atlasMatricesHost.appendChild(controls);
+  host.appendChild(controls);
   const status = document.createElement('div');
   status.className = 'right-rail-atlas-state';
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
   const label = { BOOK: 'вся книга', SCENE: 'сохранённая сцена', FRAGMENT: 'выделенный фрагмент сохранённой сцены' }[atlasMatricesSourceScope.kind];
-  status.textContent = `Область: ${label}. Показаны наблюдения и совместные упоминания.`;
-  atlasMatricesHost.appendChild(status);
+  status.textContent = `Область: ${label}. ${authoredStatus || 'Показаны наблюдения и совместные упоминания.'}`;
+  host.appendChild(status);
 }
 
 function appendAtlasMatrixAuthoredAssociations(projection) {
@@ -19482,19 +19612,25 @@ function appendAtlasMatrixAuthoredAssociations(projection) {
   }
 }
 
-function invalidateAtlasMatrixAuthoredSource() {
+function invalidateAtlasMatrixAuthoredSource({ workspace = false, render = renderAtlasMatricesState } = {}) {
   const projection = atlasMatricesState.authoredAssociationApplicability;
-  if (currentRightTab !== 'atlas' || currentAtlasSurface !== 'matrices' || !localDirty
-    || !projection || projection.state === 'unavailable') return;
-  if (atlasMatricesSourceScope.kind !== 'BOOK') {
-    setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED');
-    return;
-  }
+  if (currentRightTab !== 'atlas' || (currentAtlasSurface !== 'matrices' && !workspace) || !localDirty) return;
+  if (workspace && atlasMatricesState.state === 'loading') return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED', render);
+  if (!projection || projection.state === 'unavailable') return;
+  if (atlasMatricesSourceScope.kind !== 'BOOK') return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED', render);
   atlasMatricesState = { ...atlasMatricesState, authoredAssociationApplicability: {
     schemaVersion: projection.schemaVersion, projectId: projection.projectId, state: 'unavailable',
     sourceScope: projection.sourceScope, reason: 'ATLAS_SOURCE_UNSAVED', rows: [],
   } };
-  renderAtlasMatricesState();
+  render();
+}
+
+function invalidateVisibleAtlasAuthoredSource() {
+  if (isAtlasWorkspaceAuthoredVisible()) {
+    invalidateAtlasMatrixAuthoredSource({ workspace: true, render: renderAtlasMatricesAndWorkspace });
+  } else {
+    invalidateAtlasMatrixAuthoredSource();
+  }
 }
 
 function renderAtlasMatricesState() {
@@ -19610,6 +19746,7 @@ function renderAtlasMatricesState() {
 
 async function refreshAtlasMatrices(options = {}) {
   if (currentRightTab !== 'atlas') return;
+  const render = options.render || renderAtlasMatricesState;
   if (atlasMatricesScopeProjectId !== currentProjectId) {
     atlasMatricesSourceScope = { kind: 'BOOK' };
     atlasMatricesScopeProjectId = currentProjectId;
@@ -19618,15 +19755,15 @@ async function refreshAtlasMatrices(options = {}) {
   if (!current) return;
   const sourceScope = { ...atlasMatricesSourceScope };
   if (sourceScope.kind !== 'BOOK') {
-    if (localDirty || localEditGeneration !== lastAckedGeneration) return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED');
-    if (sourceScope.sceneId !== currentDocumentId) return setAtlasMatricesScopeUnavailable('ATLAS_MATRICES_SCOPE_SCENE_CHANGED');
+    if (localDirty || localEditGeneration !== lastAckedGeneration) return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED', render);
+    if (sourceScope.sceneId !== currentDocumentId) return setAtlasMatricesScopeUnavailable('ATLAS_MATRICES_SCOPE_SCENE_CHANGED', render);
   }
   atlasMatricesState = {
     ...atlasMatricesState,
     state: currentProjectId ? 'loading' : 'empty',
     projectId: currentProjectId || '',
   };
-  renderAtlasMatricesState();
+  render();
   const authoredRequested = typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13';
   const result = await invokeWorkspaceQueryBridge(ATLAS_MATRICES_QUERY_ID, {
     projectId: currentProjectId,
@@ -19640,7 +19777,7 @@ async function refreshAtlasMatrices(options = {}) {
   if (!current() || !scopeKeys.every(key => sourceScope[key] === atlasMatricesSourceScope[key])) return;
   if (authoredRequested && window.__PRODUCT_PROFILE !== 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13') return;
   if (sourceScope.kind !== 'BOOK' && (localDirty || localEditGeneration !== lastAckedGeneration)) {
-    return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED');
+    return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED', render);
   }
   let nextState = readAtlasQueryProjection(result, 'atlasMatrices', requestProject)
     || { state: 'unavailable', unavailableReason: 'ATLAS_MATRICES_QUERY_FAILED', projectId: requestProject };
@@ -19658,7 +19795,7 @@ async function refreshAtlasMatrices(options = {}) {
   }
   if (!authoredRequested) delete normalized.authoredAssociationApplicability;
   atlasMatricesState = normalized;
-  renderAtlasMatricesState();
+  render(current);
 }
 
 function renderAtlasHeatmapState() {
@@ -24699,7 +24836,7 @@ function markAsModified() {
   syncVisibleAuthoringSurfacesSurface();
   scheduleAutoSave();
   if (typeof atlasLanguageAnalysisView !== 'undefined' && atlasLanguageAnalysisView) renderAtlasLanguageAnalysis();
-  if (typeof atlasMatricesState !== 'undefined' && atlasMatricesState.authoredAssociationApplicability) invalidateAtlasMatrixAuthoredSource();
+  if (typeof atlasMatricesState !== 'undefined' && (atlasMatricesState.authoredAssociationApplicability || atlasMatricesState.state === 'loading')) invalidateVisibleAtlasAuthoredSource();
 }
 
 function normalizeFontWeightPreset(value) {
@@ -26961,6 +27098,14 @@ atlasOverviewHost?.addEventListener('click', (event) => {
 });
 
 atlasWorkspace?.addEventListener('click', (event) => {
+  const scope = event.target instanceof Element ? event.target.closest('[data-atlas-matrices-source-scope]') : null;
+  if (scope instanceof HTMLElement && isAtlasWorkspaceAuthoredVisible()) {
+    selectAtlasMatricesSourceScope(scope.dataset.atlasMatricesSourceScope, {
+      render: renderAtlasMatricesAndWorkspace,
+      isCurrent: isAtlasWorkspaceAuthoredVisible,
+    });
+    return;
+  }
   const posture = event.target instanceof Element ? event.target.closest('[data-atlas-posture]') : null;
   if (posture instanceof HTMLElement) {
     setAtlasSurfacePosture(posture.dataset.atlasPosture || '');
@@ -27482,7 +27627,11 @@ window.addEventListener('resize', () => {
   scheduleLayoutRefresh();
   resetCentralSheetStripContinuousFallback();
   scheduleCentralSheetStripProofRefresh();
-  if (atlasSurfacePosture !== ATLAS_SURFACE_POSTURE.MANUSCRIPT) renderAtlasWorkspaceState();
+  if (atlasSurfacePosture !== ATLAS_SURFACE_POSTURE.MANUSCRIPT) {
+    const revealAuthored = atlasWorkspace?.hidden === true && isAtlasWorkspaceAuthoredVisible();
+    renderAtlasWorkspaceState();
+    if (revealAuthored) void refreshAtlasWorkspaceAssociations();
+  }
 });
 document.addEventListener('compositionstart', () => {
   fullEnvironmentComposing = true; noteFullEnvironmentFormChanged({ sync: false });
@@ -28335,7 +28484,7 @@ if (window.electronAPI) {
     if (!localDirty) void refreshManuscriptNoteReferences();
     void refreshVisibleCommentProjection();
     updateInspectorSnapshot();
-    if (typeof atlasMatricesState !== 'undefined' && atlasMatricesState.authoredAssociationApplicability) invalidateAtlasMatrixAuthoredSource();
+    if (typeof atlasMatricesState !== 'undefined' && (atlasMatricesState.authoredAssociationApplicability || atlasMatricesState.state === 'loading')) invalidateVisibleAtlasAuthoredSource();
   });
 }
 

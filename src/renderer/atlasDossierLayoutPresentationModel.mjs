@@ -1,4 +1,5 @@
 import { hashCanonicalValue } from '../core/browser-safe-hash.mjs';
+import { ATLAS_WORKSPACE_AUTHORED_KIND } from './atlasSurfacePresentationModel.mjs';
 import { ATLAS_DEEP_LINK_KIND, ATLAS_DOSSIER_LOD } from '../core/atlas-dossier-layout-links-v1.mjs';
 
 export const ATLAS_DOSSIER_PRESENTATION_SCHEMA_VERSION = 'yalken.renderer.atlasDossierLayoutPresentation.v1';
@@ -34,6 +35,9 @@ function evidenceRows(rows) {
 }
 function buildSelectedDossier(row, entityDossier = {}, relationDossier = {}) {
   if (!row) return freezeDeep({ state: 'empty', rowId: '', kicker: 'Dossier', title: 'Select an Atlas item', meta: 'Evidence and typed links stay bound to the current selection.', evidence: [], typedLinks: [] });
+  if (row.kind === ATLAS_WORKSPACE_AUTHORED_KIND) return freezeDeep({
+    state: 'ready', rowId: row.rowId, kicker: row.status, title: row.title, meta: row.subtitle, evidence: [], typedLinks: [],
+  });
   const typedLinks = [typedLink(ATLAS_DEEP_LINK_KIND.ROW, row.rowId, row.title, row.kind)];
   let evidence = [];
   if (row.kind === 'ENTITY') {
