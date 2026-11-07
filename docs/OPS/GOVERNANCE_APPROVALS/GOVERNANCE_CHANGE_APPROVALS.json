@@ -32321,6 +32321,27 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_DISPLAY_MAC_20261107",
       "approvedAtUtc": "2026-11-07T18:47:19.366Z",
       "rationale": "Owner-delegated exact current Atlas Time range preservation and required verification bindings."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "e712083e6313143dc7b59977234b4a796f5355305070d939c6904cbf8586d6db",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_DISPLAY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T18:54:16.922Z",
+      "rationale": "Owner-delegated exact current Atlas Time inherited C06 digest correction and technical current bindings."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "cf52f1507f6b860223d4e24e3292e9770ebb0f19d611994d33cf69891a76b462",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_DISPLAY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T18:54:16.922Z",
+      "rationale": "Owner-delegated exact current Atlas Time inherited C06 digest correction and technical current bindings."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "b13ef465865837b4a4e113c535d31cb9102f25cf5387a0c999b2a472802967f0",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_DISPLAY_MAC_20261107",
+      "approvedAtUtc": "2026-11-07T18:54:16.922Z",
+      "rationale": "Owner-delegated exact current Atlas Time inherited C06 digest correction and technical current bindings."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",

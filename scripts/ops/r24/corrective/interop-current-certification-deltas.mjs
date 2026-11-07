@@ -90,7 +90,7 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "ad5b230cdedc9af296dfa730b3aea184ea5b9347d833f576c6e8657c2bbc27bd"
+      "sha256": "b13ef465865837b4a4e113c535d31cb9102f25cf5387a0c999b2a472802967f0"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -746,17 +746,21 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-07--atlas-temporal-range-display.md",
-      "sha256": "7a18987f5a5977510895991e13d5222fef5f64e61859ae84d476d46660b46c15"
+      "sha256": "b2f31651b0be123cbf9643d7910edada5ac62ad3cb63c8fd5f3728225fe319d8"
     },
     {
       "path": "src/derived/atlas/deriveAtlasTemporalLayout.mjs",
       "sha256": "8c6bb71601826822967dee8bbf95ca8992f8c1763c42fc14b80200248c87aa2a"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
+      "sha256": "192ed9917be34ce3819d2011c03377c36fa85aa2d650aff2132af9f0d996e400"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "54c29ed52538af624926723dc707d9a87fad48f763b6bd409a91100a96727ef7"
+      "sha256": "e712083e6313143dc7b59977234b4a796f5355305070d939c6904cbf8586d6db"
     }
   ]
 });

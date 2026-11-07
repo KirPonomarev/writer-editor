@@ -81,4 +81,6 @@ AGENT_FINAL_REPORT_V1 and CODEX_OUTPUT_POLICY. Exact identity, changed paths, ex
 
 ## FAIL_PROTOCOL
 
+Exact b0d5d49b returned an inherited C06 digest mismatch. The retained original verification is 98c9c4c520b5d32e2f897a5044412f3bf388133840fc491019a63e01b5b5b2bc. The correction binds the single current test while preserving the original archived bytes.
+
 Retain the actual input, unchanged test source, observed and expected outcomes, status and output. Keep synthetic Core/query, physical application and full Mac claims separate.

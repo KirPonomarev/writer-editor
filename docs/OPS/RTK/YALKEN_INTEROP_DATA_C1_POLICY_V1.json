@@ -4444,7 +4444,7 @@
       },
       {
         "path": "docs/tasks/2026-11-07--atlas-temporal-range-display.md",
-        "sha256": "7a18987f5a5977510895991e13d5222fef5f64e61859ae84d476d46660b46c15"
+        "sha256": "b2f31651b0be123cbf9643d7910edada5ac62ad3cb63c8fd5f3728225fe319d8"
       },
       {
         "path": "src/derived/atlas/deriveAtlasTemporalLayout.mjs",
