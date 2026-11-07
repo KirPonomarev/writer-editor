@@ -1,3 +1,17 @@
+# CURRENT HANDOFF — применимые авторские связи Atlas
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_ASSOCIATION_APPLICABILITY_MAC_20261107
+BASE: 2d7f0c8e70a07f11c22a8d00a4fc551220b9c3b7
+BRANCH: codex/atlas-association-applicability-20261107
+STATUS: ADMITTED_TEST_FIRST
+
+PR2207 закрыт. Текущая работа начинается на проверенной зарегистрированной ветке с admission 157e47d8e96362c29a3f7f3af224a7a5d1098332609965f521bec674cbeb354b. Проба 0f92ebd0ee16fdcd8cdc6befb210072e81fc9a5ef9e3206e6db704c946b4bc9e видит три авторские записи в досье и ноль авторских проекций в Matrix. Следующий шаг — пройти task E0, сохранить RED на неизменённой семантике M15 и подключить одну отдельную read-only проекцию к текущему Matrix. Существующие наблюдения, история и правила WP500 сохраняются.
+
+Все старые профили, материалы и ошибки сохраняются. Новые собственные native сборки требуют точной отдельной проверки. Полный выпуск Mac, all17 и graph parity остаются открыты. Office PAUSED. Black Box после полного Mac.
+
+--- Previous handoffs remain as historical records ---
+
 # CURRENT HANDOFF — authored Atlas native complete; same-chain source companions
 
 TASK: YALKEN_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106; sole executor, branch unchanged, original M14 rollback.

@@ -19671,6 +19671,21 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
       && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'].includes(profile.profileId)
       && evaluateWriterLocalQueryAccess({ profile, queryId }).allowed;
   };
+  const authoredRequested = payload && Object.getOwnPropertyDescriptor(payload, 'includeAuthoredAssociations')?.value === true
+    && queryId === ATLAS_MATRICES_QUERY_ID;
+  const readAuthoredContext = () => [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(),
+    currentLifecycleSubjectId(), currentFilePath, currentProjectName, lastSignaledEditGeneration];
+  const authoredContext = authoredRequested ? readAuthoredContext() : null;
+  const authoredContextCurrent = () => {
+    if (!authoredContext) return true;
+    const profile = getWriterLocalRuntimeProfile(), window = authoredContext[0];
+    return window && !window.isDestroyed() && !window.webContents.isDestroyed()
+      && profile.profileId === 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'
+      && evaluateWriterLocalQueryAccess({ profile, queryId }).allowed
+      && (payload.sourceScope?.kind === 'BOOK' || !isDirty)
+      && readAuthoredContext().every((value, index) => value === authoredContext[index]);
+  };
+  if (!authoredContextCurrent()) return { ok: false, error: { code: 'E_ATLAS_AUTHORED_ASSOCIATION_CONTEXT_REVOKED' } };
   const requestedProjectId = normalizeStableProjectId(payload?.projectId);
   let source;
   try {
@@ -19724,6 +19739,7 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
     ).sourceRevision,
   });
   if (!languageContextCurrent()) return { ok: false, error: { code: 'E_ATLAS_LANGUAGE_CONTEXT_REVOKED' } };
+  if (!authoredContextCurrent()) return { ok: false, error: { code: 'E_ATLAS_AUTHORED_ASSOCIATION_CONTEXT_REVOKED' } };
   if (!scheduled.ok) {
     return {
       ok: false,
@@ -19784,7 +19800,9 @@ function normalizeAtlasRelationDossierPayload(payload = {}) {
 
 function normalizeAtlasMatricesPayload(payload = {}) {
   const source = isPlainObjectValue(payload) ? payload : {};
+  const authored = Object.getOwnPropertyDescriptor(source, 'includeAuthoredAssociations');
   return {
+    ...(authored ? { includeAuthoredAssociations: authored.value } : {}),
     projectId: typeof source.projectId === 'string' ? source.projectId.trim() : '',
     rowLimit: Number.isSafeInteger(Number(source.rowLimit)) ? Number(source.rowLimit) : 8,
     columnLimit: Number.isSafeInteger(Number(source.columnLimit)) ? Number(source.columnLimit) : 8,
@@ -20378,6 +20396,15 @@ async function handleWorkspaceAtlasRelationDossierQuery(payload = {}) {
 
 async function handleWorkspaceAtlasMatricesQuery(payload = {}) {
   const safePayload = normalizeAtlasMatricesPayload(payload);
+  const authoredRequested = Object.hasOwn(safePayload, 'includeAuthoredAssociations');
+  if (authoredRequested) {
+    if (safePayload.includeAuthoredAssociations !== true || !safePayload.projectId || !Object.hasOwn(safePayload, 'sourceScope')) {
+      return { ok: true, atlasMatrices: makeAtlasMatricesFallback(safePayload.projectId, 'ATLAS_AUTHORED_ASSOCIATION_REQUEST_INVALID') };
+    }
+    if (getWriterLocalRuntimeProfile().profileId !== 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13') {
+      return { ok: true, atlasMatrices: makeAtlasMatricesFallback(safePayload.projectId, 'ATLAS_AUTHORED_ASSOCIATION_PROFILE_UNAVAILABLE') };
+    }
+  }
   const matricesModule = await loadAtlasMatricesModule();
   try {
     const sourceScope = matricesModule.normalizeAtlasMatricesSourceScope(safePayload.sourceScope);
@@ -20399,6 +20426,7 @@ async function handleWorkspaceAtlasMatricesQuery(payload = {}) {
         columnLimit: safePayload.columnLimit,
         listLimit: safePayload.listLimit,
         ...(Object.hasOwn(safePayload, 'sourceScope') ? { sourceScope: sourceScope.value } : {}),
+        ...(authoredRequested ? { includeAuthoredAssociations: true } : {}),
       },
       capabilitySnapshot: {
         platformId: 'node',

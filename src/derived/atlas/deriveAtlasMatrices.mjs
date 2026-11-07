@@ -1,4 +1,5 @@
 import { createDerivedError, deriveView, hashCanonicalValue } from '../deriveView.mjs';
+import { deriveAtlasAuthoredAssociationApplicability } from './deriveAtlasAuthoredAssociations.mjs';
 import { deriveAtlasObservationAggregate } from './deriveAtlasObservationAggregate.mjs';
 import { buildAtlasTemporalContinuityFromObservationAggregate, deriveAtlasTemporalContinuity } from './deriveAtlasTemporalContinuity.mjs';
 import {
@@ -551,15 +552,16 @@ export function deriveAtlasMatrices(input = {}) {
       },
     };
   }
-  const explicitScope = Object.hasOwn(input.params || {}, 'sourceScope');
+  const { includeAuthoredAssociations, ...matrixParams } = input.params || {};
+  const explicitScope = Object.hasOwn(matrixParams, 'sourceScope');
   const scopeResult = normalizeAtlasMatricesSourceScope(input?.params?.sourceScope);
   if (!scopeResult.ok) return scopeResult;
 
-  return deriveView({
+  const result = deriveView({
     viewId: VIEW_ID,
     coreState: input.coreState,
     params: {
-      ...input.params,
+      ...matrixParams,
       projectId,
       languageCode,
       rowLimit,
@@ -619,6 +621,13 @@ export function deriveAtlasMatrices(input = {}) {
       return explicitScope ? { ...value, sourceScope } : value;
     },
   });
+  if (!result.ok || !explicitScope || includeAuthoredAssociations !== true) return result;
+
+  const authoredAssociationApplicability = deriveAtlasAuthoredAssociationApplicability({
+    coreState: input.coreState, projectId, sourceScope: { ...result.value.sourceScope }, limit: listLimit,
+  });
+  const value = { ...result.value, authoredAssociationApplicability };
+  return { ...result, value, meta: { ...result.meta, outputHash: hashCanonicalValue(value) } };
 }
 
 export { VIEW_ID as ATLAS_MATRICES_VIEW_ID };

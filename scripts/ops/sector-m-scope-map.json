@@ -580,6 +580,8 @@
       "src/derived/atlas/deriveAtlasAuthoredAssociations.mjs",
       "test/unit/atlas-authored-associations.test.js",
       "docs/tasks/2026-11-06--atlas-authored-associations.md",
+      "test/unit/atlas-authored-association-applicability.test.js",
+      "docs/tasks/2026-11-07--atlas-association-applicability.md",
       "test/contracts/yalken-atlas-v5-final-audit-p0-04-design-os-binding.contract.test.js"
     ]
   },
