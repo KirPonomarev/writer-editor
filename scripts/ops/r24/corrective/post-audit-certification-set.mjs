@@ -173540,7 +173540,761 @@ const R24_INTEROP_ATLAS_TEMPORAL_SCENE_SOURCE_20261107_DELTA = Object.freeze({
   ]
 });
 
-const R24_INTEROP_CURRENT_INPUTS_DELTA = R24_INTEROP_ATLAS_TEMPORAL_SCENE_SOURCE_20261107_DELTA;
+const R24_INTEROP_ATLAS_TEMPORAL_AUTHOR_INPUT_20261107_DELTA = Object.freeze({
+  "id": "YALKEN_ATLAS_TEMPORAL_EXPLICIT_AUTHOR_INPUT_MAC_20261107",
+  "successorBaseSha": "837ee63404b3f2eb2a9d3a68d25b509b2c71c5e1",
+  "successorBaseTree": "4916dc8cc8c1a6f7f3ba634d105d12dbf3a2da46",
+  "bindings": [
+    {
+      "path": "src/main.js",
+      "sha256": "d5a90ae3bdf17d0e9e632ce08c707c8cded6966c102f83cc69fec696b4193afb"
+    },
+    {
+      "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "sha256": "39dbad55068bd3a93cce5f92b8036b46ef722831e8cd298243576cd7f7d5738d"
+    },
+    {
+      "path": "src/renderer/editor.bundle.js",
+      "sha256": "d89383ebb733752e4ec73196681206a98a1e98e2a53cbc86d7acd0abef901ed6"
+    },
+    {
+      "path": "src/renderer/editor.js",
+      "sha256": "361eae8b017c6460c22fdab1208d7072ef7aee397d9ed2d4b2a26f411cd3ce75"
+    },
+    {
+      "path": "test/unit/project-tree-pathless-contract.test.js",
+      "sha256": "ccd6a971618e732218a50f1bad67b96f3172eec81f584af4e732bf345570e055"
+    },
+    {
+      "path": "src/preload.js",
+      "sha256": "3ee61cab2fde58f05be26dd7fe8d383d08c0628fc5d36ac30ea454ee97fd5280"
+    },
+    {
+      "path": "test/unit/r24-s1-envelope-integration.test.js",
+      "sha256": "6448baedaafdfaadf6aa93d4abfb98d8bdf9f0bbfd162606f456f391a83dcd38"
+    },
+    {
+      "path": "src/preload.bundle.cjs",
+      "sha256": "77410db0564c6df4eb743bc5c2fd77eacca2a7bb9c666d7e3e216d3408276284"
+    },
+    {
+      "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
+      "sha256": "bd9f206841e3538ab45b7b44f0d34e3f6a20ce87ccbf63a4661987d970c18c52"
+    },
+    {
+      "path": "test/contracts/rtk-word-novel-import-partition.contract.test.js",
+      "sha256": "dfaacea4ce201e44ffc3ce9bce7c15a9c65363e43f2879edacf3c788a88b98b3"
+    },
+    {
+      "path": "test/contracts/rtk-word-scene-identity-main.contract.test.js",
+      "sha256": "a6c85d4c4406709f1b3b6879efe81a95ded4473281c1fe129c309870be76628e"
+    },
+    {
+      "path": "docs/CONTEXT.md",
+      "sha256": "f378000bf1b6c42dd18cecb42b4e1c47e08112b8afd6ffd505126eb2cb72fb2e"
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "sha256": "ad0dfe29eaf9dc5e96cf7529c42778807e583c41096cc569992d01dac45c8329"
+    },
+    {
+      "path": "docs/WORKLOG.md",
+      "sha256": "ae70736cfc34ff048d59291e569133940abbe27004b3e806aa713cb44768ad45"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "72067115f69dc10390b1cfb76f5289ef83b2c8bff80837f28a464adaa08ff4b6"
+    },
+    {
+      "path": "docs/ARCH_DIFF_LOG.md",
+      "sha256": "9e3f0da708a923fa5018a4a3ea7490e9cbc00431257c35b9efc8f16797cc4644"
+    },
+    {
+      "path": "src/command/commandSurfaceKernel.js",
+      "sha256": "59cb92fe22ea14c09abae404eaec8838ba1bc9ebc6633751792045becc7faae9"
+    },
+    {
+      "path": "src/product/stage10ProductWiring.mjs",
+      "sha256": "30d10f86ccddd6aede0612bee45befe2d7b447cd6ecb9ac680666d0d18155160"
+    },
+    {
+      "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "sha256": "c79b39d4d62fb44f58db7c51462bfd5f0f093605faa2e9d8d9130251d0fa6f0b"
+    },
+    {
+      "path": "src/renderer/commands/projectCommands.mjs",
+      "sha256": "cff4f777d955be3a4af8a794c8dc00ceb762cc285259c58bd64470d67d276cc5"
+    },
+    {
+      "path": "scripts/after-pack.cjs",
+      "sha256": "3bb80c1c5ec40da6ff7b0e63960aa589bee399497adde6b0de0896c6f8efa64b"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "aac1bbd159fb08157eef0a82d5afe8a729f7b13ddd789d9724b8d496e1485b7e"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "53427b097689d2ae33bf84642fd8118eafee21f6d53fc3ad93c17df5a6c39ca4"
+    },
+    {
+      "path": "scripts/ops/release-candidate.mjs",
+      "sha256": "6338117c6c3a11fae7545d773bdf708dee5fa1c0b1dcbabcb547ff5078dd3bc7"
+    },
+    {
+      "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
+      "sha256": "70aba15025e71851f93d7777cb2b5bcb9f61ec6e6f5d55d623bac6917c4d6b23"
+    },
+    {
+      "path": "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs",
+      "sha256": "fb314243dc5f12ced34257efd30a556deacecfb2fc1f77a7ed945ac064f52944"
+    },
+    {
+      "path": "docs/PROCESS.md",
+      "sha256": "ed46f07e957d2a1476fc429aeef9e842ae4309043d75ba6db0bb3ddfd4beb397"
+    },
+    {
+      "path": "scripts/agent-guardrails-lib.mjs",
+      "sha256": "ac063f0827c61d76e2dce49907f447c58ce815f37a36d973233a5c3dc2caac0f"
+    },
+    {
+      "path": "test/contracts/agent-architecture-guardrails.contract.test.js",
+      "sha256": "2745f8c9279cc3799af32ead5995d14207c9b2b37a8b08dad1e49503f0879903"
+    },
+    {
+      "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "sha256": "c2e6f9288403159fa1212dabe48325919f682dc31ca9536b6012485e514c0f7a"
+    },
+    {
+      "path": "src/renderer/flags.js",
+      "sha256": "7c0615006baa27997b47c58131206380a29550b34c4c9257992b9d9bd0e930ae"
+    },
+    {
+      "path": "docs/tasks/2026-10-22--full-mac-atlas-map.md",
+      "sha256": "20a82e0ea5f46abd30ecf9e1501c6d6e7baef86ac6fda6fe69c92daf472bd548"
+    },
+    {
+      "path": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "f172c81d72a160c73810ffd9502109eb0222c420d89371118a7689dfeab457e4"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
+      "sha256": "16f3d821c3b4f2aadfd1871de435799359f8521c78435dc74d6754b43a166247"
+    },
+    {
+      "path": "test/unit/paste-focus-signal.test.js",
+      "sha256": "2ae57c6c1488f121cb1c7b0c140b2c0e962ff3a5c11e031a11d91ae593ceaa0f"
+    },
+    {
+      "path": "test/unit/metadata-inspector-read-model-main.test.js",
+      "sha256": "3d54c6c050a2f07a90df976354837d9f4a39838936e12a66e6e8c4540aa1b039"
+    },
+    {
+      "path": "test/contracts/rtk-word-list-pattern-renderer.contract.test.js",
+      "sha256": "d1eec777d8f15f99a93a48f63261c3ce1df66d186ac949818c9a0518e3d20f30"
+    },
+    {
+      "path": "src/core/writer-local-profile-v1.cjs",
+      "sha256": "f0c369e6b0f8cace87f6157706d24e74142e97764ec368d8488875b9b120fa0e"
+    },
+    {
+      "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "sha256": "518dfc3a0e1e6e5f44cf328075eff47d65f408f7728d92bcdc213878e3d7a561"
+    },
+    {
+      "path": "src/core/runtime.mjs",
+      "sha256": "9fa80d656aeebcf234156e06f063e72dc849d24c99bd6ccccf3a5a53c0bb8259"
+    },
+    {
+      "path": "src/core/registry.ts",
+      "sha256": "107c2653578f74767d380438630d8c267ba52af6404fd1348bea6cc977e6ead6"
+    },
+    {
+      "path": "src/renderer/design-os/atlasFeatureIntegrationManifest.mjs",
+      "sha256": "3ef6cec3d4deec81fd605b680a5dcdb585bc539c212e7c629af2dc3dc8ae382b"
+    },
+    {
+      "path": "src/shared/productCommandRegistry.cjs",
+      "sha256": "816e64bc7111992e89c2402e07872136a17e2000a13e5925887429c33f3f2d8d"
+    },
+    {
+      "path": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+      "sha256": "ac4fdf95753fbe0b342f99246b94cb0d5e82d289418946cc1ad3b3929eba15d9"
+    },
+    {
+      "path": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+      "sha256": "7dccb519c7b1c5f18c8051c0dac9570acffb4b0ca09933ba539578dd31646c71"
+    },
+    {
+      "path": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
+      "sha256": "41b6ea10d8094698d7017e9fdc8088b62b8808bb9dfd9d87cab0f73cd0bf9e0b"
+    },
+    {
+      "path": "src/menu/menu-config.v2.json",
+      "sha256": "8460a56d479599f35df7fc90e94fc5521beffe251bc00f9701eb657f62785cfb"
+    },
+    {
+      "path": "src/runtime-governance/docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+      "sha256": "ac4fdf95753fbe0b342f99246b94cb0d5e82d289418946cc1ad3b3929eba15d9"
+    },
+    {
+      "path": "src/runtime-governance/docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+      "sha256": "7dccb519c7b1c5f18c8051c0dac9570acffb4b0ca09933ba539578dd31646c71"
+    },
+    {
+      "path": "test/unit/keyboard-shortcuts.test.js",
+      "sha256": "974f660079d82ce487a9eb2a76ff0a1781bf57a8777115bf01186df3f2ce52f7"
+    },
+    {
+      "path": "scripts/ops/menu-config-normalize.mjs",
+      "sha256": "273d99906cc57fa1fed210717780c08171859a0e9efecda979dad14488c9be85"
+    },
+    {
+      "path": "scripts/run-tests.js",
+      "sha256": "baa06fbd364e0b3e298f52206d10e0c022b0ef625f0d8bf88d7f04f2cc72fe64"
+    },
+    {
+      "path": "test/contracts/promotion-heavy-lane-entrypoint.contract.test.js",
+      "sha256": "443e191854341e64dd0e6280e81f4491df280e45b2c3e11f9e45443ad7baceeb"
+    },
+    {
+      "path": "test/contracts/rtk-word-comment-edit-intents-renderer.contract.test.js",
+      "sha256": "09a412ad89a7485be846547bd6feef614e86c429b3dc2dcb9c7c64a021d77682"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-e04-c02-atlas-alias-scope-suppression-boundary.contract.test.js",
+      "sha256": "8f130323b3ccba941072bf6338f9fb21cbf8a1cb3f5e8b08941ab782d7f39ef3"
+    },
+    {
+      "path": "src/derived/projections/projectionInspectorManifests.mjs",
+      "sha256": "cefb22c04f67079f757eb907dd1b825b0a20444343a2651cd52fa90d42ccac6b"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-e03-c05-projection-inspector-fallback-manifests.contract.test.js",
+      "sha256": "afd8a776eeca4038988ae5806fd92f03b8d07db6a6189d680ec9fe9d8a95fe3c"
+    },
+    {
+      "path": "src/core/entitlement-law-v1.cjs",
+      "sha256": "a6fc1bbd56623fb6d5b9a6f75c7725bc41977b42a9cfab67559e4b1cc00fbc0f"
+    },
+    {
+      "path": "src/core/pulse-claim-v1.mjs",
+      "sha256": "5e29d24b917bd6b9fed39c6d308b8e209540ce5162b01537d00224517070bd52"
+    },
+    {
+      "path": "src/renderer/commands/capabilityPolicy.mjs",
+      "sha256": "10811db501fe41ad5e052e8f4ff66657ae0d2204bba88cdc8be3a654cd2124eb"
+    },
+    {
+      "path": "src/renderer/pulseHistoryPresentationModel.mjs",
+      "sha256": "61456610aaadfd82448d8e6cc37d011abeace5e1b8867f0a7df61361779180bc"
+    },
+    {
+      "path": "test/unit/r24-wp806-pulse-claim-integration.test.js",
+      "sha256": "e7daca4c36ea4812e4736d9a35ee43c1088e7790a7bfaab0de7f6d57ae4dc127"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "250d307477bf437cbc529ba56b01d39e914e4f9ae753dffb767b632313026524"
+    },
+    {
+      "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
+      "sha256": "f461c13a171690cec3178326db05eb289fa480ea645fecdbdf7fb7f252f5cfb2"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-final-audit-p0-08-stage10-product-wiring.contract.test.js",
+      "sha256": "fdbd0fc50c37982e870266e421c196871dc22eec407ec4b7255a0edb8a5aa75f"
+    },
+    {
+      "path": "src/export/pdf/pdfExportHandler.js",
+      "sha256": "66a355d3d9a13051a90b7544a2d96b977a580e87552c3520d35735d12a709b51"
+    },
+    {
+      "path": "test/unit/pdf-export-handler.test.js",
+      "sha256": "31ea08f3a6ff44608361fe1fbc7434ff87557618e51ff8a799b015b3dbc1a73f"
+    },
+    {
+      "path": "docs/tasks/2026-10-29--certification-applicable-inputs.md",
+      "sha256": "fbbad21ea2d91249b959abff64e14c1b4df4521284cafb219eff2745ed300b63"
+    },
+    {
+      "path": "test/unit/manual-map-scene-navigation.test.js",
+      "sha256": "62ccced5d75b82ad22ea4eab5db1b2edfb84cc65d5ee015c74933ac98c6b5eaf"
+    },
+    {
+      "path": "docs/tasks/2026-10-29--manual-map-scene-navigation.md",
+      "sha256": "709c12d4fc53b166f2fafb3cc1826806287ac0135ba35a8a846f5ffeca81ef65"
+    },
+    {
+      "path": "src/derived/atlas/deriveAtlasContinuityLedgerSurface.mjs",
+      "sha256": "fc41f18eed4756db0ab97b57bc637dec857cb6b1ff6af027a1ab5642f6d3cb58"
+    },
+    {
+      "path": "test/unit/r24-wp605-wse-revision-time-object-integration.test.js",
+      "sha256": "342bbe52162d3d2acbbdd7d8eaf263f0c09c90cfcfe0d73fa1da9e102b86b20f"
+    },
+    {
+      "path": "docs/tasks/2026-10-29--wse-semantic-diff.md",
+      "sha256": "3e775297841769968805d85b6adca492eeae1a9d33d366c3fe5f40e5b262a933"
+    },
+    {
+      "path": "scripts/ops/r24/corrective/rcv00b-current-head-effective-state-compiler.mjs",
+      "sha256": "2b559b5fc07d97ceddbd28700285603dfa9336a7982d2d4881c3f98440c6e67a"
+    },
+    {
+      "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "12395d379d836c705ff4d1898729f3098a68cb9da4feab3f7a35f788664487ac"
+    },
+    {
+      "path": "docs/tasks/2026-10-30--c1c-bounded-throughput.md",
+      "sha256": "0d425f8f86ab8aeb80d61e60960a146ed13a098262f38444b2062b060964d256"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "4a13b139253c18b054d3a0db6d4cf6f1485f1920c1d5653e8665bde8413c2f62"
+    },
+    {
+      "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "8afa1818ef18c89bab498af7f721fa2a69cc58d4f185e8214c5327e2ae7d9d08"
+    },
+    {
+      "path": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "cc488d0ba124de36c923ff95978fdb0ee0b614df04fc2252efce82db3a2289a5"
+    },
+    {
+      "path": "docs/OPS/R24/ENV_FLAG_REGISTRY_V1.json",
+      "sha256": "deb89def11ae566183286726fa12d4f195239f47a48bcebd9afa5f2cab153da1"
+    },
+    {
+      "path": "docs/tasks/2026-10-30--pulse-authored-corrections.md",
+      "sha256": "66ebb5ce863c8c5c4d9eeaa2c7f400844ea3985b94728df57cde575ef1986637"
+    },
+    {
+      "path": "src/core/pulse-privacy-v1.mjs",
+      "sha256": "22ff796ae6299c60134dfca21bfaf0cf569d1fdb21e92e9ce12a7331144859b1"
+    },
+    {
+      "path": "test/unit/r24-wp804-pulse-privacy-integration.test.js",
+      "sha256": "d727eda4391567bb3b6f639e94c5a456b884c6d3642180f8b633f1b14d210bd4"
+    },
+    {
+      "path": "test/unit/r24-wp806-pulse-claim-mutants.test.js",
+      "sha256": "f72790d67feefad1feb7bfe2d25ee5e489113913afdf7a80bfe1b78c7b89f4fe"
+    },
+    {
+      "path": "test/contracts/r24-wp804-terminal-carriers.contract.test.mjs",
+      "sha256": "73eaae3abff45fb2cedfc96ab8844ca86194a1684afcc7ba925716529e78910d"
+    },
+    {
+      "path": "docs/tasks/2026-10-30--navigator-save-counter-freshness.md",
+      "sha256": "3f10553d3863bee15fcffe7a63f1ceb89758eb54e208edbdb68a9f19467a9510"
+    },
+    {
+      "path": "test/unit/navigator-derived-counters-renderer.test.js",
+      "sha256": "cbb7da96b6acfc620b76dc56337d0dc3d311c83356408fc252d4003ea91df203"
+    },
+    {
+      "path": "test/contracts/rtk-word-nested-tables.contract.test.js",
+      "sha256": "ba1268a8ecbe5fda9b174af3d805f39c0049c211807f28dbf74cc9672de5b871"
+    },
+    {
+      "path": "scripts/ops/r24/corrective/current-bindings-finalizer.mjs",
+      "sha256": "a16a7f58f9557922a3590ea46f3ee720ad7d9aefea0f7d0473d018f902438f91"
+    },
+    {
+      "path": "test/unit/current-bindings-finalizer.test.js",
+      "sha256": "461fb0c2fa8ca2f4cd3b1eb78a4465b4e85e0c55730612951df08f67d3287012"
+    },
+    {
+      "path": "docs/tasks/2026-10-31--current-bindings-finalizer.md",
+      "sha256": "886899e394d69cfa05e3a1015599d70b8e34791ed7bf5c5072a7978ee2b1a76d"
+    },
+    {
+      "path": "scripts/ops/r24/corrective/c2a-effective-certification.mjs",
+      "sha256": "978eb47c88004ac4ac38773c94d5552ddb1f29212e4646b29d23483a8a712a3d"
+    },
+    {
+      "path": "scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs",
+      "sha256": "2909665be72b5c47795234f6429886125b2c04d2d5bc991af626f6ef66d97cc9"
+    },
+    {
+      "path": "docs/references/YALKEN_DESIGN_TOOL_MATRIX_V1.md",
+      "sha256": "5638bc02e16e68314f34b54993265cb7d8f02f953a9dbfb2681324f6d38a64f5"
+    },
+    {
+      "path": "docs/architecture/AGENT_TASK_ARCHITECTURE_DECLARATION_V1.schema.json",
+      "sha256": "54559d324d7b2d3e3692417017b089a85ee1f2e79cd2fdc61a7441d42e238da6"
+    },
+    {
+      "path": "docs/tasks/2026-10-31--evidence-based-ui-router.md",
+      "sha256": "32d4d197c11d4f3b21486d11580705bdb03c2914f0999fafc786b064f0a5591d"
+    },
+    {
+      "path": "test/unit/agent-architecture-guardrails.test.js",
+      "sha256": "f8660889323ac82d587948123c2590c5d564cf4817161aeb24f38d433f25f2dc"
+    },
+    {
+      "path": "docs/tasks/2026-10-31--environment-epochs-full-configuration.md",
+      "sha256": "ef86a20e57f29a47a70174ade15927c40f7433f7483ef28f80d486911a458267"
+    },
+    {
+      "path": "src/main/environmentEpochPort.cjs",
+      "sha256": "4b4c9726244afe057d5e4630f532d521c57f34bcef6adacbeef5a854274be693"
+    },
+    {
+      "path": "src/renderer/design-os/designOsEnvironmentEpochs.mjs",
+      "sha256": "d2767701ff45093811bf7aa8fbc02875c0b7ed98d66a1dc220240058fe3cb3fd"
+    },
+    {
+      "path": "test/unit/environment-epochs-full-configuration.test.js",
+      "sha256": "65e6212b4012cbd09c28e77dca78e246d94117439e785e24140993c3188fce85"
+    },
+    {
+      "path": "test/unit/environment-epochs-full-port.test.js",
+      "sha256": "92ee72c97835a2e3e04fb05e248ea7e072797f51bcfc66013c15c989a3cd6372"
+    },
+    {
+      "path": "test/unit/environment-epochs-full-ui.test.js",
+      "sha256": "c0a7a42b6b9182d70b4ad905786d1af6f30f4e3cbaa5aa58d4ebc4c64f98087f"
+    },
+    {
+      "path": "test/unit/sector-m-command-kernel-shell-action-adoption.test.js",
+      "sha256": "94074c358cab7b3d7edaf001aa54f6402f295d701e9cf6d0ae6784c2b66ad00a"
+    },
+    {
+      "path": "test/unit/sector-m-design-os-save-boundary-truth-sync.test.js",
+      "sha256": "441618f58a02ae3fd74f8d0fdb90d617c2d6ef5871b888704c5411b45f364ca2"
+    },
+    {
+      "path": "test/unit/sector-m-toolbar-master-library-sync.test.js",
+      "sha256": "a2e3fd1231aa275ff0c9ed29a0f1a530ec976838e28321094cb77ba207114b5c"
+    },
+    {
+      "path": "test/unit/sector-m-toolbar-master-remove-return.test.js",
+      "sha256": "2533d46f97c1cdab816f75af48d2b30abedfe094852ae9599befa8eaf76504ab"
+    },
+    {
+      "path": "docs/tasks/2026-11-01--atlas-unmentioned-entity-alias.md",
+      "sha256": "daa6f365fb6bddac8b5df1c2effad392c824381a39bbcd26f864d1d1aab43d3b"
+    },
+    {
+      "path": "src/derived/plot/derivePlotProjection.mjs",
+      "sha256": "be2770772c8634f03910a528f302f7532cb3994be3f059e9bbeb715417ff3055"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-e03-c01-plot-projection-originref-sequence-layout.contract.test.js",
+      "sha256": "dcdcd3047aabd40e62bcb5df9fee56270577cde31a4036f5a7474c55d05f0740"
+    },
+    {
+      "path": "test/unit/plot-source-navigation.test.js",
+      "sha256": "62510d4cb77e3ec3f4cbc92ca49660dfbbac9189d6b78059bcd688b3766c4b9e"
+    },
+    {
+      "path": "docs/tasks/2026-11-01--plot-source-navigation.md",
+      "sha256": "97d60e6c10c82010114b416cf56e1568c79745311b34f7920968c893e82f3f06"
+    },
+    {
+      "path": "test/unit/sector-m-preload-tree-document-command-bridge.test.js",
+      "sha256": "da71dde5e2a2c81d5ee23c657a3f53a73355bdeba51b3f2b3286e4fb9db1a84c"
+    },
+    {
+      "path": "docs/tasks/2026-11-01--idea-origin-navigation.md",
+      "sha256": "5a8fad6cf709191fc9de208bb24b16356efb2b9ba14fba4df022f361a49a9adb"
+    },
+    {
+      "path": "test/unit/idea-origin-navigation.test.js",
+      "sha256": "52252bf7048557f835d18251c2d74cd03824f761cf0b611534d1cfae38e9be90"
+    },
+    {
+      "path": "docs/tasks/2026-11-02--meaning-source-navigation.md",
+      "sha256": "97c3531a730a6295d94662473d01b4a396ac39537b629e4a4d855c5d4a09e724"
+    },
+    {
+      "path": "test/unit/meaning-source-navigation.test.js",
+      "sha256": "7cee49c2fa61efca88535a2a58941263b80f1512553a69a68918e40669167a36"
+    },
+    {
+      "path": "docs/tasks/2026-11-02--scene-meaning-promotion.md",
+      "sha256": "8123c15584d067da35a6ca2d40466497117c0dea8d2a66087f693f7386dab146"
+    },
+    {
+      "path": "test/unit/scene-meaning-promotion.test.js",
+      "sha256": "22d5e7f088d43161644a5a50eead8d01c7f68a36da163956d2abce24d1f59481"
+    },
+    {
+      "path": "docs/tasks/2026-11-02--mandatory-test-setup-diagnostics.md",
+      "sha256": "3a77f9b2e6d710d1a6d401b7b772f4b81e327c4b861fc0fc95c975f89e0cf25a"
+    },
+    {
+      "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
+      "sha256": "5a7b15396c72da6cb5da76d8e4d3f7fbc9ffb6e194fa7a56716e566fcaa51732"
+    },
+    {
+      "path": "scripts/test-diagnostics.cjs",
+      "sha256": "bfbcd27ee2935206a248d510fbf13f2c2e0ffc7d192df55e2d94e8538818102f"
+    },
+    {
+      "path": "test/unit/test-diagnostics.test.js",
+      "sha256": "ff45ff6787423974ebf11db0f3b6a61d16839ad4da775f6235cf63c643a79e94"
+    },
+    {
+      "path": "scripts/guards/ops-current-wave-stop.mjs",
+      "sha256": "ae28c706c18eda41c3b35a7c69d3a030f18e74b9b4d43e287387ffa1df884d89"
+    },
+    {
+      "path": "scripts/test-environment.cjs",
+      "sha256": "c2382b5696c8498ef122501c771789c4f49f8bc77655a290d502dc678e1b1dba"
+    },
+    {
+      "path": "scripts/ops/r24/test-mutants.mjs",
+      "sha256": "0042b56dc425a38bf294bb15b1c70f6e762294f0d2f890d61d79bff925ef037f"
+    },
+    {
+      "path": "scripts/ops/r24/mutation-context.mjs",
+      "sha256": "004ae1c1e468866d7935861f081b41bb008fae009e95a58c57712bd7b59deb5b"
+    },
+    {
+      "path": "test/unit/r24-mutation-context.test.js",
+      "sha256": "5066ebf39054c3eeb925450bb1acad0411c66ddabe63b7d68ea0506a323dc4a0"
+    },
+    {
+      "path": "scripts/ops/r24/tests/mutation-boundaries.test.mjs",
+      "sha256": "2126f4e1f2548f3936a2173057479df8017a84fdb6db12d94a37985c860953e9"
+    },
+    {
+      "path": "scripts/ops/r24/tests/wp603-recovery-post-audit.test.mjs",
+      "sha256": "b7be350d3cad09babad229486506fa787db02d568f8be03d26e157ea0ece4901"
+    },
+    {
+      "path": "scripts/ops/ops-synth-negative.test.cjs",
+      "sha256": "2f21afa5359d360b009a23867cc3db085f4b7c091b705e5a8fa456a5b148366b"
+    },
+    {
+      "path": "src/menu/menu-artifact-lock.js",
+      "sha256": "b2cc29adba3af48f6d19b34480c42725491b2df5ca82f7ad1bf980f5b032e574"
+    },
+    {
+      "path": "test/contracts/menu-artifact-export-and-runtime-verify.contract.test.js",
+      "sha256": "9eabd395f86fea80eabeab97f4c55733dda13a9b29709301239dabda8546bb5e"
+    },
+    {
+      "path": "docs/tasks/2026-11-03--mac-menu-artifact-namespace.md",
+      "sha256": "a1362cd78fb9cc322882f463a65a7ab8518f15272a2a52af6ae08981cb381f60"
+    },
+    {
+      "path": "src/renderer/tiptap/index.js",
+      "sha256": "8eec3fd967e62f4f25d0a9eb0460d2f406a27e262b8fc05b429f63c037c82011"
+    },
+    {
+      "path": "test/unit/sector-m-native-history-ownership.test.js",
+      "sha256": "b67ae5ace3690eb0ba368fb26e9269106c22d05f2dc6b6916c7326a1c8d214a7"
+    },
+    {
+      "path": "test/fixtures/menu/edit-history-native-roles.v1.json",
+      "sha256": "6eddb09e789abfa0513416b654f0340625817f3a59b1c5046f6261a11e8ec0ca"
+    },
+    {
+      "path": "docs/tasks/2026-11-03--writer-native-history.md",
+      "sha256": "33b3bd8279eb2890a21b4a09a7f6aa6dc77e3632c85e5f962163e866aa9c98e2"
+    },
+    {
+      "path": "src/menu/menu-locale.catalog.v1.json",
+      "sha256": "56efe4a0f34bdb3b6719be2c432a0a8ab477ec272b3899d41fcb7bddbabe7970"
+    },
+    {
+      "path": "docs/tasks/2026-11-03--writer-pdf-target-bytes.md",
+      "sha256": "97ee19d06ea8b8eeed9a9aa6370bce450fa2c230dcf97a593fd0c256183fb87c"
+    },
+    {
+      "path": "docs/tasks/2026-11-04--writer-pdf-zero-margins.md",
+      "sha256": "f50d2b4edc5f8286d9115e1d9142c97bb7aaea3c39585f7b77dba5b43176cd31"
+    },
+    {
+      "path": "src/product/stage10ApplicationCommandRoute.mjs",
+      "sha256": "178eb409d26c79a0ec7c8485e7e278dccf2062cbcb25b969a03275eae786cc87"
+    },
+    {
+      "path": "docs/tasks/2026-11-04--manual-map-native-dialog-budget.md",
+      "sha256": "ee047f3257acbc74ad2eeed6c01e5393fa803443ba4bb3e2ba65e53f0187ca0a"
+    },
+    {
+      "path": "src/main/atlasLanguageAnalysisPort.cjs",
+      "sha256": "f77a01b660fc9418c3277b02b0452601e946c5e672530f208fbb805c12c36462"
+    },
+    {
+      "path": "src/main/atlasLanguageAnalysisWorker.py",
+      "sha256": "aee986442e68921ad4c79c1b2fec444b606d43f95647be41cd3fa95ebd0848ff"
+    },
+    {
+      "path": "src/main/atlasLanguageResourcesV1.json",
+      "sha256": "d2f74c4d3855663fe8bef1bf6a28322de4318fb9350d2bb7c0b47238c1f8628f"
+    },
+    {
+      "path": "scripts/build-atlas-language-resources.cjs",
+      "sha256": "8f743f597bd8549077216fd11e1bad0db00659d9d92b5db5b36646d93db9e028"
+    },
+    {
+      "path": "test/contracts/atlas-offline-scene-analysis.contract.test.js",
+      "sha256": "e1c493ad0656c015b89ac2d563813a45d8e4de984d673542e7a80545a9d74048"
+    },
+    {
+      "path": "test/unit/atlas-language-resource-builder.test.js",
+      "sha256": "4ad57d8877033a69f938d502a20f7ed577dc98e3056d530c028828980b6d4bcb"
+    },
+    {
+      "path": "docs/tasks/2026-11-04--atlas-offline-scene-analysis.md",
+      "sha256": "66194133a08a6ab166a03d5a24c4b3adbe24e73484fbbca6ff8dce983f2611c1"
+    },
+    {
+      "path": "docs/OPS/STATUS/ATLAS_OFFLINE_LANGUAGE_ENGINE_DECISION_V1.json",
+      "sha256": "df16aea027d5067e8f3977531171b90211cb5c9f3495ed9a75d50b471c01252e"
+    },
+    {
+      "path": "docs/tasks/2026-11-05--atlas-native-source-notices.md",
+      "sha256": "9a87851145c1e361ca1593fcb3b5331b3e5967bed9c22f13039068e9d54c055d"
+    },
+    {
+      "path": "test/unit/project-tree-reorder-identity.test.js",
+      "sha256": "86df01a4e544279ab4afee72c1f484d7db7129e11543123e99a58a92ff864399"
+    },
+    {
+      "path": "docs/tasks/2026-11-05--writer-tree-reorder-identity.md",
+      "sha256": "e2383974c9767511d665cd019259cf51bd1099f78258becf4e8f7b5aabd0824d"
+    },
+    {
+      "path": "test/unit/writer-line-height-field-coherence.test.js",
+      "sha256": "e4b35f02b609cb9c11e140f528459db9cdc88d901782fe6939c56b0c58f41372"
+    },
+    {
+      "path": "docs/tasks/2026-11-05--writer-line-height-field-coherence.md",
+      "sha256": "d4c1319da34eef4889ac297290460a9974524e66f46060772c6c9d07b3e3cebf"
+    },
+    {
+      "path": "test/unit/writer-line-height-custom-input.test.js",
+      "sha256": "72ca0d54cfccb3b44fec3d2d08060e6a10b0c0587366efea69100375a091971d"
+    },
+    {
+      "path": "test/unit/writer-custom-font-size-input.test.js",
+      "sha256": "d02fdfc073a69355b3f569144bd9d932a7139dcc43938425a20841ca4dbb5433"
+    },
+    {
+      "path": "docs/tasks/2026-11-06--writer-custom-font-size-input.md",
+      "sha256": "9b9dfd531558052038d2fd822ddb224a8625de5ad2ee0e0bc563e42171df63d3"
+    },
+    {
+      "path": "test/unit/sector-m-command-surface-ui-fencing.test.js",
+      "sha256": "0e71fbedfb06b6b2a78344fc1394286586652de0cb717a0c54aa617f6ddc21ba"
+    },
+    {
+      "path": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "sha256": "e8b0d3e650eae3cff0663b8886294044cbc9e4718b50d4772f06dc8357481b56"
+    },
+    {
+      "path": "docs/tasks/2026-11-06--one-test-cost-historical-git-reads.md",
+      "sha256": "299285c1f52ac1738da156341ff17a130cb1a21e6feaaa33fa0df71ffaa80d75"
+    },
+    {
+      "path": "test/contracts/r24-p01-admission-preparation-compatibility.contract.test.mjs",
+      "sha256": "3f1abc474d37681121455cc979599f29b1092070148a32a980b95c193d4e4317"
+    },
+    {
+      "path": "test/contracts/r24-wp601-historical-inventory-claims.contract.test.mjs",
+      "sha256": "02676ce763dd49f1e0d63c69e546ef80cc540e9041aff11ab58ead31d406107e"
+    },
+    {
+      "path": "test/contracts/r24-wp705-historical-inventory-claims.contract.test.mjs",
+      "sha256": "10632cb557aa9790c6e7512211d2a4ba50bffa24af11bd4272b863c2a78c7353"
+    },
+    {
+      "path": "src/derived/atlas/deriveAtlasMatrices.mjs",
+      "sha256": "e3ab9c3a5c99daee243d1355e791cf9fbd47986abe87c818ed52269d0060e1cd"
+    },
+    {
+      "path": "test/unit/atlas-matrices-source-scope.test.js",
+      "sha256": "805f394f94fb4077c1fc52d73963beac40f84587a1a11394232c623753180b87"
+    },
+    {
+      "path": "docs/tasks/2026-11-06--atlas-matrices-source-scope.md",
+      "sha256": "27d745f0ebfbcf8180207e8fe67c8d84f506debe0883a4410ae311139ace754d"
+    },
+    {
+      "path": "src/core/atlas-authored-associations-v1.mjs",
+      "sha256": "b10f4bb6f22d6e46b9cb705173664c6f77e6e720feee4b8a2309a349a0822549"
+    },
+    {
+      "path": "src/derived/atlas/deriveAtlasAuthoredAssociations.mjs",
+      "sha256": "0bb00e205505663d0b4986a97fdbe382ca45809ba05d158e50c6fb56f1b61954"
+    },
+    {
+      "path": "test/unit/atlas-authored-associations.test.js",
+      "sha256": "df24b0877475e02c233e82924c6ff4038c6597774b4c508a38c261f4e60c427d"
+    },
+    {
+      "path": "docs/tasks/2026-11-06--atlas-authored-associations.md",
+      "sha256": "def973c8aeb4291f332ca0982354ee403f270d2c268faf2ec59d6f6cb5153d6f"
+    },
+    {
+      "path": "src/core/contracts.ts",
+      "sha256": "866efeb879f4c88c168cf1d7712236edb753f69ad4784cab6f6eb4779ed70b7a"
+    },
+    {
+      "path": "src/core/domainEvents.mjs",
+      "sha256": "2c9f21ec5a07702f3e9df95a3f71f0cb35022bf93120628cc0459a019cc8cfd5"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-final-audit-p0-04-design-os-binding.contract.test.js",
+      "sha256": "2c35c6f895d5b4217831d9d383f35dd3c9013d9436e2337486350f29c347c6b3"
+    },
+    {
+      "path": "test/unit/atlas-authored-association-applicability.test.js",
+      "sha256": "08894495d4183a5afd5f04cc7d5050dbb95bf71333a55fe28e8c8663283e9482"
+    },
+    {
+      "path": "docs/tasks/2026-11-07--atlas-association-applicability.md",
+      "sha256": "1ba39fcdc8c1583a4cc0f1ed944b47b2dd4ed1be9395fce64b8dbe9936956e0f"
+    },
+    {
+      "path": "docs/tasks/2026-11-07--atlas-author-workspace-parity.md",
+      "sha256": "231eb6d6e8902ed162a940571c837d9f2fd85559ff57c3f95dd6c5326554752d"
+    },
+    {
+      "path": "src/renderer/atlasSurfacePresentationModel.mjs",
+      "sha256": "3bf92b7450ca26d40b2752811bb87be0fc85991eeccfcc4fad492a79d27fdc32"
+    },
+    {
+      "path": "src/renderer/atlasDossierLayoutPresentationModel.mjs",
+      "sha256": "2b1859d8f08f8af2891d88f825bd0b1809d691048823fd0b4f25fcde53d1ea82"
+    },
+    {
+      "path": "test/unit/atlas-authored-association-workspace.test.js",
+      "sha256": "93cef2e371e303ebda8702db0fcfedf1fc4f02af1c4076d3392fad3353ead7b1"
+    },
+    {
+      "path": "docs/tasks/2026-11-07--atlas-temporal-scene-source.md",
+      "sha256": "f4e1d496f5125b23f7a660883ffa3a068c0fe1cd25622b35f1037752c316eceb"
+    },
+    {
+      "path": "test/unit/atlas-temporal-scene-source.test.js",
+      "sha256": "dd21829396eb5c13ca0067b3deaeb3255e6c04cd74ce1046d63367dcfc6df2a9"
+    },
+    {
+      "path": "docs/tasks/2026-11-07--atlas-temporal-author-input.md",
+      "sha256": "2afa7494934df0231abe788fc698978ac67f7e6b758b7a86e161262dd4f639f8"
+    },
+    {
+      "path": "test/unit/atlas-temporal-author-input.test.js",
+      "sha256": "88250a3910ac0ed65319c649fe6008bce61c96af87b1e813d4acaf69851bf85d"
+    }
+  ],
+  "guards": [
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "fbd96ead886c6074c26e627d9dffd6b431f29ea4973a6d991a9482e8a0b7421f"
+    }
+  ]
+});
+
+const R24_INTEROP_CURRENT_INPUTS_DELTA = R24_INTEROP_ATLAS_TEMPORAL_AUTHOR_INPUT_20261107_DELTA;
 const R24_INTEROP_CERTIFICATION_APPLICABLE_INPUTS_SUCCESSOR = Object.freeze({
   ...R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR,
   ...R24_INTEROP_CERTIFICATION_APPLICABLE_INPUTS_DELTA,
@@ -173887,6 +174641,15 @@ const R24_INTEROP_ATLAS_TEMPORAL_SCENE_SOURCE_20261107_SUCCESSOR = Object.freeze
   }).map(([path,sha256])=>({path,sha256})),
 });
 
+const R24_INTEROP_ATLAS_TEMPORAL_AUTHOR_INPUT_20261107_SUCCESSOR = Object.freeze({
+  ...R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR,
+  ...R24_INTEROP_ATLAS_TEMPORAL_AUTHOR_INPUT_20261107_DELTA,
+  bindings:Object.entries({
+    ...Object.fromEntries(R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR.bindings.map(({path,sha256})=>[path,sha256])),
+    ...Object.fromEntries(R24_INTEROP_ATLAS_TEMPORAL_AUTHOR_INPUT_20261107_DELTA.bindings.map(({path,sha256})=>[path,sha256])),
+  }).map(([path,sha256])=>({path,sha256})),
+});
+
 export function verifyR24InteropWordPromotionSuccessor({candidateSha='HEAD',git=defaultGit}={}){
   const candidate=gitText(git,['rev-parse',candidateSha]);
   // Resolve the shared immutable guard once. The original unguarded promotion
@@ -173894,7 +174657,7 @@ export function verifyR24InteropWordPromotionSuccessor({candidateSha='HEAD',git=
   let candidatePolicyDigest;
   try{candidatePolicyDigest=h(objectBytes(git,candidate,DATA_POLICY_PATH));}
   catch{candidatePolicyDigest=null;}
-  const expectation=[R24_INTEROP_WORD_PROMOTION_SUCCESSOR,R24_INTEROP_WORD_TABLES_C1_SUCCESSOR,R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR,R24_INTEROP_WORD_HOSTILE_SUCCESSOR,R24_INTEROP_WORD_MEDIA_SUCCESSOR,R24_INTEROP_WORD_NATIVE_REOPEN_SUCCESSOR,R24_INTEROP_WORD_TABLE_FILES_SUCCESSOR,R24_INTEROP_WORD_IMPORT_TRANSACTION_SUCCESSOR,R24_INTEROP_WORD_IMPORT_LOSS_SUCCESSOR,R24_INTEROP_WORD_MEDIA_DISPLAY_SUCCESSOR,R24_INTEROP_WORD_MEDIA_TEXT_SUCCESSOR,R24_INTEROP_WORD_TABLE_PROPERTIES_SUCCESSOR,R24_INTEROP_WORD_COMPOSITE_FIDELITY_SUCCESSOR,R24_INTEROP_WORD_CURRENT_STRUCTURE_SUCCESSOR,R24_INTEROP_WORD_MACOS27_SUCCESSOR,R24_INTEROP_WORD_IMPORT_CONTRACT_SUCCESSOR,R24_INTEROP_WORD_PROOF_SUCCESSOR,R24_INTEROP_WORD_READER_PIN_SUCCESSOR,R24_INTEROP_WORD_INLINE_ATOMS_SUCCESSOR,R24_INTEROP_WORD_VISIBILITY_RUBY_SUCCESSOR,R24_INTEROP_WORD_HTTP_LINKS_SUCCESSOR,R24_INTEROP_WORD_ROUND_KEY_DURABILITY_SUCCESSOR,R24_INTEROP_WORD_CLEAN_LINK_LABEL_SUCCESSOR,R24_INTEROP_WORD_STRUCTURAL_TRANSACTION_SUCCESSOR,R24_INTEROP_WORD_AUTHORED_TOPOLOGY_SUCCESSOR,R24_INTEROP_WORD_LINK_LABEL_CONTEXT_SUCCESSOR,R24_INTEROP_WORD_NODE_NAME_INPUT_SUCCESSOR,R24_INTEROP_WORD_REVIEW_DEFAULT_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_COMBINED_LINK_RETURN_SUCCESSOR,R24_INTEROP_WORD_GENERIC_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_COMMENT_AUTHORING_SUCCESSOR,R24_INTEROP_WORD_COMMENT_ANCHOR_SAVE_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_DELTA_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_APPLY_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_APPLY_CLOSURE_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_PROOFING_SUCCESSOR,R24_INTEROP_WORD_COMMENT_SHADOW_REPLAY_SUCCESSOR,R24_INTEROP_WORD_COMMENT_REPLY_RETURN_SUCCESSOR,R24_INTEROP_WORD_WATCHDOG_TEST_SUCCESSOR,R24_INTEROP_WORD_COMMENT_THREAD_DELETION_SUCCESSOR,R24_INTEROP_WORD_REVIEW_SELECTION_IDENTITY_SUCCESSOR,R24_INTEROP_WORD_COMMENT_LITERAL_FONT_SUCCESSOR,R24_INTEROP_WORD_NEW_COMMENT_RETURN_SUCCESSOR,R24_INTEROP_WORD_REPLY_DELETION_SUCCESSOR,R24_INTEROP_WORD_REPLY_DELETE_UI_SUCCESSOR,R24_INTEROP_WORD_COMMENT_PARAGRAPH_REBASE_SUCCESSOR,R24_INTEROP_WORD_DELIVERY_HISTORICAL_LOOKUP_SUCCESSOR,R24_INTEROP_WORD_NATIVE_COMMENT_INTAKE_SUCCESSOR,R24_INTEROP_WORD_NATIVE_COMMENT_INTAKE_SUCCESSOR,R24_INTEROP_WORD_JPEG_MEDIA_SUCCESSOR,R24_INTEROP_WORD_MANUSCRIPT_NOTES_SUCCESSOR,R24_INTEROP_WORD_MANUSCRIPT_NOTES_RETURN_SUCCESSOR,R24_INTEROP_WORD_PENDING_TEXT_REVISIONS_SUCCESSOR,R24_INTEROP_WORD_SCENE_DEFAULT_PROFILE_SUCCESSOR,R24_INTEROP_WORD_PENDING_RETURN_HISTORY_SUCCESSOR,R24_INTEROP_WORD_PENDING_RETURN_HISTORY_SUCCESSOR,R24_INTEROP_WORD_TABLE_CELL_LISTS_SUCCESSOR,R24_INTEROP_WORD_PENDING_RICH_BLOCKS_SUCCESSOR,R24_INTEROP_WORD_PENDING_TEXT_MOVES_SUCCESSOR,R24_INTEROP_WORD_PENDING_FORMATTING_SUCCESSOR,R24_INTEROP_WORD_MOVE_RECORDING_SUCCESSOR,R24_INTEROP_WORD_MOVE_RECORDING_SUCCESSOR,R24_INTEROP_WORD_TABLE_ROWS_SUCCESSOR,R24_INTEROP_WORD_TABLE_CELL_SHIFT_SUCCESSOR,R24_INTEROP_WORD_CELL_SHIFT_CHAINS_SUCCESSOR,R24_INTEROP_WORD_USER_BOOKMARKS_SUCCESSOR,R24_INTEROP_WORD_MEDIA_RETURN_SUCCESSOR,R24_INTEROP_WORD_NOTE_LISTS_SUCCESSOR,R24_INTEROP_WORD_SCENE_FIRST_NOTE_SUCCESSOR,R24_INTEROP_WORD_NOTE_TABLES_SUCCESSOR,R24_INTEROP_WORD_NOTE_PANEL_FIT_SUCCESSOR,R24_INTEROP_WORD_NOTE_TABLE_RETURN_SUCCESSOR,R24_INTEROP_WORD_NOTE_MEDIA_SUCCESSOR,R24_INTEROP_WORD_LOCAL_IMAGE_SUCCESSOR,R24_INTEROP_WORD_MEDIA_NOTES_SUCCESSOR,R24_INTEROP_WORD_NESTED_TABLES_SUCCESSOR,R24_INTEROP_WORD_PENDING_NOTES_SUCCESSOR,R24_INTEROP_WORD_BOOKMARK_PARAGRAPHS_SUCCESSOR,R24_INTEROP_WORD_SCENE_IDENTITY_SUCCESSOR,R24_INTEROP_WORD_SCENE_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_SCENE_SPLIT_MERGE_SUCCESSOR,R24_INTEROP_WORD_CONCURRENT_RETURN_SUCCESSOR,R24_INTEROP_WORD_LIST_FORMAT_SUCCESSOR,R24_INTEROP_WORD_LIST_CONTINUATION_SUCCESSOR,R24_INTEROP_WORD_SCENE_CLEAN_RETURN_SUCCESSOR,R24_INTEROP_WORD_HEADING_OUTLINE_SUCCESSOR,R24_INTEROP_WORD_HEADING_OUTLINE_SUCCESSOR,R24_INTEROP_WORD_TYPED_BREAKS_SUCCESSOR,R24_INTEROP_WORD_SECTIONS_SUCCESSOR,R24_INTEROP_WORD_IMPORT_FIDELITY_SUCCESSOR,R24_INTEROP_WORD_HEADER_FOOTER_SUCCESSOR,R24_INTEROP_WORD_EFFECTIVE_STYLE_RETURN_SUCCESSOR,R24_INTEROP_WORD_PARAGRAPH_LAYOUT_SUCCESSOR,R24_INTEROP_WORD_RICH_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_LIST_PATTERNS_SUCCESSOR,R24_INTEROP_WORD_COMMENT_ANCHORS_SUCCESSOR,R24_INTEROP_WORD_IMPORT_ATTEMPTS_SUCCESSOR,R24_INTEROP_WORD_IMPORT_RESTART_SUCCESSOR,R24_INTEROP_WORD_MULTIPARAGRAPH_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_STRUCTURAL_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_BREAK_FORMATTING_SUCCESSOR,R24_INTEROP_WORD_PENDING_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_COMMENT_DECISIONS_SUCCESSOR,R24_INTEROP_WORD_RECORDING_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_MIXED_RETURN_SUCCESSOR,R24_INTEROP_WORD_NOVEL_EDITORIAL_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_PARAGRAPH_MARK_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_SUCCESSOR,R24_INTEROP_WORD_SAFE_CONFIRMATION_SUCCESSOR,R24_INTEROP_WORD_NOTES_SAFE_CONFIRMATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR,R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_NATIVE_EFFECTIVE_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_EDITOR_CODE_SCHEMA_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PROTECTED_CODE_REPRESENTATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_FINITE_COMPOSITION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_LANGUAGE_PENDING_READBACK_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_ACTUAL_MARKER_TRANSPORT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RETAINED_PARAGRAPH_EXPECTATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RETAINED_REPLAY_PRESERVATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_COMPLETE_NO_CHANGE_HISTORY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_HANDLED_UNCHANGED_BOOK_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SOURCE_EMPTY_LEAF_HISTORY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_GENERATED_ARTIFACT_DELIVERY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PENDING_TRANSPORT_COMPOSITION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_OWNED_MARKER_SOURCE_BINDING_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_CHECKED_MARK_CARRIER_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_ORIGINAL_BOOKMARK_FIXTURE_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_BOUNDED_NOVEL_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_OWNED_BOOK_FIXTURE_CONTINUITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PLAIN_SOURCE_PARAGRAPH_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SOURCE_OWNED_OFFICE_CARRIER_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_COMPLETE_SOURCE_INTERACTION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_FULL_INTAKE_PROFILE_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_IMPORTED_AUTHORING_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_COMPLETE_IMPORTED_REPLAY_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PURE_ALLOCATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_STOP_PUBLICATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_STATIC_REPLAY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_CANONICAL_RHS_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_CANONICAL_EQUALITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SINGLE_FULL_MANUSCRIPT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_EXPLICIT_COMMENT_TRANSPORT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_ACTUAL_EFFECTIVE_COMMENT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SINGLE_SCENE_SOURCE_GROUP_SUCCESSOR,R24_INTEROP_WORD_SCENE_EXPORT_PROJECTION_PERFORMANCE_SUCCESSOR,R24_INTEROP_WORD_SCENE_EXPORT_WINDOWS_ARGV_SUCCESSOR,R24_INTEROP_WORD_SCENE_EXPORT_TAP_COMPAT_SUCCESSOR,R24_INTEROP_WORD_SCENE_SAVE_OBSERVATION_SUCCESSOR,R24_INTEROP_WORD_FULL_EXPORT_PROFILE_PROPAGATION_SUCCESSOR,R24_INTEROP_WORD_PARSER_QUERY_PERFORMANCE_SUCCESSOR,R24_INTEROP_WORD_RETURN_SINGLE_PROJECTION_SUCCESSOR,R24_INTEROP_WORD_PREVIEW_NATIVE_WAIT_SUCCESSOR,R24_INTEROP_WORD_BOOK_NOTE_DEFAULTS_SUCCESSOR,R24_INTEROP_WORD_NOVEL_IMPORT_PARTITION_SUCCESSOR,R24_INTEROP_WORD_NOVEL_FULL500K_ATOMIC_IMPORT_SUCCESSOR,R24_INTEROP_WORD_NOVEL_ATOMIC_NOTE_RETURN_SUCCESSOR,R24_INTEROP_WORD_MAC_NORMAL_QUIT_SUCCESSOR,R24_INTEROP_WORD_YALKEN_ORIGIN_NOVEL_RETURN_SUCCESSOR,R24_INTEROP_WORD_RECORDING_STRUCTURAL_UNDO_SUCCESSOR,R24_INTEROP_WORD_RECORDING_NATIVE_NOTES_SUCCESSOR,R24_INTEROP_WORD_COMMENT_TRANSIENT_HISTORY_SUCCESSOR,R24_INTEROP_WORD_STORAGE_DOCUMENTATION_SUCCESSOR,R24_INTEROP_WORD_NOTES_TRANSPORT_PRECISION_SUCCESSOR,R24_INTEROP_WORD_NOTE_FREE_LANGUAGE_SUCCESSOR,R24_INTEROP_WORD_OPAQUE_COLOR_SUCCESSOR,R24_INTEROP_WORD_MAIN_TREE_READ_WORKER_SUCCESSOR,R24_INTEROP_WORD_RTK_RETIRED_MEMBER_IDENTITY_SUCCESSOR,R24_INTEROP_WORD_TREE_PROJECT_QUERY_SCOPE_SUCCESSOR,R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR,R24_INTEROP_WORD_NOVEL_MANIFEST_CONTINUATION_SUCCESSOR,R24_INTEROP_WORD_NOVEL_NATIVE_PRIMITIVES_SUCCESSOR,R24_INTEROP_WORD_HISTORY_PRIVATE_PREPARATION_SUCCESSOR,R24_INTEROP_WORD_EXPORT_ACTIVATION_SUCCESSOR,R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_CORRECTNESS_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_ASSURANCE_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_CONTRACTS_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_TEST_SCHEDULING_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_NATIVE_FS_PROFILES_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_OUTPUT_CONTRACT_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_TXT_ASSURANCE_SUCCESSOR,R24_INTEROP_FIRST_MAC_RELEASE_SCOPE_SUCCESSOR,R24_INTEROP_FIRST_MAC_RELEASE_SCOPE_FIXTURE_SUCCESSOR,R24_INTEROP_CI_SINGLE_RTK_SUCCESSOR,R24_INTEROP_AGENT_SCOPED_CONTEXT_SUCCESSOR,R24_INTEROP_AGENT_SCOPED_CONTEXT_P03_ACTIVATION_SUCCESSOR,R24_INTEROP_MAC_PROJECT_OPEN_CONTENT_SUCCESSOR,R24_INTEROP_MAC_LONGFORM_VISIBLE_EDITOR_SUCCESSOR,R24_INTEROP_MAC_LONGFORM_CONTRACT_HARNESS_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_POST_OPEN_SUCCESSOR,R24_INTEROP_FULL_MAC_ATLAS_MAP_SUCCESSOR,R24_INTEROP_FULL_MAC_ATLAS_MAP_NATIVE_INPUT_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_ASSURANCE_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_SYNOPSIS_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_METADATA_TRANSACTION_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_METADATA_RECONCILIATION_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_CALLER_CONTRACT_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_BINDING_COUNT_SUCCESSOR,R24_INTEROP_MAC_ATLAS_ASYNC_PUBLICATION_SUCCESSOR,R24_INTEROP_MAC_ATLAS_ER_QUERY_PARITY_SUCCESSOR,R24_INTEROP_MAC_ATLAS_SCENE_HARNESS_SUCCESSOR,R24_INTEROP_MAC_ATLAS_REPORTS_BINDING_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_AUTHORING_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_CURRENT_BINDINGS_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_NATIVE_DRAFT_KEYS_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_ATTACHMENT_TRANSPORT_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_PRODUCTION_MATRIX_REPORTING_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_PDF_EXPORT_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_MARKDOWN_EXPORT_SUCCESSOR,R24_INTEROP_MAC_MAP_LIVE_CONTROLS_SUCCESSOR,R24_INTEROP_MAC_NATIVE_SELECT_ALL_SUCCESSOR,R24_INTEROP_MAC_NATIVE_SELECT_ALL_GATES_SUCCESSOR,R24_INTEROP_MAC_NATIVE_SELECT_ALL_WORDING_SUCCESSOR,R24_INTEROP_MAC_ATLAS_EXACT_JOURNEY_SUCCESSOR,R24_INTEROP_ATLAS_SOURCE_EVIDENCE_CONTINUITY_SUCCESSOR,R24_INTEROP_ATLAS_SOURCE_EVIDENCE_CONTINUITY_SAVE_ACK_SUCCESSOR,R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR,R24_INTEROP_ATLAS_EXPLICIT_SUPPRESSION_SUCCESSOR,R24_INTEROP_ATLAS_READ_SURFACES_SUCCESSOR,R24_INTEROP_ATLAS_READ_SURFACES_CONTRACT_SUCCESSOR,R24_INTEROP_ATLAS_TEMPORAL_AUTHORING_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORING_IDENTITIES_SUCCESSOR,R24_INTEROP_ATLAS_SOURCE_ENTITY_SELECTION_SUCCESSOR,R24_INTEROP_ATLAS_ENTITY_CORRECTIONS_SUCCESSOR,R24_INTEROP_IDEA_MEANING_AUTHORING_SUCCESSOR,R24_INTEROP_SCENE_LANGUAGE_TAG_SUCCESSOR,R24_INTEROP_PULSE_LOCAL_HISTORY_SUCCESSOR,R24_INTEROP_ENVIRONMENT_EPOCHS_THEME_WRAP_SUCCESSOR,R24_INTEROP_SETTINGS_THEME_SUMMARY_SUCCESSOR,R24_INTEROP_MAC_NATIVE_UNDO_REDO_20261025_SUCCESSOR,R24_INTEROP_MAC_NATIVE_UNDO_REDO_C1_20261025_SUCCESSOR,R24_INTEROP_MAC_NATIVE_UNDO_REDO_MERGED_MAIN_20261025_SUCCESSOR,R24_INTEROP_MAC_NATIVE_UNDO_REDO_C3_MERGED_MAIN_20261025_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_C1_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_C2_SUCCESSOR,R24_INTEROP_CANONICAL_LOGO_20261025_SUCCESSOR,R24_INTEROP_CANONICAL_LOGO_LARGE_ICON_20261026_SUCCESSOR,R24_INTEROP_CANONICAL_LOGO_CI_EXPECTATION_20261026_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_C3_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_C4_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_C5_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_C6_SUCCESSOR,R24_INTEROP_EXTERNAL_FILE_STARTUP_SUCCESSOR,R24_INTEROP_NATIVE_SAVE_SYSTEM_PATH_SUCCESSOR,R24_INTEROP_STARTUP_SOURCE_CHOICE_SUCCESSOR,R24_INTEROP_STARTUP_CHOICE_ADOPTION_SUCCESSOR,R24_INTEROP_WSE_EVIDENCE_JUMP_FEEDBACK_SUCCESSOR,R24_INTEROP_ATLAS_CONTINUITY_AUTHOR_INPUT_SUCCESSOR,R24_INTEROP_ATLAS_CONTINUITY_AUTHOR_DIAGNOSTIC_SUCCESSOR,R24_INTEROP_ATLAS_CONTINUITY_AUTHOR_HISTORY_SUCCESSOR,R24_INTEROP_ARCHIVE_AUTHORED_COPY_SUCCESSOR,R24_INTEROP_ARCHIVE_AUTHORED_COPY_ADMISSION_SUCCESSOR,R24_INTEROP_ARCHIVE_AUTHORED_COPY_TEARDOWN_SUCCESSOR,R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR,R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR,R24_INTEROP_WRITER_MARKDOWN_CURRENT_SCENE_SUCCESSOR,R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR,R24_INTEROP_CERTIFICATION_APPLICABLE_INPUTS_SUCCESSOR,R24_INTEROP_MANUAL_MAP_SCENE_NAVIGATION_SUCCESSOR,R24_INTEROP_WSE_SEMANTIC_DIFF_SUCCESSOR,R24_INTEROP_C1C_BOUNDED_THROUGHPUT_SUCCESSOR,R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_SUCCESSOR,R24_INTEROP_NAVIGATOR_SAVE_COUNTER_FRESHNESS_SUCCESSOR,R24_INTEROP_CURRENT_BINDINGS_FINALIZER_SUCCESSOR,R24_INTEROP_EVIDENCE_BASED_UI_ROUTER_SUCCESSOR,R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_SUCCESSOR,R24_INTEROP_ATLAS_UNMENTIONED_ENTITY_ALIAS_SUCCESSOR,R24_INTEROP_PLOT_SOURCE_NAVIGATION_SUCCESSOR,R24_INTEROP_IDEA_ORIGIN_NAVIGATION_SUCCESSOR,R24_INTEROP_MEANING_SOURCE_NAVIGATION_SUCCESSOR,R24_INTEROP_SCENE_MEANING_PROMOTION_SUCCESSOR,R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_SUCCESSOR,R24_INTEROP_MAC_MENU_ARTIFACT_NAMESPACE_SUCCESSOR,R24_INTEROP_WRITER_NATIVE_HISTORY_SUCCESSOR,R24_INTEROP_WRITER_PDF_TARGET_BYTES_SUCCESSOR,R24_INTEROP_WRITER_PDF_ZERO_MARGINS_SUCCESSOR,R24_INTEROP_MANUAL_MAP_NATIVE_DIALOG_BUDGET_SUCCESSOR,R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_SUCCESSOR,R24_INTEROP_ATLAS_NATIVE_SOURCE_NOTICES_SUCCESSOR,R24_INTEROP_WRITER_TREE_REORDER_IDENTITY_SUCCESSOR,R24_INTEROP_WRITER_LINE_HEIGHT_FIELD_COHERENCE_SUCCESSOR,R24_INTEROP_WRITER_CUSTOM_FONT_SIZE_INPUT_SUCCESSOR,R24_INTEROP_ONE_TEST_COST_HISTORICAL_GIT_READS_SUCCESSOR,R24_INTEROP_ATLAS_MATRICES_SOURCE_SCOPE_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_SOURCE_CONTRACTS_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_CURRENT_CALLER_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_CURRENT_DATA_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_RCV01A_BINDING_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_RTK_FIXTURE_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_BASELINE_BINDINGS_20261107_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_CI_CONTRACT_BINDINGS_20261107_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_COPY_FIXTURE_20261107_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATION_APPLICABILITY_20261107_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_WORKSPACE_PARITY_20261107_SUCCESSOR,R24_INTEROP_ATLAS_TEMPORAL_SCENE_SOURCE_20261107_SUCCESSOR].find(set=>{
+  const expectation=[R24_INTEROP_WORD_PROMOTION_SUCCESSOR,R24_INTEROP_WORD_TABLES_C1_SUCCESSOR,R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR,R24_INTEROP_WORD_HOSTILE_SUCCESSOR,R24_INTEROP_WORD_MEDIA_SUCCESSOR,R24_INTEROP_WORD_NATIVE_REOPEN_SUCCESSOR,R24_INTEROP_WORD_TABLE_FILES_SUCCESSOR,R24_INTEROP_WORD_IMPORT_TRANSACTION_SUCCESSOR,R24_INTEROP_WORD_IMPORT_LOSS_SUCCESSOR,R24_INTEROP_WORD_MEDIA_DISPLAY_SUCCESSOR,R24_INTEROP_WORD_MEDIA_TEXT_SUCCESSOR,R24_INTEROP_WORD_TABLE_PROPERTIES_SUCCESSOR,R24_INTEROP_WORD_COMPOSITE_FIDELITY_SUCCESSOR,R24_INTEROP_WORD_CURRENT_STRUCTURE_SUCCESSOR,R24_INTEROP_WORD_MACOS27_SUCCESSOR,R24_INTEROP_WORD_IMPORT_CONTRACT_SUCCESSOR,R24_INTEROP_WORD_PROOF_SUCCESSOR,R24_INTEROP_WORD_READER_PIN_SUCCESSOR,R24_INTEROP_WORD_INLINE_ATOMS_SUCCESSOR,R24_INTEROP_WORD_VISIBILITY_RUBY_SUCCESSOR,R24_INTEROP_WORD_HTTP_LINKS_SUCCESSOR,R24_INTEROP_WORD_ROUND_KEY_DURABILITY_SUCCESSOR,R24_INTEROP_WORD_CLEAN_LINK_LABEL_SUCCESSOR,R24_INTEROP_WORD_STRUCTURAL_TRANSACTION_SUCCESSOR,R24_INTEROP_WORD_AUTHORED_TOPOLOGY_SUCCESSOR,R24_INTEROP_WORD_LINK_LABEL_CONTEXT_SUCCESSOR,R24_INTEROP_WORD_NODE_NAME_INPUT_SUCCESSOR,R24_INTEROP_WORD_REVIEW_DEFAULT_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_COMBINED_LINK_RETURN_SUCCESSOR,R24_INTEROP_WORD_GENERIC_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_COMMENT_AUTHORING_SUCCESSOR,R24_INTEROP_WORD_COMMENT_ANCHOR_SAVE_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_DELTA_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_APPLY_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_APPLY_CLOSURE_SUCCESSOR,R24_INTEROP_WORD_COMMENT_RETURN_PROOFING_SUCCESSOR,R24_INTEROP_WORD_COMMENT_SHADOW_REPLAY_SUCCESSOR,R24_INTEROP_WORD_COMMENT_REPLY_RETURN_SUCCESSOR,R24_INTEROP_WORD_WATCHDOG_TEST_SUCCESSOR,R24_INTEROP_WORD_COMMENT_THREAD_DELETION_SUCCESSOR,R24_INTEROP_WORD_REVIEW_SELECTION_IDENTITY_SUCCESSOR,R24_INTEROP_WORD_COMMENT_LITERAL_FONT_SUCCESSOR,R24_INTEROP_WORD_NEW_COMMENT_RETURN_SUCCESSOR,R24_INTEROP_WORD_REPLY_DELETION_SUCCESSOR,R24_INTEROP_WORD_REPLY_DELETE_UI_SUCCESSOR,R24_INTEROP_WORD_COMMENT_PARAGRAPH_REBASE_SUCCESSOR,R24_INTEROP_WORD_DELIVERY_HISTORICAL_LOOKUP_SUCCESSOR,R24_INTEROP_WORD_NATIVE_COMMENT_INTAKE_SUCCESSOR,R24_INTEROP_WORD_NATIVE_COMMENT_INTAKE_SUCCESSOR,R24_INTEROP_WORD_JPEG_MEDIA_SUCCESSOR,R24_INTEROP_WORD_MANUSCRIPT_NOTES_SUCCESSOR,R24_INTEROP_WORD_MANUSCRIPT_NOTES_RETURN_SUCCESSOR,R24_INTEROP_WORD_PENDING_TEXT_REVISIONS_SUCCESSOR,R24_INTEROP_WORD_SCENE_DEFAULT_PROFILE_SUCCESSOR,R24_INTEROP_WORD_PENDING_RETURN_HISTORY_SUCCESSOR,R24_INTEROP_WORD_PENDING_RETURN_HISTORY_SUCCESSOR,R24_INTEROP_WORD_TABLE_CELL_LISTS_SUCCESSOR,R24_INTEROP_WORD_PENDING_RICH_BLOCKS_SUCCESSOR,R24_INTEROP_WORD_PENDING_TEXT_MOVES_SUCCESSOR,R24_INTEROP_WORD_PENDING_FORMATTING_SUCCESSOR,R24_INTEROP_WORD_MOVE_RECORDING_SUCCESSOR,R24_INTEROP_WORD_MOVE_RECORDING_SUCCESSOR,R24_INTEROP_WORD_TABLE_ROWS_SUCCESSOR,R24_INTEROP_WORD_TABLE_CELL_SHIFT_SUCCESSOR,R24_INTEROP_WORD_CELL_SHIFT_CHAINS_SUCCESSOR,R24_INTEROP_WORD_USER_BOOKMARKS_SUCCESSOR,R24_INTEROP_WORD_MEDIA_RETURN_SUCCESSOR,R24_INTEROP_WORD_NOTE_LISTS_SUCCESSOR,R24_INTEROP_WORD_SCENE_FIRST_NOTE_SUCCESSOR,R24_INTEROP_WORD_NOTE_TABLES_SUCCESSOR,R24_INTEROP_WORD_NOTE_PANEL_FIT_SUCCESSOR,R24_INTEROP_WORD_NOTE_TABLE_RETURN_SUCCESSOR,R24_INTEROP_WORD_NOTE_MEDIA_SUCCESSOR,R24_INTEROP_WORD_LOCAL_IMAGE_SUCCESSOR,R24_INTEROP_WORD_MEDIA_NOTES_SUCCESSOR,R24_INTEROP_WORD_NESTED_TABLES_SUCCESSOR,R24_INTEROP_WORD_PENDING_NOTES_SUCCESSOR,R24_INTEROP_WORD_BOOKMARK_PARAGRAPHS_SUCCESSOR,R24_INTEROP_WORD_SCENE_IDENTITY_SUCCESSOR,R24_INTEROP_WORD_SCENE_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_SCENE_SPLIT_MERGE_SUCCESSOR,R24_INTEROP_WORD_CONCURRENT_RETURN_SUCCESSOR,R24_INTEROP_WORD_LIST_FORMAT_SUCCESSOR,R24_INTEROP_WORD_LIST_CONTINUATION_SUCCESSOR,R24_INTEROP_WORD_SCENE_CLEAN_RETURN_SUCCESSOR,R24_INTEROP_WORD_HEADING_OUTLINE_SUCCESSOR,R24_INTEROP_WORD_HEADING_OUTLINE_SUCCESSOR,R24_INTEROP_WORD_TYPED_BREAKS_SUCCESSOR,R24_INTEROP_WORD_SECTIONS_SUCCESSOR,R24_INTEROP_WORD_IMPORT_FIDELITY_SUCCESSOR,R24_INTEROP_WORD_HEADER_FOOTER_SUCCESSOR,R24_INTEROP_WORD_EFFECTIVE_STYLE_RETURN_SUCCESSOR,R24_INTEROP_WORD_PARAGRAPH_LAYOUT_SUCCESSOR,R24_INTEROP_WORD_RICH_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_LIST_PATTERNS_SUCCESSOR,R24_INTEROP_WORD_COMMENT_ANCHORS_SUCCESSOR,R24_INTEROP_WORD_IMPORT_ATTEMPTS_SUCCESSOR,R24_INTEROP_WORD_IMPORT_RESTART_SUCCESSOR,R24_INTEROP_WORD_MULTIPARAGRAPH_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_STRUCTURAL_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_BREAK_FORMATTING_SUCCESSOR,R24_INTEROP_WORD_PENDING_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_COMMENT_DECISIONS_SUCCESSOR,R24_INTEROP_WORD_RECORDING_COMMENTS_SUCCESSOR,R24_INTEROP_WORD_MIXED_RETURN_SUCCESSOR,R24_INTEROP_WORD_NOVEL_EDITORIAL_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_PARAGRAPH_MARK_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_NOVEL_MULTI_SCENE_MIXED_RETURN_SUCCESSOR,R24_INTEROP_WORD_SAFE_CONFIRMATION_SUCCESSOR,R24_INTEROP_WORD_NOTES_SAFE_CONFIRMATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_PENDING_NOTES_SUCCESSOR,R24_INTEROP_WORD_RECORDING_NOTES_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_NATIVE_EFFECTIVE_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_EDITOR_CODE_SCHEMA_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PROTECTED_CODE_REPRESENTATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_FINITE_COMPOSITION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_LANGUAGE_PENDING_READBACK_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_ACTUAL_MARKER_TRANSPORT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RETAINED_PARAGRAPH_EXPECTATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RETAINED_REPLAY_PRESERVATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_COMPLETE_NO_CHANGE_HISTORY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_HANDLED_UNCHANGED_BOOK_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SOURCE_EMPTY_LEAF_HISTORY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_GENERATED_ARTIFACT_DELIVERY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PENDING_TRANSPORT_COMPOSITION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_OWNED_MARKER_SOURCE_BINDING_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_CHECKED_MARK_CARRIER_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_ORIGINAL_BOOKMARK_FIXTURE_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_BOUNDED_NOVEL_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_OWNED_BOOK_FIXTURE_CONTINUITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PLAIN_SOURCE_PARAGRAPH_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SOURCE_OWNED_OFFICE_CARRIER_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_COMPLETE_SOURCE_INTERACTION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_FULL_INTAKE_PROFILE_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_IMPORTED_AUTHORING_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_COMPLETE_IMPORTED_REPLAY_CAPACITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_PURE_ALLOCATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_STOP_PUBLICATION_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_STATIC_REPLAY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_CANONICAL_RHS_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_RECORDING_CANONICAL_EQUALITY_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SINGLE_FULL_MANUSCRIPT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_EXPLICIT_COMMENT_TRANSPORT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_ACTUAL_EFFECTIVE_COMMENT_SUCCESSOR,R24_INTEROP_WORD_BOOK_BODY_SINGLE_SCENE_SOURCE_GROUP_SUCCESSOR,R24_INTEROP_WORD_SCENE_EXPORT_PROJECTION_PERFORMANCE_SUCCESSOR,R24_INTEROP_WORD_SCENE_EXPORT_WINDOWS_ARGV_SUCCESSOR,R24_INTEROP_WORD_SCENE_EXPORT_TAP_COMPAT_SUCCESSOR,R24_INTEROP_WORD_SCENE_SAVE_OBSERVATION_SUCCESSOR,R24_INTEROP_WORD_FULL_EXPORT_PROFILE_PROPAGATION_SUCCESSOR,R24_INTEROP_WORD_PARSER_QUERY_PERFORMANCE_SUCCESSOR,R24_INTEROP_WORD_RETURN_SINGLE_PROJECTION_SUCCESSOR,R24_INTEROP_WORD_PREVIEW_NATIVE_WAIT_SUCCESSOR,R24_INTEROP_WORD_BOOK_NOTE_DEFAULTS_SUCCESSOR,R24_INTEROP_WORD_NOVEL_IMPORT_PARTITION_SUCCESSOR,R24_INTEROP_WORD_NOVEL_FULL500K_ATOMIC_IMPORT_SUCCESSOR,R24_INTEROP_WORD_NOVEL_ATOMIC_NOTE_RETURN_SUCCESSOR,R24_INTEROP_WORD_MAC_NORMAL_QUIT_SUCCESSOR,R24_INTEROP_WORD_YALKEN_ORIGIN_NOVEL_RETURN_SUCCESSOR,R24_INTEROP_WORD_RECORDING_STRUCTURAL_UNDO_SUCCESSOR,R24_INTEROP_WORD_RECORDING_NATIVE_NOTES_SUCCESSOR,R24_INTEROP_WORD_COMMENT_TRANSIENT_HISTORY_SUCCESSOR,R24_INTEROP_WORD_STORAGE_DOCUMENTATION_SUCCESSOR,R24_INTEROP_WORD_NOTES_TRANSPORT_PRECISION_SUCCESSOR,R24_INTEROP_WORD_NOTE_FREE_LANGUAGE_SUCCESSOR,R24_INTEROP_WORD_OPAQUE_COLOR_SUCCESSOR,R24_INTEROP_WORD_MAIN_TREE_READ_WORKER_SUCCESSOR,R24_INTEROP_WORD_RTK_RETIRED_MEMBER_IDENTITY_SUCCESSOR,R24_INTEROP_WORD_TREE_PROJECT_QUERY_SCOPE_SUCCESSOR,R24_INTEROP_WORD_PENDING_BOOK_EXPORT_PHASE_REUSE_SUCCESSOR,R24_INTEROP_WORD_NOVEL_MANIFEST_CONTINUATION_SUCCESSOR,R24_INTEROP_WORD_NOVEL_NATIVE_PRIMITIVES_SUCCESSOR,R24_INTEROP_WORD_HISTORY_PRIVATE_PREPARATION_SUCCESSOR,R24_INTEROP_WORD_EXPORT_ACTIVATION_SUCCESSOR,R24_INTEROP_WORD_NOTE_REFERENCE_TYPOGRAPHY_SUCCESSOR,R24_INTEROP_WORD_MISSING_ANCHOR_RECOVERY_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_CORRECTNESS_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_ASSURANCE_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_CONTRACTS_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_TEST_SCHEDULING_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_NATIVE_FS_PROFILES_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_OUTPUT_CONTRACT_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_TXT_ASSURANCE_SUCCESSOR,R24_INTEROP_FIRST_MAC_RELEASE_SCOPE_SUCCESSOR,R24_INTEROP_FIRST_MAC_RELEASE_SCOPE_FIXTURE_SUCCESSOR,R24_INTEROP_CI_SINGLE_RTK_SUCCESSOR,R24_INTEROP_AGENT_SCOPED_CONTEXT_SUCCESSOR,R24_INTEROP_AGENT_SCOPED_CONTEXT_P03_ACTIVATION_SUCCESSOR,R24_INTEROP_MAC_PROJECT_OPEN_CONTENT_SUCCESSOR,R24_INTEROP_MAC_LONGFORM_VISIBLE_EDITOR_SUCCESSOR,R24_INTEROP_MAC_LONGFORM_CONTRACT_HARNESS_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_DIRECTORY_ROUNDTRIP_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_NATIVE_PREVIEW_BRIDGE_SUCCESSOR,R24_INTEROP_MAC_ARCHIVE_POST_OPEN_SUCCESSOR,R24_INTEROP_FULL_MAC_ATLAS_MAP_SUCCESSOR,R24_INTEROP_FULL_MAC_ATLAS_MAP_NATIVE_INPUT_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_ASSURANCE_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_SYNOPSIS_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_METADATA_TRANSACTION_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_METADATA_RECONCILIATION_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_CALLER_CONTRACT_SUCCESSOR,R24_INTEROP_MAC_NATIVE_TEXT_CLIPBOARD_BINDING_COUNT_SUCCESSOR,R24_INTEROP_MAC_ATLAS_ASYNC_PUBLICATION_SUCCESSOR,R24_INTEROP_MAC_ATLAS_ER_QUERY_PARITY_SUCCESSOR,R24_INTEROP_MAC_ATLAS_SCENE_HARNESS_SUCCESSOR,R24_INTEROP_MAC_ATLAS_REPORTS_BINDING_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_AUTHORING_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_CURRENT_BINDINGS_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_NATIVE_DRAFT_KEYS_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_ATTACHMENT_TRANSPORT_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_PRODUCTION_MATRIX_REPORTING_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_PDF_EXPORT_SUCCESSOR,R24_INTEROP_MAC_MANUAL_MAP_MARKDOWN_EXPORT_SUCCESSOR,R24_INTEROP_MAC_MAP_LIVE_CONTROLS_SUCCESSOR,R24_INTEROP_MAC_NATIVE_SELECT_ALL_SUCCESSOR,R24_INTEROP_MAC_NATIVE_SELECT_ALL_GATES_SUCCESSOR,R24_INTEROP_MAC_NATIVE_SELECT_ALL_WORDING_SUCCESSOR,R24_INTEROP_MAC_ATLAS_EXACT_JOURNEY_SUCCESSOR,R24_INTEROP_ATLAS_SOURCE_EVIDENCE_CONTINUITY_SUCCESSOR,R24_INTEROP_ATLAS_SOURCE_EVIDENCE_CONTINUITY_SAVE_ACK_SUCCESSOR,R24_INTEROP_ATLAS_EVIDENCE_REATTACHMENT_SUCCESSOR,R24_INTEROP_ATLAS_EXPLICIT_SUPPRESSION_SUCCESSOR,R24_INTEROP_ATLAS_READ_SURFACES_SUCCESSOR,R24_INTEROP_ATLAS_READ_SURFACES_CONTRACT_SUCCESSOR,R24_INTEROP_ATLAS_TEMPORAL_AUTHORING_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORING_IDENTITIES_SUCCESSOR,R24_INTEROP_ATLAS_SOURCE_ENTITY_SELECTION_SUCCESSOR,R24_INTEROP_ATLAS_ENTITY_CORRECTIONS_SUCCESSOR,R24_INTEROP_IDEA_MEANING_AUTHORING_SUCCESSOR,R24_INTEROP_SCENE_LANGUAGE_TAG_SUCCESSOR,R24_INTEROP_PULSE_LOCAL_HISTORY_SUCCESSOR,R24_INTEROP_ENVIRONMENT_EPOCHS_THEME_WRAP_SUCCESSOR,R24_INTEROP_SETTINGS_THEME_SUMMARY_SUCCESSOR,R24_INTEROP_MAC_NATIVE_UNDO_REDO_20261025_SUCCESSOR,R24_INTEROP_MAC_NATIVE_UNDO_REDO_C1_20261025_SUCCESSOR,R24_INTEROP_MAC_NATIVE_UNDO_REDO_MERGED_MAIN_20261025_SUCCESSOR,R24_INTEROP_MAC_NATIVE_UNDO_REDO_C3_MERGED_MAIN_20261025_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_C1_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_C2_SUCCESSOR,R24_INTEROP_CANONICAL_LOGO_20261025_SUCCESSOR,R24_INTEROP_CANONICAL_LOGO_LARGE_ICON_20261026_SUCCESSOR,R24_INTEROP_CANONICAL_LOGO_CI_EXPECTATION_20261026_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_C3_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_C4_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_C5_SUCCESSOR,R24_INTEROP_STARTUP_INPUT_ADMISSION_C6_SUCCESSOR,R24_INTEROP_EXTERNAL_FILE_STARTUP_SUCCESSOR,R24_INTEROP_NATIVE_SAVE_SYSTEM_PATH_SUCCESSOR,R24_INTEROP_STARTUP_SOURCE_CHOICE_SUCCESSOR,R24_INTEROP_STARTUP_CHOICE_ADOPTION_SUCCESSOR,R24_INTEROP_WSE_EVIDENCE_JUMP_FEEDBACK_SUCCESSOR,R24_INTEROP_ATLAS_CONTINUITY_AUTHOR_INPUT_SUCCESSOR,R24_INTEROP_ATLAS_CONTINUITY_AUTHOR_DIAGNOSTIC_SUCCESSOR,R24_INTEROP_ATLAS_CONTINUITY_AUTHOR_HISTORY_SUCCESSOR,R24_INTEROP_ARCHIVE_AUTHORED_COPY_SUCCESSOR,R24_INTEROP_ARCHIVE_AUTHORED_COPY_ADMISSION_SUCCESSOR,R24_INTEROP_ARCHIVE_AUTHORED_COPY_TEARDOWN_SUCCESSOR,R24_INTEROP_DEPENDENCY_SECURITY_V2_SUCCESSOR,R24_INTEROP_WRITER_TXT_CURRENT_PROJECT_SUCCESSOR,R24_INTEROP_WRITER_MARKDOWN_CURRENT_SCENE_SUCCESSOR,R24_INTEROP_WRITER_PROJECT_RENAME_SUCCESSOR,R24_INTEROP_CERTIFICATION_APPLICABLE_INPUTS_SUCCESSOR,R24_INTEROP_MANUAL_MAP_SCENE_NAVIGATION_SUCCESSOR,R24_INTEROP_WSE_SEMANTIC_DIFF_SUCCESSOR,R24_INTEROP_C1C_BOUNDED_THROUGHPUT_SUCCESSOR,R24_INTEROP_PULSE_AUTHORED_CORRECTIONS_SUCCESSOR,R24_INTEROP_NAVIGATOR_SAVE_COUNTER_FRESHNESS_SUCCESSOR,R24_INTEROP_CURRENT_BINDINGS_FINALIZER_SUCCESSOR,R24_INTEROP_EVIDENCE_BASED_UI_ROUTER_SUCCESSOR,R24_INTEROP_ENV_EPOCH_FULL_CONFIGURATION_SUCCESSOR,R24_INTEROP_ATLAS_UNMENTIONED_ENTITY_ALIAS_SUCCESSOR,R24_INTEROP_PLOT_SOURCE_NAVIGATION_SUCCESSOR,R24_INTEROP_IDEA_ORIGIN_NAVIGATION_SUCCESSOR,R24_INTEROP_MEANING_SOURCE_NAVIGATION_SUCCESSOR,R24_INTEROP_SCENE_MEANING_PROMOTION_SUCCESSOR,R24_INTEROP_MANDATORY_TEST_SETUP_DIAGNOSTICS_SUCCESSOR,R24_INTEROP_MAC_MENU_ARTIFACT_NAMESPACE_SUCCESSOR,R24_INTEROP_WRITER_NATIVE_HISTORY_SUCCESSOR,R24_INTEROP_WRITER_PDF_TARGET_BYTES_SUCCESSOR,R24_INTEROP_WRITER_PDF_ZERO_MARGINS_SUCCESSOR,R24_INTEROP_MANUAL_MAP_NATIVE_DIALOG_BUDGET_SUCCESSOR,R24_INTEROP_ATLAS_OFFLINE_SCENE_ANALYSIS_SUCCESSOR,R24_INTEROP_ATLAS_NATIVE_SOURCE_NOTICES_SUCCESSOR,R24_INTEROP_WRITER_TREE_REORDER_IDENTITY_SUCCESSOR,R24_INTEROP_WRITER_LINE_HEIGHT_FIELD_COHERENCE_SUCCESSOR,R24_INTEROP_WRITER_CUSTOM_FONT_SIZE_INPUT_SUCCESSOR,R24_INTEROP_ONE_TEST_COST_HISTORICAL_GIT_READS_SUCCESSOR,R24_INTEROP_ATLAS_MATRICES_SOURCE_SCOPE_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_MAC_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_SOURCE_CONTRACTS_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_CURRENT_CALLER_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_CURRENT_DATA_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_RCV01A_BINDING_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_RTK_FIXTURE_20261106_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_BASELINE_BINDINGS_20261107_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_CI_CONTRACT_BINDINGS_20261107_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATIONS_COPY_FIXTURE_20261107_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_ASSOCIATION_APPLICABILITY_20261107_SUCCESSOR,R24_INTEROP_ATLAS_AUTHORED_WORKSPACE_PARITY_20261107_SUCCESSOR,R24_INTEROP_ATLAS_TEMPORAL_SCENE_SOURCE_20261107_SUCCESSOR,R24_INTEROP_ATLAS_TEMPORAL_AUTHOR_INPUT_20261107_SUCCESSOR].find(set=>{
     const policyGuard=set.guards?.length===1&&set.guards[0].path===DATA_POLICY_PATH;
     if(policyGuard&&set.guards[0].sha256!==candidatePolicyDigest)return false;
     const inputs=policyGuard?set.bindings:[...set.bindings,...(set.guards||[])];

@@ -588,7 +588,9 @@
       "src/renderer/atlasDossierLayoutPresentationModel.mjs",
       "test/unit/atlas-authored-association-workspace.test.js",
       "docs/tasks/2026-11-07--atlas-temporal-scene-source.md",
-      "test/unit/atlas-temporal-scene-source.test.js"
+      "test/unit/atlas-temporal-scene-source.test.js",
+      "docs/tasks/2026-11-07--atlas-temporal-author-input.md",
+      "test/unit/atlas-temporal-author-input.test.js"
     ]
   },
   "allowPrefixByPhase": {
