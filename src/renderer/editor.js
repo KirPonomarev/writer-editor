@@ -20272,7 +20272,8 @@ function renderAtlasTemporalLayoutState() {
   const sliderWrap = document.createElement('label');
   sliderWrap.className = 'right-rail-atlas-temporal-slider';
   const sliderText = document.createElement('span');
-  sliderText.textContent = state.timeSliderState.rangeLabel || 'story time';
+  const coordinateLabel = state.layoutPacket.axis.label || 'story time';
+  sliderText.textContent = `${coordinateLabel}: ${state.timeSliderState.rangeLabel || 'empty'}`;
   const sliderInput = document.createElement('input');
   sliderInput.type = 'range';
   sliderInput.min = String(state.timeSliderState.min);
@@ -20280,7 +20281,7 @@ function renderAtlasTemporalLayoutState() {
   sliderInput.step = String(state.timeSliderState.step || 1);
   sliderInput.value = String(state.timeSliderState.value);
   sliderInput.dataset.atlasTemporalSlider = 'true';
-  sliderInput.setAttribute('aria-label', 'Atlas time slider');
+  sliderInput.setAttribute('aria-label', `Atlas time slider: ${coordinateLabel}`);
   sliderWrap.append(sliderText, sliderInput);
   sliderSection.appendChild(sliderWrap);
 

@@ -1,3 +1,20 @@
+# CURRENT — Atlas Time: координаты после сохранения диапазонов
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108
+BINDING_BASE_SHA: 895e221b5fbb92e34e67ea19dc1248c1bfd4974e
+STATUS: FOCUSED_SOURCE_VERIFIED_REQUIRED_PROOFS_PENDING
+
+PR 2212 принят обычным merge 895e221b5fbb92e34e67ea19dc1248c1bfd4974e из кандидата c6cdddcde1ac5c2400cd9a9db15606adf712c690; деревья совпадают. Завершена только сохранность частично изменяемого якоря и честность его подписей. Прошли все 20 заданий CI на кандидате и 20 на merge, 27 релевантных локальных проверок merge, отдельная сборка Electron 43.8.4 и обычный первый/холодный запуск собственного профиля 47; оба процесса завершились с кодом 0. ASAR 031299f1b7da7d40dd829bd5d7ada0662d2168dd3cdd6f6bb5cc139d999dbdd8 независимо прочитан целиком. Рукописи, якоря и история подтверждены физическим readback; 46 предыдущих профилей и 18 сборок совпали с отдельно перепроверенным текущим protected-набором. Исторический remount и три изменённых GPU-counter байта сохраняют прежнее ограничение неизвестной причины.
+
+Первичные доказательства M20: ATLAS_TEMPORAL_RANGE_FINAL_REPORT_MERGED_01.json (d9c60875172e9b3007a0b10fe5cbb1e031d08776909d2d1d678bae998dc01615), ATLAS_TEMPORAL_RANGE_MERGED_NATIVE_INDEPENDENT_OUTCOME_01.json.gz (69a3fcea99495079d1ea1e6ebe56b37fb2e43c2068528a7f1a6d64ca599b90dc). EVIDENCE_ROOT: /Volumes/T777/Yalken/Отчёты о работе/2026-11-07--atlas-temporal-range-display.
+
+На этих же native-снимках остаётся наложение меток Time. Чистый Core/query probe различил причину: calendarDate и label содержат служебный dayIndex 0, который layout принимал за настоящий ordinalDay. В текущем отдельном исходнике числовые дни различаются по типу; при отсутствии общей числовой шкалы используется явно подписанный порядок сцен. Исходный RED сохранён, все 23 focused случая и сборка renderer прошли; полный обязательный цикл, новый native и поставка этой правки ещё впереди. EVIDENCE_ROOT: /Volumes/T777/Yalken/Отчёты о работе/2026-11-08--atlas-temporal-coordinate.
+
+Полный Mac: NOT_READY; все 17 qualification rows остаются UNKNOWN. Этот результат не квалифицирует календарные преобразования, истинно одновременные точки или весь Atlas. Word/native Office PAUSED; Black Box после полного Mac.
+
+--- Previous entries remain as historical status ---
+
 # CURRENT — Авторское время в Atlas
 
 DOCUMENT_CLASS: FACTUAL_STATUS

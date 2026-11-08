@@ -387,3 +387,95 @@ test('E06 C06: Atlas Time shows authored range precision and calendar identity o
     });
   }
 });
+
+test('E06 C06: Time coordinates distinguish ordinal days from calendar placeholders and disclose scene order', async (t) => {
+  const { runtime, derived, projectId, state } = await buildTemporalLayoutFixture();
+  const ids = ['scene-a', 'scene-b', 'scene-c', 'scene-d'];
+  const day = (dayIndex) => ({ pointKind: 'ordinalDay', dayIndex });
+  const label = (value) => ({ pointKind: 'label', calendarId: 'calendar-local', label: value });
+  const date = (value) => exactIsoRange('calendar-local', value);
+  const unknown = { rangeKind: 'unknown', precisionNote: 'The author has not placed this scene.' };
+  const sceneOrder = { axis: 'scene order', values: [0, 1, 2, 3], positions: [0, 33, 67, 100], selected: ['scene-a', 'scene-b'] };
+  const cases = [
+    {
+      name: 'real ordinal zero, negative day and order different from scene order',
+      ranges: [9, 0, -2, 2].map(exactOrdinalRange),
+      axis: 'story time', values: [9, 0, -2, 2], positions: [100, 18, 0, 36], selected: ['scene-c', 'scene-b'],
+    },
+    {
+      name: 'genuinely simultaneous ordinal days stay simultaneous',
+      ranges: [0, 0, 0, 0].map(exactOrdinalRange),
+      axis: 'story time', values: [0, 0, 0, 0], positions: [0, 0, 0, 0], selected: ['scene-b', 'scene-c', 'scene-d'],
+    },
+    {
+      name: 'approximate and either open ordinal bound retain numerical days',
+      ranges: [
+        { rangeKind: 'approximate', start: day(-2), end: day(0), precisionNote: 'Around dawn.' },
+        { rangeKind: 'open', start: day(5), end: null, precisionNote: 'No end yet.' },
+        { rangeKind: 'open', start: null, end: day(0), precisionNote: 'No start yet.' },
+        exactOrdinalRange(9),
+      ],
+      axis: 'story time', values: [-2, 5, 0, 9], positions: [0, 64, 18, 100], selected: ['scene-a', 'scene-c'],
+    },
+    {
+      name: 'calendar dates are not silently interpreted as ordinal zero or guessed date arithmetic',
+      ranges: ['2042-05-18', '2042-05-17', '2042-02-31', 'Year of the river'].map(date),
+      ...sceneOrder,
+    },
+    {
+      name: 'calendar labels have no numerical day despite their normalized placeholder zero',
+      ranges: ['Dusk', 'Dawn', 'Third bell', 'First bell'].map((value) => ({ rangeKind: 'exact', start: label(value), end: label(value) })),
+      ...sceneOrder,
+    },
+    {
+      name: 'calendar, label, ordinal and unknown never share an invented numeric scale',
+      ranges: [exactOrdinalRange(9), date('2042-05-17'), { rangeKind: 'open', start: label('Dawn'), end: null, precisionNote: 'Still open.' }, unknown],
+      ...sceneOrder,
+    },
+    {
+      name: 'a mixed bound does not gain a numerical scale from its ordinal endpoint',
+      ranges: [
+        { rangeKind: 'approximate', start: day(0), end: label('Dusk'), precisionNote: 'No common scale supplied.' },
+        ...[9, 2, -2].map(exactOrdinalRange),
+      ],
+      ...sceneOrder,
+    },
+    {
+      name: 'explicit unknown is positioned only by disclosed scene order',
+      ranges: [unknown, unknown, unknown, unknown],
+      ...sceneOrder,
+    },
+  ];
+  for (const expected of cases) {
+    await t.test(expected.name, () => {
+      const authored = runtime.applyCoreSequence(state, ids.map((sceneId, index) => ({
+        type: runtime.CORE_COMMAND_IDS.ATLAS_SCENE_TEMPORAL_ANCHOR_SET,
+        payload: { projectId, sceneId, storyRange: expected.ranges[index], narrativeRange: exactOrdinalRange(index) },
+      })));
+      assert.equal(authored.ok, true);
+      const beforeHash = runtime.hashCoreState(authored.state);
+      const result = derived.deriveAtlasTemporalLayout({
+        coreState: authored.state,
+        params: { projectId, sliderValue: 1 },
+        capabilitySnapshot: nodeCapabilitySnapshot(),
+      });
+      assert.equal(result.ok, true);
+      const { layoutPacket, timeSliderState, listParity } = result.value;
+      const byScene = new Map(layoutPacket.events.map((event) => [event.sceneId, event]));
+      assert.equal(layoutPacket.axis.label, expected.axis);
+      assert.deepEqual(ids.map((id) => byScene.get(id).timeValue), expected.values);
+      assert.deepEqual(ids.map((id) => byScene.get(id).xPercent), expected.positions);
+      assert.deepEqual(timeSliderState.selectedSceneIds, expected.selected);
+      assert.equal(timeSliderState.value, Math.max(layoutPacket.axis.min, Math.min(layoutPacket.axis.max, 1)));
+      assert.deepEqual(listParity.rows.map((row) => row.sceneId), layoutPacket.events.map((event) => event.sceneId));
+      assert.deepEqual(listParity.rows.filter((row) => row.selected).map((row) => row.sceneId), expected.selected);
+      for (const row of listParity.rows) {
+        assert.equal(row.storyLabel, byScene.get(row.sceneId).storyLabel);
+        assert.equal(row.narrativeLabel, byScene.get(row.sceneId).narrativeLabel);
+      }
+      assert.equal(result.value.largeProjectBudgetProof.totalSceneCount, 4);
+      assert.equal(result.value.largeProjectBudgetProof.visibleSceneCount, 4);
+      assert.equal(runtime.hashCoreState(authored.state), beforeHash);
+    });
+  }
+});
