@@ -1214,7 +1214,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "0a7ac78ab85a6f1dbb65ed31a83398a459b4c3de2e19cbec4eaf59a90ee286a9"
+        "sha256": "c3f39abbb4021f84f72eb1b92e0c351895e3ca27397d5ff7a593e88d42505e33"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1378,7 +1378,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "9f9b5bcd2724d55a7edd248ed00d03de6054a7570eed562dd1137541795f3403"
+        "sha256": "97b0f40dd058ce84e3ef0888efd8ce8a0104ac2521e11229c512d3aae677ec4a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -3442,7 +3442,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "fd13b5584a55b84a17656f190d29e82e85763c626b12ca945a7b371265b2c638"
+        "sha256": "16fe3970a9cc13ffd659dd36c4c8c272ce9fe52d83c0a1692ad4799f4529d7a5"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3782,7 +3782,7 @@
       },
       {
         "path": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
-        "sha256": "d6fe003da77728607e22f8b1d0d78810ce8a845aa96959b0c02ec82719c54ff2"
+        "sha256": "e57fd531cecc5f7214f2d2d0e3840ab2441a1ac589e545f82ae2a7d7408c2926"
       },
       {
         "path": "docs/tasks/2026-10-24--atlas-temporal-authoring.md",
@@ -4458,7 +4458,7 @@
       },
       {
         "path": "docs/tasks/2026-11-08--atlas-temporal-coordinate.md",
-        "sha256": "4d122b9a13563ddbfb9e99629d958317f133ce77b1bb2ae45162d6b7e239d21e"
+        "sha256": "96015e595736cf45bec10598b4e2d944a775b87afa93fe6cc9dfadd39ec7453d"
       }
     ],
     "followupRepair": {

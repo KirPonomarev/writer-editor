@@ -32571,6 +32571,62 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
       "approvedAtUtc": "2026-11-08T14:47:24.324Z",
       "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: preserve collapsed author disclosure across current redraws after observed own49 visibility counterexample. Unchanged seven-target finalizer; all historical witnesses, frozen M20 bytes, failures and old profiles preserved. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "a1ff919b89f94236be493344b6268d357c4acc6b033dfbdc60bd9439424c3427",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "16fe3970a9cc13ffd659dd36c4c8c272ce9fe52d83c0a1692ad4799f4529d7a5",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "73177c27f9ffc3d00f3efecec6c5c42ba85d09f3ebe89cbc2ed3bc337e24c42f",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "e42ddafe120c9e5cfad7311fa5619f7a72642afb743927ce17af22815e2ebc97",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "4cb5819deebca5414c484de84bcc3f7f18fc6a28ca2932fc251156dcad055cb1",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "ee4a25c54a7dae23c04c441e807d62e3022fa2259a4b1a3fa438113a03bfb84e",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "b2ca93d267801d1043be10e099c48b2aecaadc2da6e43c7ee2070aa90108a90a",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
+      "sha256": "e57fd531cecc5f7214f2d2d0e3840ab2441a1ac589e545f82ae2a7d7408c2926",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",

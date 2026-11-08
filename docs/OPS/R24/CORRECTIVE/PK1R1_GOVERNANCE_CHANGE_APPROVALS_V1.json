@@ -2820,4 +2820,60 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
       "approvedAtUtc": "2026-11-08T14:47:24.324Z",
       "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: preserve collapsed author disclosure across current redraws after observed own49 visibility counterexample. Unchanged seven-target finalizer; all historical witnesses, frozen M20 bytes, failures and old profiles preserved. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "a1ff919b89f94236be493344b6268d357c4acc6b033dfbdc60bd9439424c3427",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "16fe3970a9cc13ffd659dd36c4c8c272ce9fe52d83c0a1692ad4799f4529d7a5",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "73177c27f9ffc3d00f3efecec6c5c42ba85d09f3ebe89cbc2ed3bc337e24c42f",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "e42ddafe120c9e5cfad7311fa5619f7a72642afb743927ce17af22815e2ebc97",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "4cb5819deebca5414c484de84bcc3f7f18fc6a28ca2932fc251156dcad055cb1",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "ee4a25c54a7dae23c04c441e807d62e3022fa2259a4b1a3fa438113a03bfb84e",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "b2ca93d267801d1043be10e099c48b2aecaadc2da6e43c7ee2070aa90108a90a",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
+      "sha256": "e57fd531cecc5f7214f2d2d0e3840ab2441a1ac589e545f82ae2a7d7408c2926",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
     }],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}
