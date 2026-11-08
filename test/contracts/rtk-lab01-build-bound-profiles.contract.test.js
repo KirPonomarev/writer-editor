@@ -1011,7 +1011,7 @@ test('LAB02-05-declared-16-111-3-rejects-green', async () => {
   });
   assert.equal(crossBuild.ok, false);
   assert.equal(crossBuild.code, 'RTK_LAB01_CROSS_BUILD_EVIDENCE');
-  const rejoin = module.evaluateEvidenceProfileJoin({
+  const rejoinInput = {
     registry: registryJson,
     profileId: 'word-mac-16.111.3-26080215',
     evidence: {
@@ -1019,8 +1019,29 @@ test('LAB02-05-declared-16-111-3-rejects-green', async () => {
       wordBuild: '16.111.26080215',
       evidenceHeadPath: 'docs/OPS/RTK/WORD_MAC_16_111_3_CARRIER_SURVIVAL_SMOKE_RECEIPT.json',
     },
+  };
+  // This is a historical rejoin control, not a current freshness claim.
+  const rejoin = module.evaluateEvidenceProfileJoin({
+    ...rejoinInput,
+    nowUtc: '2026-08-10T07:55:00.000Z',
   });
   assert.equal(rejoin.ok, true, `re-joining the registered smoke head is a read: ${JSON.stringify(rejoin.reasons)}`);
+
+  const profile = registryJson.profiles.find((p) => p.profileId === rejoinInput.profileId);
+  const head = profile.evidenceHeads.find((h) => h.path === rejoinInput.evidence.evidenceHeadPath);
+  assert.equal(head.sealedAtUtc, '2026-08-10T07:55:00.000Z');
+  assert.equal(profile.freshnessPolicy.maxEvidenceAgeDays, 90);
+  const boundary = module.evaluateEvidenceProfileJoin({
+    ...rejoinInput,
+    nowUtc: '2026-11-08T07:55:00.000Z',
+  });
+  assert.equal(boundary.ok, true, 'the exact ninety-day boundary remains valid');
+  const expired = module.evaluateEvidenceProfileJoin({
+    ...rejoinInput,
+    nowUtc: '2026-11-08T07:55:00.001Z',
+  });
+  assert.equal(expired.ok, false, 'one millisecond beyond the freshness limit must refuse');
+  assert.equal(expired.code, LAB01_CODES.EVIDENCE_STALE);
 });
 
 // L2-06: no rung inheritance — the current profile admits only the next

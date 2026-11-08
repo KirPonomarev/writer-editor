@@ -5,6 +5,10 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
   "successorBaseTree": "124b88078497a01e1aacd7bd95c8a5019e3b3a59",
   "bindings": [
     {
+      "path": "test/contracts/rtk-lab01-build-bound-profiles.contract.test.js",
+      "sha256": "eb03e64fdf3615766e2e02f0eb6fb961cbfac9b8bf2df12d1dfee1e2e06b35ff"
+    },
+    {
       "path": "src/main.js",
       "sha256": "ac727842d61448a048ca708dcd063b518cee94d40d99eb20484cbbf497b48e2f"
     },
@@ -90,11 +94,11 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "4d6e5f580636cdbcbcc9386122b7d7effb4a2c8f3aa13cdfe8b1a995215f4ff6"
+      "sha256": "e723e3737f31739b0ce2ab5cabf3ce84b57b85d90f24d2bbb1e4b271aff7a6d2"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "5d6ac1bcac6b3b438ba648620366ae721ace97dc89567aca8c603e71bd71a2d7"
+      "sha256": "25a000d5c7785fe55c10fd2c8b186f0bbcfda6ca379ae76056e3dc0ad9598cbc"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -254,7 +258,7 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "0faf30e798ea43dfa0bb4744ac370aeacc8245ef38682646f0677673734cc609"
+      "sha256": "fd68008fb70e1c9f1f8ff2b3182e012d2066fa0caa4c48989ad956fe28f7c554"
     },
     {
       "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -310,11 +314,11 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "1a9eb529d85e4e8714925951d88cb6fedb86d89915397bd9cfdf373086ca224b"
+      "sha256": "921f85b5f3faec0cfb641a11ea2b442035ed241204da4f10e270763b6c947cfe"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "b9d9bb0f62614167398f1cbb6daacb72d645d26050af7a70e7e932d93ede7b9d"
+      "sha256": "ebd63185d0bfe29b48f0a615561ca16dbded46ba67991fb16085189463e8dde2"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -746,7 +750,7 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-07--atlas-temporal-range-display.md",
-      "sha256": "acc3b7991abe10398d99f98d0a6bf727572b48729329a5e75d5df2391b856f9a"
+      "sha256": "e1ceca880a7b3fbe993dc854c1f72453183eb80fd121a9683eaa4d42ddf4387f"
     },
     {
       "path": "src/derived/atlas/deriveAtlasTemporalLayout.mjs",
@@ -760,7 +764,7 @@ const R24_INTEROP_ATLAS_TEMPORAL_RANGE_DISPLAY_20261107_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "31b64ae92668e856c3bb63394b0cde1254254bc591b1b8366fb1e47a18e1741d"
+      "sha256": "2e5bfad3fb869f8db2774740f87af3d01bb3602db2a342ea334c7134358f32fc"
     }
   ]
 });

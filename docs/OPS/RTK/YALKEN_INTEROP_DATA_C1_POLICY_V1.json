@@ -971,7 +971,8 @@
     "test/unit/atlas-temporal-author-input.test.js",
     "docs/tasks/2026-11-07--atlas-temporal-range-display.md",
     "src/derived/atlas/deriveAtlasTemporalLayout.mjs",
-    "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs"
+    "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+    "test/contracts/rtk-lab01-build-bound-profiles.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -3440,7 +3441,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "5d6ac1bcac6b3b438ba648620366ae721ace97dc89567aca8c603e71bd71a2d7"
+        "sha256": "25a000d5c7785fe55c10fd2c8b186f0bbcfda6ca379ae76056e3dc0ad9598cbc"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4444,11 +4445,15 @@
       },
       {
         "path": "docs/tasks/2026-11-07--atlas-temporal-range-display.md",
-        "sha256": "acc3b7991abe10398d99f98d0a6bf727572b48729329a5e75d5df2391b856f9a"
+        "sha256": "e1ceca880a7b3fbe993dc854c1f72453183eb80fd121a9683eaa4d42ddf4387f"
       },
       {
         "path": "src/derived/atlas/deriveAtlasTemporalLayout.mjs",
         "sha256": "8c6bb71601826822967dee8bbf95ca8992f8c1763c42fc14b80200248c87aa2a"
+      },
+      {
+        "path": "test/contracts/rtk-lab01-build-bound-profiles.contract.test.js",
+        "sha256": "eb03e64fdf3615766e2e02f0eb6fb961cbfac9b8bf2df12d1dfee1e2e06b35ff"
       }
     ],
     "followupRepair": {

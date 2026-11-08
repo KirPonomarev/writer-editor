@@ -43,6 +43,7 @@ The existing scene-time command preserves untouched fields and retains a stored 
 - src/renderer/editor.bundle.js
 - src/renderer/editor.js
 - test/contracts/rtk-word-comment-return-apply.contract.test.js
+- test/contracts/rtk-lab01-build-bound-profiles.contract.test.js
 - test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js
 - test/unit/current-bindings-finalizer.test.js
 - test/unit/r24-wp307-writer-local-profile-integration.test.js
@@ -60,6 +61,7 @@ FEATURE_INTEGRATION_MANIFEST_V1: Core retains the authored endpoints, precision 
 1. Keep the original read-label checkpoint and its focused cases verbatim. Append real Main and Kernel cases for untouched ranges, note and anchor identity. Run them before the amendment and retain original RED.
 2. Resolve omitted fields within existing Main canonical preparation. Run the same cases, earlier focused and affected cases, renderer build, and source guardrails.
 3. Bind current verification inputs through exact preflight. Refresh only the current Main digest in the Full-Mac V2 cut and its independent source-pin map. Preserve historical V1, all original verifier predicates and all seventeen unknown qualification rows. Reuse the existing current finalizer with the fixed current literal path. Preserve archived predicates, current full row bindings, original limits, and reject silent fallback. Complete mandatory software, separately rebuilt actual Mac first and cold before product push, ordinary PR and CI, and separately rebuilt merged verification. Native launch requires safe process binding to an isolated profile.
+4. Complete the same delivery after the inherited LAB02-05 historical smoke fixture crosses its ninety-day freshness boundary. Pin only that test's historical evaluation time through the existing nowUtc input, retain every original assertion and add exact-boundary success and one-millisecond-expired typed refusal. Preserve the evaluator, registry, sealed receipts and freshness policy byte for byte. Refresh current verification metadata through the same governed finalizer and repeat the required exact-head delivery proofs. This is mandatory CI maintenance; Office remains paused.
 
 ## CHECKS
 
@@ -88,3 +90,5 @@ Exact b0d5d49b returned an inherited C06 digest mismatch. The retained original 
 Exact 5b5777a8 original affected-chain verification returned 346 refusals: 342 stale current Full-Mac V2 Main-source pins and four parent failures. Original full output is 4d3427a7c4ec8b06bac95887d55772ba85ff3499c93381cb6c46e7ac55b51a19. Read-only discrimination acb9bd4b1637a9594c678f30a6d465807bd118878f2b7515fdb161658751c485 changes only the Main source bytes in memory to the prior exact source and restores VALID with all seventeen qualification rows still missing. It is diagnosis, never current acceptance. Fresh scope-23 declaration 108f176f3ffc4e380ffc9b713e6d8917abff5d73e6cf6e647246d50bb9176c6c admits the two literal current-source pin repairs. The original tests remain unchanged.
 
 Retain the actual input, unchanged test source, observed and expected outcomes, status and output. Keep synthetic Core/query, physical application and full Mac claims separate.
+
+PR 2212 original run 42463582344 returned one RTK failure at exact c7c76777: LAB02-05 expected a historical registered smoke join to succeed using the real wall clock, after its sealed receipt crossed the unchanged ninety-day limit on 2026-11-08 at 07:55 UTC. Preserve complete original RTK output ed8932fc64dbcecb8dd77c79a64a7c1943c45a8696e027ec27e3efa315e4b990. Read-only discrimination 0896a4e2b445f71503ad131ee3e7ffbb66f6cfece0ecab88e6153361df11fbf6 proves current-time refusal, historical-time success, exact ninety-day acceptance and one-millisecond-expired refusal with the same source and registry. Scope-24 preflight 60cd360bc40f7a69087e074b55a88286dbb2b148a7ad2cd8857ef6fe8482a617 admits the bounded test-clock correction; it creates no fresh Word evidence or release authority.
