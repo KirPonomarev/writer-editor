@@ -17315,7 +17315,7 @@ function setAtlasReportsDraftField(fieldName, value) {
 
 function appendAtlasTemporalAuthorControls(parent) {
   const section = appendAtlasOverviewSection(parent, 'Author controls', { open: true });
-  section.dataset.atlasTemporalAuthorControls = 'true';
+  section.parentElement.dataset.atlasTemporalAuthorControls = 'true';
   const projectId = currentProjectId;
   const documentKind = currentDocumentKind;
   const sceneId = documentKind === 'scene' || documentKind === 'chapter-file' ? currentDocumentId : null;
@@ -17382,7 +17382,7 @@ function appendAtlasTemporalAuthorControls(parent) {
     reason: sceneId ? '' : 'Open a scene first',
   }));
   section.appendChild(actions);
-  return section;
+  return section.parentElement;
 }
 
 function appendAtlasContinuityAuthorControls(parent) {

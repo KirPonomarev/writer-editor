@@ -634,6 +634,7 @@ test('E06 C06: actual Time rendering keeps the chosen author disclosure state', 
     return source.slice(start, end);
   };
   const actual = [
+    extract('function appendAtlasOverviewSection(', '\nfunction createAtlasWorkspacePostureControls('),
     extract('function appendAtlasTemporalAuthorControls(', '\nfunction appendAtlasContinuityAuthorControls('),
     extract('function renderAtlasTemporalLayoutState(', '\nfunction closeAtlasTemporalLayoutSurface('),
     extract('async function refreshAtlasTemporalLayout(', '\nfunction normalizeAtlasContinuityLedgerSurface('),
@@ -643,15 +644,18 @@ test('E06 C06: actual Time rendering keeps the chosen author disclosure state', 
     class HTMLElement {
       constructor(tag = 'div') {
         this.tagName = tag.toUpperCase(); this.children = []; this.dataset = {};
-        this.style = { setProperty() {} }; this.open = false;
+        this.style = { setProperty() {} }; this.parentElement = null;
       }
-      append(...nodes) { this.children.push(...nodes); }
+      append(...nodes) {
+        for (const node of nodes) { node.parentElement = this; this.children.push(node); }
+      }
       appendChild(node) { this.append(node); return node; }
       setAttribute() {}
       contains(node) { return this === node || this.children.some((child) => child.contains(node)); }
       set innerHTML(value) {
         assert.equal(value, '');
         if (this.contains(document.activeElement)) document.activeElement = document.body;
+        for (const node of this.children) node.parentElement = null;
         this.children = [];
       }
       querySelector(selector) {
@@ -670,8 +674,12 @@ test('E06 C06: actual Time rendering keeps the chosen author disclosure state', 
       constructor() { super('input'); }
       focus() { document.activeElement = this; }
     }
+    class HTMLDetailsElement extends HTMLElement {
+      constructor() { super('details'); this.open = false; }
+    }
     document.body = new HTMLElement('body');
-    document.createElement = (tag) => tag === 'input' ? new HTMLInputElement() : new HTMLElement(tag);
+    document.createElement = (tag) => tag === 'input' ? new HTMLInputElement()
+      : tag === 'details' ? new HTMLDetailsElement() : new HTMLElement(tag);
     const host = new HTMLElement();
     const editor = new HTMLElement();
     const queries = [];
@@ -692,11 +700,6 @@ test('E06 C06: actual Time rendering keeps the chosen author disclosure state', 
       bindAtlasTemporalLayoutKeyboardNavigation() {}, applyAtlasResolvedSurfaceBinding() {},
       isAtlasSurfaceActive: () => true, normalizeAtlasTemporalLayout: (value) => value,
       appendAtlasOverviewMetric() {}, appendAtlasTemporalLayoutList() {},
-      appendAtlasOverviewSection(parent, title, options) {
-        const section = new HTMLElement('details'); section.open = options.open;
-        const summary = new HTMLElement('summary'); summary.textContent = title;
-        section.append(summary); parent.append(section); return section;
-      },
       appendAtlasSurfaceField(parent) { const field = new HTMLInputElement(); parent.append(field); return field; },
       makeAtlasSurfaceCommandButton: () => new HTMLElement('button'),
       captureAtlasPublication: () => () => true,
@@ -721,6 +724,14 @@ test('E06 C06: actual Time rendering keeps the chosen author disclosure state', 
   }
   await t.test('first render exposes the existing author controls by default', () => {
     const f = fixture(); assert.equal(f.author().open, true);
+  });
+  await t.test('overview section uses a native disclosure and returns its body', () => {
+    const f = fixture(), disclosure = f.author(), body = disclosure.children[1];
+    assert.equal(disclosure.tagName, 'DETAILS');
+    assert.equal(body.tagName, 'DIV');
+    assert.equal(body.parentElement, disclosure);
+    assert.equal(Object.hasOwn(body, 'open'), false);
+    assert.equal(typeof disclosure.open, 'boolean');
   });
   await t.test('ready redraw retains a deliberately collapsed disclosure', () => {
     const f = fixture(); f.author().open = false; f.context.render();
