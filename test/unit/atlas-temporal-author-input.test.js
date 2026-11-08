@@ -78,9 +78,9 @@ async function fixture() {
   assert.ok(draft, 'production draft declaration');
   const functions = [
     'captureAtlasPublication', 'normalizeAtlasSurface', 'isAtlasSurfaceActive', 'appendAtlasOverviewSection',
-    'appendAtlasSurfaceField', 'runAtlasSurfaceProductCommand', 'makeAtlasSurfaceCommandButton',
+    'appendAtlasSurfaceField', 'appendAtlasSurfaceSelect', 'runAtlasSurfaceProductCommand', 'makeAtlasSurfaceCommandButton',
     'makeStableUiId', 'ensureAtlasSurfaceDraftId', 'exactAtlasCalendarRange', 'exactAtlasNarrativeRange',
-    'readAtlasTemporalWholeDay', 'getAtlasTemporalCalendarPayload', 'getAtlasTemporalAnchorPayload',
+    'readAtlasTemporalWholeDay', 'getAtlasTemporalCalendarPayload', 'getAtlasTemporalRangePayload', 'getAtlasTemporalAnchorPayload',
     'setAtlasTemporalDraftField', 'appendAtlasTemporalAuthorControls',
   ].flatMap((name) => source.match(new RegExp(`^(?:async )?function ${name}\\([\\s\\S]*?^\\}`, 'm')) || []);
   const render = vm.runInContext(`${draft[0]}\n${functions.join('\n')}\nappendAtlasTemporalAuthorControls`, context);
@@ -97,7 +97,7 @@ async function fixture() {
           const input = field(key);
           assert.ok(input, `visible field ${key}`);
           input.value = value;
-          input.listeners.input();
+          (input.listeners.input || input.listeners.change)();
         }
       },
       click(key) {
@@ -277,4 +277,161 @@ test('Atlas Time keeps the calendar of a story date separate from the project ca
   reopened.click(anchorAction);
   assert.equal(f.anchor('scene-a').storyRange.start.calendarId, 'calendar-dawn');
   assert.equal(f.anchor('scene-b').storyRange.start.calendarId, 'calendar-dusk');
+});
+
+test('Atlas Time authors an exact narrative interval with explicit negative and zero bounds', async () => {
+  const f = await fixture(), form = f.open();
+  form.enter({ narrativeRangeKind: 'exact', narrativeDay: '-2', narrativeEndDay: '0' });
+  form.click(anchorAction);
+  const range = f.anchor('scene-a').narrativeRange;
+  assert.equal(range.rangeKind, 'exact');
+  assert.equal(range.start.dayIndex, -2);
+  assert.equal(range.end.dayIndex, 0);
+  assert.deepEqual(f.project().scenes, f.originalScenes);
+});
+
+test('Atlas Time authors an approximate narrative interval with the author precision note', async () => {
+  const f = await fixture(), form = f.open();
+  form.enter({ narrativeRangeKind: 'approximate', narrativeDay: '-2', narrativeEndDay: '0',
+    narrativePrecisionNote: '  Около рассвета e\u0301 🧭  ' });
+  form.click(anchorAction);
+  const range = f.anchor('scene-a').narrativeRange;
+  assert.equal(range.rangeKind, 'approximate');
+  assert.equal(range.start.dayIndex, -2);
+  assert.equal(range.end.dayIndex, 0);
+  assert.equal(range.precisionNote, 'Около рассвета e\u0301 🧭');
+  assert.deepEqual(f.project().scenes, f.originalScenes);
+});
+
+for (const direction of ['from', 'until']) {
+  test(`Atlas Time authors an open narrative ${direction} zero without inventing the missing side`, async () => {
+    const f = await fixture(), form = f.open();
+    form.enter({ narrativeRangeKind: direction, narrativeDay: direction === 'from' ? '0' : '',
+      narrativeEndDay: direction === 'until' ? '0' : '', narrativePrecisionNote: 'Other bound is not known' });
+    form.click(anchorAction);
+    const range = f.anchor('scene-a').narrativeRange;
+    assert.equal(range.rangeKind, 'open');
+    assert.equal(range.start?.dayIndex ?? null, direction === 'from' ? 0 : null);
+    assert.equal(range.end?.dayIndex ?? null, direction === 'until' ? 0 : null);
+    assert.equal(range.precisionNote, 'Other bound is not known');
+    assert.deepEqual(f.project().scenes, f.originalScenes);
+  });
+}
+
+test('Atlas Time can explicitly record unknown narrative time with an author reason', async () => {
+  const f = await fixture(), form = f.open();
+  form.enter({ narrativeRangeKind: 'unknown', narrativePrecisionNote: 'Narrator cannot date this scene' });
+  form.click(anchorAction);
+  const range = f.anchor('scene-a').narrativeRange;
+  assert.equal(range.rangeKind, 'unknown');
+  assert.equal(range.start, null);
+  assert.equal(range.end, null);
+  assert.equal(range.precisionNote, 'Narrator cannot date this scene');
+  assert.equal(range.explicitUnknown, true);
+});
+
+test('Atlas Time sends calendar intervals and both open directions without converting their dates', async () => {
+  const f = await fixture(), form = f.open();
+  form.enter({ calendarId: 'calendar-dawn', calendarName: 'Dawn' });
+  form.click(calendarAction);
+  for (const [kind, start, end] of [['exact', 'Первый рассвет', 'Последний рассвет'],
+    ['approximate', 'Первый рассвет', 'Последний рассвет'], ['from', 'Первый рассвет', ''],
+    ['until', '', 'Последний рассвет']]) {
+    form.enter({ storyCalendarId: 'calendar-dawn', storyRangeKind: kind, storyDate: start,
+      storyEndDate: end, storyPrecisionNote: kind === 'exact' ? '' : 'Авторская граница' });
+    form.click(anchorAction);
+    const range = f.anchor('scene-a').storyRange;
+    assert.equal(range.rangeKind, kind === 'from' || kind === 'until' ? 'open' : kind);
+    assert.equal(range.start?.value ?? '', start);
+    assert.equal(range.end?.value ?? '', end);
+    for (const point of [range.start, range.end].filter(Boolean)) {
+      assert.equal(point.pointKind, 'calendarDate');
+      assert.equal(point.calendarId, 'calendar-dawn');
+    }
+    assert.deepEqual(f.project().scenes, f.originalScenes);
+  }
+});
+
+test('Atlas Time accepts a one-sided approximate range but never fills its absent bound', async () => {
+  const f = await fixture(), form = f.open();
+  form.enter({ narrativeRangeKind: 'approximate', narrativeDay: '', narrativeEndDay: '0',
+    narrativePrecisionNote: 'Approximately until the opening day' });
+  form.click(anchorAction);
+  const range = f.anchor('scene-a').narrativeRange;
+  assert.equal(range.rangeKind, 'approximate');
+  assert.equal(range.start, null);
+  assert.equal(range.end.dayIndex, 0);
+});
+
+test('Atlas Time refuses incomplete, ambiguous and unexplained range choices without dispatch or draft loss', async () => {
+  const f = await fixture(), form = f.open();
+  const cases = [
+    { narrativeRangeKind: 'approximate', narrativeDay: '0', narrativeEndDay: '2', narrativePrecisionNote: '' },
+    { narrativeRangeKind: 'approximate', narrativeDay: '', narrativeEndDay: '', narrativePrecisionNote: 'No bounds' },
+    { narrativeRangeKind: 'from', narrativeDay: '', narrativeEndDay: '2', narrativePrecisionNote: 'Wrong side' },
+    { narrativeRangeKind: 'until', narrativeDay: '0', narrativeEndDay: '', narrativePrecisionNote: 'Wrong side' },
+    { narrativeRangeKind: 'from', narrativeDay: '0', narrativeEndDay: '2', narrativePrecisionNote: 'Two sides' },
+    { narrativeRangeKind: 'until', narrativeDay: '0', narrativeEndDay: '2', narrativePrecisionNote: 'Two sides' },
+    { narrativeRangeKind: 'from', narrativeDay: '0', narrativeEndDay: '', narrativePrecisionNote: '' },
+    { narrativeRangeKind: 'unknown', narrativeDay: '', narrativeEndDay: '', narrativePrecisionNote: '' },
+    { narrativeRangeKind: 'unknown', narrativeDay: '0', narrativeEndDay: '', narrativePrecisionNote: 'A supplied bound must not disappear' },
+    { narrativeRangeKind: 'exact', narrativeDay: '', narrativeEndDay: '0', narrativePrecisionNote: '' },
+    { narrativeRangeKind: 'invented-kind', narrativeDay: '0', narrativeEndDay: '', narrativePrecisionNote: '' },
+  ];
+  for (const values of cases) {
+    form.enter(values);
+    form.click(anchorAction);
+    for (const [key, value] of Object.entries(values)) assert.equal(form.field(key).value, value);
+  }
+  assert.deepEqual(f.requests, []);
+  assert.equal(f.statuses.length, cases.length);
+  assert.ok(f.statuses.every(({ visible }) => visible));
+  assert.deepEqual(f.project().scenes, f.originalScenes);
+});
+
+test('Atlas Time rejects malformed and unsafe end days and a missing calendar for end-only story time', async () => {
+  const f = await fixture(), form = f.open();
+  for (const narrativeEndDay of ['1.5', '1e3', '12 days', '9007199254740992', 'Infinity']) {
+    form.enter({ narrativeRangeKind: 'exact', narrativeDay: '0', narrativeEndDay });
+    form.click(anchorAction);
+  }
+  assert.deepEqual(f.requests, []);
+  const second = f.open({ currentDocumentId: 'scene-b' });
+  second.enter({ storyRangeKind: 'until', storyEndDate: 'Last light', storyPrecisionNote: 'Unknown beginning' });
+  second.click(anchorAction);
+  assert.deepEqual(f.requests, []);
+  assert.equal(f.statuses.length, 6);
+});
+
+test('Atlas Time marks only explicitly edited range dimensions for the existing Main preservation route', async () => {
+  const f = await fixture(), form = f.open();
+  form.enter({ narrativeRangeKind: 'until', narrativeEndDay: '0', narrativePrecisionNote: 'Unknown start' });
+  form.click(anchorAction);
+  assert.deepEqual(Array.from(f.requests[0].payload.preserveUntouchedTemporalFields), ['storyRange', 'note']);
+  const second = f.open({ currentDocumentId: 'scene-b' });
+  second.enter({ storyRangeKind: 'unknown', storyPrecisionNote: 'No dated evidence' });
+  second.click(anchorAction);
+  assert.deepEqual(Array.from(f.requests[1].payload.preserveUntouchedTemporalFields), ['narrativeRange', 'note']);
+});
+
+test('Atlas Time keeps advanced drafts scene-owned and refuses detached and foreign range submissions', async () => {
+  const f = await fixture(), first = f.open();
+  first.enter({ narrativeRangeKind: 'approximate', narrativeDay: '-2', narrativeEndDay: '0',
+    narrativePrecisionNote: 'Saved only on an explicit command' });
+  const second = f.open({ currentDocumentId: 'scene-b' });
+  first.enter({ narrativeEndDay: '7' });
+  first.click(anchorAction);
+  assert.deepEqual(f.requests, []);
+  assert.equal(second.field('narrativeRangeKind').value, '');
+  assert.equal(second.field('narrativeEndDay').value, '');
+  const returned = f.open({ currentDocumentId: 'scene-a' });
+  assert.equal(returned.field('narrativeEndDay').value, '0');
+  assert.equal(returned.field('narrativeRangeKind').value, 'approximate');
+  f.context.currentProjectId = 'project-b';
+  returned.click(anchorAction);
+  assert.deepEqual(f.requests, []);
+  const foreign = f.open();
+  assert.equal(foreign.field('narrativeRangeKind').value, '');
+  assert.equal(foreign.field('narrativePrecisionNote').value, '');
+  assert.deepEqual(f.project().scenes, f.originalScenes);
 });

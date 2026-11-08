@@ -17223,28 +17223,79 @@ function getAtlasTemporalCalendarPayload(draft, reject) {
 }
 
 function getAtlasTemporalAnchorPayload(sceneId, draft, reject) {
-  const storyDate = (draft.storyDate || '').trim();
-  const narrativeDay = (draft.narrativeDay || '').trim();
-  const calendarId = (draft.storyCalendarId || '').trim();
-  if (!storyDate && !narrativeDay) return reject('Enter a story date or a narrative day.');
-  if (storyDate && !calendarId) return reject('Enter the calendar ID for the story date.');
-  const dayIndex = readAtlasTemporalWholeDay(narrativeDay);
-  if (narrativeDay && dayIndex === null) return reject('Enter a whole number for the narrative day.');
+  function getAtlasTemporalRangePayload(draft, dimension, reject) {
+    const story = dimension === 'story';
+    const startField = story ? 'storyDate' : 'narrativeDay';
+    const endField = story ? 'storyEndDate' : 'narrativeEndDay';
+    const start = (draft[startField] || '').trim();
+    const end = (draft[endField] || '').trim();
+    const selectedKind = (draft[`${dimension}RangeKind`] || '').trim();
+    const precisionNote = (draft[`${dimension}PrecisionNote`] || '').trim();
+    const label = story ? 'story' : 'narrative';
+    if (!start && !end && !selectedKind && !precisionNote) {
+      return { rangeKind: 'unknown', precisionNote: story ? 'Story date not supplied' : 'Narrative day not supplied' };
+    }
+    const kind = selectedKind || 'exact';
+    if (!['exact', 'approximate', 'from', 'until', 'unknown'].includes(kind)) {
+      return reject(`Choose a supported ${label} range kind.`);
+    }
+    if (kind === 'unknown') {
+      if (start || end) return reject(`Clear the ${label} bounds before marking time unknown.`);
+      if (!precisionNote) return reject(`Explain why ${label} time is unknown.`);
+      return { rangeKind: 'unknown', precisionNote };
+    }
+    if (kind === 'exact' && !start) return reject(`Enter the ${label} start bound.`);
+    if (kind === 'approximate' && !start && !end) return reject(`Enter at least one ${label} bound.`);
+    if (kind === 'from' && (!start || end)) return reject(`For a ${label} range from a start, enter only the start bound.`);
+    if (kind === 'until' && (start || !end)) return reject(`For a ${label} range until an end, enter only the end bound.`);
+    if (kind !== 'exact' && !precisionNote) return reject(`Explain the approximate or open ${label} range.`);
+    const calendarId = (draft.storyCalendarId || '').trim();
+    if (story && !calendarId) return reject('Enter the calendar ID for the story date.');
+    if (!story && [start, end].some((value) => value && readAtlasTemporalWholeDay(value) === null)) {
+      return reject('Enter a whole number for each narrative day.');
+    }
+    if (kind === 'exact') {
+      const range = story ? exactAtlasCalendarRange(calendarId, start)
+        : exactAtlasNarrativeRange(readAtlasTemporalWholeDay(start));
+      if (end) range.end = story ? { pointKind: 'calendarDate', calendarId, value: end }
+        : { pointKind: 'ordinalDay', dayIndex: readAtlasTemporalWholeDay(end) };
+      if (precisionNote) range.precisionNote = precisionNote;
+      return range;
+    }
+    const point = (value) => !value ? null : story ? { pointKind: 'calendarDate', calendarId, value }
+      : { pointKind: 'ordinalDay', dayIndex: readAtlasTemporalWholeDay(value) };
+    return {
+      rangeKind: kind === 'approximate' ? 'approximate' : 'open',
+      start: point(start),
+      end: point(end),
+      precisionNote,
+    };
+  }
+  const rangeFields = {
+    story: ['storyDate', 'storyEndDate', 'storyPrecisionNote'],
+    narrative: ['narrativeDay', 'narrativeEndDay', 'narrativePrecisionNote'],
+  };
+  const hasRangeInput = (dimension) => [...rangeFields[dimension], `${dimension}RangeKind`]
+    .some((field) => (draft[field] || '').trim());
+  if (!hasRangeInput('story') && !hasRangeInput('narrative')) return reject('Enter a story date or a narrative day.');
+  const storyRange = getAtlasTemporalRangePayload(draft, 'story', reject);
+  if (!storyRange) return null;
+  const narrativeRange = getAtlasTemporalRangePayload(draft, 'narrative', reject);
+  if (!narrativeRange) return null;
   const preserveUntouchedTemporalFields = [];
-  if (!Object.hasOwn(draft, 'storyDate')) preserveUntouchedTemporalFields.push('storyRange');
-  if (!Object.hasOwn(draft, 'narrativeDay')) preserveUntouchedTemporalFields.push('narrativeRange');
+  for (const dimension of ['story', 'narrative']) {
+    if (!rangeFields[dimension].some((field) => Object.hasOwn(draft, field)) && !draft[`${dimension}RangeKind`]) {
+      preserveUntouchedTemporalFields.push(`${dimension}Range`);
+    }
+  }
   if (!Object.hasOwn(draft, 'note')) preserveUntouchedTemporalFields.push('note');
   draft.anchorId ||= makeStableUiId('atlas-temporal-anchor');
   return {
     preserveUntouchedTemporalFields,
     sceneId,
     anchorId: draft.anchorId,
-    storyRange: storyDate
-      ? exactAtlasCalendarRange(calendarId, storyDate)
-      : { rangeKind: 'unknown', precisionNote: 'Story date not supplied' },
-    narrativeRange: dayIndex === null
-      ? { rangeKind: 'unknown', precisionNote: 'Narrative day not supplied' }
-      : exactAtlasNarrativeRange(dayIndex),
+    storyRange,
+    narrativeRange,
     note: (draft.note || '').trim(),
   };
 }
@@ -17347,6 +17398,11 @@ function appendAtlasTemporalAuthorControls(parent) {
       });
     input.disabled = !projectId;
   }
+  const setSceneField = (key, value) => {
+    if (!projectId || !sceneId || !isCurrent()) return;
+    scene[key] = value;
+    scenes.set(sceneId, scene);
+  };
   for (const [fieldName, label, placeholder] of [
     ['storyCalendarId', 'Calendar ID for story date', 'An existing calendar ID'],
     ['storyDate', 'Story date (optional)', 'Keep saved date if untouched'],
@@ -17354,14 +17410,41 @@ function appendAtlasTemporalAuthorControls(parent) {
     ['note', 'Note (optional)', 'Keep saved note if untouched'],
   ]) {
     const input = appendAtlasSurfaceField(fields, { datasetName: 'atlasTemporalField', fieldName, label, placeholder },
-      scene, (key, value) => {
-        if (!projectId || !sceneId || !isCurrent()) return;
-        scene[key] = value;
-        scenes.set(sceneId, scene);
-      });
+      scene, setSceneField);
     input.disabled = !projectId || !sceneId;
   }
   section.appendChild(fields);
+
+  const rangeDetails = appendAtlasOverviewSection(section, 'Range details', { open: false });
+  rangeDetails.parentElement.dataset.atlasTemporalRangeDetails = 'true';
+  const rangeFields = document.createElement('div');
+  rangeFields.className = 'right-rail-atlas-journey-fields';
+  for (const [dimension, label, endField, endLabel] of [
+    ['story', 'Story', 'storyEndDate', 'Story end date (optional)'],
+    ['narrative', 'Narrative', 'narrativeEndDay', 'Narrative end day (optional)'],
+  ]) {
+    const kind = appendAtlasSurfaceSelect(rangeFields, {
+      datasetName: 'atlasTemporalField', fieldName: `${dimension}RangeKind`, label: `${label} range`,
+      emptyLabel: 'Single date or day',
+      options: [
+        { value: 'exact', label: 'Exact interval' },
+        { value: 'approximate', label: 'Approximate interval' },
+        { value: 'from', label: 'From a start, end unknown' },
+        { value: 'until', label: 'Until an end, start unknown' },
+        { value: 'unknown', label: 'Unknown time' },
+      ],
+    }, scene, setSceneField);
+    kind.disabled = !projectId || !sceneId;
+    for (const config of [
+      { fieldName: endField, label: endLabel, placeholder: 'Leave the absent bound empty' },
+      { fieldName: `${dimension}PrecisionNote`, label: `${label} precision or reason`,
+        placeholder: 'Required for approximate, open or unknown time' },
+    ]) {
+      const input = appendAtlasSurfaceField(rangeFields, { datasetName: 'atlasTemporalField', ...config }, scene, setSceneField);
+      input.disabled = !projectId || !sceneId;
+    }
+  }
+  rangeDetails.appendChild(rangeFields);
 
   const actions = document.createElement('div');
   actions.className = 'right-rail-atlas-action-bar';
@@ -20207,6 +20290,7 @@ function renderAtlasTemporalLayoutState() {
   if (!(atlasTemporalLayoutHost instanceof HTMLElement)) return;
   const previousAuthorControls = atlasTemporalLayoutHost.querySelector('[data-atlas-temporal-author-controls]');
   const authorControlsOpen = previousAuthorControls?.open;
+  const rangeDetailsOpen = atlasTemporalLayoutHost.querySelector('[data-atlas-temporal-range-details]')?.open;
   bindAtlasTemporalLayoutKeyboardNavigation();
   if (atlasTemporalLayoutShell instanceof HTMLElement) {
     atlasTemporalLayoutShell.hidden = !isAtlasSurfaceActive('temporal') || atlasTemporalLayoutExplicitOpen !== true;
@@ -20250,6 +20334,9 @@ function renderAtlasTemporalLayoutState() {
   atlasTemporalLayoutHost.appendChild(actionBar);
   const authorControls = appendAtlasTemporalAuthorControls(atlasTemporalLayoutHost);
   if (typeof authorControlsOpen === 'boolean') authorControls.open = authorControlsOpen;
+  if (typeof rangeDetailsOpen === 'boolean') {
+    atlasTemporalLayoutHost.querySelector('[data-atlas-temporal-range-details]').open = rangeDetailsOpen;
+  }
 
   if (state.state === 'unavailable') {
     const unavailable = document.createElement('div');

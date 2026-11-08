@@ -1,3 +1,18 @@
+# CURRENT — Atlas Time: явные авторские границы
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108
+BINDING_BASE_SHA: 08c4d7811a6d00e073a085f2d918eb345ba486ce
+STATUS: FOCUSED_SOURCE_VERIFIED_REQUIRED_PROOFS_PENDING
+
+PR2213 завершён обычным merge08c4d7811a6d00e073a085f2d918eb345ba486ce из f52052a951ab0ec45cd904317633f8f06d570c1e, дерево de78487dd4755b9c056d3b965e5d9f74520f7f00 совпало. Candidate/main CI прошли20из20 на каждом SHA, actual merged local27из27. Merged build089b23a988d8bb2fcb799f59f254570691c85f9b7f37e8058ac4e094e9d31ba9, ASAR820b09b667c0bb00325b75564e0923dd952fc443d253bf444e9cc0c5d74e2349 прошёл независимое полное чтение1484ASAR leaves и7252bundle entries. Actual own54 FIRST18/COLD16, шесть исходных JPEG и physical seed11 подтверждают scene-order fallback, повторный0/1/0/1/0 с фокусом и свёрнутыми author controls, точное открытие двух сцен мышью/клавиатурой/списком и неизменные рукописи/временные данные. Два штатных процесса завершились0 без helpers. Независимый native4bc9cd209723d3e40d60226e2016543892639c557c07a4ca0715b34196204152; полный собственный профиль108entries56files ba5d7532ab89cd780d678c37ebd26215b1e4ccca958f842b9600d93cc8fd46f6; protected54profiles26bundles a848ec72f7ad80ade0339a00e699de9fe02728946009bd92327c5d8e45aa7b1c. Final schema-valid report ATLAS_TEMPORAL_COORDINATE_SCOPE_FINAL_REPORT_01.json, SHA9ad6fb5db4af0c650e3903ed9af759b32f9867455167ccc10ca79a028401d9fc. Все исходные FAIL, прежние59skips и6moderate dev findings сохранены. Это bounded Time closure; numeric-story UI и полный Mac не квалифицированы.
+
+Следующий source-пробел подтверждён дешёвой пробой809a605a6817fe0b916c7c2ca501cbeb1540a2127da9bcd7d0aa000708570d62: Core принимает approximate/from/until, текущий serializer предлагает только точечные даты/дни. Разрешённый отдельный исходник добавляет необязательные Range details в существующей форме и передаёт явные границы/причину через прежнюю команду. Исходный RED59cases45pass14fail сохранён, те же frozen59 проходят; После совместимого перемещения локального helper внутрь существующего serializer те же139 related cases проходят a35ea7ed8d7dc25e9c19b2441e2ad6633b8ad3992c08a37707883e77c7e77788. Копия Main fixture/его extractor остаётся неизменной; первоначальная ReferenceError и read-only discriminator f009285b сохранены. Renderer пересобран; окончательные affected/current-binding/native/full delivery проверки ещё впереди. Ни одного нового native acceptance пока нет.
+
+NEXT: проверить точный текущий source и существующие callers, завершить необходимые current companions, затем rebuilt own55 AUTHOR/cold и оставшиеся обязательные gates/normal delivery/merged proof. Один исполнитель и одна цепочка. Новые материалы и отчёты — датированная2026-11-08--atlas-temporal-range-authoring на проверенном T777. Full Mac остаётся NOT_READY, все17UNKNOWN; Word/nativeOffice PAUSED, Black Box после полного Mac.
+
+--- Earlier current blocks below are historical snapshots; their pending NEXT is superseded by this entry ---
+
 # CURRENT — Atlas Time: координаты после сохранения диапазонов
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -1,3 +1,19 @@
+# CURRENT HANDOFF — Atlas Time explicit range authoring
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108
+BASE: 08c4d7811a6d00e073a085f2d918eb345ba486ce
+BRANCH: codex/atlas-temporal-range-authoring-20261108
+STATUS: FOCUSED_SOURCE_VERIFIED_REQUIRED_PROOFS_PENDING
+
+M21 Time coordinate delivery is CLOSED: PR2213, merged08c4d7811a6d00e073a085f2d918eb345ba486ce, candidatef52052a951ab0ec45cd904317633f8f06d570c1e, identical treede78487dd4755b9c056d3b965e5d9f74520f7f00; candidate/main20CI each, actual merged27local, own54FIRST18/COLD16/two exits0. Build089b23a988d8bb2fcb799f59f254570691c85f9b7f37e8058ac4e094e9d31ba9/ASAR820b09b667c0bb00325b75564e0923dd952fc443d253bf444e9cc0c5d74e2349; independent native4bc9cd209723d3e40d60226e2016543892639c557c07a4ca0715b34196204152, full own54profile ba5d7532ab89cd780d678c37ebd26215b1e4ccca958f842b9600d93cc8fd46f6, protected54profiles26bundles a848ec72f7ad80ade0339a00e699de9fe02728946009bd92327c5d8e45aa7b1c. Final19field report ATLAS_TEMPORAL_COORDINATE_SCOPE_FINAL_REPORT_01.json SHA9ad6fb5db4af0c650e3903ed9af759b32f9867455167ccc10ca79a028401d9fc. Exact claims and residual unknown GPU/default-profile history remain in that report and CONTEXT. Do not replay old own48/native/CI instructions below.
+
+The next actual Stage06 gap is explicit range authoring in the existing form. Pure production/Core discriminator809a605a confirms three unsupported UI intents. Fresh declaration04 ea1b34dca3b407ce5d19f5d1ec6d161604bf69add85232ae49c4132f69333353/preflight02 932ceff0ac6677d24b03f742268165350a4692deb3d1b8cc9ea85cad8768dee2/source admissionab791b03 precede implementation. E0db18d613 passes after a retained task wording refusal. Original RED8d8ecbd4 and same frozen59 GREEN62899cdd are preserved; whole related139522c088a preceded nesting a local helper to preserve the untouched existing Main extractor; final same139 pass a35ea7ed after that source correction, with the initial ReferenceError/control f009285b retained. Final bundlef92b1c19 is rebuilt; original cases/assertions stay unchanged. No new native, product delivery or full-Mac acceptance yet.
+
+NEXT: verify current final source/callers and necessary technical companions, admit new own55 AUTHOR/cold, then complete mandatory immutable candidate/PR/CI/merge and separately rebuilt exact merged proof. Current18path scope includes the existing M21 task factual closure; all historical blocks, raw failures, author data, profiles and apps stay preserved. Full V6/DNA5/17qualification remain open; Office PAUSED, BlackBox after full Mac. No extra agent, chat, tracker or independent infrastructure.
+
+--- Earlier handoffs below remain historical; use the current task above ---
+
 # CURRENT HANDOFF — Atlas Time coordinate basis
 
 DOCUMENT_CLASS: FACTUAL_STATUS

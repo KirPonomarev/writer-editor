@@ -701,6 +701,7 @@ test('E06 C06: actual Time rendering keeps the chosen author disclosure state', 
       isAtlasSurfaceActive: () => true, normalizeAtlasTemporalLayout: (value) => value,
       appendAtlasOverviewMetric() {}, appendAtlasTemporalLayoutList() {},
       appendAtlasSurfaceField(parent) { const field = new HTMLInputElement(); parent.append(field); return field; },
+      appendAtlasSurfaceSelect(parent) { const field = new HTMLElement('select'); parent.append(field); return field; },
       makeAtlasSurfaceCommandButton: () => new HTMLElement('button'),
       captureAtlasPublication: () => () => true,
       beginAtlasQueryPublication() {
@@ -720,6 +721,7 @@ test('E06 C06: actual Time rendering keeps the chosen author disclosure state', 
     const slider = () => host.querySelector('[data-atlas-temporal-slider]');
     context.render();
     return { context, document, editor, author, slider, queries, ready,
+      rangeDetails: () => host.querySelector('[data-atlas-temporal-range-details]'),
       reply(index) { queries[index].resolve({ value: ready(queries[index].payload.sliderValue) }); } };
   }
   await t.test('first render exposes the existing author controls by default', () => {
@@ -768,5 +770,20 @@ test('E06 C06: actual Time rendering keeps the chosen author disclosure state', 
     f.reply(0); await pending;
     assert.equal(f.document.activeElement, f.editor);
     assert.equal(f.author().open, false);
+  });
+  await t.test('range details are optional and collapsed on the first render', () => {
+    const f = fixture();
+    assert.equal(f.rangeDetails().tagName, 'DETAILS');
+    assert.equal(f.rangeDetails().open, false);
+  });
+  await t.test('a current range-details disclosure choice survives loading and the query reply', async () => {
+    const f = fixture(); f.rangeDetails().open = true;
+    const pending = f.context.refresh(1);
+    assert.equal(f.rangeDetails().open, true);
+    f.rangeDetails().open = false;
+    f.reply(0); await pending;
+    assert.equal(f.rangeDetails().open, false);
+    f.rangeDetails().open = true; f.context.render();
+    assert.equal(f.rangeDetails().open, true);
   });
 });
