@@ -479,3 +479,147 @@ test('E06 C06: Time coordinates distinguish ordinal days from calendar placehold
     });
   }
 });
+
+test('E06 C06: actual slider refresh preserves only current owned keyboard focus', async (t) => {
+  const vm = require('node:vm');
+  const source = fs.readFileSync(path.join(process.cwd(), 'src/renderer/editor.js'), 'utf8');
+  const start = source.indexOf('async function refreshAtlasTemporalLayout(');
+  const end = source.indexOf('\nfunction normalizeAtlasContinuityLedgerSurface(', start);
+  assert.ok(start > 0 && end > start);
+  const actualRefresh = source.slice(start, end);
+  function fixture(focused = 'slider') {
+    const document = { body: { name: 'body' }, activeElement: null };
+    const focusCalls = [];
+    class HTMLElement {}
+    class HTMLInputElement extends HTMLElement {
+      constructor() { super(); this.type = 'range'; this.dataset = { atlasTemporalSlider: 'true' }; }
+      focus(options) { document.activeElement = this; focusCalls.push({ element: this, options }); }
+    }
+    const editor = new HTMLElement();
+    const foreign = new HTMLInputElement();
+    let slider = new HTMLInputElement();
+    const originalSlider = slider;
+    const host = new HTMLElement();
+    host.contains = (element) => element === slider;
+    host.querySelector = (selector) => {
+      assert.equal(selector, '[data-atlas-temporal-slider]');
+      return slider;
+    };
+    document.activeElement = focused === 'slider' ? slider : focused === 'foreign' ? foreign : editor;
+    const queries = [];
+    const renders = [];
+    let epoch = 0;
+    const context = {
+      document, HTMLElement, HTMLInputElement,
+      currentRightTab: 'atlas', currentProjectId: 'focus-project',
+      atlasTemporalLayoutExplicitOpen: true, atlasTemporalLayoutHost: host,
+      atlasTemporalLayoutPublication: null,
+      atlasTemporalLayoutState: { state: 'ready', timeSliderState: { value: 0 } },
+      ATLAS_TEMPORAL_LAYOUT_QUERY_ID: 'query.atlasTemporalLayout',
+      beginAtlasQueryPublication() {
+        const requestEpoch = ++epoch;
+        const project = context.currentProjectId;
+        return () => epoch === requestEpoch && context.currentProjectId === project
+          && context.currentRightTab === 'atlas' && context.atlasTemporalLayoutExplicitOpen;
+      },
+      renderAtlasTemporalLayoutState() {
+        if (document.activeElement === slider) document.activeElement = document.body;
+        renders.push(context.atlasTemporalLayoutState.state);
+        slider = context.atlasTemporalLayoutState.state === 'ready' ? new HTMLInputElement() : null;
+      },
+      invokeWorkspaceQueryBridge(id, payload) {
+        return new Promise((resolve) => { queries.push({ id, payload, resolve }); });
+      },
+      readAtlasQueryProjection: (result) => result.value,
+      normalizeAtlasTemporalLayout: (value) => value,
+    };
+    vm.createContext(context);
+    vm.runInContext(actualRefresh + '\nthis.refresh = refreshAtlasTemporalLayout;', context);
+    return {
+      document, editor, foreign, originalSlider, queries, renders, focusCalls, context,
+      slider: () => slider,
+      refresh(value) {
+        if (slider) slider.value = String(value);
+        context.atlasTemporalLayoutState.timeSliderState.value = value;
+        return context.refresh(value);
+      },
+      reply(index, available = true) {
+        const query = queries[index];
+        query.resolve({ value: available ? { state: 'ready', timeSliderState: { value: query.payload.sliderValue } } : null });
+      },
+    };
+  }
+  await t.test('focused native slider stays mounted while current query waits and regains focus', async () => {
+    const f = fixture();
+    const pending = f.refresh(1);
+    assert.equal(f.document.activeElement, f.originalSlider);
+    assert.equal(f.slider(), f.originalSlider);
+    assert.deepEqual(f.renders, []);
+    f.reply(0); await pending;
+    assert.notEqual(f.slider(), f.originalSlider);
+    assert.equal(f.document.activeElement, f.slider());
+    assert.equal(f.context.atlasTemporalLayoutState.timeSliderState.value, 1);
+    assert.equal(f.focusCalls.length, 1);
+    assert.equal(f.focusCalls[0].options.preventScroll, true);
+  });
+  await t.test('latest slider response owns focus and stale response cannot steal it', async () => {
+    const f = fixture();
+    const first = f.refresh(1);
+    const second = f.refresh(0);
+    f.reply(1); await second;
+    const replacement = f.slider();
+    assert.equal(f.document.activeElement, replacement);
+    f.reply(0); await first;
+    assert.equal(f.slider(), replacement);
+    assert.equal(f.document.activeElement, replacement);
+    assert.equal(f.context.atlasTemporalLayoutState.timeSliderState.value, 0);
+    assert.deepEqual(f.renders, ['ready']);
+    assert.equal(f.focusCalls.length, 1);
+  });
+  await t.test('later editor focus is retained when current slider result arrives', async () => {
+    const f = fixture();
+    const pending = f.refresh(1);
+    f.document.activeElement = f.editor;
+    f.reply(0); await pending;
+    assert.equal(f.document.activeElement, f.editor);
+    assert.equal(f.focusCalls.length, 0);
+    assert.equal(f.context.atlasTemporalLayoutState.timeSliderState.value, 1);
+  });
+  await t.test('foreign focused slider outside this host is never reclaimed', async () => {
+    const f = fixture('foreign');
+    const pending = f.refresh(1);
+    assert.deepEqual(f.renders, ['loading']);
+    assert.equal(f.document.activeElement, f.foreign);
+    f.reply(0); await pending;
+    assert.equal(f.document.activeElement, f.foreign);
+    assert.equal(f.focusCalls.length, 0);
+  });
+  await t.test('project change rejects stale slider publication and focus restore', async () => {
+    const f = fixture();
+    const pending = f.refresh(1);
+    f.context.currentProjectId = 'other-project';
+    f.document.activeElement = f.editor;
+    f.reply(0); await pending;
+    assert.equal(f.context.atlasTemporalLayoutPublication, null);
+    assert.equal(f.document.activeElement, f.editor);
+    assert.equal(f.focusCalls.length, 0);
+  });
+  await t.test('closing Time rejects stale slider publication and focus restore', async () => {
+    const f = fixture();
+    const pending = f.refresh(1);
+    f.context.atlasTemporalLayoutExplicitOpen = false;
+    f.document.activeElement = f.editor;
+    f.reply(0); await pending;
+    assert.equal(f.context.atlasTemporalLayoutPublication, null);
+    assert.equal(f.document.activeElement, f.editor);
+    assert.equal(f.focusCalls.length, 0);
+  });
+  await t.test('unavailable current result cannot focus a nonexistent replacement', async () => {
+    const f = fixture();
+    const pending = f.refresh(1);
+    f.reply(0, false); await pending;
+    assert.equal(f.context.atlasTemporalLayoutState.state, 'unavailable');
+    assert.equal(f.slider(), null);
+    assert.equal(f.focusCalls.length, 0);
+  });
+});

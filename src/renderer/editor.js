@@ -20334,13 +20334,17 @@ async function refreshAtlasTemporalLayout(sliderValue = null, options = {}) {
   if (atlasTemporalLayoutExplicitOpen !== true) return;
   const current = beginAtlasQueryPublication('atlasTemporalLayout', options), requestProject = currentProjectId;
   if (!current) return;
+  const focused = document.activeElement;
+  const focusedSlider = Number.isFinite(sliderValue) && focused instanceof HTMLInputElement
+    && focused.type === 'range' && focused.dataset.atlasTemporalSlider === 'true'
+    && atlasTemporalLayoutHost instanceof HTMLElement && atlasTemporalLayoutHost.contains(focused) ? focused : null;
   atlasTemporalLayoutPublication = null;
   atlasTemporalLayoutState = {
     ...atlasTemporalLayoutState,
     state: currentProjectId ? 'loading' : 'empty',
     projectId: currentProjectId || '',
   };
-  renderAtlasTemporalLayoutState();
+  if (!focusedSlider) renderAtlasTemporalLayoutState();
   const result = await invokeWorkspaceQueryBridge(ATLAS_TEMPORAL_LAYOUT_QUERY_ID, {
     projectId: currentProjectId,
     explicitOpen: atlasTemporalLayoutExplicitOpen === true,
@@ -20351,9 +20355,14 @@ async function refreshAtlasTemporalLayout(sliderValue = null, options = {}) {
   if (!current() || atlasTemporalLayoutExplicitOpen !== true) return;
   const nextState = readAtlasQueryProjection(result, 'atlasTemporalLayout', requestProject)
     || { state: 'unavailable', unavailableReason: 'ATLAS_TEMPORAL_LAYOUT_QUERY_FAILED', projectId: requestProject };
+  const restoreSliderFocus = focusedSlider && document.activeElement === focusedSlider;
   atlasTemporalLayoutState = normalizeAtlasTemporalLayout(nextState);
   atlasTemporalLayoutPublication = current;
   renderAtlasTemporalLayoutState();
+  if (restoreSliderFocus && current() && atlasTemporalLayoutExplicitOpen === true) {
+    const replacement = atlasTemporalLayoutHost.querySelector('[data-atlas-temporal-slider]');
+    if (replacement instanceof HTMLInputElement) replacement.focus({ preventScroll: true });
+  }
 }
 
 function normalizeAtlasContinuityLedgerSurface(result = {}) {
