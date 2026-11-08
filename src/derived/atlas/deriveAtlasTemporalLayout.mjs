@@ -105,19 +105,27 @@ function pointValue(point) {
 
 function pointLabel(point) {
   if (!isPlainObject(point)) return '';
-  return normalizeString(point.label)
-    || normalizeString(point.value)
-    || (Number.isFinite(Number(point.dayIndex)) ? `day ${Number(point.dayIndex)}` : '');
+  if (point.pointKind === 'ordinalDay') {
+    return Number.isSafeInteger(point.dayIndex) ? `day ${point.dayIndex}` : '';
+  }
+  const label = normalizeString(point.label) || normalizeString(point.value);
+  const calendarId = normalizeString(point.calendarId);
+  return label && calendarId ? `${label} (${calendarId})` : label;
 }
 
 function rangeLabel(range) {
   if (!isPlainObject(range)) return 'unknown';
   const kind = normalizeString(range.rangeKind) || 'unknown';
+  if (kind === 'unknown') return kind;
+
   const start = pointLabel(range.start);
   const end = pointLabel(range.end);
-  if (start && end && start !== end) return `${start} to ${end}`;
-  if (start || end) return start || end;
-  return kind;
+  let label = '';
+  if (start && end) label = start === end ? start : `${start} to ${end}`;
+  else if (start) label = `from ${start}`;
+  else if (end) label = `until ${end}`;
+  if (!label) return kind;
+  return kind === 'approximate' ? `approximately ${label}` : label;
 }
 
 function rangeTimeValue(range, fallback) {
@@ -269,6 +277,8 @@ function buildLayout({ anchors, relationSegments, projectId, sceneLimit, segment
     const storyRange = isPlainObject(row.storyRange) ? row.storyRange : {};
     const narrativeRange = isPlainObject(row.narrativeRange) ? row.narrativeRange : {};
     const timeValue = rangeTimeValue(storyRange, fallback);
+    const storyLabel = rangeLabel(storyRange);
+    const narrativeLabel = rangeLabel(narrativeRange);
     const temporalState = storyRange.rangeKind === 'unknown' || narrativeRange.rangeKind === 'unknown' ? 'unknown' : row.anchorState || 'anchored';
     return {
       eventId: `atlas-temporal-event:${row.sceneId || fallback}`,
@@ -276,12 +286,12 @@ function buildLayout({ anchors, relationSegments, projectId, sceneLimit, segment
       sceneTitle: normalizeString(row.sceneTitle) || normalizeString(row.sceneId) || 'Scene',
       sceneOrdinal: fallback,
       timeValue,
-      storyLabel: rangeLabel(storyRange),
-      narrativeLabel: rangeLabel(narrativeRange),
+      storyLabel,
+      narrativeLabel,
       temporalState,
       anchorState: normalizeString(row.anchorState) || 'missing',
       relationSegmentCount: relationCounts.get(row.sceneId) || 0,
-      ariaLabel: `${normalizeString(row.sceneTitle) || normalizeString(row.sceneId) || 'Scene'}: ${rangeLabel(storyRange)}, narrative ${rangeLabel(narrativeRange)}`,
+      ariaLabel: `${normalizeString(row.sceneTitle) || normalizeString(row.sceneId) || 'Scene'}: ${storyLabel}, narrative ${narrativeLabel}`,
     };
   }));
   const visibleEvents = allEvents.slice(0, sceneLimit);

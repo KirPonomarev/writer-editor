@@ -340,5 +340,38 @@ async function register() {
     const applied = api.applyCurrentBindings(f.root, f.request, prepared.proposalSha256, { journalPath: f.journal() });
     assert.equal(applied.status, 'APPLIED_METADATA_ONLY'); assert.deepEqual(applied.completed, []); assert.deepEqual(snapshot(f), before);
   });
+  test('current certificate companion preserves legacy bytes and the same file limit', () => {
+    const f = fixture();
+    const current = 'scripts/ops/r24/corrective/interop-current-certification-deltas.mjs';
+    const historical = fs.readFileSync(path.join(f.root, CERT));
+    f.request.scopeIn.push(current);
+    write(f.root, current, f.cert(f.delta));
+    refused(f, () => api.prepareCurrentBindings(f.root, f.request), /E_CURRENT_BINDINGS_CERTIFICATE_CARRIER/u);
+
+    delete f.request.expectedOld[CERT];
+    pin(f, current);
+    f.request.additionalAdmittedPaths = [current];
+    changedTest(f);
+    const before = snapshot(f);
+    const proposal = api.prepareCurrentBindings(f.root, f.request);
+    assert.deepEqual(snapshot(f), before);
+    assert.equal(proposal.proposal.changes.length, 7);
+    assert.ok(proposal.proposal.changes.some(row => row.path === current && row.changed));
+    assert.equal(proposal.proposal.changes.some(row => row.path === CERT), false);
+
+    const applied = api.applyCurrentBindings(f.root, f.request, proposal.proposalSha256, { journalPath: f.journal() });
+    assert.equal(applied.status, 'APPLIED_METADATA_ONLY');
+    assert.ok(applied.completed.includes(current));
+    assert.deepEqual(fs.readFileSync(path.join(f.root, CERT)), historical);
+    const policy = JSON.parse(fs.readFileSync(path.join(f.root, POLICY)));
+    assert.ok(policy.admittedPaths.includes(current));
+    assert.equal(policy.qualifiedRuntimeRepair.sourceBindings.some(row => row.path === current), false);
+    for (const name of Object.keys(f.request.expectedOld)) pin(f, name);
+    fs.appendFileSync(path.join(f.root, current), Buffer.alloc(8 * 1024 * 1024, 32));
+    const oversizedSize = fs.statSync(path.join(f.root, current)).size;
+    refused(f, () => api.prepareCurrentBindings(f.root, f.request), /E_CURRENT_BINDINGS_FILE_BYTES/u);
+    assert.equal(fs.statSync(path.join(f.root, current)).size, oversizedSize);
+  });
+
 }
 register().catch(error => { process.stderr.write(String(error.stack || error) + '\n'); process.exitCode = 1; });

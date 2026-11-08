@@ -6125,3 +6125,101 @@ for (const variant of ['unchanged', 'new-clean', 'new-draft']) {
     } finally { gate.release(); fsp.readFile = originalRead; await pending; }
   });
 }
+
+test('Atlas Time partial input preserves existing fields through the actual Command Kernel', async t => {
+  const h = await fullMacMainFixture(t, { packaged: true, rendererLoaded: true });
+  const ui = await fullMacRendererCommandPort(h);
+  const f = await exactAtlasScene(h, 'Explicit partial Atlas time');
+  const { projectId, sceneId } = f;
+  assert.equal((await h.main.handleUiOpenDocumentCommand({ projectId, nodeId: sceneId })).ok, true);
+  const id = 'atlas.sceneTemporalAnchor.set';
+  const calendar = await temporalMainPayload({ projectId }, 'atlas.calendar.define', 'partial');
+  assertTemporalMainReceipt((await ui('atlas.calendar.define', calendar)).mainResult, 'atlas.calendar.define');
+
+  const editor = read('src/renderer/editor.js');
+  const methods = ['exactAtlasCalendarRange', 'exactAtlasNarrativeRange', 'readAtlasTemporalWholeDay', 'getAtlasTemporalAnchorPayload'];
+  const sources = methods.map(name => {
+    const start = editor.indexOf('function ' + name + '(');
+    const end = editor.indexOf('\n}\n', start);
+    assert.ok(start >= 0 && end > start, name);
+    return editor.slice(start, end + 2);
+  });
+  const getIntent = require('node:vm').runInNewContext(sources.concat('getAtlasTemporalAnchorPayload').join('\n'), {
+    makeStableUiId: () => 'new-renderer-draft-id',
+  });
+  const intent = draft => ({
+    projectId,
+    ...structuredClone(getIntent(sceneId, draft, message => { throw new Error(message); })),
+  });
+  const dayZero = { pointKind: 'ordinalDay', dayIndex: 0 };
+  const seed = {
+    projectId, sceneId, anchorId: 'previously-saved-anchor', note: 'Saved author note',
+    storyRange: {
+      rangeKind: 'open',
+      start: { pointKind: 'label', calendarId: calendar.calendarId, label: 'После рассвета' },
+      precisionNote: 'Конец неизвестен',
+    },
+    narrativeRange: { rangeKind: 'open', end: dayZero, precisionNote: 'The starting day is unknown.' },
+  };
+  const readAnchor = () => JSON.parse(fs.readFileSync(f.manifestPath)).atlas.sceneTemporalAnchors[sceneId];
+  const readHistory = () => {
+    const root = path.join(f.projectRoot, '.stage10-local');
+    return {
+      events: JSON.parse(fs.readFileSync(path.join(root, 'product-session.v2.json'))).eventLog.events,
+      receipts: JSON.parse(fs.readFileSync(path.join(root, 'command-receipt-authority-store.v2.json'))).receipts,
+    };
+  };
+  for (const [name, preservedAxis, draft] of [
+    ['narrative edit retains the open story bound', 'storyRange', { narrativeDay: '9' }],
+    ['story edit retains the open narrative bound', 'narrativeRange', { storyCalendarId: calendar.calendarId, storyDate: '2042-05-17' }],
+  ]) {
+    await t.test(name, async () => {
+      assertTemporalMainReceipt((await ui(id, seed)).mainResult, id);
+      const old = readAnchor();
+      const before = readHistory();
+      const result = await ui(id, intent(draft));
+      const receipt = assertTemporalMainReceipt(result.mainResult, id);
+      const current = readAnchor();
+      assert.deepEqual(current[preservedAxis], old[preservedAxis]);
+      assert.equal(current.note, old.note);
+      assert.equal(current.id, old.id);
+      assert.equal(current.createdByCommandSeq, old.createdByCommandSeq);
+      if (preservedAxis === 'storyRange') assert.equal(current.narrativeRange.start.dayIndex, 9);
+      else assert.equal(current.storyRange.start.value, '2042-05-17');
+      const after = readHistory();
+      for (const key of ['events', 'receipts']) {
+        assert.equal(after[key].length, before[key].length + 1);
+        assert.deepEqual(after[key].slice(0, -1), before[key]);
+      }
+      assert.equal(after.events.at(-1).domainEventDigest, receipt.domainEventDigest);
+      assert.deepEqual(fs.readFileSync(f.scenePath), f.sceneBytes);
+    });
+  }
+
+  await t.test('explicit clear still writes unknown and keeps the same anchor', async () => {
+    assertTemporalMainReceipt((await ui(id, seed)).mainResult, id);
+    assertTemporalMainReceipt((await ui(id, intent({ storyDate: '', narrativeDay: '0', note: '' }))).mainResult, id);
+    const current = readAnchor();
+    assert.equal(current.storyRange.rangeKind, 'unknown');
+    assert.equal(current.storyRange.start, null);
+    assert.equal(current.narrativeRange.start.dayIndex, 0);
+    assert.equal(current.note, '');
+    assert.equal(current.id, seed.anchorId);
+    assert.deepEqual(fs.readFileSync(f.scenePath), f.sceneBytes);
+  });
+
+  await t.test('malformed field hints and a stale anchor hash refuse with no writes', async () => {
+    const before = reattachmentWholeFixtureRoster(h);
+    for (const [patch, code] of [
+      [{ preserveUntouchedTemporalFields: 'storyRange' }, 'E_ATLAS_SCENE_TEMPORAL_PRESERVE_FIELDS_INVALID'],
+      [{ preserveUntouchedTemporalFields: ['storyRange', 'storyRange'] }, 'E_ATLAS_SCENE_TEMPORAL_PRESERVE_FIELDS_INVALID'],
+      [{ preserveUntouchedTemporalFields: ['projectId'] }, 'E_ATLAS_SCENE_TEMPORAL_PRESERVE_FIELDS_INVALID'],
+      [{ expectedAnchorHash: 'wrong-anchor-hash' }, 'E_ATLAS_SCENE_TEMPORAL_ANCHOR_STALE'],
+    ]) {
+      const result = await ui(id, { ...intent({ narrativeDay: '12' }), ...patch });
+      assert.equal(result.mainResult.ok, false);
+      assert.ok(JSON.stringify(result.mainResult).includes(code));
+      assert.deepEqual(reattachmentWholeFixtureRoster(h), before);
+    }
+  });
+});

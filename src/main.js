@@ -41154,6 +41154,29 @@ async function prepareManualMapPortabilityCommand(commandId, payload, binding, r
   };
 }
 
+function prepareAtlasTemporalAnchorPayload(payload, binding) {
+  const fields = payload.preserveUntouchedTemporalFields;
+  const allowedFields = ['storyRange', 'narrativeRange', 'note'];
+  if (!Array.isArray(fields) || fields.length > allowedFields.length
+    || fields.some(field => !allowedFields.includes(field)) || new Set(fields).size !== fields.length) {
+    const code = 'E_ATLAS_SCENE_TEMPORAL_PRESERVE_FIELDS_INVALID';
+    throw Object.assign(new Error(code), { code });
+  }
+
+  const prepared = cloneJsonSafe(payload);
+  delete prepared.preserveUntouchedTemporalFields;
+  const sceneId = typeof payload.sceneId === 'string' ? payload.sceneId.trim() : '';
+  const anchors = binding.coreState.data.projects[binding.projectId]?.atlas?.sceneTemporalAnchors;
+  const anchor = isPlainObjectValue(anchors) && Object.hasOwn(anchors, sceneId) ? anchors[sceneId] : null;
+  if (!isPlainObjectValue(anchor)) return prepared;
+
+  for (const field of fields) {
+    if (Object.hasOwn(anchor, field)) prepared[field] = anchor[field];
+  }
+  if (typeof anchor.id === 'string' && anchor.id.trim()) prepared.anchorId = anchor.id;
+  return prepared;
+}
+
 async function prepareCanonicalProjectTruthCommand(commandId, payload, hostEffectPorts = {}) {
   const record = getProductCommandRecord(commandId);
   const spec = record ? PRODUCT_AUTHOR_DOMAIN_SCHEMAS[record.domain] : null;
@@ -41203,6 +41226,8 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload, hostEffec
   const sceneLanguage = SCENE_LANGUAGE_TAG_COMMAND_IDS.includes(commandId)
     ? await prepareSceneLanguageIntent(commandId, payload, binding, previousHash, guard) : null;
   const association = commandId === 'atlas.association.record' ? await prepareAtlasAssociationIntent(payload, binding, previousHash, guard) : null;
+  const temporalAnchorPayload = commandId === 'atlas.sceneTemporalAnchor.set' && Object.hasOwn(payload, 'preserveUntouchedTemporalFields')
+    ? prepareAtlasTemporalAnchorPayload(payload, binding) : null;
   const publicResult = portability?.publicResult || (commandId === 'manualMap.create' ? {} : null);
   return {
     schemaVersion: 'yalken.stage10.canonicalProjectTruthCommand.v1',
@@ -41210,7 +41235,7 @@ async function prepareCanonicalProjectTruthCommand(commandId, payload, hostEffec
     sourceHash: previousHash,
     sourceRevision: Number(binding.manifest?.lastCommandId || 0),
     coreState: cloneJsonSafe(binding.coreState),
-    payload: sceneLanguage?.payload || portability?.payload || cloneJsonSafe(payload),
+    payload: sceneLanguage?.payload || portability?.payload || temporalAnchorPayload || cloneJsonSafe(payload),
     publicResult,
     async prepareMutation(result = {}) {
       await assertCurrent();

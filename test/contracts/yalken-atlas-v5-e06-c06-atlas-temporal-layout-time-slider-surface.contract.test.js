@@ -292,3 +292,98 @@ test('E06 C06: Atlas temporal layout derived sources keep side-effect boundaries
     }
   }
 });
+
+test('E06 C06: Atlas Time shows authored range precision and calendar identity on all existing label routes', async (t) => {
+  const runtime = await loadModule(path.join('src', 'core', 'runtime.mjs'));
+  const derived = await loadModule(path.join('src', 'derived', 'index.mjs'));
+  const projectId = 'atlas-temporal-precision-project';
+  const sceneId = 'scene-precision';
+  const sceneTitle = 'Precision scene';
+  const manuscript = 'After the bell, the author leaves the date open.';
+  const fixture = runtime.applyCoreSequence(runtime.createInitialCoreState(), [
+    {
+      type: runtime.CORE_COMMAND_IDS.PROJECT_CREATE,
+      payload: { projectId, title: 'Range precision', sceneId, sceneTitle },
+    },
+    {
+      type: runtime.CORE_COMMAND_IDS.PROJECT_APPLY_TEXT_EDIT,
+      payload: { projectId, sceneId, text: manuscript },
+    },
+    ...['calendar-river', 'calendar-bells'].map((calendarId) => ({
+      type: runtime.CORE_COMMAND_IDS.ATLAS_CALENDAR_DEFINE,
+      payload: {
+        projectId,
+        calendarId,
+        name: calendarId,
+        calendarKind: 'fictional',
+        calendarSystem: 'local-story',
+        conversionRules: [{
+          ruleId: 'no-conversion',
+          ruleKind: 'unsupported',
+          sourceScale: 'story-day',
+          targetScale: 'narrative-day',
+          precision: 'unsupported',
+          reason: 'The author has not supplied a conversion.',
+        }],
+      },
+    })),
+  ]);
+  assert.equal(fixture.ok, true);
+  const dayZero = { pointKind: 'ordinalDay', dayIndex: 0 };
+  const bell = { pointKind: 'label', calendarId: 'calendar-bells', label: 'Второй звон' };
+  const open = (start, end) => ({ rangeKind: 'open', start, end, precisionNote: 'One side is undecided.' });
+  const approximate = (start, end) => ({ rangeKind: 'approximate', start, end, precisionNote: 'A rough estimate.' });
+  const unknown = { rangeKind: 'unknown', precisionNote: 'The author has not decided.' };
+  const cases = [
+    ['exact with narrative zero', exactIsoRange('calendar-river', '2042-05-17'), exactOrdinalRange(0),
+      '2042-05-17 (calendar-river)', 'day 0'],
+    ['same date in a different calendar', exactIsoRange('calendar-bells', '2042-05-17'), exactOrdinalRange(0),
+      '2042-05-17 (calendar-bells)', 'day 0'],
+    ['bounded approximate narrative order', exactIsoRange('calendar-river', '2042-05-17'),
+      approximate({ pointKind: 'ordinalDay', dayIndex: -2 }, dayZero),
+      '2042-05-17 (calendar-river)', 'approximately day -2 to day 0'],
+    ['approximate start only', approximate(bell, null), exactOrdinalRange(0),
+      'approximately from Второй звон (calendar-bells)', 'day 0'],
+    ['approximate end only', approximate(null, bell), exactOrdinalRange(0),
+      'approximately until Второй звон (calendar-bells)', 'day 0'],
+    ['open from story point and until narrative point', open(bell, null), open(null, dayZero),
+      'from Второй звон (calendar-bells)', 'until day 0'],
+    ['open until story point and from narrative point', open(null, bell), open(dayZero, null),
+      'until Второй звон (calendar-bells)', 'from day 0'],
+    ['explicit unknown remains unknown', unknown, unknown, 'unknown', 'unknown'],
+  ];
+  for (const [name, storyRange, narrativeRange, storyLabel, narrativeLabel] of cases) {
+    await t.test(name, () => {
+      const authored = runtime.reduceCoreState(fixture.state, {
+        type: runtime.CORE_COMMAND_IDS.ATLAS_SCENE_TEMPORAL_ANCHOR_SET,
+        payload: { projectId, sceneId, storyRange, narrativeRange },
+      });
+      assert.equal(authored.ok, true);
+      const project = authored.state.data.projects[projectId];
+      const anchor = project.atlas.sceneTemporalAnchors[sceneId];
+      assert.equal(anchor.storyRange.rangeKind, storyRange.rangeKind);
+      assert.equal(anchor.narrativeRange.rangeKind, narrativeRange.rangeKind);
+      const beforeHash = runtime.hashCoreState(authored.state);
+      const projected = derived.deriveAtlasTemporalLayout({
+        coreState: authored.state,
+        params: { projectId },
+        capabilitySnapshot: nodeCapabilitySnapshot(),
+      });
+      assert.equal(projected.ok, true);
+      const { layoutPacket, listParity, timeSliderState } = projected.value;
+      const [event] = layoutPacket.events;
+      const [row] = listParity.rows;
+      assert.equal(event.sceneId, sceneId);
+      assert.equal(row.sceneId, sceneId);
+      assert.equal(event.storyLabel, storyLabel);
+      assert.equal(event.narrativeLabel, narrativeLabel);
+      assert.equal(event.ariaLabel, event.sceneTitle + ': ' + storyLabel + ', narrative ' + narrativeLabel);
+      assert.equal(row.storyLabel, storyLabel);
+      assert.equal(row.narrativeLabel, narrativeLabel);
+      assert.deepEqual(timeSliderState.selectedSceneIds, [sceneId]);
+      assert.equal(timeSliderState.rangeLabel, storyLabel);
+      assert.equal(project.scenes[sceneId].text, manuscript);
+      assert.equal(runtime.hashCoreState(authored.state), beforeHash);
+    });
+  }
+});

@@ -17230,8 +17230,13 @@ function getAtlasTemporalAnchorPayload(sceneId, draft, reject) {
   if (storyDate && !calendarId) return reject('Enter the calendar ID for the story date.');
   const dayIndex = readAtlasTemporalWholeDay(narrativeDay);
   if (narrativeDay && dayIndex === null) return reject('Enter a whole number for the narrative day.');
+  const preserveUntouchedTemporalFields = [];
+  if (!Object.hasOwn(draft, 'storyDate')) preserveUntouchedTemporalFields.push('storyRange');
+  if (!Object.hasOwn(draft, 'narrativeDay')) preserveUntouchedTemporalFields.push('narrativeRange');
+  if (!Object.hasOwn(draft, 'note')) preserveUntouchedTemporalFields.push('note');
   draft.anchorId ||= makeStableUiId('atlas-temporal-anchor');
   return {
+    preserveUntouchedTemporalFields,
     sceneId,
     anchorId: draft.anchorId,
     storyRange: storyDate
@@ -17343,9 +17348,9 @@ function appendAtlasTemporalAuthorControls(parent) {
   }
   for (const [fieldName, label, placeholder] of [
     ['storyCalendarId', 'Calendar ID for story date', 'An existing calendar ID'],
-    ['storyDate', 'Story date (optional)', 'Unknown when blank'],
-    ['narrativeDay', 'Narrative day (optional)', 'Unknown when blank'],
-    ['note', 'Note (optional)', 'Anchor note'],
+    ['storyDate', 'Story date (optional)', 'Keep saved date if untouched'],
+    ['narrativeDay', 'Narrative day (optional)', 'Keep saved day if untouched'],
+    ['note', 'Note (optional)', 'Keep saved note if untouched'],
   ]) {
     const input = appendAtlasSurfaceField(fields, { datasetName: 'atlasTemporalField', fieldName, label, placeholder },
       scene, (key, value) => {
