@@ -387,3 +387,386 @@ test('E06 C06: Atlas Time shows authored range precision and calendar identity o
     });
   }
 });
+
+test('E06 C06: Time coordinates distinguish ordinal days from calendar placeholders and disclose scene order', async (t) => {
+  const { runtime, derived, projectId, state } = await buildTemporalLayoutFixture();
+  const ids = ['scene-a', 'scene-b', 'scene-c', 'scene-d'];
+  const day = (dayIndex) => ({ pointKind: 'ordinalDay', dayIndex });
+  const label = (value) => ({ pointKind: 'label', calendarId: 'calendar-local', label: value });
+  const date = (value) => exactIsoRange('calendar-local', value);
+  const unknown = { rangeKind: 'unknown', precisionNote: 'The author has not placed this scene.' };
+  const sceneOrder = { axis: 'scene order', values: [0, 1, 2, 3], positions: [0, 33, 67, 100], selected: ['scene-a', 'scene-b'] };
+  const cases = [
+    {
+      name: 'real ordinal zero, negative day and order different from scene order',
+      ranges: [9, 0, -2, 2].map(exactOrdinalRange),
+      axis: 'story time', values: [9, 0, -2, 2], positions: [100, 18, 0, 36], selected: ['scene-c', 'scene-b'],
+    },
+    {
+      name: 'genuinely simultaneous ordinal days stay simultaneous',
+      ranges: [0, 0, 0, 0].map(exactOrdinalRange),
+      axis: 'story time', values: [0, 0, 0, 0], positions: [0, 0, 0, 0], selected: ['scene-b', 'scene-c', 'scene-d'],
+    },
+    {
+      name: 'approximate and either open ordinal bound retain numerical days',
+      ranges: [
+        { rangeKind: 'approximate', start: day(-2), end: day(0), precisionNote: 'Around dawn.' },
+        { rangeKind: 'open', start: day(5), end: null, precisionNote: 'No end yet.' },
+        { rangeKind: 'open', start: null, end: day(0), precisionNote: 'No start yet.' },
+        exactOrdinalRange(9),
+      ],
+      axis: 'story time', values: [-2, 5, 0, 9], positions: [0, 64, 18, 100], selected: ['scene-a', 'scene-c'],
+    },
+    {
+      name: 'calendar dates are not silently interpreted as ordinal zero or guessed date arithmetic',
+      ranges: ['2042-05-18', '2042-05-17', '2042-02-31', 'Year of the river'].map(date),
+      ...sceneOrder,
+    },
+    {
+      name: 'calendar labels have no numerical day despite their normalized placeholder zero',
+      ranges: ['Dusk', 'Dawn', 'Third bell', 'First bell'].map((value) => ({ rangeKind: 'exact', start: label(value), end: label(value) })),
+      ...sceneOrder,
+    },
+    {
+      name: 'calendar, label, ordinal and unknown never share an invented numeric scale',
+      ranges: [exactOrdinalRange(9), date('2042-05-17'), { rangeKind: 'open', start: label('Dawn'), end: null, precisionNote: 'Still open.' }, unknown],
+      ...sceneOrder,
+    },
+    {
+      name: 'a mixed bound does not gain a numerical scale from its ordinal endpoint',
+      ranges: [
+        { rangeKind: 'approximate', start: day(0), end: label('Dusk'), precisionNote: 'No common scale supplied.' },
+        ...[9, 2, -2].map(exactOrdinalRange),
+      ],
+      ...sceneOrder,
+    },
+    {
+      name: 'explicit unknown is positioned only by disclosed scene order',
+      ranges: [unknown, unknown, unknown, unknown],
+      ...sceneOrder,
+    },
+  ];
+  for (const expected of cases) {
+    await t.test(expected.name, () => {
+      const authored = runtime.applyCoreSequence(state, ids.map((sceneId, index) => ({
+        type: runtime.CORE_COMMAND_IDS.ATLAS_SCENE_TEMPORAL_ANCHOR_SET,
+        payload: { projectId, sceneId, storyRange: expected.ranges[index], narrativeRange: exactOrdinalRange(index) },
+      })));
+      assert.equal(authored.ok, true);
+      const beforeHash = runtime.hashCoreState(authored.state);
+      const result = derived.deriveAtlasTemporalLayout({
+        coreState: authored.state,
+        params: { projectId, sliderValue: 1 },
+        capabilitySnapshot: nodeCapabilitySnapshot(),
+      });
+      assert.equal(result.ok, true);
+      const { layoutPacket, timeSliderState, listParity } = result.value;
+      const byScene = new Map(layoutPacket.events.map((event) => [event.sceneId, event]));
+      assert.equal(layoutPacket.axis.label, expected.axis);
+      assert.deepEqual(ids.map((id) => byScene.get(id).timeValue), expected.values);
+      assert.deepEqual(ids.map((id) => byScene.get(id).xPercent), expected.positions);
+      assert.deepEqual(timeSliderState.selectedSceneIds, expected.selected);
+      assert.equal(timeSliderState.value, Math.max(layoutPacket.axis.min, Math.min(layoutPacket.axis.max, 1)));
+      assert.deepEqual(listParity.rows.map((row) => row.sceneId), layoutPacket.events.map((event) => event.sceneId));
+      assert.deepEqual(listParity.rows.filter((row) => row.selected).map((row) => row.sceneId), expected.selected);
+      for (const row of listParity.rows) {
+        assert.equal(row.storyLabel, byScene.get(row.sceneId).storyLabel);
+        assert.equal(row.narrativeLabel, byScene.get(row.sceneId).narrativeLabel);
+      }
+      assert.equal(result.value.largeProjectBudgetProof.totalSceneCount, 4);
+      assert.equal(result.value.largeProjectBudgetProof.visibleSceneCount, 4);
+      assert.equal(runtime.hashCoreState(authored.state), beforeHash);
+    });
+  }
+});
+
+test('E06 C06: actual slider refresh preserves only current owned keyboard focus', async (t) => {
+  const vm = require('node:vm');
+  const source = fs.readFileSync(path.join(process.cwd(), 'src/renderer/editor.js'), 'utf8');
+  const start = source.indexOf('async function refreshAtlasTemporalLayout(');
+  const end = source.indexOf('\nfunction normalizeAtlasContinuityLedgerSurface(', start);
+  assert.ok(start > 0 && end > start);
+  const actualRefresh = source.slice(start, end);
+  function fixture(focused = 'slider') {
+    const document = { body: { name: 'body' }, activeElement: null };
+    const focusCalls = [];
+    class HTMLElement {}
+    class HTMLInputElement extends HTMLElement {
+      constructor() { super(); this.type = 'range'; this.dataset = { atlasTemporalSlider: 'true' }; }
+      focus(options) { document.activeElement = this; focusCalls.push({ element: this, options }); }
+    }
+    const editor = new HTMLElement();
+    const foreign = new HTMLInputElement();
+    let slider = new HTMLInputElement();
+    const originalSlider = slider;
+    const host = new HTMLElement();
+    host.contains = (element) => element === slider;
+    host.querySelector = (selector) => {
+      assert.equal(selector, '[data-atlas-temporal-slider]');
+      return slider;
+    };
+    document.activeElement = focused === 'slider' ? slider : focused === 'foreign' ? foreign : editor;
+    const queries = [];
+    const renders = [];
+    let epoch = 0;
+    const context = {
+      document, HTMLElement, HTMLInputElement,
+      currentRightTab: 'atlas', currentProjectId: 'focus-project',
+      atlasTemporalLayoutExplicitOpen: true, atlasTemporalLayoutHost: host,
+      atlasTemporalLayoutPublication: null,
+      atlasTemporalLayoutState: { state: 'ready', timeSliderState: { value: 0 } },
+      ATLAS_TEMPORAL_LAYOUT_QUERY_ID: 'query.atlasTemporalLayout',
+      beginAtlasQueryPublication() {
+        const requestEpoch = ++epoch;
+        const project = context.currentProjectId;
+        return () => epoch === requestEpoch && context.currentProjectId === project
+          && context.currentRightTab === 'atlas' && context.atlasTemporalLayoutExplicitOpen;
+      },
+      renderAtlasTemporalLayoutState() {
+        if (document.activeElement === slider) document.activeElement = document.body;
+        renders.push(context.atlasTemporalLayoutState.state);
+        slider = context.atlasTemporalLayoutState.state === 'ready' ? new HTMLInputElement() : null;
+      },
+      invokeWorkspaceQueryBridge(id, payload) {
+        return new Promise((resolve) => { queries.push({ id, payload, resolve }); });
+      },
+      readAtlasQueryProjection: (result) => result.value,
+      normalizeAtlasTemporalLayout: (value) => value,
+    };
+    vm.createContext(context);
+    vm.runInContext(actualRefresh + '\nthis.refresh = refreshAtlasTemporalLayout;', context);
+    return {
+      document, editor, foreign, originalSlider, queries, renders, focusCalls, context,
+      slider: () => slider,
+      refresh(value) {
+        if (slider) slider.value = String(value);
+        context.atlasTemporalLayoutState.timeSliderState.value = value;
+        return context.refresh(value);
+      },
+      reply(index, available = true) {
+        const query = queries[index];
+        query.resolve({ value: available ? { state: 'ready', timeSliderState: { value: query.payload.sliderValue } } : null });
+      },
+    };
+  }
+  await t.test('focused native slider stays mounted while current query waits and regains focus', async () => {
+    const f = fixture();
+    const pending = f.refresh(1);
+    assert.equal(f.document.activeElement, f.originalSlider);
+    assert.equal(f.slider(), f.originalSlider);
+    assert.deepEqual(f.renders, []);
+    f.reply(0); await pending;
+    assert.notEqual(f.slider(), f.originalSlider);
+    assert.equal(f.document.activeElement, f.slider());
+    assert.equal(f.context.atlasTemporalLayoutState.timeSliderState.value, 1);
+    assert.equal(f.focusCalls.length, 1);
+    assert.equal(f.focusCalls[0].options.preventScroll, true);
+  });
+  await t.test('latest slider response owns focus and stale response cannot steal it', async () => {
+    const f = fixture();
+    const first = f.refresh(1);
+    const second = f.refresh(0);
+    f.reply(1); await second;
+    const replacement = f.slider();
+    assert.equal(f.document.activeElement, replacement);
+    f.reply(0); await first;
+    assert.equal(f.slider(), replacement);
+    assert.equal(f.document.activeElement, replacement);
+    assert.equal(f.context.atlasTemporalLayoutState.timeSliderState.value, 0);
+    assert.deepEqual(f.renders, ['ready']);
+    assert.equal(f.focusCalls.length, 1);
+  });
+  await t.test('later editor focus is retained when current slider result arrives', async () => {
+    const f = fixture();
+    const pending = f.refresh(1);
+    f.document.activeElement = f.editor;
+    f.reply(0); await pending;
+    assert.equal(f.document.activeElement, f.editor);
+    assert.equal(f.focusCalls.length, 0);
+    assert.equal(f.context.atlasTemporalLayoutState.timeSliderState.value, 1);
+  });
+  await t.test('foreign focused slider outside this host is never reclaimed', async () => {
+    const f = fixture('foreign');
+    const pending = f.refresh(1);
+    assert.deepEqual(f.renders, ['loading']);
+    assert.equal(f.document.activeElement, f.foreign);
+    f.reply(0); await pending;
+    assert.equal(f.document.activeElement, f.foreign);
+    assert.equal(f.focusCalls.length, 0);
+  });
+  await t.test('project change rejects stale slider publication and focus restore', async () => {
+    const f = fixture();
+    const pending = f.refresh(1);
+    f.context.currentProjectId = 'other-project';
+    f.document.activeElement = f.editor;
+    f.reply(0); await pending;
+    assert.equal(f.context.atlasTemporalLayoutPublication, null);
+    assert.equal(f.document.activeElement, f.editor);
+    assert.equal(f.focusCalls.length, 0);
+  });
+  await t.test('closing Time rejects stale slider publication and focus restore', async () => {
+    const f = fixture();
+    const pending = f.refresh(1);
+    f.context.atlasTemporalLayoutExplicitOpen = false;
+    f.document.activeElement = f.editor;
+    f.reply(0); await pending;
+    assert.equal(f.context.atlasTemporalLayoutPublication, null);
+    assert.equal(f.document.activeElement, f.editor);
+    assert.equal(f.focusCalls.length, 0);
+  });
+  await t.test('unavailable current result cannot focus a nonexistent replacement', async () => {
+    const f = fixture();
+    const pending = f.refresh(1);
+    f.reply(0, false); await pending;
+    assert.equal(f.context.atlasTemporalLayoutState.state, 'unavailable');
+    assert.equal(f.slider(), null);
+    assert.equal(f.focusCalls.length, 0);
+  });
+});
+
+test('E06 C06: actual Time rendering keeps the chosen author disclosure state', async (t) => {
+  const vm = require('node:vm');
+  const source = fs.readFileSync(path.join(process.cwd(), 'src/renderer/editor.js'), 'utf8');
+  const extract = (startText, endText) => {
+    const start = source.indexOf(startText);
+    const end = source.indexOf(endText, start);
+    assert.ok(start > 0 && end > start);
+    return source.slice(start, end);
+  };
+  const actual = [
+    extract('function appendAtlasOverviewSection(', '\nfunction createAtlasWorkspacePostureControls('),
+    extract('function appendAtlasTemporalAuthorControls(', '\nfunction appendAtlasContinuityAuthorControls('),
+    extract('function renderAtlasTemporalLayoutState(', '\nfunction closeAtlasTemporalLayoutSurface('),
+    extract('async function refreshAtlasTemporalLayout(', '\nfunction normalizeAtlasContinuityLedgerSurface('),
+  ].join('\n');
+  function fixture() {
+    const document = { activeElement: null };
+    class HTMLElement {
+      constructor(tag = 'div') {
+        this.tagName = tag.toUpperCase(); this.children = []; this.dataset = {};
+        this.style = { setProperty() {} }; this.parentElement = null;
+      }
+      append(...nodes) {
+        for (const node of nodes) { node.parentElement = this; this.children.push(node); }
+      }
+      appendChild(node) { this.append(node); return node; }
+      setAttribute() {}
+      contains(node) { return this === node || this.children.some((child) => child.contains(node)); }
+      set innerHTML(value) {
+        assert.equal(value, '');
+        if (this.contains(document.activeElement)) document.activeElement = document.body;
+        for (const node of this.children) node.parentElement = null;
+        this.children = [];
+      }
+      querySelector(selector) {
+        const match = /^\[data-([a-z-]+)\]$/u.exec(selector);
+        assert.ok(match, selector);
+        const key = match[1].replace(/-([a-z])/gu, (_, letter) => letter.toUpperCase());
+        for (const child of this.children) {
+          if (Object.hasOwn(child.dataset, key)) return child;
+          const nested = child.querySelector(selector);
+          if (nested) return nested;
+        }
+        return null;
+      }
+    }
+    class HTMLInputElement extends HTMLElement {
+      constructor() { super('input'); }
+      focus() { document.activeElement = this; }
+    }
+    class HTMLDetailsElement extends HTMLElement {
+      constructor() { super('details'); this.open = false; }
+    }
+    document.body = new HTMLElement('body');
+    document.createElement = (tag) => tag === 'input' ? new HTMLInputElement()
+      : tag === 'details' ? new HTMLDetailsElement() : new HTMLElement(tag);
+    const host = new HTMLElement();
+    const editor = new HTMLElement();
+    const queries = [];
+    let epoch = 0;
+    const ready = (value = 0) => ({
+      state: 'ready', projectId: 'disclosure-project', summary: { layoutHash: 'current', sceneCount: 2 },
+      timeSliderState: { min: 0, max: 1, value, step: 1, rangeLabel: 'calendar label' },
+      layoutPacket: { axis: { label: 'scene order' }, events: [] }, listParity: { rows: [] },
+    });
+    const context = {
+      document, HTMLElement, HTMLInputElement,
+      currentRightTab: 'atlas', currentProjectId: 'disclosure-project',
+      currentDocumentKind: 'scene', currentDocumentId: 'scene-a',
+      atlasTemporalLayoutHost: host, atlasTemporalLayoutShell: null,
+      atlasTemporalLayoutExplicitOpen: true, atlasTemporalLayoutState: ready(),
+      atlasTemporalAuthorDraft: { projectId: 'disclosure-project', calendar: {}, scenes: new Map() },
+      ATLAS_TEMPORAL_LAYOUT_QUERY_ID: 'query.atlasTemporalLayout',
+      bindAtlasTemporalLayoutKeyboardNavigation() {}, applyAtlasResolvedSurfaceBinding() {},
+      isAtlasSurfaceActive: () => true, normalizeAtlasTemporalLayout: (value) => value,
+      appendAtlasOverviewMetric() {}, appendAtlasTemporalLayoutList() {},
+      appendAtlasSurfaceField(parent) { const field = new HTMLInputElement(); parent.append(field); return field; },
+      makeAtlasSurfaceCommandButton: () => new HTMLElement('button'),
+      captureAtlasPublication: () => () => true,
+      beginAtlasQueryPublication() {
+        const generation = ++epoch, project = context.currentProjectId;
+        return () => generation === epoch && project === context.currentProjectId
+          && context.atlasTemporalLayoutExplicitOpen;
+      },
+      invokeWorkspaceQueryBridge(id, payload) {
+        return new Promise((resolve) => queries.push({ payload, resolve }));
+      },
+      readAtlasQueryProjection: (result) => result.value,
+    };
+    vm.createContext(context);
+    vm.runInContext(actual + '\nthis.render = renderAtlasTemporalLayoutState; this.refresh = refreshAtlasTemporalLayout;', context);
+    const author = () => host.children.find((node) => node.tagName === 'DETAILS'
+      && node.children[0]?.textContent === 'Author controls');
+    const slider = () => host.querySelector('[data-atlas-temporal-slider]');
+    context.render();
+    return { context, document, editor, author, slider, queries, ready,
+      reply(index) { queries[index].resolve({ value: ready(queries[index].payload.sliderValue) }); } };
+  }
+  await t.test('first render exposes the existing author controls by default', () => {
+    const f = fixture(); assert.equal(f.author().open, true);
+  });
+  await t.test('overview section uses a native disclosure and returns its body', () => {
+    const f = fixture(), disclosure = f.author(), body = disclosure.children[1];
+    assert.equal(disclosure.tagName, 'DETAILS');
+    assert.equal(body.tagName, 'DIV');
+    assert.equal(body.parentElement, disclosure);
+    assert.equal(Object.hasOwn(body, 'open'), false);
+    assert.equal(typeof disclosure.open, 'boolean');
+  });
+  await t.test('ready redraw retains a deliberately collapsed disclosure', () => {
+    const f = fixture(); f.author().open = false; f.context.render();
+    assert.equal(f.author().open, false);
+  });
+  await t.test('loading empty and unavailable redraws retain the current disclosure choice', () => {
+    const f = fixture(); f.author().open = false;
+    for (const state of ['loading', 'empty', 'unavailable', 'ready']) {
+      f.context.atlasTemporalLayoutState = { ...f.ready(), state }; f.context.render();
+      assert.equal(f.author().open, false, state);
+    }
+  });
+  await t.test('a disclosure toggle during the pending query is the latest choice', async () => {
+    const f = fixture();
+    for (const open of [false, true]) {
+      f.slider().focus(); const pending = f.context.refresh(open ? 0 : 1);
+      f.author().open = open;
+      f.reply(f.queries.length - 1); await pending;
+      assert.equal(f.author().open, open);
+    }
+  });
+  await t.test('repeated slider directions retain both collapsed author controls and keyboard focus', async () => {
+    const f = fixture(); f.author().open = false; f.slider().focus();
+    for (const value of [1, 0, 1, 0]) {
+      const pending = f.context.refresh(value); f.reply(f.queries.length - 1); await pending;
+      assert.equal(f.author().open, false);
+      assert.equal(f.document.activeElement, f.slider());
+      assert.equal(f.slider().value, String(value));
+    }
+  });
+  await t.test('later editor focus and collapsed author controls both survive the result', async () => {
+    const f = fixture(); f.author().open = false; f.slider().focus();
+    const pending = f.context.refresh(1); f.document.activeElement = f.editor;
+    f.reply(0); await pending;
+    assert.equal(f.document.activeElement, f.editor);
+    assert.equal(f.author().open, false);
+  });
+});

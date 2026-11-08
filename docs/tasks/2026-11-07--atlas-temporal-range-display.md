@@ -8,7 +8,7 @@ BINDING_BASE_SHA: 761e51281353a796a153a080fc27d4a9f9921dab
 HEAD_SHA_AT_START: 761e51281353a796a153a080fc27d4a9f9921dab
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/atlas-temporal-range-display-20261107
-STATUS: ADMITTED_TEST_FIRST
+STATUS: BOUNDED_DELIVERY_MERGED_AND_VERIFIED
 DOCUMENT_CLASS: PROCESS
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true POST_MERGE_EXACT_HEAD_REQUIRED=true
 OWNER_AUTHORITY: V6 P17 and DNA5, sole executor, normal delivery and isolated native verification.
@@ -92,3 +92,7 @@ Exact 5b5777a8 original affected-chain verification returned 346 refusals: 342 s
 Retain the actual input, unchanged test source, observed and expected outcomes, status and output. Keep synthetic Core/query, physical application and full Mac claims separate.
 
 PR 2212 original run 42463582344 returned one RTK failure at exact c7c76777: LAB02-05 expected a historical registered smoke join to succeed using the real wall clock, after its sealed receipt crossed the unchanged ninety-day limit on 2026-11-08 at 07:55 UTC. Preserve complete original RTK output ed8932fc64dbcecb8dd77c79a64a7c1943c45a8696e027ec27e3efa315e4b990. Read-only discrimination 0896a4e2b445f71503ad131ee3e7ffbb66f6cfece0ecab88e6153361df11fbf6 proves current-time refusal, historical-time success, exact ninety-day acceptance and one-millisecond-expired refusal with the same source and registry. Scope-24 preflight 60cd360bc40f7a69087e074b55a88286dbb2b148a7ad2cd8857ef6fe8482a617 admits the bounded test-clock correction; it creates no fresh Word evidence or release authority.
+
+## MERGED_VERIFICATION_20261108
+
+PR 2212 merged normally at 895e221b5fbb92e34e67ea19dc1248c1bfd4974e from c6cdddcde1ac5c2400cd9a9db15606adf712c690 with identical tree. Candidate and merge CI each passed twenty jobs. Exact merged local27 and separately rebuilt own47 first/cold with both exits0 and independent physical readback are complete. Final report d9c60875172e9b3007a0b10fe5cbb1e031d08776909d2d1d678bae998dc01615; independent native outcome69a3fcea99495079d1ea1e6ebe56b37fb2e43c2068528a7f1a6d64ca599b90dc. These certify this bounded range-preservation delivery only. All17 Full-Mac rows remain unknown. Coordinate overlap is the next separately admitted task; historical failures and profiles remain preserved.

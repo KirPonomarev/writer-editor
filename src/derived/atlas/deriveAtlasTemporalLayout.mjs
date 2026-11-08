@@ -95,12 +95,8 @@ function buildAuthority() {
 }
 
 function pointValue(point) {
-  if (!isPlainObject(point)) return null;
-  if (Number.isFinite(Number(point.dayIndex))) return Number(point.dayIndex);
-  const value = normalizeString(point.value);
-  const date = value.match(/^(\d{4})-(\d{2})-(\d{2})$/u);
-  if (date) return Number(date[1]) * 372 + Number(date[2]) * 31 + Number(date[3]);
-  return null;
+  if (!isPlainObject(point) || point.pointKind !== 'ordinalDay') return null;
+  return Number.isSafeInteger(point.dayIndex) ? point.dayIndex : null;
 }
 
 function pointLabel(point) {
@@ -128,13 +124,11 @@ function rangeLabel(range) {
   return kind === 'approximate' ? `approximately ${label}` : label;
 }
 
-function rangeTimeValue(range, fallback) {
-  if (!isPlainObject(range)) return fallback;
-  const start = pointValue(range.start);
-  if (Number.isFinite(start)) return start;
-  const end = pointValue(range.end);
-  if (Number.isFinite(end)) return end;
-  return fallback;
+function rangeTimeValue(range) {
+  if (!isPlainObject(range) || range.rangeKind === 'unknown') return null;
+  const points = [range.start, range.end].filter(isPlainObject);
+  if (points.length < 1 || points.some((point) => pointValue(point) === null)) return null;
+  return pointValue(points[0]);
 }
 
 function percentFor(value, min, max) {
@@ -272,11 +266,14 @@ function buildLayout({ anchors, relationSegments, projectId, sceneLimit, segment
   const allAnchorRows = Array.isArray(anchors.sceneTemporalAnchors) ? anchors.sceneTemporalAnchors : [];
   const allSegments = Array.isArray(relationSegments.relationSegments) ? relationSegments.relationSegments : [];
   const relationCounts = countRelationsByScene(allSegments);
-  const allEvents = sortAtlasTemporalLayoutEvents(allAnchorRows.map((row) => {
+  const storyValues = allAnchorRows.map((row) => rangeTimeValue(row.storyRange));
+  const useStoryDays = storyValues.length > 0 && storyValues.every((value) => value !== null);
+  const axisLabel = useStoryDays ? 'story time' : 'scene order';
+  const allEvents = sortAtlasTemporalLayoutEvents(allAnchorRows.map((row, index) => {
     const fallback = Number.isFinite(Number(row.sceneOrdinal)) ? Number(row.sceneOrdinal) : 0;
     const storyRange = isPlainObject(row.storyRange) ? row.storyRange : {};
     const narrativeRange = isPlainObject(row.narrativeRange) ? row.narrativeRange : {};
-    const timeValue = rangeTimeValue(storyRange, fallback);
+    const timeValue = useStoryDays ? storyValues[index] : fallback;
     const storyLabel = rangeLabel(storyRange);
     const narrativeLabel = rangeLabel(narrativeRange);
     const temporalState = storyRange.rangeKind === 'unknown' || narrativeRange.rangeKind === 'unknown' ? 'unknown' : row.anchorState || 'anchored';
@@ -374,7 +371,7 @@ function buildLayout({ anchors, relationSegments, projectId, sceneLimit, segment
     layoutPacket: {
       schemaVersion: ATLAS_TEMPORAL_LAYOUT_PACKET_SCHEMA_VERSION,
       state: events.length < 1 ? 'empty' : 'ready',
-      axis: { min, max, step: 1, label: 'story time' },
+      axis: { min, max, step: 1, label: axisLabel },
       events,
       segments,
     },

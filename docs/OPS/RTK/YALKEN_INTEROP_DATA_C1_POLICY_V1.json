@@ -972,7 +972,8 @@
     "docs/tasks/2026-11-07--atlas-temporal-range-display.md",
     "src/derived/atlas/deriveAtlasTemporalLayout.mjs",
     "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
-    "test/contracts/rtk-lab01-build-bound-profiles.contract.test.js"
+    "test/contracts/rtk-lab01-build-bound-profiles.contract.test.js",
+    "docs/tasks/2026-11-08--atlas-temporal-coordinate.md"
   ],
   "protectedFiles": [
     {
@@ -1213,7 +1214,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "a9ae7da16bd2635d6571793df590b2af73d0d14449f43ac6768dd5761c49ac07"
+        "sha256": "c3f39abbb4021f84f72eb1b92e0c351895e3ca27397d5ff7a593e88d42505e33"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1377,7 +1378,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "5c4fab723d6e418863df86645f9ea6f3424fd1941e5ab908b98caa426d459281"
+        "sha256": "97b0f40dd058ce84e3ef0888efd8ce8a0104ac2521e11229c512d3aae677ec4a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2893,11 +2894,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "f378000bf1b6c42dd18cecb42b4e1c47e08112b8afd6ffd505126eb2cb72fb2e"
+        "sha256": "b68f8b436c2efc473d36045ceea3b6574d2c20d7aabca7562975e998f2ac266f"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "ad0dfe29eaf9dc5e96cf7529c42778807e583c41096cc569992d01dac45c8329"
+        "sha256": "7637dd6b31e8f860d849eec7e5e4b415c074facf8d08e8f88887147a407f4c65"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -3441,7 +3442,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "25a000d5c7785fe55c10fd2c8b186f0bbcfda6ca379ae76056e3dc0ad9598cbc"
+        "sha256": "463820608c643eb5759a23941eb10910811540656a3a344681ea537420746816"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3573,7 +3574,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "bb4b7933ec9e9a5d62f0b0be82339cb9fe9b8f5439a0ee3b04121edf79a77610"
+        "sha256": "ecaa82f3598cc3d482a568c80c3d16e084c302876710f9e003927e82816ce577"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3781,7 +3782,7 @@
       },
       {
         "path": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
-        "sha256": "192ed9917be34ce3819d2011c03377c36fa85aa2d650aff2132af9f0d996e400"
+        "sha256": "e57fd531cecc5f7214f2d2d0e3840ab2441a1ac589e545f82ae2a7d7408c2926"
       },
       {
         "path": "docs/tasks/2026-10-24--atlas-temporal-authoring.md",
@@ -4441,19 +4442,23 @@
       },
       {
         "path": "test/unit/atlas-temporal-author-input.test.js",
-        "sha256": "88250a3910ac0ed65319c649fe6008bce61c96af87b1e813d4acaf69851bf85d"
+        "sha256": "5f709063f5202c288b30c112c683bcda4a87a6ad069193ab49468e621eeb596c"
       },
       {
         "path": "docs/tasks/2026-11-07--atlas-temporal-range-display.md",
-        "sha256": "e1ceca880a7b3fbe993dc854c1f72453183eb80fd121a9683eaa4d42ddf4387f"
+        "sha256": "6ff79c83a190b8d55480a90402ede21138a182ae428fe5118c1b416c78aa68e0"
       },
       {
         "path": "src/derived/atlas/deriveAtlasTemporalLayout.mjs",
-        "sha256": "8c6bb71601826822967dee8bbf95ca8992f8c1763c42fc14b80200248c87aa2a"
+        "sha256": "01d99aeea247200013e0ff81b8f859113b3c0f8e417d2b7ed364ca8326757c2f"
       },
       {
         "path": "test/contracts/rtk-lab01-build-bound-profiles.contract.test.js",
         "sha256": "eb03e64fdf3615766e2e02f0eb6fb961cbfac9b8bf2df12d1dfee1e2e06b35ff"
+      },
+      {
+        "path": "docs/tasks/2026-11-08--atlas-temporal-coordinate.md",
+        "sha256": "dc6be6b471910fdc54158393df4e6b06b01955099f12d2666ae2a1400622b2b4"
       }
     ],
     "followupRepair": {

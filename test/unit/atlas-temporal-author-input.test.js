@@ -12,8 +12,11 @@ class Element {
   children = [];
   dataset = {};
   listeners = {};
+  parentElement = null;
 
-  append(...children) { this.children.push(...children); }
+  append(...children) {
+    for (const child of children) { child.parentElement = this; this.children.push(child); }
+  }
   appendChild(child) { this.append(child); }
   contains(target) { return this === target || this.children.some((child) => child.contains(target)); }
   setAttribute() {}

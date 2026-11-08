@@ -2652,4 +2652,312 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_DISPLAY_MAC_20261107",
       "approvedAtUtc": "2026-11-08T09:16:24.264Z",
       "rationale": "Standing owner-delegated development and both-registry witness authority. Same unfinished PR2212: explicit historical test clock and exact90day/1ms-expired refusal after preserved original RTK failure. Runtime freshness evaluator,90day policy, Word registry, sealed receipts, app source, old entries and full17 qualification gates remain protected. Current metadata uses unchanged governed finalizer."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "3d9c10e1a3a6a17bd9a1d84d1f353fbcc9e1be1e66dc1f99d6b18126dbb03f43",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "8318fb27dd7bfabce70b286a2ab28c08c36e5605b112ccacc8e8bdb3b405421f",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "40aa07cef3d6bce19724749777e1a23a613f3c917ca6d029f8470912d174fd9b",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "9f02f8fc1fcb8c437821eb068395d3fd39bb8b7a3deed24023450c265918d56e",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "c8c929f3c90016b26005fe174422406c5ddf1fc170a552fa3fdc8df746f3495f",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "3891899e0b08638bcc0b62fa959bb158279b77db069be25eaf12cb38d3b3059e",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "d09ce5e8bf847b4b63e045e9086f3dabd82625beaf4b21e2bf0196c63c6cf3cd",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
+      "sha256": "b8442693d3dfc3c0897dc9a4ff601f498186aa03021fc6879e0d04c59f84d3d0",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "d576c35d3a12f06d49b005319d230603d24a738a5d0e92865ec97fb2f4df1ef8",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "ce19471d933d2d0c0e1e0d9ef1dd6dc39b98f0518c4aef47fb7589d08a6d0728",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "b473737ed099a2839f88452f73ed7d01e13a3c0bc3600e6bf4e330a32bf76f3c",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "8f687480d6afa9f2403e82c83259dd6d118bd4e9ab8c181906e32c678bff2944",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "2386b21c5e64e8e911a447e1db297aa583f35c9183c0345683d2100d1590242a",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "8aa0ec8572f60d3f27762a437f9dced67a2e53472fbd61d7894a6e23c3147820",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "063c2edd92c66f890daa9dd63ad02744931a7801784f226f68492f73724e3fda",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
+      "sha256": "1f31b2b04146c2117230feec33c9df32fc11732d42072c476eba5ec4f1336fe2",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "123efa7a3d3e075f05a3bb33ae10aba5a3b6cca2cde17c405711d85c88efe416",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:47:24.324Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: preserve collapsed author disclosure across current redraws after observed own49 visibility counterexample. Unchanged seven-target finalizer; all historical witnesses, frozen M20 bytes, failures and old profiles preserved. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "fd13b5584a55b84a17656f190d29e82e85763c626b12ca945a7b371265b2c638",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:47:24.324Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: preserve collapsed author disclosure across current redraws after observed own49 visibility counterexample. Unchanged seven-target finalizer; all historical witnesses, frozen M20 bytes, failures and old profiles preserved. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "e1651c8efb5c9b384ad8bf06f317ab58894fad7d5599f4e3b9eaafb6d4c4fd86",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:47:24.324Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: preserve collapsed author disclosure across current redraws after observed own49 visibility counterexample. Unchanged seven-target finalizer; all historical witnesses, frozen M20 bytes, failures and old profiles preserved. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "d879359a9a4479f1e4b95e1a66a93a1ae0ff8ae1abcbf5f55b732fc831df32df",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:47:24.324Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: preserve collapsed author disclosure across current redraws after observed own49 visibility counterexample. Unchanged seven-target finalizer; all historical witnesses, frozen M20 bytes, failures and old profiles preserved. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "e7351d91f386a61325ca7f655da5e9cbb812758790cbb6e4fb827fa110bfb496",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:47:24.324Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: preserve collapsed author disclosure across current redraws after observed own49 visibility counterexample. Unchanged seven-target finalizer; all historical witnesses, frozen M20 bytes, failures and old profiles preserved. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "153c6635ba5c03b72fe4348925df87d79c3a0a8c48186fce13f92c4949a67d28",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:47:24.324Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: preserve collapsed author disclosure across current redraws after observed own49 visibility counterexample. Unchanged seven-target finalizer; all historical witnesses, frozen M20 bytes, failures and old profiles preserved. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "f38aef4f553db86d570760e99e35aa4d6961477667a309f5645816d8e7b6a55d",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:47:24.324Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: preserve collapsed author disclosure across current redraws after observed own49 visibility counterexample. Unchanged seven-target finalizer; all historical witnesses, frozen M20 bytes, failures and old profiles preserved. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
+      "sha256": "d6fe003da77728607e22f8b1d0d78810ce8a845aa96959b0c02ec82719c54ff2",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:47:24.324Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: preserve collapsed author disclosure across current redraws after observed own49 visibility counterexample. Unchanged seven-target finalizer; all historical witnesses, frozen M20 bytes, failures and old profiles preserved. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "a1ff919b89f94236be493344b6268d357c4acc6b033dfbdc60bd9439424c3427",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "16fe3970a9cc13ffd659dd36c4c8c272ce9fe52d83c0a1692ad4799f4529d7a5",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "73177c27f9ffc3d00f3efecec6c5c42ba85d09f3ebe89cbc2ed3bc337e24c42f",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "e42ddafe120c9e5cfad7311fa5619f7a72642afb743927ce17af22815e2ebc97",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "4cb5819deebca5414c484de84bcc3f7f18fc6a28ca2932fc251156dcad055cb1",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "ee4a25c54a7dae23c04c441e807d62e3022fa2259a4b1a3fa438113a03bfb84e",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "b2ca93d267801d1043be10e099c48b2aecaadc2da6e43c7ee2070aa90108a90a",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
+      "sha256": "e57fd531cecc5f7214f2d2d0e3840ab2441a1ac589e545f82ae2a7d7408c2926",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T15:04:42.538Z",
+      "rationale": "Standing owner authority for development and both registries. Same unfinished Atlas Time delivery: actual-helper test correction and native details ownership after retained own50 visibility counterexample. Unchanged seven-target finalizer, all historical witnesses/frozen M20 bytes and failures/profiles retained. No new dependency, calendar conversion or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "72735e46201b7269c13ae9e0c03ec0eaf367e60cfbfd07461411345a2d7b9547",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T16:01:40.873Z",
+      "rationale": "Standing owner authority for development and both registries. Same18-path Atlas Time delivery: existing author-unit DOM now supplies native parent links; all7 case names/assertions and every product runtime byte preserved. Unchanged seven-target finalizer; all old native/source proofs, failures, witnesses and frozen M20 bytes retained. No dependency, product behavior, membership or release qualification change."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "463820608c643eb5759a23941eb10910811540656a3a344681ea537420746816",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T16:01:40.873Z",
+      "rationale": "Standing owner authority for development and both registries. Same18-path Atlas Time delivery: existing author-unit DOM now supplies native parent links; all7 case names/assertions and every product runtime byte preserved. Unchanged seven-target finalizer; all old native/source proofs, failures, witnesses and frozen M20 bytes retained. No dependency, product behavior, membership or release qualification change."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "c7d7a14c0373185d5956a158f9639ef5a015cbc034325b578c3c8f8b71c03361",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T16:01:40.873Z",
+      "rationale": "Standing owner authority for development and both registries. Same18-path Atlas Time delivery: existing author-unit DOM now supplies native parent links; all7 case names/assertions and every product runtime byte preserved. Unchanged seven-target finalizer; all old native/source proofs, failures, witnesses and frozen M20 bytes retained. No dependency, product behavior, membership or release qualification change."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "336f597795f42b9bc88786c07166960afb220e11f3f5998a1b5a5993f6f3b308",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T16:01:40.873Z",
+      "rationale": "Standing owner authority for development and both registries. Same18-path Atlas Time delivery: existing author-unit DOM now supplies native parent links; all7 case names/assertions and every product runtime byte preserved. Unchanged seven-target finalizer; all old native/source proofs, failures, witnesses and frozen M20 bytes retained. No dependency, product behavior, membership or release qualification change."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "eb2c5640ed4e8338758a2e6ac1c266f0a4280a8dfa6e073037f976760dbe1dd4",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T16:01:40.873Z",
+      "rationale": "Standing owner authority for development and both registries. Same18-path Atlas Time delivery: existing author-unit DOM now supplies native parent links; all7 case names/assertions and every product runtime byte preserved. Unchanged seven-target finalizer; all old native/source proofs, failures, witnesses and frozen M20 bytes retained. No dependency, product behavior, membership or release qualification change."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "6fee6e2cdce8eeaa2a52bf7ab41fbdee4d5788647df0ed021e881b883ede06d1",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T16:01:40.873Z",
+      "rationale": "Standing owner authority for development and both registries. Same18-path Atlas Time delivery: existing author-unit DOM now supplies native parent links; all7 case names/assertions and every product runtime byte preserved. Unchanged seven-target finalizer; all old native/source proofs, failures, witnesses and frozen M20 bytes retained. No dependency, product behavior, membership or release qualification change."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "94ed1cc0e551a9b58b4858228e3330fb4b069b7bbc0695b27afeb22ebf194ed1",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T16:01:40.873Z",
+      "rationale": "Standing owner authority for development and both registries. Same18-path Atlas Time delivery: existing author-unit DOM now supplies native parent links; all7 case names/assertions and every product runtime byte preserved. Unchanged seven-target finalizer; all old native/source proofs, failures, witnesses and frozen M20 bytes retained. No dependency, product behavior, membership or release qualification change."
+    },
+    {
+      "filePath": "test/unit/atlas-temporal-author-input.test.js",
+      "sha256": "5f709063f5202c288b30c112c683bcda4a87a6ad069193ab49468e621eeb596c",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T16:01:40.873Z",
+      "rationale": "Standing owner authority for development and both registries. Same18-path Atlas Time delivery: existing author-unit DOM now supplies native parent links; all7 case names/assertions and every product runtime byte preserved. Unchanged seven-target finalizer; all old native/source proofs, failures, witnesses and frozen M20 bytes retained. No dependency, product behavior, membership or release qualification change."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "f6d593d6f5e5c299401a8b42e814a28abd08aa1daa316d0e34c9723737740655",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T17:28:43.451Z",
+      "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "da05084bad5afeb6bd71da6f77e955c435d1c81dd54a78e769b6711ddf9cc3d2",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T17:28:43.451Z",
+      "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "767e4a9f20ea692b50a14f6ede4474c677c46c5a5ec24254eac5d95499a3c5bf",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T17:28:43.451Z",
+      "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "ecaa82f3598cc3d482a568c80c3d16e084c302876710f9e003927e82816ce577",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T17:28:43.451Z",
+      "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
     }],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}

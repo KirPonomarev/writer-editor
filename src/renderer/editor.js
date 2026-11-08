@@ -17315,6 +17315,7 @@ function setAtlasReportsDraftField(fieldName, value) {
 
 function appendAtlasTemporalAuthorControls(parent) {
   const section = appendAtlasOverviewSection(parent, 'Author controls', { open: true });
+  section.parentElement.dataset.atlasTemporalAuthorControls = 'true';
   const projectId = currentProjectId;
   const documentKind = currentDocumentKind;
   const sceneId = documentKind === 'scene' || documentKind === 'chapter-file' ? currentDocumentId : null;
@@ -17381,6 +17382,7 @@ function appendAtlasTemporalAuthorControls(parent) {
     reason: sceneId ? '' : 'Open a scene first',
   }));
   section.appendChild(actions);
+  return section.parentElement;
 }
 
 function appendAtlasContinuityAuthorControls(parent) {
@@ -20203,6 +20205,8 @@ function appendAtlasTemporalLayoutList(parent, rows, omittedCount = 0) {
 
 function renderAtlasTemporalLayoutState() {
   if (!(atlasTemporalLayoutHost instanceof HTMLElement)) return;
+  const previousAuthorControls = atlasTemporalLayoutHost.querySelector('[data-atlas-temporal-author-controls]');
+  const authorControlsOpen = previousAuthorControls?.open;
   bindAtlasTemporalLayoutKeyboardNavigation();
   if (atlasTemporalLayoutShell instanceof HTMLElement) {
     atlasTemporalLayoutShell.hidden = !isAtlasSurfaceActive('temporal') || atlasTemporalLayoutExplicitOpen !== true;
@@ -20244,7 +20248,8 @@ function renderAtlasTemporalLayoutState() {
   closeButton.textContent = 'Close';
   actionBar.appendChild(closeButton);
   atlasTemporalLayoutHost.appendChild(actionBar);
-  appendAtlasTemporalAuthorControls(atlasTemporalLayoutHost);
+  const authorControls = appendAtlasTemporalAuthorControls(atlasTemporalLayoutHost);
+  if (typeof authorControlsOpen === 'boolean') authorControls.open = authorControlsOpen;
 
   if (state.state === 'unavailable') {
     const unavailable = document.createElement('div');
@@ -20272,7 +20277,8 @@ function renderAtlasTemporalLayoutState() {
   const sliderWrap = document.createElement('label');
   sliderWrap.className = 'right-rail-atlas-temporal-slider';
   const sliderText = document.createElement('span');
-  sliderText.textContent = state.timeSliderState.rangeLabel || 'story time';
+  const coordinateLabel = state.layoutPacket.axis.label || 'story time';
+  sliderText.textContent = `${coordinateLabel}: ${state.timeSliderState.rangeLabel || 'empty'}`;
   const sliderInput = document.createElement('input');
   sliderInput.type = 'range';
   sliderInput.min = String(state.timeSliderState.min);
@@ -20280,7 +20286,7 @@ function renderAtlasTemporalLayoutState() {
   sliderInput.step = String(state.timeSliderState.step || 1);
   sliderInput.value = String(state.timeSliderState.value);
   sliderInput.dataset.atlasTemporalSlider = 'true';
-  sliderInput.setAttribute('aria-label', 'Atlas time slider');
+  sliderInput.setAttribute('aria-label', `Atlas time slider: ${coordinateLabel}`);
   sliderWrap.append(sliderText, sliderInput);
   sliderSection.appendChild(sliderWrap);
 
@@ -20333,13 +20339,17 @@ async function refreshAtlasTemporalLayout(sliderValue = null, options = {}) {
   if (atlasTemporalLayoutExplicitOpen !== true) return;
   const current = beginAtlasQueryPublication('atlasTemporalLayout', options), requestProject = currentProjectId;
   if (!current) return;
+  const focused = document.activeElement;
+  const focusedSlider = Number.isFinite(sliderValue) && focused instanceof HTMLInputElement
+    && focused.type === 'range' && focused.dataset.atlasTemporalSlider === 'true'
+    && atlasTemporalLayoutHost instanceof HTMLElement && atlasTemporalLayoutHost.contains(focused) ? focused : null;
   atlasTemporalLayoutPublication = null;
   atlasTemporalLayoutState = {
     ...atlasTemporalLayoutState,
     state: currentProjectId ? 'loading' : 'empty',
     projectId: currentProjectId || '',
   };
-  renderAtlasTemporalLayoutState();
+  if (!focusedSlider) renderAtlasTemporalLayoutState();
   const result = await invokeWorkspaceQueryBridge(ATLAS_TEMPORAL_LAYOUT_QUERY_ID, {
     projectId: currentProjectId,
     explicitOpen: atlasTemporalLayoutExplicitOpen === true,
@@ -20350,9 +20360,14 @@ async function refreshAtlasTemporalLayout(sliderValue = null, options = {}) {
   if (!current() || atlasTemporalLayoutExplicitOpen !== true) return;
   const nextState = readAtlasQueryProjection(result, 'atlasTemporalLayout', requestProject)
     || { state: 'unavailable', unavailableReason: 'ATLAS_TEMPORAL_LAYOUT_QUERY_FAILED', projectId: requestProject };
+  const restoreSliderFocus = focusedSlider && document.activeElement === focusedSlider;
   atlasTemporalLayoutState = normalizeAtlasTemporalLayout(nextState);
   atlasTemporalLayoutPublication = current;
   renderAtlasTemporalLayoutState();
+  if (restoreSliderFocus && current() && atlasTemporalLayoutExplicitOpen === true) {
+    const replacement = atlasTemporalLayoutHost.querySelector('[data-atlas-temporal-slider]');
+    if (replacement instanceof HTMLInputElement) replacement.focus({ preventScroll: true });
+  }
 }
 
 function normalizeAtlasContinuityLedgerSurface(result = {}) {

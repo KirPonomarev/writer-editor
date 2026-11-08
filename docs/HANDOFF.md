@@ -1,3 +1,19 @@
+# CURRENT HANDOFF — Atlas Time coordinate basis
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108
+BASE: 895e221b5fbb92e34e67ea19dc1248c1bfd4974e
+BRANCH: codex/atlas-temporal-coordinate-20261108
+STATUS: FOCUSED_SOURCE_VERIFIED_REQUIRED_PROOFS_PENDING
+
+Previous bounded delivery is closed: PR 2212, candidate c6cdddcde1ac5c2400cd9a9db15606adf712c690, merged 895e221b5fbb92e34e67ea19dc1248c1bfd4974e, identical tree bd8cbe1a05c25d3397def0f495828951f411f725. Candidate/main CI each passed all 20 jobs. Exact merge passed 27 local checks, a separate Electron 43.8.4 native rebuild, own47 first and cold launches with two clean exits, independent full ASAR/bundle and canonical-data readback. The current protected46-profile/18-bundle baseline matched after cold; earlier GPU counter/remount provenance remains recorded without attributing its unknown cause. Final report d9c60875172e9b3007a0b10fe5cbb1e031d08776909d2d1d678bae998dc01615 and native outcome 69a3fcea99495079d1ea1e6ebe56b37fb2e43c2068528a7f1a6d64ca599b90dc are under /Volumes/T777/Yalken/Отчёты о работе/2026-11-07--atlas-temporal-range-display.
+
+Remaining observed gap: distinct label/calendar points overlap in the existing Time chart. A pure real Core/query discriminator on895e proves their normalized placeholder dayIndex0 is mistaken for an ordinal day; true ordinal0 and2/9 are correct. This branch changes only derived coordinate typing and the existing visible/accessibility slider label. Any unscaled participating story point selects disclosed scene order for the whole projection; no implicit calendar conversion or synthetic jitter. The unchanged expanded focused suite is23/23 after retained RED; renderer rebuilt. Preserve original range labels, command/data/history protections and all old profiles. No new native result is claimed yet.
+
+NEXT: verify the affected chain, admit only necessary current bindings under a fresh exact preflight, then complete mandatory candidate gates, rebuilt native first/cold in new own48, normal PR/CI/merge and separately rebuilt merged verification. One executor and delivery chain; no new infrastructure or independent docs task. Current declaration7a394b71, E0 81349026, RED954ade18 and GREENd048fe4c are in the dated2026-11-08--atlas-temporal-coordinate evidence folder. All17 Full-Mac rows remain UNKNOWN and full release NOT_READY; Office stays paused and Black Box follows full Mac.
+
+--- Previous handoffs remain historical ---
+
 # CURRENT HANDOFF — Atlas Time author input
 
 DOCUMENT_CLASS: FACTUAL_STATUS
