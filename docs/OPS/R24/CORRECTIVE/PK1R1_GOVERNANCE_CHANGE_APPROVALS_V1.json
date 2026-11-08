@@ -2932,4 +2932,32 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
       "approvedAtUtc": "2026-11-08T16:01:40.873Z",
       "rationale": "Standing owner authority for development and both registries. Same18-path Atlas Time delivery: existing author-unit DOM now supplies native parent links; all7 case names/assertions and every product runtime byte preserved. Unchanged seven-target finalizer; all old native/source proofs, failures, witnesses and frozen M20 bytes retained. No dependency, product behavior, membership or release qualification change."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "f6d593d6f5e5c299401a8b42e814a28abd08aa1daa316d0e34c9723737740655",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T17:28:43.451Z",
+      "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "da05084bad5afeb6bd71da6f77e955c435d1c81dd54a78e769b6711ddf9cc3d2",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T17:28:43.451Z",
+      "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "767e4a9f20ea692b50a14f6ede4474c677c46c5a5ec24254eac5d95499a3c5bf",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T17:28:43.451Z",
+      "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "ecaa82f3598cc3d482a568c80c3d16e084c302876710f9e003927e82816ce577",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T17:28:43.451Z",
+      "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
     }],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}

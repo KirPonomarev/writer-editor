@@ -3574,7 +3574,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "bb4b7933ec9e9a5d62f0b0be82339cb9fe9b8f5439a0ee3b04121edf79a77610"
+        "sha256": "ecaa82f3598cc3d482a568c80c3d16e084c302876710f9e003927e82816ce577"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4458,7 +4458,7 @@
       },
       {
         "path": "docs/tasks/2026-11-08--atlas-temporal-coordinate.md",
-        "sha256": "8c497608e95959a0a653bd9a8cbe2c86e3fb9d0c94a7e959b500af94bf3e58fc"
+        "sha256": "dc6be6b471910fdc54158393df4e6b06b01955099f12d2666ae2a1400622b2b4"
       }
     ],
     "followupRepair": {

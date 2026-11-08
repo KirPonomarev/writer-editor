@@ -864,7 +864,7 @@ const R24_INTEROP_ATLAS_TEMPORAL_COORDINATE_20261108_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "6fee6e2cdce8eeaa2a52bf7ab41fbdee4d5788647df0ed021e881b883ede06d1"
+      "sha256": "da05084bad5afeb6bd71da6f77e955c435d1c81dd54a78e769b6711ddf9cc3d2"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -908,7 +908,7 @@ const R24_INTEROP_ATLAS_TEMPORAL_COORDINATE_20261108_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/sector-m-scope-map.json",
-      "sha256": "bb4b7933ec9e9a5d62f0b0be82339cb9fe9b8f5439a0ee3b04121edf79a77610"
+      "sha256": "ecaa82f3598cc3d482a568c80c3d16e084c302876710f9e003927e82816ce577"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -1532,13 +1532,13 @@ const R24_INTEROP_ATLAS_TEMPORAL_COORDINATE_20261108_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-08--atlas-temporal-coordinate.md",
-      "sha256": "8c497608e95959a0a653bd9a8cbe2c86e3fb9d0c94a7e959b500af94bf3e58fc"
+      "sha256": "dc6be6b471910fdc54158393df4e6b06b01955099f12d2666ae2a1400622b2b4"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "eb2c5640ed4e8338758a2e6ac1c266f0a4280a8dfa6e073037f976760dbe1dd4"
+      "sha256": "f6d593d6f5e5c299401a8b42e814a28abd08aa1daa316d0e34c9723737740655"
     }
   ]
 });

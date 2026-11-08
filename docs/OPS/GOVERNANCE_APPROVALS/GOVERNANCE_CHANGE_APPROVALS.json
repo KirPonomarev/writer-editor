@@ -32683,6 +32683,34 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
       "approvedAtUtc": "2026-11-08T16:01:40.873Z",
       "rationale": "Standing owner authority for development and both registries. Same18-path Atlas Time delivery: existing author-unit DOM now supplies native parent links; all7 case names/assertions and every product runtime byte preserved. Unchanged seven-target finalizer; all old native/source proofs, failures, witnesses and frozen M20 bytes retained. No dependency, product behavior, membership or release qualification change."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "f6d593d6f5e5c299401a8b42e814a28abd08aa1daa316d0e34c9723737740655",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T17:28:43.451Z",
+      "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "da05084bad5afeb6bd71da6f77e955c435d1c81dd54a78e769b6711ddf9cc3d2",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T17:28:43.451Z",
+      "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "767e4a9f20ea692b50a14f6ede4474c677c46c5a5ec24254eac5d95499a3c5bf",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T17:28:43.451Z",
+      "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "ecaa82f3598cc3d482a568c80c3d16e084c302876710f9e003927e82816ce577",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T17:28:43.451Z",
+      "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
