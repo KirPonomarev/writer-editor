@@ -32459,6 +32459,62 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
       "approvedAtUtc": "2026-11-08T12:55:53.179Z",
       "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "d576c35d3a12f06d49b005319d230603d24a738a5d0e92865ec97fb2f4df1ef8",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "ce19471d933d2d0c0e1e0d9ef1dd6dc39b98f0518c4aef47fb7589d08a6d0728",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "b473737ed099a2839f88452f73ed7d01e13a3c0bc3600e6bf4e330a32bf76f3c",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "8f687480d6afa9f2403e82c83259dd6d118bd4e9ab8c181906e32c678bff2944",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "2386b21c5e64e8e911a447e1db297aa583f35c9183c0345683d2100d1590242a",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "8aa0ec8572f60d3f27762a437f9dced67a2e53472fbd61d7894a6e23c3147820",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "063c2edd92c66f890daa9dd63ad02744931a7801784f226f68492f73724e3fda",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
+    },
+    {
+      "filePath": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
+      "sha256": "1f31b2b04146c2117230feec33c9df32fc11732d42072c476eba5ec4f1336fe2",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T14:22:20.352Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same unfinished Atlas Time delivery: real native slider focus counterexample, minimal current-focus correction and unchanged seven-target finalizer. All prior witnesses, frozen M20 declaration, native failure and closed own48 remain preserved. No new dependency, calendar conversion, release or native qualification."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
