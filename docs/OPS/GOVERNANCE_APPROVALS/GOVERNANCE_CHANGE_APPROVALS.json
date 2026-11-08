@@ -32403,6 +32403,62 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_DISPLAY_MAC_20261107",
       "approvedAtUtc": "2026-11-08T09:16:24.264Z",
       "rationale": "Standing owner-delegated development and both-registry witness authority. Same unfinished PR2212: explicit historical test clock and exact90day/1ms-expired refusal after preserved original RTK failure. Runtime freshness evaluator,90day policy, Word registry, sealed receipts, app source, old entries and full17 qualification gates remain protected. Current metadata uses unchanged governed finalizer."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "3d9c10e1a3a6a17bd9a1d84d1f353fbcc9e1be1e66dc1f99d6b18126dbb03f43",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "8318fb27dd7bfabce70b286a2ab28c08c36e5605b112ccacc8e8bdb3b405421f",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "40aa07cef3d6bce19724749777e1a23a613f3c917ca6d029f8470912d174fd9b",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "9f02f8fc1fcb8c437821eb068395d3fd39bb8b7a3deed24023450c265918d56e",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "c8c929f3c90016b26005fe174422406c5ddf1fc170a552fa3fdc8df746f3495f",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "3891899e0b08638bcc0b62fa959bb158279b77db069be25eaf12cb38d3b3059e",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "d09ce5e8bf847b4b63e045e9086f3dabd82625beaf4b21e2bf0196c63c6cf3cd",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
+    },
+    {
+      "filePath": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
+      "sha256": "b8442693d3dfc3c0897dc9a4ff601f498186aa03021fc6879e0d04c59f84d3d0",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T12:55:53.179Z",
+      "rationale": "Standing owner-delegated development and both-registry authority. Same Atlas Time coordinate correction and existing seven-target current-binding finalizer; original RED, all prior approvals, complete previous selected delta and unchanged verifier predicates retained. No new runtime dependency, calendar conversion or release/native acceptance."
     }],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",

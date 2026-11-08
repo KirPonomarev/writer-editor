@@ -31,6 +31,15 @@ One correction to the existing read-only Time projection and its existing slider
 - src/renderer/editor.js
 - src/renderer/editor.bundle.js
 - test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js
+- docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+- docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json
+- docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/r24/corrective/interop-current-certification-deltas.mjs
 
 ## DENYLIST
 
@@ -54,6 +63,8 @@ DESIGN_TOOL_DEVIATIONS: No external design service or separate lab is needed for
 2. Correct typed numeric extraction and choose one honest coordinate basis per projection. Bind that basis into the existing visible and accessible slider label. Rebuild the generated renderer.
 3. Prove the same original cases, Core immutability, both open directions, approximation, unknown and mixed scales, genuine zero, genuine equal-day overlap, slider bounds, selection, list parity and budgets. Review the exact diff. Refresh factual documents with the proven M20 merged status and this task's actual stage, retaining historical blocks byte for byte.
 4. Through a fresh exact preflight, refresh only necessary current governed bindings. Preserve all historical approvals, source bytes and verifier predicates. Run mandatory affected and baseline checks, actual rebuilt candidate first/cold in a new own profile and an independent physical oracle before product push. Complete ordinary PR, required CI, normal merge and exact merged verification including rebuilt native. No partial or full release claim from a green PR.
+
+The metadata phase is admitted on clean source checkpoint 004145fb184e1fe0b24a19522796d9606da24bda by declaration e66fed5bb54058251f5a2bbfb834caaf0c4eb2d7f90e26f0256afa47cd1b885a. Only the nine technical paths added above and this task allowlist may change in that phase. The existing seven-target finalizer retains its complete validation and size limits. Preserve the previous current delta verbatim and append the new selected delta with the full inherited binding set. Current witnesses use the owner's standing both-registry authority; no prior approval is replaced. These metadata carry no release or Office acceptance.
 
 ## CHECKS
 
