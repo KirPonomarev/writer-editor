@@ -17315,6 +17315,7 @@ function setAtlasReportsDraftField(fieldName, value) {
 
 function appendAtlasTemporalAuthorControls(parent) {
   const section = appendAtlasOverviewSection(parent, 'Author controls', { open: true });
+  section.dataset.atlasTemporalAuthorControls = 'true';
   const projectId = currentProjectId;
   const documentKind = currentDocumentKind;
   const sceneId = documentKind === 'scene' || documentKind === 'chapter-file' ? currentDocumentId : null;
@@ -17381,6 +17382,7 @@ function appendAtlasTemporalAuthorControls(parent) {
     reason: sceneId ? '' : 'Open a scene first',
   }));
   section.appendChild(actions);
+  return section;
 }
 
 function appendAtlasContinuityAuthorControls(parent) {
@@ -20203,6 +20205,8 @@ function appendAtlasTemporalLayoutList(parent, rows, omittedCount = 0) {
 
 function renderAtlasTemporalLayoutState() {
   if (!(atlasTemporalLayoutHost instanceof HTMLElement)) return;
+  const previousAuthorControls = atlasTemporalLayoutHost.querySelector('[data-atlas-temporal-author-controls]');
+  const authorControlsOpen = previousAuthorControls?.open;
   bindAtlasTemporalLayoutKeyboardNavigation();
   if (atlasTemporalLayoutShell instanceof HTMLElement) {
     atlasTemporalLayoutShell.hidden = !isAtlasSurfaceActive('temporal') || atlasTemporalLayoutExplicitOpen !== true;
@@ -20244,7 +20248,8 @@ function renderAtlasTemporalLayoutState() {
   closeButton.textContent = 'Close';
   actionBar.appendChild(closeButton);
   atlasTemporalLayoutHost.appendChild(actionBar);
-  appendAtlasTemporalAuthorControls(atlasTemporalLayoutHost);
+  const authorControls = appendAtlasTemporalAuthorControls(atlasTemporalLayoutHost);
+  if (typeof authorControlsOpen === 'boolean') authorControls.open = authorControlsOpen;
 
   if (state.state === 'unavailable') {
     const unavailable = document.createElement('div');

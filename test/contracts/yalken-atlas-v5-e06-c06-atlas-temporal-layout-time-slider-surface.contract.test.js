@@ -623,3 +623,139 @@ test('E06 C06: actual slider refresh preserves only current owned keyboard focus
     assert.equal(f.focusCalls.length, 0);
   });
 });
+
+test('E06 C06: actual Time rendering keeps the chosen author disclosure state', async (t) => {
+  const vm = require('node:vm');
+  const source = fs.readFileSync(path.join(process.cwd(), 'src/renderer/editor.js'), 'utf8');
+  const extract = (startText, endText) => {
+    const start = source.indexOf(startText);
+    const end = source.indexOf(endText, start);
+    assert.ok(start > 0 && end > start);
+    return source.slice(start, end);
+  };
+  const actual = [
+    extract('function appendAtlasTemporalAuthorControls(', '\nfunction appendAtlasContinuityAuthorControls('),
+    extract('function renderAtlasTemporalLayoutState(', '\nfunction closeAtlasTemporalLayoutSurface('),
+    extract('async function refreshAtlasTemporalLayout(', '\nfunction normalizeAtlasContinuityLedgerSurface('),
+  ].join('\n');
+  function fixture() {
+    const document = { activeElement: null };
+    class HTMLElement {
+      constructor(tag = 'div') {
+        this.tagName = tag.toUpperCase(); this.children = []; this.dataset = {};
+        this.style = { setProperty() {} }; this.open = false;
+      }
+      append(...nodes) { this.children.push(...nodes); }
+      appendChild(node) { this.append(node); return node; }
+      setAttribute() {}
+      contains(node) { return this === node || this.children.some((child) => child.contains(node)); }
+      set innerHTML(value) {
+        assert.equal(value, '');
+        if (this.contains(document.activeElement)) document.activeElement = document.body;
+        this.children = [];
+      }
+      querySelector(selector) {
+        const match = /^\[data-([a-z-]+)\]$/u.exec(selector);
+        assert.ok(match, selector);
+        const key = match[1].replace(/-([a-z])/gu, (_, letter) => letter.toUpperCase());
+        for (const child of this.children) {
+          if (Object.hasOwn(child.dataset, key)) return child;
+          const nested = child.querySelector(selector);
+          if (nested) return nested;
+        }
+        return null;
+      }
+    }
+    class HTMLInputElement extends HTMLElement {
+      constructor() { super('input'); }
+      focus() { document.activeElement = this; }
+    }
+    document.body = new HTMLElement('body');
+    document.createElement = (tag) => tag === 'input' ? new HTMLInputElement() : new HTMLElement(tag);
+    const host = new HTMLElement();
+    const editor = new HTMLElement();
+    const queries = [];
+    let epoch = 0;
+    const ready = (value = 0) => ({
+      state: 'ready', projectId: 'disclosure-project', summary: { layoutHash: 'current', sceneCount: 2 },
+      timeSliderState: { min: 0, max: 1, value, step: 1, rangeLabel: 'calendar label' },
+      layoutPacket: { axis: { label: 'scene order' }, events: [] }, listParity: { rows: [] },
+    });
+    const context = {
+      document, HTMLElement, HTMLInputElement,
+      currentRightTab: 'atlas', currentProjectId: 'disclosure-project',
+      currentDocumentKind: 'scene', currentDocumentId: 'scene-a',
+      atlasTemporalLayoutHost: host, atlasTemporalLayoutShell: null,
+      atlasTemporalLayoutExplicitOpen: true, atlasTemporalLayoutState: ready(),
+      atlasTemporalAuthorDraft: { projectId: 'disclosure-project', calendar: {}, scenes: new Map() },
+      ATLAS_TEMPORAL_LAYOUT_QUERY_ID: 'query.atlasTemporalLayout',
+      bindAtlasTemporalLayoutKeyboardNavigation() {}, applyAtlasResolvedSurfaceBinding() {},
+      isAtlasSurfaceActive: () => true, normalizeAtlasTemporalLayout: (value) => value,
+      appendAtlasOverviewMetric() {}, appendAtlasTemporalLayoutList() {},
+      appendAtlasOverviewSection(parent, title, options) {
+        const section = new HTMLElement('details'); section.open = options.open;
+        const summary = new HTMLElement('summary'); summary.textContent = title;
+        section.append(summary); parent.append(section); return section;
+      },
+      appendAtlasSurfaceField(parent) { const field = new HTMLInputElement(); parent.append(field); return field; },
+      makeAtlasSurfaceCommandButton: () => new HTMLElement('button'),
+      captureAtlasPublication: () => () => true,
+      beginAtlasQueryPublication() {
+        const generation = ++epoch, project = context.currentProjectId;
+        return () => generation === epoch && project === context.currentProjectId
+          && context.atlasTemporalLayoutExplicitOpen;
+      },
+      invokeWorkspaceQueryBridge(id, payload) {
+        return new Promise((resolve) => queries.push({ payload, resolve }));
+      },
+      readAtlasQueryProjection: (result) => result.value,
+    };
+    vm.createContext(context);
+    vm.runInContext(actual + '\nthis.render = renderAtlasTemporalLayoutState; this.refresh = refreshAtlasTemporalLayout;', context);
+    const author = () => host.children.find((node) => node.tagName === 'DETAILS'
+      && node.children[0]?.textContent === 'Author controls');
+    const slider = () => host.querySelector('[data-atlas-temporal-slider]');
+    context.render();
+    return { context, document, editor, author, slider, queries, ready,
+      reply(index) { queries[index].resolve({ value: ready(queries[index].payload.sliderValue) }); } };
+  }
+  await t.test('first render exposes the existing author controls by default', () => {
+    const f = fixture(); assert.equal(f.author().open, true);
+  });
+  await t.test('ready redraw retains a deliberately collapsed disclosure', () => {
+    const f = fixture(); f.author().open = false; f.context.render();
+    assert.equal(f.author().open, false);
+  });
+  await t.test('loading empty and unavailable redraws retain the current disclosure choice', () => {
+    const f = fixture(); f.author().open = false;
+    for (const state of ['loading', 'empty', 'unavailable', 'ready']) {
+      f.context.atlasTemporalLayoutState = { ...f.ready(), state }; f.context.render();
+      assert.equal(f.author().open, false, state);
+    }
+  });
+  await t.test('a disclosure toggle during the pending query is the latest choice', async () => {
+    const f = fixture();
+    for (const open of [false, true]) {
+      f.slider().focus(); const pending = f.context.refresh(open ? 0 : 1);
+      f.author().open = open;
+      f.reply(f.queries.length - 1); await pending;
+      assert.equal(f.author().open, open);
+    }
+  });
+  await t.test('repeated slider directions retain both collapsed author controls and keyboard focus', async () => {
+    const f = fixture(); f.author().open = false; f.slider().focus();
+    for (const value of [1, 0, 1, 0]) {
+      const pending = f.context.refresh(value); f.reply(f.queries.length - 1); await pending;
+      assert.equal(f.author().open, false);
+      assert.equal(f.document.activeElement, f.slider());
+      assert.equal(f.slider().value, String(value));
+    }
+  });
+  await t.test('later editor focus and collapsed author controls both survive the result', async () => {
+    const f = fixture(); f.author().open = false; f.slider().focus();
+    const pending = f.context.refresh(1); f.document.activeElement = f.editor;
+    f.reply(0); await pending;
+    assert.equal(f.document.activeElement, f.editor);
+    assert.equal(f.author().open, false);
+  });
+});
