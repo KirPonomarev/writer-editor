@@ -3442,7 +3442,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "16fe3970a9cc13ffd659dd36c4c8c272ce9fe52d83c0a1692ad4799f4529d7a5"
+        "sha256": "463820608c643eb5759a23941eb10910811540656a3a344681ea537420746816"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4442,7 +4442,7 @@
       },
       {
         "path": "test/unit/atlas-temporal-author-input.test.js",
-        "sha256": "88250a3910ac0ed65319c649fe6008bce61c96af87b1e813d4acaf69851bf85d"
+        "sha256": "5f709063f5202c288b30c112c683bcda4a87a6ad069193ab49468e621eeb596c"
       },
       {
         "path": "docs/tasks/2026-11-07--atlas-temporal-range-display.md",
@@ -4458,7 +4458,7 @@
       },
       {
         "path": "docs/tasks/2026-11-08--atlas-temporal-coordinate.md",
-        "sha256": "96015e595736cf45bec10598b4e2d944a775b87afa93fe6cc9dfadd39ec7453d"
+        "sha256": "8c497608e95959a0a653bd9a8cbe2c86e3fb9d0c94a7e959b500af94bf3e58fc"
       }
     ],
     "followupRepair": {
