@@ -8,7 +8,7 @@ BINDING_BASE_SHA: 60e7d2e1c38760226f194666c551b6a38a38bb8f
 HEAD_SHA_AT_START: 60e7d2e1c38760226f194666c551b6a38a38bb8f
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/atlas-global-composite-20261109
-STATUS: CURRENT_UI_CONTRACT_RECONCILIATION_PENDING
+STATUS: CURRENT_SHARED_DELIVERY_ADMISSION_REPAIR_PENDING
 DOCUMENT_CLASS: PROCESS
 CLAIM_BOUNDARY: Single bounded product integration; not Stage08 or Full Mac qualification.
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true POST_MERGE_EXACT_HEAD_REQUIRED=true
@@ -170,3 +170,7 @@ At R3 namespace64/64 passed including immutable Git corruption controls, raw e68
 ### Current design binding contract reconciliation
 
 All24 frozen R4 cheap stages reached terminal atbf26e118:22 allowed outcomes and2 blocking stale composition counts, manifest16 vs15 and rail14 vs13. Exact base comparison retains every old fifteen manifest contribution and thirteen rail surface; only the admitted globalComposite is added. Clean declaration07 admits the two existing contract files only: retain every original assertion, require exact new counts plus the current read-only global tuple, hidden inactive tab/panel and shared refresh route. Whole focused contracts11/11, no skips or todo, rawf11316b6738b14ca22da69194f74f169a261ef71cddf8b65039aca3d74221b56. No product runtime input changed, no new file/test or default skip. Preserve original event101/100/1 and direct203/202/1 logs, all prior evidence and unlaunched own66. Refresh only existing current companions and technical witnesses, then current32 checks and exact native/full normal delivery; no release acceptance. Production audit0; full audit6 moderate development-tool findings is the existing advisory. Full Mac remains NOT_READY/UNFROZEN/all17 UNKNOWN; P05 next order unchanged.
+
+### Shared delivery admission correction
+
+CURRENT_SHARED_DELIVERY_STATUS: R5 native at8917b2e45225bb9cc7a6bbb17ac06fe166ac3bde independently verified601a14f26d23a6ddfa2f0cd03f6c53c68e164ba93c99655cfe687cd9518a97c3: new own67 ordinary Save/cold and two exits0, exact three-file oracle and all prior48 profiles20 bundles preserved; all1495 runtime inputs and7252 bundle entries match earlier observed code. Cold cache diagnostic1 is retained. R5 software reached terminal without interruption:24 preliminary stages allowed outcomes, RTK4419/4419, affected2335/2335 and E0 exit0. Post-audit63/62/1 and C1C335/327/8 all fail only SHARED_UNADMITTED_DELTA, exactly the missing already-declared ER C06 test path from976 admitted paths/825 source bindings. Direct query original6fbc6756266a40553e52b598d7228bd035236c9d539a59e05761b2ab172b5a4b and all original raw streams retained; no unchanged retry. Fresh declaration08/preflight admits adding only this one current hash to the existing selected certificate and arrays, using the unchanged seven-target finalizer. Expected977 paths/826 source bindings/515 composed pins; all old tuples and gate predicates retained. Run complete current delivery queries and post-audit before native/heavy gates. R5 default/WP104/Electron were not started after the proved delivery blocker; none is claimed passed. No product runtime edit or push/PR. Full Mac remains NOT_READY/UNFROZEN/all17 UNKNOWN.

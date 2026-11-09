@@ -3942,11 +3942,11 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "fcc8b8c21dc0f36f1ffd925c4e69bae1832ad555bc494b0895558601da530eb7"
+      "sha256": "6067e510f294c7fe7ed866dd23f64c32d5e7911163c23ecd71ac0dc365f80454"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "fe1c1810724795e55cf6405928fbe659a9247d766cd768e05f58a00bef3a0dfd"
+      "sha256": "28f905fb5812f4e8bea47aefbff5b66cc1790cdebd8f65f5604acb73cc65dd2c"
     },
     {
       "path": "docs/WORKLOG.md",
@@ -3982,7 +3982,7 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "4762cef50b2318f97a340750f60b49912a9fa861e323603bb256ceae01ba3cb7"
+      "sha256": "52b6f75a2af5250d54255039dfc8ae75dc9d837ceb5a7b614d72d7db8ac9f101"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -4666,7 +4666,7 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-09--atlas-global-composite.md",
-      "sha256": "ed59fa81a29c651437555c1643c1a2f3cd023ce96f68a4892f459675956a55e2"
+      "sha256": "e639f82885401c4ed9a38378237ab32c9ca60e5151061019085d70ff87b6504e"
     },
     {
       "path": "src/derived/atlas/deriveAtlasGlobalCompositeGraphNavigation.mjs",
@@ -4699,12 +4699,16 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     {
       "path": "test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js",
       "sha256": "4c93e52ee84bed9b971ef868488892cfa536684200d776e49d4aedfc4c069613"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-er-c06-atlas-rail-responsive-accessibility.contract.test.js",
+      "sha256": "c9c39e27f8b2fabf1c2e1cf348670617586324aae12baaa52c3e19bbb28cfb3f"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "199caa13e1bdb86c0cd426c1f1128ee4d91b41d836496e64f0ffdea896afbb32"
+      "sha256": "271d7a17deabecb90316fa4385ce85f3e65cdd441ce01d4fa5281e981b5b4a54"
     }
   ]
 });
