@@ -1,3 +1,9 @@
+# 2026-11-09 — M25 delivered; protected finite P05 entry
+
+PR2217 closed normally at d62c3523c97a67a0dd2f18b2e9c0d7ef5df3530c: candidate36/merged31 local stages, both exact20-job hosted runs and separately rebuilt own70 graph/Save/cold with two ordinary exits0. Final schema report8f8206ed4a6c57c8af9bfce0b41fb7b8c9923ef8202a5d4cbc44fcbd36c3619a; protected old profiles/bundles, full closed52-file carrier, original failures and limits retained. Full Mac/all17 remain open.
+
+Entered owner-prioritized finite P05 INT01through08/B02 from that clean base with full normative/scoped factual startup and preflight017b1bab. Initial four-path task/factual scope permits owned external diagnosis only. Unchanged literal Main with actual parser/file reader/safe-create/atomic batch confirms accepted Markdown writes a scene under the old project ID and creates zero new projects against expected one. Raw Node exit1 9f37a303 and independent raw-filesystem7d3f94fd preserve that INT03 gap; preview zero-write, replay refusal and all four protected input bytes pass. Original pre-import diagnostic-buffer and task-wording setup failures are retained. No production edit, app launch or P05 qualification yet. Preserve all other routes; no new tracker/infrastructure.
+
 # 2026-11-07 — Explicit Atlas Time input
 
 PR 2210 closed at 837ee634. Exact source and Core reproduced unintended writes from cleared fields and a previous scene ID. The existing Time form now uses the open scene and explicit inputs, including its own date calendar and a separately labeled optional conversion offset. Original RED 1d9569b8 and expanded RED f7da64b6 remain. The same seven expanded cases passed at 8d375775, with no skipped case, and the maintained bundle built at 842dcbd9. Current verification bindings, actual native acceptance and delivery are pending.

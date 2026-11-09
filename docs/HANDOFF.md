@@ -1,3 +1,18 @@
+# CURRENT — M25 closed; finite P05 interchange diagnosis
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109
+BINDING_BASE_SHA: d62c3523c97a67a0dd2f18b2e9c0d7ef5df3530c
+STATUS: PHASE01_CAUSAL_GAP_CONFIRMED_SOURCE_UNCHANGED
+
+M25 PR2217 is normally merged at this exact base, candidatecc4af0f303a569ff1105ebf0a6a98a94a57804ec, same tested tree46567f148fe87234b494b67e5d9f6918391dddbd. Candidate36 software stages and both hosted20-job runs are independently checked. Merged31 local rows include2335/2335 affected cases without skips;10113 source bytes/modes/Git blobs match. Separately rebuilt own70 proves graph/list/source navigation, bounded write-denied buffer preservation, ordinary restored Save and same-profile cold with two normal exits0. Independent09f43790f3d8a13c355d95040ab696fcf15b96ca390f8ec6c4480ef5f402f831 rereads the full52-file closed profile,7252 bundle entries and51older profiles/23bundles. Final guardrails0ebbcd194cfa6bf27fb83860587fa617df34fd75ab12f4f9093d4bb4757bbf9d and schema report ATLAS_GLOBAL_COMPOSITE_FINAL_REPORT_01.json SHA8f8206ed4a6c57c8af9bfce0b41fb7b8c9923ef8202a5d4cbc44fcbd36c3619a close that bounded chain. Old raw failures, all controls, one cold cache warning and the R1 default-profile side-effect UNKNOWN remain preserved.
+
+Current owner order now enters protected P05 TXT/Markdown/ordinary Project Archive/DOCX INT01through08 and B02. Actual unchanged literal-Main preview/accept with the real parser, bounded file reader, safe-create and atomic batch created projects/current/roman/Imported/source 7d07100c5e.txt under the existing project ID, with zero new project manifests against INT03 expected one. Original Node assertion exit1 is retained in9f37a303527a54400092d2214681fef9359a7cd035a66aa9f74a3ad61f0bec0b; independent raw filesystem7d3f94fddaaccfa3b3f90b2822c14967c8b3522cac2de277d53abb47984d4e42 confirms the gap. Preview left the complete fixture roster unchanged, replay refused without a second write and all four original/foreign inputs stayed exact. This finite host does not claim Electron, full Kernel/capability or library acceptance. Declaration01 SHA1b0c4cb5c82c6dccad34183e43905d88d36eafdee40e78b86eb8a0cd02defbfb and preflight017b1bab1b7ec542c30acaa1b81e0aa4326a689fae651d1f5fe2652c377f2bc9 admit only four required task/factual documents and owned external diagnosis; production/test edits require a prospective amendment. No app or production edit has run. The first diagnostic setup stopped before import on Node default-buffer ENOBUFS; its original method/process6230d61c and five-file carrier remain. Only diagnostic Git blob identity reading changed, without raising any limit; the same frozen fixture objects were reused. Existing eight directions are reused, not rewritten from historical PENDING.
+
+NEXT: preserve the four-document unaccepted checkpoint, then prospectively admit a bounded existing-seam Markdown new-project correction with all source/reference/capability/no-loss guards; map and protect the other seven directions. After P05 retain the two accepted CLI tasks, remaining V6/DNA5 and full qualification/final Mac before Black Box. Full Mac remains NOT_READY, UNFROZEN and all17 UNKNOWN; Word/native PAUSED. Sole executor, no agents/new chats/timers. Earlier pending/queue/pause entries below keep their original historical identities.
+
+--- Original factual bodies preserved byte exact below ---
+
 # CURRENT — M25 historical profile oracle repair pending
 
 DOCUMENT_CLASS: FACTUAL_STATUS

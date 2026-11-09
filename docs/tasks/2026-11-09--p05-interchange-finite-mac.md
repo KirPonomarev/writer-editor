@@ -1,0 +1,92 @@
+# P05 protected finite Mac interchange
+
+TASK_ID: YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109
+TYPE: CORE
+DOCUMENT_CLASS: PROCESS
+STATUS: PHASE01_CAUSAL_GAP_CONFIRMED_SOURCE_UNCHANGED
+CANON_VERSION: v1.0
+CHECKS_BASELINE_VERSION: v1.0
+ACTIVE_EXECUTION_CANON: v3.13a-final
+BINDING_BASE_SHA: d62c3523c97a67a0dd2f18b2e9c0d7ef5df3530c
+BRANCH: codex/p05-interchange-finite-mac-20261109
+DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true POST_MERGE_EXACT_HEAD_VERIFICATION_REQUIRED=true
+DESIGN_TOOL_ROUTER: Existing interface unchanged; exact typed router value is in validated declaration01.
+CLAIM_BOUNDARY: Eight existing P05 directions and concrete demonstrated gaps; no full Mac qualification or new format.
+
+## MICRO_GOAL
+
+Preserve and qualify the protected four-format/eight-direction P05 baseline, INT01 through08 and B02, using current code, exact actual Mac routes and independent data/loss/refusal oracles. Reuse existing implementation and proofs; fix only an executed regression or blocking gap. One P05 result, one rollback and one delivery chain.
+
+Owner priority is the previously verified direct request01a1c07a-d8e7-7381-b168-66082f5c4d15, confirmation01a1c07b-c798-75d0-b905-4d5a2cd332fc and accepted finite refinement01a1c115-e26e-7120-bb15-3c698ff5e280. M25 is closed by PR2217 and ATLAS_GLOBAL_COMPOSITE_FINAL_REPORT_01.json, SHA8f8206ed4a6c57c8af9bfce0b41fb7b8c9923ef8202a5d4cbc44fcbd36c3619a. Full Mac remains NOT_READY, UNFROZEN, all17 UNKNOWN. After P05 complete the two accepted CLI tasks, then remaining V6/DNA5 and full Mac before Black Box.
+
+## ARTIFACT
+
+Phase01 admits four required task/factual documents and one bounded external diagnosis only. Executed current-Main causal Node assertion exits1: accepted import creates one scene in the old project, zero new project manifests against expected one. The actual existing writer control succeeds; preview is whole-roster zero-write and replay refuses a second write. Independent raw-filesystem proof7d3f94fddaaccfa3b3f90b2822c14967c8b3522cac2de277d53abb47984d4e42, raw process9f37a303527a54400092d2214681fef9359a7cd035a66aa9f74a3ad61f0bec0b and six-file closed carrier6df37310fe6d007c68436dc7d5c55a068a439dcbe9f000db62a097f438a32b0b retain the result. Original input876898a0d3b92c05ddbd13ec8f54e549c751de417c0a4aff35928d9403012d88 is unchanged. First pre-import ENOBUFS setup failure and initial E0 lexical wording rejection are preserved separately; neither is product failure or PASS. No production source or maintained test edit is admitted yet. Prospective clean-head scope amendment and current preflight must precede any such edit after the distinguishing proof. An unaccepted local checkpoint may preserve this initial task and factual handoff; it is not product delivery or qualification.
+
+New materials and reports use the dated2026-11-09--p05-interchange-finite-mac directories under the owner-designated T777 roots. The explicitly temporary APFS runtime is /Volumes/T7-Secure/storage/yalken/runtime/p05-interchange-finite-mac-20261109, initially only probe01 and its necessary owned ancestor. No existing profile or runtime moves. Final original logs/fixtures and independent readback go to T777 in compact containers where physical paths are unnecessary. No native app launch before separate exact build/profile StageAdmission.
+
+Phase01 diff budget: task at most180 lines, each factual prefix at most35lines and WORKLOG at most15lines. Existing bytes remain intact; no formatting or unrelated cleanup.
+
+## ALLOWLIST
+
+- docs/tasks/2026-11-09--p05-interchange-finite-mac.md
+- docs/CONTEXT.md
+- docs/HANDOFF.md
+- docs/WORKLOG.md
+
+## DENYLIST
+
+Every unlisted repository path in phase01, including src, test, scripts, OPS/governance, dependencies, lockfiles and workflows. No source mutation before causal proof and prospective scope amendment. No old WP700 through709 reopening from narrative PENDING, new tracker/registry/framework, new format/provider/merge/transport, UI redesign, heap/timeout increase, weakened test, default private profile, Word/native, Google, signing/notary/public distribution, Black Box, reset/stash/clean/rebase/force push or deletion of the project. Preserve all original failures, controls, historical profiles and frozen bytes.
+
+## CONTRACT / SHAPES
+
+O: Every included route has an observed current entry, exact code/build/profile/input binding, honest syntax/size/encoding/newline/loss limits, preserved donor/foreign state and independent output oracle. T: Owner-approved V6 P05/B02 -> existing canonical Commands and Kernel -> named Main/product persistence ports and adapters -> readable result, never renderer path authority. H: Current Markdown preview/accept feeds the active project root to an existing-scene batch; a literal current-Main and actual-filesystem probe predicts a new scene under the old project and no new project manifest, contrary to INT03. This is an unexecuted hypothesis at entry, not a failure verdict. B: All other seven directions, legacy contracts, buffers, IDs, histories, original fixtures and safety gates remain protected. P: Cheapest causal actual-Main proof first, full relevant maintained controls, independent text/IR/XML/ZIP/filesystem readback, mandatory gates and exact native/delivery checks. I: Exact base/branch above, current UUID-pinned disks, frozen V6 and fixture hashes, actual target/source/build/profile and lifecycle identities.
+
+The master source is 02 — Полный мастер-план реализации Ялкена — V6 — 2026-10-22.txt, SHAeb2b3ee7455c34576925e0028685a0d13283f122d774a5336910a6172102e377. P05 lines282through359, B02 and MR04 retain the full denominator. INTERCHANGE_MATRIX.json SHA4b876d9c34e1afdf15c547e1abe3be22d9f3f472ecbfc9e35671a97e60671ebb is a source-bound document contract, not current runtime evidence. The full master explicitly includes meaningful directories in the archive denominator; its older abbreviated JSON file wording cannot omit them.
+
+- INT01 TXT import: supported Unicode text/create-only scene or new project, explicit UTF8/BOM/newline policy, source unchanged; no rich/history promise.
+- INT02 TXT export: current, selected and all supported scenes, exact text view/order/newlines; no metadata/assets/history backup claim.
+- INT03 Markdown import: local file, write-free preview and supported IR/loss report, then new project; unsupported input/resource/refusal limits explicit.
+- INT04 Markdown export: actual saved scene/document IR route, source-bound supported subset and cancel-default loss consent; no full-project/CommonMark promise.
+- INT05 ordinary archive export: whole selected root, typed exact file/directory roster including meaningful empty directories, file sizes/hashes and unknown authored bytes; symlinks refuse.
+- INT06 ordinary archive import: absent root, restore preserves ID only without collision, copy creates a new ID with only declared identity/provenance changes. Raw equality precedes rebinding, then library/open/edit/Save/reopen. Existing live project never overwritten.
+- INT07 DOCX import: supported source, immutable preview/reference, create-only new project/ID and independently persisted Current/Original/revisions/comments/anchors. Notes/replies only in the proved subset; no universal or million-word claim.
+- INT08 DOCX export: docxMin validated-document route and separately bound review/full-manuscript routes retain their actual selectors, limits and supported text/style/review subsets. They are not one interchangeable export claim.
+
+FEATURE_INTEGRATION_MANIFEST_V1: EXISTING_SEAM: BOUND_TO_CURRENT_APPROVED_ENTRYPOINTS; no new integration registry. Phase01 changes no runtime behavior. Product Core owns project/scene/content/identity/recovery. Kernel owns current command meaning/capability and effect reservation. Existing Main import/export adapters own bounded file I/O, dialog, queue/lease and atomic publication. Existing pathless immutable preview/source/roster projections are read-only; UI dispatch is intent-only. Existing command IDs remain those in minimum-interchange-v1.cjs, with DOCX review routes separately named by current implementation. No new event/query/port/surface or shell contribution. PROJECT_STATE is protected except new admitted synthetic diagnostic state; AUTHORING_WORKING_STATE retains no-loss duty; derived previews/exports never become authority; shell/transient state does not own text. Each async effect rechecks source/project/entity/lifecycle/session/revision/generation and capability. Invalid, stale, cancel, existing/foreign target and absent adapter fail closed with recovery retained. Typing hot path unchanged; existing keyboard/platform behavior and bounds preserved. SURFACE_MANIFEST_V1: NO_NEW_VISUAL_ZONE_EXISTING_FORM_UNCHANGED.
+
+Actual native qualification requires a new task-owned profile and exact admitted artifact. Original owner checkout, 51pre-existing profiles/23bundles and closed own70/application are read-only protected. No candidate observation is relabelled merged; no code-presence/count-only/self-verification becomes PASS. Separate frozen text/IR/XML, standard ZIP/raw-file and persisted readers supplement actual UI open/Save/cold. OS-managed security identity restoration is not claimed.
+
+Startup: fresh registry/worktree/UUID/encryption/unlocked/write checks, bootstrap READY and full normative plus scoped factual reads precede declaration01/preflight017b1bab1b7ec542c30acaa1b81e0aa4326a689fae651d1f5fe2652c377f2bc9. Current source and frozen plan are read progressively. This is not a P03 checkpoint/full-history/cache claim. Only this sole agent writes. Local brain refs were read; novelwriter.md and ghostwriter.md supply context only, with no external service/code/dependency adoption.
+
+## IMPLEMENTATION_STEPS
+
+1. CHECK_01 выполняется ДО любых изменений; CHECK_02+ выполняются ПОСЛЕ. Preserve the closed M25 evidence and establish this exact clean P05 entry, required task/factual docs and E0 before diagnostic execution.
+2. Execute a small immutable-source distinguishing probe of actual Markdown Main preview/accept and existing persistence using only owned synthetic files. Preserve control, predicted gap, exact source/raw hashes and host/oracle limits; do not run expensive unchanged gates to diagnose one gap.
+3. Map the remaining seven protected directions and current route/loss/resource/refusal proofs. Before any production/test change checkpoint owned task WIP and validate a prospective exact scope amendment, guards, rollback and current source witnesses. Fix only reproduced gaps at existing seams; never rewrite all interchange.
+4. Freeze supported inputs and independent expected results. Execute complete affected suites for touched chains, all mandatory gates and current exact companions. Check every invariant with normal/boundary/adversarial/stale/recovery controls; retain original skipped/unknown coverage honestly.
+5. Rebuild/admit actual native before product push and observe the eight included directions with independent data/source/foreign-target proof and relevant Save/cold journeys. Finish normal commit/push/PR/exact CI/merge and clean fetched merged verification, then continue the owner queue.
+
+## CHECKS
+
+CHECK_01_PRE_ENTRY: exact clean base/branch, canonical registry/worktree, freshly fetched main, UUID/encryption/unlocked writable volumes, no competing task writer/index lock, full normative/scoped factual startup, M25 closure and architecture preflight0 before this edit.
+
+CHECK_02_POST_TASK: valid HARD task/E0, exact four-path phase01 diff and unchanged production/test bytes before any diagnostic. No source or native authority inferred from the task text.
+
+CHECK_03_POST_CAUSE: actual literal-Main control plus predicted new-project counterexample with actual owned persistence; independent old/new manifest/scene/roster bytes, original input and foreign controls. Distinguish finite host from native app. Unexpected setup failure is retained and corrected before a product conclusion.
+
+CHECK_04_POST_ROUTES: all eight directions and required subroutes named exactly, frozen expected data/loss/resource/refusal/identity ledger, full affected maintained tests and meaningful negatives, no absent/skip/todo/different-head PASS.
+
+CHECK_05_POST_DELIVERY: required inventory/DATA/certification/governance/strict/E0-mutants/OSS/audit/baseline/Electron/guardrails and diff/rollback checks appropriate to the eventual changed scope; exact rebuilt actual native, independent persisted/artifact/protected-state readback, normal Git delivery and exact merged repeat. Full Mac/all17 remain open until their own denominator is met.
+
+## STOP_CONDITION
+
+Stop dependent mutation on ambiguous base/scope/authority, foreign dirty state, invalid admission, stale/missing mandatory proof, forbidden write/bypass/security expansion, actual data loss or unmergeable base drift. After three identical failure signatures preserve expected/actual/seed/HEAD/hashes and change the hypothesis. Ordinary decisions stay autonomous under standing owner authority; do not repeat previously granted permissions.
+
+## REPORT_FORMAT
+
+AGENT_FINAL_REPORT_V1, exactly one text code block of KEY: VALUE lines in the final task answer; basenames only, no slash paths/URLs. Include before/after/merged SHA, exact changed scope, real test numerators/denominators/skips, commit/push/PR/CI/merge/native/merged verification, independent oracles, limitations, rollback and one next step. A bounded P05 result is not the full Mac release.
+
+## FAIL_PROTOCOL
+
+Preserve every original error, raw stdout/stderr/process status, input/source/build/profile identity and working control. Do not disable/omit tests, relax oracles, erase old fixtures, replace external authority with narrative or fabricate success. Prospective clean-head amendment precedes any newly needed source/test path; no silent base transfer or unrelated improvement.
