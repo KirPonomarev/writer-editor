@@ -1,3 +1,7 @@
+# 2026-11-10 — P05 exact current Mac source pin
+
+Clean691 resumed; WP10413/13 and finalizer31/31 pass. Current full-Mac query detects exactly one old Main pin among69; retained44902831/cause991c6292. Prospective declaration/preflight08 admits only current V2 cut and independent gate digest correction, preserving every original69-source/17-row/unknown/authority guard and whole negative family. Unlaunched native691 build36557eff and separate official1487-leaf proof09e0eee1 remain bound to that head, not acceptance. No runtime change; finish current companions, all8 native and full delivery.
+
 # 2026-11-10 — P05 adjacent ENV fixture qualification
 
 Source remains bb0bc155; preserve actual Markdown authoring veto and supply the finite ENV host's missing idle field. Original78/77/1 e957841c becomes78/78 394e899a with creating/opening/preview/cleared controls and all old assertions retained. Declaration/preflight05 prospectively adds that sole unit fixture,25 paths. Current companion refresh/native/full delivery remain pending; all earlier outputs stay at their exact identities.

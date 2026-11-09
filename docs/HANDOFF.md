@@ -1,3 +1,10 @@
+# CURRENT — P05 current Mac scope binding correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109
+
+At clean691 WP10413/13 and finalizer31/31 passed, no skips. FULL_MAC_SCOPE fails only its historical Main digest; cause991c6292 confirms other68 pins exact. Prospective27-path declaration08/preflight08 admit only that one current V2 digest in cut and independent gate, with all69 members,17 UNKNOWN rows, predicates and old V1 protected. Actual691 build36557eff and official1487-leaf reader09e0eee1 completed, unlaunched; no native/push/PR acceptance. Finish whole unchanged source-pin controls, exact companions and final candidate proof before actual eight-route UI. Full Mac NOT_READY, UNFROZEN; Word/native PAUSED, Black Box last. Earlier bytes and errors preserved below.
+
 # CURRENT — P05 ENV host repaired; exact companion refresh pending
 
 DOCUMENT_CLASS: FACTUAL_STATUS
