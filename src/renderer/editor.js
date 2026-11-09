@@ -28698,8 +28698,10 @@ if (window.electronAPI) {
           lastAckedGeneration = ack.savedGeneration;
           localDirty = false;
           if (refreshAtlasSource) void loadTree();
-          if (refreshAtlasSource && currentRightTab === 'atlas'
-            && (currentAtlasSurface === 'journey' || currentAtlasSurface === 'currentScene')) refreshActiveAtlasSurface();
+          if (refreshAtlasSource && currentRightTab === 'atlas') {
+            if (currentAtlasSurface === 'journey' || currentAtlasSurface === 'currentScene') refreshActiveAtlasSurface();
+            else if (currentAtlasSurface === 'continuity') void refreshAtlasContinuityLedgerSurface();
+          }
         }
       } else {
         localDirty = Boolean(message.state);
