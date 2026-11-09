@@ -2904,11 +2904,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "f05ff3498578926cb3c11a1b6a5c2f95d6d8316375df16e131ab29a95230ce5f"
+        "sha256": "926c76d2f95fbfdfedc22eb4664429087d2fd9bef44715df503387b559881411"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "5198410a8159519558ff51ea3bd25317242794356681cad2e4d36bceab2c6bdb"
+        "sha256": "2f0756be64d8f6b5a94caa914d5776d98fcecd55593e2a5d1996b77d833fe98d"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -3452,7 +3452,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "5d5e7fe83be0a6935f75c208ba47de3825e5d5698b5e470f275e3e3c5da12506"
+        "sha256": "1098f74fe6c11a7c2791f3cb4054842cb1a9854ab8258b80b520d8ede937eed1"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4396,7 +4396,7 @@
       },
       {
         "path": "test/unit/atlas-authored-associations.test.js",
-        "sha256": "df24b0877475e02c233e82924c6ff4038c6597774b4c508a38c261f4e60c427d"
+        "sha256": "ebc9c31b813244ea93ed19feeb111af2fa782eca647d4ff0d02e04040cb8d16a"
       },
       {
         "path": "docs/tasks/2026-11-06--atlas-authored-associations.md",
@@ -4484,7 +4484,7 @@
       },
       {
         "path": "docs/tasks/2026-11-09--atlas-global-composite.md",
-        "sha256": "c6a99fa7f9decc98dba13f9ee3260348bc5539606d58c7c26796252905095d31"
+        "sha256": "a42c37f9d82477140edc00c781f165d5b2d9b00a83d6679424c604177106b618"
       },
       {
         "path": "src/derived/atlas/deriveAtlasGlobalCompositeGraphNavigation.mjs",

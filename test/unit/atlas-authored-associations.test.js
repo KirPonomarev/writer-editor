@@ -201,7 +201,7 @@ test('authored association real Main/Kernel persists explicit meaning without co
   const result = await f.h.command(COMMAND, { ...payload, editorMode: 'tiptap' });
   t.diagnostic(JSON.stringify({ reach: 'ACTUAL_MAIN_REGISTERED_ENVELOPE', profileId: f.h.main.__profile().profileId, payload, result }));
   if (!result.ok) assert.deepEqual(f.h.roster(), roster, 'Legacy route refusal preserves the entire Documents roster');
-  assertMainApplied(result); assert.equal(f.h.main.__profile().profileId, PROFILE);
+  assertMainApplied(result); assert.equal(f.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14');
   const saved = f.manifest(), record = saved.atlas.authoredAssociations[payload.associationId];
   assert.equal(saved.lastCommandId, before.lastCommandId + 1); assert.equal(record.revisions.length, 1);
   assert.equal(record.revisions[0].source.quote, f.text.slice(0, 16)); assert.deepEqual(fs.readFileSync(f.scenePath), sceneBytes);

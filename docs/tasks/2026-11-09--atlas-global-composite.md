@@ -8,7 +8,7 @@ BINDING_BASE_SHA: 60e7d2e1c38760226f194666c551b6a38a38bb8f
 HEAD_SHA_AT_START: 60e7d2e1c38760226f194666c551b6a38a38bb8f
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/atlas-global-composite-20261109
-STATUS: NATIVE_OBSERVED_CURRENT_CERTIFICATION_REPAIR_PENDING
+STATUS: CURRENT_PROFILE_FIXTURE_RECONCILIATION_PENDING
 DOCUMENT_CLASS: PROCESS
 CLAIM_BOUNDARY: Single bounded product integration; not Stage08 or Full Mac qualification.
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true POST_MERGE_EXACT_HEAD_REQUIRED=true
@@ -57,6 +57,7 @@ Existing E08 C01-C05 source modules already execute their original 21 cases with
 - test/contracts/rtk-word-scene-identity-main.contract.test.js
 - test/contracts/yalken-atlas-v5-e08-c04-trust-filters-batch-navigation-accessibility-parity.contract.test.js
 - test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js
+- test/unit/atlas-authored-associations.test.js
 - test/unit/atlas-global-composite.test.js
 - test/unit/r24-wp307-writer-local-profile-integration.test.js
 
@@ -159,3 +160,7 @@ At be05bba7cba33cd8ce2c96a711611f9d564e6974, own65 actual rebuilt native showed1
 Required namespace gate64/63/1 held at the unchanged Word predecessor predicate: composed514 bindings differ only for current index.html and ER C02 registry contract, neither yet overlaid by the current200-entry delta. Clean declaration04 admits only existing35 paths; append those TWO exact current hashes and refresh existing companions, preserving historical tuples and all verifier/negative contracts. No product runtime source edit.
 
 Direct owner request01a1c07a-d8e7-7381-b168-66082f5c4d15, confirmed01a1c07b-c798-75d0-b905-4d5a2cd332fc, official originals read: finish this active M25 full delivery first; then complete agreed P05 import/export (TXT, Markdown, normal project archive, DOCX; INT01–08 and accepted scope/limits/create-only/no-loss/refusals), reusing existing implementation/proofs and fixing only demonstrated gaps; then remaining V6/DNA5; common acceptance/all17 and final release packaging last. Intermediate actual builds/native/mandatory gates remain required per feature. This supersedes the older NEXT TWO before any product queue; the accepted honest --dry-run then brain:status deliveries remain after import/export and before the subsequent independent product contour. No P25/fullWord/Google/new-format/dependency/security expansion; Office/native PAUSED, Black Box after full Mac. All historical queue/pause notes below remain historical and do not override current direct resume/priority.
+
+### Inherited current-Main assertion correction
+
+At R3 namespace64/64 passed including immutable Git corruption controls, raw e686243508161965d4a15338cc4d59aaceed24e5e60b3c757cfc93c2292be74f. The next inherited authored-association group87/86/1 stops only because one real-current-Main assertion reused historical PROFILE=V13 after the command already APPLIED under V14. Retarget that ONE current assertion to V14; preserve the historical constant/factory behavior and every persisted-data/history/negative assertion. Fresh clean declaration05 admits36 exact paths before edit. Original failure bb0b8849b6dc6b04c90f65064f8185993c113591cdf11415e7c2c661a9e5004e remains. Product runtime inputs1495 unchanged; R3 bundle7252 entries matches R2, own66 fixture is prepared and retained without launch. Reconcile all cheap required controls before any further unchanged native rebuild or heavy wave. No CI/qualification waiver.

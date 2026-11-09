@@ -3942,11 +3942,11 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "f05ff3498578926cb3c11a1b6a5c2f95d6d8316375df16e131ab29a95230ce5f"
+      "sha256": "926c76d2f95fbfdfedc22eb4664429087d2fd9bef44715df503387b559881411"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "5198410a8159519558ff51ea3bd25317242794356681cad2e4d36bceab2c6bdb"
+      "sha256": "2f0756be64d8f6b5a94caa914d5776d98fcecd55593e2a5d1996b77d833fe98d"
     },
     {
       "path": "docs/WORKLOG.md",
@@ -3982,11 +3982,11 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "523323a4fd52858870410d787b456ea9796901a749552e78366c77d9981e1bf5"
+      "sha256": "7319d382cf26ff6002772ef356a779efabb761c9ff12b50f2eb3764d3833850d"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "5d5e7fe83be0a6935f75c208ba47de3825e5d5698b5e470f275e3e3c5da12506"
+      "sha256": "1098f74fe6c11a7c2791f3cb4054842cb1a9854ab8258b80b520d8ede937eed1"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -4146,7 +4146,7 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "d38d5eeab80c545dcabf350efae2c6f7922dd65621ed732ca54d5859b85987d8"
+      "sha256": "4948eaf06a05b7bf86a3f8f726f06a232a54178d20a264c4cc9891ca972383b5"
     },
     {
       "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -4202,11 +4202,11 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "b598d67cedcbd44e25765d9351f545b2a2a2ee8a78eac08992884ee6cd00d39a"
+      "sha256": "679e93cda522d135db30d18367fea675f2d361f22c846433b2cbc162580a0ba2"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "8bb79fdf13a5d463b0200c204fed5279f01c934cdb5d3d9a114871d004a977c1"
+      "sha256": "5a6a02f65f84469503f8deba610fc48c1cdf5bf8ef6193c425f8fbabbe2375d3"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -4578,7 +4578,7 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "test/unit/atlas-authored-associations.test.js",
-      "sha256": "df24b0877475e02c233e82924c6ff4038c6597774b4c508a38c261f4e60c427d"
+      "sha256": "ebc9c31b813244ea93ed19feeb111af2fa782eca647d4ff0d02e04040cb8d16a"
     },
     {
       "path": "docs/tasks/2026-11-06--atlas-authored-associations.md",
@@ -4666,7 +4666,7 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-09--atlas-global-composite.md",
-      "sha256": "c6a99fa7f9decc98dba13f9ee3260348bc5539606d58c7c26796252905095d31"
+      "sha256": "a42c37f9d82477140edc00c781f165d5b2d9b00a83d6679424c604177106b618"
     },
     {
       "path": "src/derived/atlas/deriveAtlasGlobalCompositeGraphNavigation.mjs",
@@ -4704,7 +4704,7 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "b4c1ac13ffaa91cd36f27d2c5c4946c445610c476dbb581ab9d1b642912e1ddd"
+      "sha256": "0b19c49158d59ba7105d6f94f14a5ba8a4029a0360ab4e3cc2a245cfb1b88f45"
     }
   ]
 });
