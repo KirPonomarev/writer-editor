@@ -8,7 +8,7 @@ BINDING_BASE_SHA: 60e7d2e1c38760226f194666c551b6a38a38bb8f
 HEAD_SHA_AT_START: 60e7d2e1c38760226f194666c551b6a38a38bb8f
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/atlas-global-composite-20261109
-STATUS: RESUMED_SOURCE_CHECKS_AND_CURRENT_BINDINGS_PENDING
+STATUS: NATIVE_OBSERVED_CURRENT_CERTIFICATION_REPAIR_PENDING
 DOCUMENT_CLASS: PROCESS
 CLAIM_BOUNDARY: Single bounded product integration; not Stage08 or Full Mac qualification.
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true POST_MERGE_EXACT_HEAD_REQUIRED=true
@@ -151,3 +151,11 @@ Same open M25 chain continues at unaccepted source checkpoint f7000f225d4c742767
 ### Early actual native correction
 
 Exact d9f4251a4a0211820ca772fe33b72c58b3fe8b40 ASAR dc17bc2caccbb68f26673b7f47920477e5d8d37ecf89bc1e0241de87ee70754d built successfully; all1486 packaged leaves and7252 bundle entries independently reread. Ordinary own64 UI exposed missing Graph because flags.js rejects exact V14; no typing or Save, initial logical files3 of3 byte exact, ordinary exit0. Fresh clean declaration03 admits35 paths adding only flags.js; same original delivery base60e7d2e1c38760226f194666c551b6a38a38bb8f. Retain original native failure and UI-tool default relaunch incident separately; no native PASS. Rebuild required after the demonstrated fix.
+
+### Current namespace binding repair and accepted next priority
+
+At be05bba7cba33cd8ce2c96a711611f9d564e6974, own65 actual rebuilt native showed157 nodes, bounded120-node graph,24-row paging through the final page,152 exact author nodes, negative Meaning observation filter, graph/list keyboard equivalence and existing Meaning/manual-map source views. Under two owned fixture directories with temporary0500, unsaved suffix survived refresh and source navigation while all3 source files remained exact. Restore0700, ordinary Save and same-profile cold matched the predeclared full doc-v2 JSON/prefix/UTF16 oracle, every author record and neighbor, and expected manifest invalidation timestamp only. Two actual exits0. Independent02fbb3ae6d4520566a15d050e5762f8ade2a7dffb13adb77320e588acfc03846; original failures and native cache diagnostic limitation retained. This does not qualify full Stage08 or any full Mac row.
+
+Required namespace gate64/63/1 held at the unchanged Word predecessor predicate: composed514 bindings differ only for current index.html and ER C02 registry contract, neither yet overlaid by the current200-entry delta. Clean declaration04 admits only existing35 paths; append those TWO exact current hashes and refresh existing companions, preserving historical tuples and all verifier/negative contracts. No product runtime source edit.
+
+Direct owner request01a1c07a-d8e7-7381-b168-66082f5c4d15, confirmed01a1c07b-c798-75d0-b905-4d5a2cd332fc, official originals read: finish this active M25 full delivery first; then complete agreed P05 import/export (TXT, Markdown, normal project archive, DOCX; INT01–08 and accepted scope/limits/create-only/no-loss/refusals), reusing existing implementation/proofs and fixing only demonstrated gaps; then remaining V6/DNA5; common acceptance/all17 and final release packaging last. Intermediate actual builds/native/mandatory gates remain required per feature. This supersedes the older NEXT TWO before any product queue; the accepted honest --dry-run then brain:status deliveries remain after import/export and before the subsequent independent product contour. No P25/fullWord/Google/new-format/dependency/security expansion; Office/native PAUSED, Black Box after full Mac. All historical queue/pause notes below remain historical and do not override current direct resume/priority.

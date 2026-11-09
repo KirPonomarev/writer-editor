@@ -1,3 +1,19 @@
+# CURRENT — M25 native observed; exact certification closure pending
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_GLOBAL_COMPOSITE_MAC_20261109
+BINDING_BASE_SHA: 60e7d2e1c38760226f194666c551b6a38a38bb8f
+LATEST_OBSERVED_CANDIDATE: be05bba7cba33cd8ce2c96a711611f9d564e6974
+STATUS: REQUIRED_NAMESPACE_BINDING_REPAIR_PENDING_NO_PUSH_OR_PR
+
+Actual rebuilt own65 native proved bounded graph/list/filter/source behavior, unsaved text preservation during an owned write denial, restored ordinary Save and same-profile cold with two normal exits0. Independent artifact/source/profile readback02fbb3ae6d4520566a15d050e5762f8ade2a7dffb13adb77320e588acfc03846. All3 logical files stayed exact during unsaved navigation; after Save/cold the full expected doc-v2 value and protected author/neighbor bytes matched. Protected46 earlier profiles and18 bundles exact. Native cold cache warning and original R1 UI-tool default relaunch limitation remain explicit; no clean-cache or unrelated default-state preservation claim.
+
+The mandatory namespace invocation is64 tests/63 pass/1 fail, no skips. The unchanged composed514-pin predicate differs only for index.html and ER C02 registry contract: their current hashes were missing as two overrides in the current200-entry delta. Repair that declared companion only, retain all historical declarations/predicates/negative tests, then run all remaining gates, full delivery and exact merged verification. No product runtime change in this repair. Full Mac remains NOT_READY, UNFROZEN and all17 UNKNOWN.
+
+CURRENT_OWNER_ORDER: original direct request01a1c07a-d8e7-7381-b168-66082f5c4d15 and confirmation01a1c07b-c798-75d0-b905-4d5a2cd332fc independently read. Finish this M25 chain; FIRST NEXT complete agreed P05 import/export TXT/Markdown/normal project archive/DOCX and INT01–08 by mapping protected existing code/proofs and fixing real gaps. Then remaining V6/DNA5. Common full qualification and final release packaging follow full implementation; intermediate feature builds/native/gates continue. The older two CLI corrections remain accepted after import/export, before the next independent product contour. No new tracker/canon/scope or dependency; P25/fullWord/Google not authorized by this ordering. Office/native PAUSED, Black Box after full Mac; sole current executor, no new agent/chat/timer.
+
+--- Earlier factual checkpoints and their original errors/queues preserved byte exact below ---
+
 # CURRENT — Atlas global composite: explicit product route
 
 DOCUMENT_CLASS: FACTUAL_STATUS

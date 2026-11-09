@@ -3942,11 +3942,11 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "a0511c8f9022c3ee1ece5b04c4baea28515d134079b35b572ceb98cf5e56f412"
+      "sha256": "f05ff3498578926cb3c11a1b6a5c2f95d6d8316375df16e131ab29a95230ce5f"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "6913e76ddac51b11fb816f92dddf268bde922362c5ee8e849c7006efb2c08c52"
+      "sha256": "5198410a8159519558ff51ea3bd25317242794356681cad2e4d36bceab2c6bdb"
     },
     {
       "path": "docs/WORKLOG.md",
@@ -3982,7 +3982,7 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "0def2d31e90f3f12668762074a4fa091f03edb1808f6134606d8e93ff3a7c0bd"
+      "sha256": "523323a4fd52858870410d787b456ea9796901a749552e78366c77d9981e1bf5"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -4666,7 +4666,7 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-09--atlas-global-composite.md",
-      "sha256": "906085d7b04129a75000a87199762093b03455332eff00e43486b0a5b00b6b1a"
+      "sha256": "c6a99fa7f9decc98dba13f9ee3260348bc5539606d58c7c26796252905095d31"
     },
     {
       "path": "src/derived/atlas/deriveAtlasGlobalCompositeGraphNavigation.mjs",
@@ -4691,12 +4691,20 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     {
       "path": "test/unit/atlas-global-composite.test.js",
       "sha256": "6a99393f0ab0811794e5298b29676bff4ecc5f7657f74cd198ad0b3751120dfc"
+    },
+    {
+      "path": "src/renderer/index.html",
+      "sha256": "942e56ce96011eb61623b46ad3727eca27f17105bc8c2a85db32afd72646672a"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js",
+      "sha256": "4c93e52ee84bed9b971ef868488892cfa536684200d776e49d4aedfc4c069613"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "ac59b8e29a301b9f315b6302d0d15ffb45fe90798c2eeeab99f9eaf215d70f97"
+      "sha256": "b4c1ac13ffaa91cd36f27d2c5c4946c445610c476dbb581ab9d1b642912e1ddd"
     }
   ]
 });

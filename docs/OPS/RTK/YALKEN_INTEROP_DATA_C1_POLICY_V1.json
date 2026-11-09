@@ -2904,11 +2904,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "a0511c8f9022c3ee1ece5b04c4baea28515d134079b35b572ceb98cf5e56f412"
+        "sha256": "f05ff3498578926cb3c11a1b6a5c2f95d6d8316375df16e131ab29a95230ce5f"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "6913e76ddac51b11fb816f92dddf268bde922362c5ee8e849c7006efb2c08c52"
+        "sha256": "5198410a8159519558ff51ea3bd25317242794356681cad2e4d36bceab2c6bdb"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -4484,7 +4484,7 @@
       },
       {
         "path": "docs/tasks/2026-11-09--atlas-global-composite.md",
-        "sha256": "906085d7b04129a75000a87199762093b03455332eff00e43486b0a5b00b6b1a"
+        "sha256": "c6a99fa7f9decc98dba13f9ee3260348bc5539606d58c7c26796252905095d31"
       },
       {
         "path": "src/derived/atlas/deriveAtlasGlobalCompositeGraphNavigation.mjs",
