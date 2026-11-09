@@ -92,6 +92,7 @@ test('full ENV actual cancelled/applied map results do not invent authoring pend
     wordCommentDraft: null, wordCommentBusy: false, manuscriptDrafts: new Map(), notesMutationPending: false,
     storyDrafts: new Map(), storyMutationPending: false, metadataUpdateDebounceId: null, metadataUpdatePending: false,
     metadataUpdateInFlight: false, treeMutationPending: false, pendingRevisionBusy: false, pendingDocxImportAttempt: null,
+    pendingMarkdownImportAttempt: null,
     manualMapCommandDraft: null, manualMapDraftOwnership: 4, renderManualMapWorkbenchState: () => {},
     sceneLanguageAuthorDrafts: new Map(), ideaMeaningAuthorDrafts: new Map(),
   });
@@ -107,6 +108,14 @@ test('full ENV actual cancelled/applied map results do not invent authoring pend
   assert.equal(h.hasFullEnvironmentAuthoringPending(), false);
   h.wordCommentDraft = { text: 'Unrelated unsaved comment' }; assert.equal(h.hasFullEnvironmentAuthoringPending(), true);
   h.wordCommentDraft = null; h.manualMapCommandDraft = null; assert.equal(h.hasFullEnvironmentAuthoringPending(), false);
+  for (const phase of ['creating', 'opening']) {
+    h.pendingMarkdownImportAttempt = { phase };
+    assert.equal(h.hasFullEnvironmentAuthoringPending(), true, `Markdown ${phase} must veto environment publication`);
+  }
+  h.pendingMarkdownImportAttempt = { phase: 'previewing' };
+  assert.equal(h.hasFullEnvironmentAuthoringPending(), false, 'read-only preview is not retained authoring');
+  h.pendingMarkdownImportAttempt = null;
+  assert.equal(h.hasFullEnvironmentAuthoringPending(), false, 'completed Markdown action must release the veto');
 });
 
 test('full ENV actual Settings refresh invalidates stale projection before await, disables loading and refuses superseded publication', async () => {

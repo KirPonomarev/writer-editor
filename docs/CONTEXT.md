@@ -1,3 +1,13 @@
+# CURRENT — P05 ENV host repaired; exact companion refresh pending
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109
+STATUS: CURRENT_PROOF_BINDINGS_PENDING_NO_NATIVE_PUSH_OR_PR
+
+Clean-head declaration05 6c90a8332432bb4f52bd76a8c0148ee6858323d1fed9b3e5c1d9996ba1821e78 and preflight05 eeeaae314e34eb3576e206bf0cadf253e40356ac0bad720f3df92dc83050deaf admit exactly25 same-chain paths. Adjacent ENV/baseline78/77/1 rawe957841c is a finite-host missing pendingMarkdownImportAttempt global; the real renderer already defines it. Preserve the production veto and all original assertions, supply idle state and prove creating/opening veto versus preview/cleared. Full repaired78/78, zero skips/todo, raw394e899a9f24df77431f7be5ccef7bc4299a12947a59ebc13c21fae4669dbe61. Application source remains unchanged from clean bb0bc155, whose exact522 namespace pins, DATA post evaluation and719/719 affected proof33d3135f remain at that original identity. Refresh only current companion/witness hashes before remaining software, actual rebuilt eight-route native and normal delivery. Full Mac NOT_READY, UNFROZEN, all17 UNKNOWN; Word/native PAUSED and Black Box last.
+
+--- Earlier factual bytes and all original results preserved below ---
+
 # CURRENT — P05 proof repairs complete; current bindings and native pending
 
 DOCUMENT_CLASS: FACTUAL_STATUS

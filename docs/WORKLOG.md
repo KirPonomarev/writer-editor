@@ -1,3 +1,7 @@
+# 2026-11-10 — P05 adjacent ENV fixture qualification
+
+Source remains bb0bc155; preserve actual Markdown authoring veto and supply the finite ENV host's missing idle field. Original78/77/1 e957841c becomes78/78 394e899a with creating/opening/preview/cleared controls and all old assertions retained. Declaration/preflight05 prospectively adds that sole unit fixture,25 paths. Current companion refresh/native/full delivery remain pending; all earlier outputs stay at their exact identities.
+
 # 2026-11-10 — P05 exact proof and companion closure
 
 Clean-head phase03 declaration/preflight04 admits24 same-chain paths. Required inherited DOCX composer endpoint and X16 imported-binding oracle repairs pass35/35 with every original negative retained, plus actual runtime full-count and missing-import controls. Rawd44d047c; original broader714/707/7 and all red/setup failures retained. Markdown source61/61 remains unchanged. Refresh only exact existing machine companions and standing-authorized append-only witnesses; native/all8/CI/merge still pending. No new result, dependency, capability or infrastructure.

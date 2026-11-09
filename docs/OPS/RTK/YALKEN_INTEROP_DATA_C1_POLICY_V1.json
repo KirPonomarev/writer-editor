@@ -2911,15 +2911,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "69993b99808820ce48beb23d92ae886bf1e0eb9218cf659dd60276ea150ec605"
+        "sha256": "43aa469bb7bf2a74eb8a9a7a795c68da7cfe86ac11309319432fbc97c5f48a25"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "0269726dd61df64674bc1111321d6a0a2dde2094a7df8fc7a5b2dbff71ae1815"
+        "sha256": "2552c05da5248a826d1da7f48322929bb09c829aab292ee0659eae6c992ff3b6"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "00f017de4115ff764a804f4e7a5e6ece49386d15cc03079b0231a35563c55ec1"
+        "sha256": "a205f19cfad1f5cc7d8ea0b5300d017c753fd170dd554a4193a71e1f01f36649"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3459,7 +3459,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "215da4e03f5876fd2aab63f673a8f2a426f62617db577d1967e2a02329b9d029"
+        "sha256": "fde687190606170a97c0b0c355405d3a45c648705bb8d3cdc52da8adebed8e63"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4131,7 +4131,7 @@
       },
       {
         "path": "test/unit/environment-epochs-full-ui.test.js",
-        "sha256": "c0a7a42b6b9182d70b4ad905786d1af6f30f4e3cbaa5aa58d4ebc4c64f98087f"
+        "sha256": "56865638cb46a2152b1435296dd0e112c80043db0bcc65bbbbe77831f3d372d5"
       },
       {
         "path": "test/unit/sector-m-command-kernel-shell-action-adoption.test.js",
@@ -4523,7 +4523,7 @@
       },
       {
         "path": "docs/tasks/2026-11-09--p05-interchange-finite-mac.md",
-        "sha256": "a0e0a14109d3b59c26a48ef64efc7e5490c87a56a704433bd0418002da6e3401"
+        "sha256": "3042c4be09e3f973b1cb773faabd34504a0fa3dab4beb47e8aa17f4dcb5a5993"
       },
       {
         "path": "src/core/markdown-new-project-v1.mjs",
