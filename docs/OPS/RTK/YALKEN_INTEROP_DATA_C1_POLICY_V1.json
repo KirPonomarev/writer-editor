@@ -2904,11 +2904,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "926c76d2f95fbfdfedc22eb4664429087d2fd9bef44715df503387b559881411"
+        "sha256": "fcc8b8c21dc0f36f1ffd925c4e69bae1832ad555bc494b0895558601da530eb7"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "2f0756be64d8f6b5a94caa914d5776d98fcecd55593e2a5d1996b77d833fe98d"
+        "sha256": "fe1c1810724795e55cf6405928fbe659a9247d766cd768e05f58a00bef3a0dfd"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -3452,7 +3452,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "1098f74fe6c11a7c2791f3cb4054842cb1a9854ab8258b80b520d8ede937eed1"
+        "sha256": "180595924fd58775de4636728d48c3bcb68e5d54bf4bf22bfaebaeb90986e361"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4412,7 +4412,7 @@
       },
       {
         "path": "test/contracts/yalken-atlas-v5-final-audit-p0-04-design-os-binding.contract.test.js",
-        "sha256": "2c35c6f895d5b4217831d9d383f35dd3c9013d9436e2337486350f29c347c6b3"
+        "sha256": "372892c48585c63612922ecefe2ae624510aeec84655ef511dc6f89ebd53b907"
       },
       {
         "path": "test/unit/atlas-authored-association-applicability.test.js",
@@ -4484,7 +4484,7 @@
       },
       {
         "path": "docs/tasks/2026-11-09--atlas-global-composite.md",
-        "sha256": "a42c37f9d82477140edc00c781f165d5b2d9b00a83d6679424c604177106b618"
+        "sha256": "ed59fa81a29c651437555c1643c1a2f3cd023ce96f68a4892f459675956a55e2"
       },
       {
         "path": "src/derived/atlas/deriveAtlasGlobalCompositeGraphNavigation.mjs",

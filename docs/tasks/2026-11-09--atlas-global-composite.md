@@ -8,7 +8,7 @@ BINDING_BASE_SHA: 60e7d2e1c38760226f194666c551b6a38a38bb8f
 HEAD_SHA_AT_START: 60e7d2e1c38760226f194666c551b6a38a38bb8f
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/atlas-global-composite-20261109
-STATUS: CURRENT_PROFILE_FIXTURE_RECONCILIATION_PENDING
+STATUS: CURRENT_UI_CONTRACT_RECONCILIATION_PENDING
 DOCUMENT_CLASS: PROCESS
 CLAIM_BOUNDARY: Single bounded product integration; not Stage08 or Full Mac qualification.
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true POST_MERGE_EXACT_HEAD_REQUIRED=true
@@ -57,6 +57,8 @@ Existing E08 C01-C05 source modules already execute their original 21 cases with
 - test/contracts/rtk-word-scene-identity-main.contract.test.js
 - test/contracts/yalken-atlas-v5-e08-c04-trust-filters-batch-navigation-accessibility-parity.contract.test.js
 - test/contracts/yalken-atlas-v5-er-c02-single-query-registry-runtime-parity.contract.test.js
+- test/contracts/yalken-atlas-v5-er-c06-atlas-rail-responsive-accessibility.contract.test.js
+- test/contracts/yalken-atlas-v5-final-audit-p0-04-design-os-binding.contract.test.js
 - test/unit/atlas-authored-associations.test.js
 - test/unit/atlas-global-composite.test.js
 - test/unit/r24-wp307-writer-local-profile-integration.test.js
@@ -164,3 +166,7 @@ Direct owner request01a1c07a-d8e7-7381-b168-66082f5c4d15, confirmed01a1c07b-c798
 ### Inherited current-Main assertion correction
 
 At R3 namespace64/64 passed including immutable Git corruption controls, raw e686243508161965d4a15338cc4d59aaceed24e5e60b3c757cfc93c2292be74f. The next inherited authored-association group87/86/1 stops only because one real-current-Main assertion reused historical PROFILE=V13 after the command already APPLIED under V14. Retarget that ONE current assertion to V14; preserve the historical constant/factory behavior and every persisted-data/history/negative assertion. Fresh clean declaration05 admits36 exact paths before edit. Original failure bb0b8849b6dc6b04c90f65064f8185993c113591cdf11415e7c2c661a9e5004e remains. Product runtime inputs1495 unchanged; R3 bundle7252 entries matches R2, own66 fixture is prepared and retained without launch. Reconcile all cheap required controls before any further unchanged native rebuild or heavy wave. No CI/qualification waiver.
+
+### Current design binding contract reconciliation
+
+All24 frozen R4 cheap stages reached terminal atbf26e118:22 allowed outcomes and2 blocking stale composition counts, manifest16 vs15 and rail14 vs13. Exact base comparison retains every old fifteen manifest contribution and thirteen rail surface; only the admitted globalComposite is added. Clean declaration07 admits the two existing contract files only: retain every original assertion, require exact new counts plus the current read-only global tuple, hidden inactive tab/panel and shared refresh route. Whole focused contracts11/11, no skips or todo, rawf11316b6738b14ca22da69194f74f169a261ef71cddf8b65039aca3d74221b56. No product runtime input changed, no new file/test or default skip. Preserve original event101/100/1 and direct203/202/1 logs, all prior evidence and unlaunched own66. Refresh only existing current companions and technical witnesses, then current32 checks and exact native/full normal delivery; no release acceptance. Production audit0; full audit6 moderate development-tool findings is the existing advisory. Full Mac remains NOT_READY/UNFROZEN/all17 UNKNOWN; P05 next order unchanged.
