@@ -1,3 +1,21 @@
+# CURRENT HANDOFF — Atlas Continuity Ledger: saved revision freshness
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_CONTINUITY_SAVE_FRESHNESS_MAC_20261109
+BINDING_BASE_SHA: de084f8b014e5d5f5a4240a547f31a4c916dc709
+BRANCH: codex/atlas-continuity-save-freshness-20261109
+STATUS: FOCUSED_SOURCE_VERIFIED_REQUIRED_PROOFS_PENDING
+
+PR2215 is closed at exact merged de084f8b014e5d5f5a4240a547f31a4c916dc709; candidate a8e50a15406cbd5d01e875a7224335669590c0f8, same tested tree 6f86d39f479fb3001395a1b5632eea439d43c7d2. Candidate and main CI 20/20 each, exact merged local27, separately rebuilt own60 AUTHOR five and COLD with six unchanged files, two normal exits, final guardrails. Final report ATLAS_TEMPORAL_STORY_DAY_FINAL_REPORT_01.json SHA f8b8ead5909caca7b95c4359e226d3d4b737bbe8797dc02c7e5f8868f497a00f. Full Mac remains NOT_READY, all17 qualification rows UNKNOWN.
+
+Exact unchanged-source finite probe c12149badbe69a088ff4c4307f15553b83763b5acbe79d73c3460feb4787f5cb and independent actual native causal 542b12c91f9bef6108a7963e798de872a6c68996eb6d8105be5f7da6a4ec061a show one changed durable Save and one opted-in Pulse observation while the open Ledger remained at 03fd4bc3 with empty history. Explicit reload showed 201de01e and the same one row without a second write. Closed own61, prior own60 and original failure evidence are retained.
+
+Preflight 3bf595ecd6292407aa90e1185df09d0694714b535af90aeb505339f8ed7203f7 and task E0 50c3685b2db1595f9649ee60ea115132aa81abcfd77e6fdc466d122abe1560cf precede semantic changes. Prospective original-runtime RED 6d47b12c3b61e50da4b0d04fa7fff02f82331c18de7e54ec8bc2a1c7e3a77ee8: 35 of 43, eight missing-query failures. Same frozen 43/43 after one existing Ledger query at the current accepted generation; adjacent maintained 56/56 27fc33f3472907d55b6f655eea4c9e18e36cc8818211f7a52747f21fe10f2fac; normal renderer bundle f58ff638f0fe3e3393109d37a78ed586de099720a4d2efeadc5c7d06b62059dd. Explicit-open and current guards, other existing routes and Main/Core unchanged. This is source evidence, not candidate, native or release acceptance.
+
+NEXT: current source bindings, mandatory checks and exact rebuilt candidate and merged Save and cold proof in the same chain.
+
+--- Earlier factual entries remain byte exact below ---
+
 # CURRENT HANDOFF — Atlas Time numbered story days
 
 DOCUMENT_CLASS: FACTUAL_STATUS

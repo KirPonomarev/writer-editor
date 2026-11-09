@@ -85,3 +85,10 @@ Use AGENT_FINAL_REPORT_V1 with exact heads, bounded denominator, delivery outcom
 ## FAIL_PROTOCOL
 
 Retain original raw bytes and process exit; first distinguish the cause cheaply. Do not weaken checks, rebase silently, retag old evidence or repeat expensive steps without changed input or a new hypothesis.
+
+
+---
+
+TERMINAL_DELIVERY_STATUS: CLOSED_ON_EXACT_MAIN
+
+PR2215 is closed at exact merged de084f8b014e5d5f5a4240a547f31a4c916dc709; candidate a8e50a15406cbd5d01e875a7224335669590c0f8, same tested tree 6f86d39f479fb3001395a1b5632eea439d43c7d2. Candidate and main CI 20/20 each, exact merged local27, separately rebuilt own60 AUTHOR five and COLD with six unchanged files, two normal exits, final guardrails. Final report ATLAS_TEMPORAL_STORY_DAY_FINAL_REPORT_01.json SHA f8b8ead5909caca7b95c4359e226d3d4b737bbe8797dc02c7e5f8868f497a00f. Full Mac remains NOT_READY, all17 qualification rows UNKNOWN.

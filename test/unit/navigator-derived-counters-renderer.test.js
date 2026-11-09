@@ -199,3 +199,135 @@ test('failed current tree read remains truthful and stale failures cannot damage
     h.preserved();
   });
 });
+
+const ledgerSaveQueryId = 'query.atlasContinuityLedgerSurface';
+
+function savedLedgerProjection(source, pulseCount) {
+  return {
+    ok: true,
+    atlasContinuityLedgerSurface: {
+      state: 'ready',
+      projectId: 'project-a',
+      summary: { sourceHash: source },
+      wseRevisionTimeObject: { sourceRevision: source },
+      pulseClaim: { summary: { totalRows: pulseCount } },
+    },
+  };
+}
+
+async function savedOpenLedgerHarness() {
+  const h = await savedNavigatorHarness();
+  const publications = [], existingSceneRefreshes = [];
+  Object.assign(h.c, {
+    currentRightTab: 'atlas',
+    currentAtlasSurface: 'continuity',
+    currentTreeContentPublicationId: 'scene-publication',
+    atlasContinuityLedgerExplicitOpen: true,
+    atlasContinuityRequestEpoch: 0,
+    atlasPublicationEpoch: 1,
+    atlasQueryPublicationSequences: new Map(),
+    atlasCommandPublicationSequence: 0,
+    atlasJourneyDraftRevision: 0,
+    manualMapDraftRevision: 0,
+    manualMapDraftOwnership: null,
+    ATLAS_CONTINUITY_LEDGER_SURFACE_QUERY_ID: ledgerSaveQueryId,
+    atlasContinuityLedgerState: savedLedgerProjection('saved-initial', 0).atlasContinuityLedgerSurface,
+    refreshActiveAtlasSurface() { existingSceneRefreshes.push(h.c.currentAtlasSurface); },
+    renderAtlasContinuityLedgerState() {
+      const state = h.c.atlasContinuityLedgerState;
+      if (state.state === 'ready') publications.push({
+        source: state.summary.sourceHash,
+        wse: state.wseRevisionTimeObject.sourceRevision,
+        pulse: state.pulseClaim.summary.totalRows,
+      });
+    },
+  });
+  const source = read('src/renderer/editor.js');
+  vm.runInContext([
+    'captureAtlasPublication',
+    'beginAtlasQueryPublication',
+    'reviewSurfaceIsPlainObject',
+    'normalizeAtlasContinuityLedgerSurface',
+    'refreshAtlasContinuityLedgerSurface',
+  ].map(name => actualNavigatorFunction(source, name)).join('\n'), h.c);
+  return { ...h, publications, existingSceneRefreshes };
+}
+
+test('current durable Save refreshes already open Ledger from the existing query', async () => {
+  const h = await savedOpenLedgerHarness();
+  h.ack();
+  assert.deepEqual(h.requests.map(r => r.id), ['query.projectTree', ledgerSaveQueryId]);
+  assert.deepEqual(JSON.parse(JSON.stringify(h.requests[1].payload)), {
+    projectId: 'project-a', explicitOpen: true, rowLimit: 16,
+  });
+  h.requests[0].resolve(await h.projection());
+  h.requests[1].resolve(savedLedgerProjection('saved-current', 1));
+  await h.settle();
+  assert.deepEqual(h.publications, [{ source: 'saved-current', wse: 'saved-current', pulse: 1 }]);
+  assert.equal(h.c.localDirty, false);
+  assert.deepEqual(h.existingSceneRefreshes, []);
+  h.preserved();
+  h.ack();
+  assert.equal(h.requests.length, 2, 'a repeated accepted generation must not query Ledger again');
+});
+
+test('a Ledger query is not started by noncurrent saves or inactive views', async t => {
+  for (const [name, configure, send, tree] of [
+    ['stale', () => {}, h => h.ack(1), false],
+    ['future', () => {}, h => h.ack(3), false],
+    ['protected', () => {}, h => h.c.dirty({ state: true, ack: { kind: 'PROTECTED', savedGeneration: 2 } }), false],
+    ['no-op', c => { c.localDirty = false; c.lastAckedGeneration = 2; }, h => h.ack(), false],
+    ['hidden', c => { c.currentRightTab = 'history'; }, h => h.ack(), true],
+    ['closed', c => { c.atlasContinuityLedgerExplicitOpen = false; }, h => h.ack(), true],
+    ['another Atlas view', c => { c.currentAtlasSurface = 'temporal'; }, h => h.ack(), true],
+  ]) await t.test(name, async () => {
+    const h = await savedOpenLedgerHarness();
+    configure(h.c); send(h); await h.settle();
+    assert.deepEqual(h.requests.map(r => r.id), tree ? ['query.projectTree'] : []);
+    assert.equal(h.publications.length, 0);
+    if (name === 'closed') assert.equal(h.c.atlasContinuityLedgerExplicitOpen, false);
+    if (tree) { h.requests[0].resolve(await h.projection()); await h.settle(); }
+    h.preserved();
+  });
+});
+
+test('the same Save still refreshes the existing Atlas scene and journey routes', async t => {
+  for (const surface of ['currentScene', 'journey']) await t.test(surface, async () => {
+    const h = await savedOpenLedgerHarness();
+    h.c.currentAtlasSurface = surface; h.ack();
+    assert.deepEqual(h.existingSceneRefreshes, [surface]);
+    assert.deepEqual(h.requests.map(r => r.id), ['query.projectTree']);
+    h.requests[0].resolve(await h.projection()); await h.settle();
+    assert.equal(h.publications.length, 0);
+    h.preserved();
+  });
+});
+
+test('a late Ledger response cannot replace the newer accepted saved revision', async () => {
+  const h = await savedOpenLedgerHarness();
+  h.ack();
+  h.c.localEditGeneration = 3; h.c.localDirty = true; h.ack();
+  assert.deepEqual(h.requests.map(r => r.id), ['query.projectTree', ledgerSaveQueryId, 'query.projectTree', ledgerSaveQueryId]);
+  h.requests[2].resolve(await h.projection()); h.requests[3].resolve(savedLedgerProjection('saved-newer', 2)); await h.settle();
+  h.requests[0].resolve(await h.projection()); h.requests[1].resolve(savedLedgerProjection('saved-older', 1)); await h.settle();
+  assert.deepEqual(h.publications, [{ source: 'saved-newer', wse: 'saved-newer', pulse: 2 }]);
+  h.preserved();
+});
+
+test('an accepted Save result cannot publish Ledger after its view or source changes', async t => {
+  for (const [name, change] of [
+    ['project', c => { c.currentProjectId = 'project-b'; }],
+    ['scene', c => { c.currentDocumentId = 'scene-a'; }],
+    ['edit generation', c => { c.localEditGeneration++; c.localDirty = true; }],
+    ['active view', c => { c.currentAtlasSurface = 'temporal'; }],
+    ['explicit close', c => { c.atlasContinuityLedgerExplicitOpen = false; }],
+  ]) await t.test(name, async () => {
+    const h = await savedOpenLedgerHarness(); h.ack();
+    assert.deepEqual(h.requests.map(r => r.id), ['query.projectTree', ledgerSaveQueryId]);
+    change(h.c);
+    h.requests[1].resolve(savedLedgerProjection('saved-stale', 1)); await h.settle();
+    assert.deepEqual(h.publications, []);
+    assert.equal(h.c.atlasContinuityLedgerState.summary.sourceHash, 'saved-initial');
+    h.requests[0].resolve(await h.projection()); await h.settle();
+  });
+});
