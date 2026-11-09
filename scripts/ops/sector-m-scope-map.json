@@ -593,6 +593,7 @@
       "test/unit/atlas-temporal-author-input.test.js",
       "docs/tasks/2026-11-07--atlas-temporal-range-display.md",
       "docs/tasks/2026-11-08--atlas-temporal-coordinate.md",
+      "docs/tasks/2026-11-08--atlas-temporal-range-authoring.md",
       "src/derived/atlas/deriveAtlasTemporalLayout.mjs"
     ]
   },

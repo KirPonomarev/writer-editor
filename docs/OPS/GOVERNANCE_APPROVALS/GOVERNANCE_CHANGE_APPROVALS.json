@@ -32711,7 +32711,78 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
       "approvedAtUtc": "2026-11-08T17:28:43.451Z",
       "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
-    }],
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "f10b5559f40c3fb6d28822aefffe630cc3f48dfff502fbedbf0deb7f7fb9e0e2",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "d0a14ed8a875b0d7780db4527193be962a794737c48466ac02ab619daf4b7330",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "c77b81cac48029a1dd829d4e5ec4a45265ea0c3471c6719c9708309020bb0eaa",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "3b78baad34550e9da0b85d83f80a7407d598abec6e2dbd2a71407980912d804e",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "ac7b6ec97875e870e2239d61f7bf59359cd3cbbd70caa3109896f6888283c0b6",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "5f929d9256f366d95b7590334c0003520c335c55fc9309565a1de7b5a71b9640",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "31f549cc19707d79fda4b05f2a139108ae7b2d72b10a0085746d2e4aec2b5d4a",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "734c1dd3f77dad53fdce2a544f20663414cabff7a44c73110c4cdc0b57f2a5e3",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
+      "sha256": "d8e19c31cc275898188f6c56f173ff4d8316ca19dabbabe43c657d5aacef602d",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "994ae7631a008dab05edd795bb47317112b3f4a449e60e4c9a768dfbcf7044ae",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    }
+  ],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
     "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",

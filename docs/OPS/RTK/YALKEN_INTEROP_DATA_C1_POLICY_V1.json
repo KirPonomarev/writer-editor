@@ -973,7 +973,8 @@
     "src/derived/atlas/deriveAtlasTemporalLayout.mjs",
     "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
     "test/contracts/rtk-lab01-build-bound-profiles.contract.test.js",
-    "docs/tasks/2026-11-08--atlas-temporal-coordinate.md"
+    "docs/tasks/2026-11-08--atlas-temporal-coordinate.md",
+    "docs/tasks/2026-11-08--atlas-temporal-range-authoring.md"
   ],
   "protectedFiles": [
     {
@@ -1214,7 +1215,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "c3f39abbb4021f84f72eb1b92e0c351895e3ca27397d5ff7a593e88d42505e33"
+        "sha256": "45f55fef5694b3496413adf23b0f8749583bb278dd5692d2c41938041e7a45eb"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1378,7 +1379,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "97b0f40dd058ce84e3ef0888efd8ce8a0104ac2521e11229c512d3aae677ec4a"
+        "sha256": "3cf76ea3eb889aacecb06e13f643a1567346a725f7dbbfe725a8876db2ccaf90"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2894,11 +2895,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "b68f8b436c2efc473d36045ceea3b6574d2c20d7aabca7562975e998f2ac266f"
+        "sha256": "dd680e266e1aaccbccb7c01194f2dd9c532cc07710e4a033ceaf1b9a9ab19316"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "7637dd6b31e8f860d849eec7e5e4b415c074facf8d08e8f88887147a407f4c65"
+        "sha256": "35e91a5bf083f1736100221f4c48fcb8ee3380341eb74c589eb6c166e1d944c1"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -3442,7 +3443,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "463820608c643eb5759a23941eb10910811540656a3a344681ea537420746816"
+        "sha256": "d0a14ed8a875b0d7780db4527193be962a794737c48466ac02ab619daf4b7330"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3574,7 +3575,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "ecaa82f3598cc3d482a568c80c3d16e084c302876710f9e003927e82816ce577"
+        "sha256": "734c1dd3f77dad53fdce2a544f20663414cabff7a44c73110c4cdc0b57f2a5e3"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3782,7 +3783,7 @@
       },
       {
         "path": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
-        "sha256": "e57fd531cecc5f7214f2d2d0e3840ab2441a1ac589e545f82ae2a7d7408c2926"
+        "sha256": "d8e19c31cc275898188f6c56f173ff4d8316ca19dabbabe43c657d5aacef602d"
       },
       {
         "path": "docs/tasks/2026-10-24--atlas-temporal-authoring.md",
@@ -4442,7 +4443,7 @@
       },
       {
         "path": "test/unit/atlas-temporal-author-input.test.js",
-        "sha256": "5f709063f5202c288b30c112c683bcda4a87a6ad069193ab49468e621eeb596c"
+        "sha256": "6d24382713926e9facae2fc08987e866e0393f1cf21300e1b074af1e2cfce599"
       },
       {
         "path": "docs/tasks/2026-11-07--atlas-temporal-range-display.md",
@@ -4458,7 +4459,11 @@
       },
       {
         "path": "docs/tasks/2026-11-08--atlas-temporal-coordinate.md",
-        "sha256": "dc6be6b471910fdc54158393df4e6b06b01955099f12d2666ae2a1400622b2b4"
+        "sha256": "6e4f8eeb6148e8eb5397ba603b10a9fe9f0c3b5f8c2164ab0ad58675ca6a522d"
+      },
+      {
+        "path": "docs/tasks/2026-11-08--atlas-temporal-range-authoring.md",
+        "sha256": "c293fba89837813782252a28427037088aeb34c77b28540f89f67b9a3ba9f037"
       }
     ],
     "followupRepair": {

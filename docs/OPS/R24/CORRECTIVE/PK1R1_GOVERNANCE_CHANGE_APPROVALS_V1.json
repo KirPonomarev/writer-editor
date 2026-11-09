@@ -2960,4 +2960,68 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_COORDINATE_MAC_20261108",
       "approvedAtUtc": "2026-11-08T17:28:43.451Z",
       "rationale": "Standing owner development and both-registry authority. Same19-path Atlas Time chain: admit only its exact task document in Sector M DONE after the full baseline exposed that missing path. Other map rules, all original test assertions, all product/runtime bytes, memberships and frozen M20 bytes remain unchanged. Only three necessary current-binding targets changed. Old failures and proofs retain their original identities; no release qualification claim."
-    }],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "f10b5559f40c3fb6d28822aefffe630cc3f48dfff502fbedbf0deb7f7fb9e0e2",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "d0a14ed8a875b0d7780db4527193be962a794737c48466ac02ab619daf4b7330",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "c77b81cac48029a1dd829d4e5ec4a45265ea0c3471c6719c9708309020bb0eaa",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "3b78baad34550e9da0b85d83f80a7407d598abec6e2dbd2a71407980912d804e",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "ac7b6ec97875e870e2239d61f7bf59359cd3cbbd70caa3109896f6888283c0b6",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "5f929d9256f366d95b7590334c0003520c335c55fc9309565a1de7b5a71b9640",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "31f549cc19707d79fda4b05f2a139108ae7b2d72b10a0085746d2e4aec2b5d4a",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "734c1dd3f77dad53fdce2a544f20663414cabff7a44c73110c4cdc0b57f2a5e3",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "test/contracts/yalken-atlas-v5-e06-c06-atlas-temporal-layout-time-slider-surface.contract.test.js",
+      "sha256": "d8e19c31cc275898188f6c56f173ff4d8316ca19dabbabe43c657d5aacef602d",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
+      "approvedAtUtc": "2026-11-08T20:58:52.094Z",
+      "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    }
+  ],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}
