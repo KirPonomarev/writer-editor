@@ -241,3 +241,38 @@ test('composite presentation: mismatched project, malformed positions, excessive
     const bad = structuredClone(state); change(bad); assert.equal(validate(bad, f.projectId), null);
   }
 });
+
+
+function runActualEarlyFlags(profileId) {
+  const source = require('node:fs').readFileSync(require('node:path').join(__dirname, '../../src/renderer/flags.js'), 'utf8');
+  const elements = ['[data-mode="plan"]', '[data-mode="review"]', '[data-right-tab="comments"]',
+    '[data-right-tab="atlas"]', '[data-toolbar-item-key="review-comment"]', '[data-atlas-reachability-opener]']
+    .map(selector => ({ selector, hidden: false, disabled: false, tabIndex: 0,
+      setAttribute() {}, style: { setProperty() {} } }));
+  const callbacks = [], document = { body: { dataset: {} },
+    querySelectorAll: selectors => elements.filter(element => selectors.split(',').includes(element.selector)),
+    addEventListener: (name, run) => { assert.equal(name, 'DOMContentLoaded'); callbacks.push(run); } };
+  const window = { location: { search: '?USE_TIPTAP=1&PRODUCT_PROFILE=' + encodeURIComponent(profileId) } };
+  require('node:vm').runInNewContext(source, { window, document, URLSearchParams, console: { log() {} } });
+  callbacks.forEach(run => run());
+  return { window, document, elements };
+}
+test('early renderer actual flags retain exact V14 and inherited Atlas presentation cut', () => {
+  for (const profileId of [V14, 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13']) {
+    const result = runActualEarlyFlags(profileId);
+    assert.equal(result.window.__PRODUCT_PROFILE, profileId);
+    assert.equal(result.document.body.dataset.productProfile, profileId);
+    assert.equal(result.elements.find(element => element.selector === '[data-right-tab="atlas"]').hidden, false);
+    assert.ok(result.elements.filter(element => element.selector !== '[data-right-tab="atlas"]').every(element => element.hidden && element.disabled));
+  }
+});
+test('early renderer actual flags deny forged V14 identities and retain historical V1 cut', () => {
+  for (const profileId of [V14 + '-forged', 'writer_local_atlas_global_composite_v14', '', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V15']) {
+    const result = runActualEarlyFlags(profileId);
+    assert.equal(result.window.__PRODUCT_PROFILE, '');
+    assert.equal(result.document.body.dataset.productProfile, undefined);
+  }
+  const old = runActualEarlyFlags('WRITER_LOCAL_V1');
+  assert.equal(old.window.__PRODUCT_PROFILE, 'WRITER_LOCAL_V1');
+  assert.ok(old.elements.every(element => element.hidden && element.disabled));
+});

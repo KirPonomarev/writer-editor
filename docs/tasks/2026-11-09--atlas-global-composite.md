@@ -50,6 +50,7 @@ Existing E08 C01-C05 source modules already execute their original 21 cases with
 - src/renderer/design-os/atlasSlotCatalog.v1.mjs
 - src/renderer/editor.bundle.js
 - src/renderer/editor.js
+- src/renderer/flags.js
 - src/renderer/index.html
 - src/shared/workspaceQueryRegistry.cjs
 - test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js
@@ -146,3 +147,7 @@ RESUMED: Direct owner goal status ACTIVE after the reboot pause. Fresh registry/
 ### Current V2 selector admission
 
 Same open M25 chain continues at unaccepted source checkpoint f7000f225d4c742767562773a61a6352b11c7542. Clean preflight7835e9d479bac434eb9f82d365dcbd34e47b313c3d81a2a999b82a60334461cb admits exactly34 paths, adding only existing release-candidate.mjs to reconcile actual V14 with current V2. Original base60e7d2e1c38760226f194666c551b6a38a38bb8f remains the delivery base; no rebase or push. Historical V1/V13, all17 UNKNOWN, UNFROZEN and release-denial predicates remain protected.
+
+### Early actual native correction
+
+Exact d9f4251a4a0211820ca772fe33b72c58b3fe8b40 ASAR dc17bc2caccbb68f26673b7f47920477e5d8d37ecf89bc1e0241de87ee70754d built successfully; all1486 packaged leaves and7252 bundle entries independently reread. Ordinary own64 UI exposed missing Graph because flags.js rejects exact V14; no typing or Save, initial logical files3 of3 byte exact, ordinary exit0. Fresh clean declaration03 admits35 paths adding only flags.js; same original delivery base60e7d2e1c38760226f194666c551b6a38a38bb8f. Retain original native failure and UI-tool default relaunch incident separately; no native PASS. Rebuild required after the demonstrated fix.

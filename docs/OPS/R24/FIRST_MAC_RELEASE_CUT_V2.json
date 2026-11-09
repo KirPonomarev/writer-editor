@@ -1145,7 +1145,7 @@
     "src/product/stage10MainPersistenceAdapter.mjs": "bffab1daf99425322d83169fad426e22bd1ed2c6584b96aadda63e7c3978ffc6",
     "src/renderer/commands/projectCommands.mjs": "cff4f777d955be3a4af8a794c8dc00ceb762cc285259c58bd64470d67d276cc5",
     "src/renderer/design-os/designOsFormConfiguration.mjs": "774771d53827f04f6262441eb234b451aad244238a8bdaf67ffe4f493b771273",
-    "src/renderer/flags.js": "7c0615006baa27997b47c58131206380a29550b34c4c9257992b9d9bd0e930ae",
+    "src/renderer/flags.js": "a3776494de2fea7a5d026b2028783bae419c80f30c6e2d9840d15bd471e0a5e5",
     "src/renderer/index.html": "942e56ce96011eb61623b46ad3727eca27f17105bc8c2a85db32afd72646672a",
     "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json": "4819f1354c2e7f6f4f04b6444341ceb632fe521ffde719fb56766c7644f1ee7f",
     "src/shared/productCommandRegistry.cjs": "816e64bc7111992e89c2402e07872136a17e2000a13e5925887429c33f3f2d8d",
