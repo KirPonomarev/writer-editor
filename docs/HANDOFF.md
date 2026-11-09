@@ -1,3 +1,19 @@
+# CURRENT HANDOFF — Atlas Time numbered story days
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_TEMPORAL_STORY_DAY_MAC_20261109
+BASE: 12d719ce735cfdd15c2c2d853edb7a70ab727545
+BRANCH: codex/atlas-temporal-story-day-20261109
+STATUS: FOCUSED_SOURCE_VERIFIED_REQUIRED_PROOFS_PENDING
+
+M22 PR2214 closed at exact merged 12d719ce735cfdd15c2c2d853edb7a70ab727545; candidate 551e635f69dbc4cc7c15c2a9517899e7c4a079c7, tested tree 2202994225543eae98bd9713920756ba8c6d5423. Candidate/main required CI 20/20 each, merged local27 56034ed0721dd1ac1eafb92ac0739c85b29b4a7b32e93f089423d164f7886826, separate rebuilt own58 AUTHOR 9 and COLD with all six physical files literal, two real exits0; independent native 5e1c1cb2359162ec0c7b94e08d84007f7ff4bd1357671d057a99a6b3c37be552. Merged CI cae69030780fa90c760bd09caa067da536183c48a04906e7545019300b6eb3f3, guardrails a3e4d1baefba643c00a2fd9f39506dfec671ee01505ab75a6a4dc8a128c5916a. Final19 report ATLAS_TEMPORAL_RANGE_AUTHORING_FINAL_REPORT_01.json SHA2cc2328332837190014d60637f70afbf9a5338b4a77e2e4351883d4516dd6298. This is bounded Atlas Time authoring; full Mac NOT_READY, all17 UNKNOWN.
+
+Read-only production/Core discriminator c10ba6a13d21fdd1b299570bda78034bbc055cdb907b8075447e804067c81d9a at exact base confirms the next bounded Stage06 gap: a story date 0 without a calendar refuses; with a calendar it is literal calendarDate, while existing Core ordinalDay 0 and -2 produce the story time axis. Original oracle refusal cce86fed21e1c026b46d5787c837eb89e18a3ca0c45ed778991325b1a3a41be0 retained. Fresh declaration 7d5fd1c1c393aa4486f1148680eb82f642949dda3944038c031d61dd7fd30c06, preflight 5681b0f27da5f21e6bd9274f3decf6248736fdca02e70db25a4cb6e1f40424ba, E0 d3b977492c8945f69797db13df193d5d2d621017c8896a44c2ab7e95bcd63c87. Source-level numbered story choice and separate drafts are implemented in the existing Time form. Original corrected RED 3d18a18d287f64bbc232099ac79485f7863ccc8f3720dfdca9df08a65a2391a2; same frozen expanded GREEN be73354780a20beccd5948f35d91a9b557be52764cb9d2d1b804fcc2fc4220b8 with 65 of 65 and no skips or todo, actual Main five of five f78429bf312723814da368d5315f8beec1bbbf0176400117182b56d5806d3759, regenerated bundle 018f14522294d63ee1c58994fe55a6aa657ca0051950385f43fb8c9b089f0ad6. Native and final delivery pending.
+
+NEXT: finish exact current bindings and validate separately rebuilt actual candidate and merged apps with the same frozen oracle, alongside required gates and normal delivery. No next write contour until closure.
+
+--- Earlier handoffs below are preserved as historical ---
+
 # CURRENT HANDOFF — Atlas Time explicit range authoring
 
 DOCUMENT_CLASS: FACTUAL_STATUS

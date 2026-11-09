@@ -32781,6 +32781,69 @@
       "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108",
       "approvedAtUtc": "2026-11-08T20:58:52.094Z",
       "rationale": "Standing direct-owner autonomous development and future necessary both-registry authority. Same18-path explicit Atlas Time range-authoring delivery. Existing Core/Main/command/security semantics, original frozen assertions, protected profiles and all historical evidence remain unchanged. Exact current technical companions and exact task scope entry only; no verifier weakening or release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "f7e0565da5fd79d28dd5ced00a62d2e4efc263ae98797acb7ec0aa5fb7df7ead",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_STORY_DAY_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T01:35:33.423Z",
+      "rationale": "Standing direct owner authorization for autonomous V6/DNA5 development and future exact entries in both registries. Same bounded Atlas Time numbered story day delivery. Exact current technical paths and task scope; prior entries, source safety and gate semantics preserved. No release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "46f8eb6e9841a30d5b57404b5dab0a8438e07e01ce62e697de5a353e57fcdfb0",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_STORY_DAY_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T01:35:33.423Z",
+      "rationale": "Standing direct owner authorization for autonomous V6/DNA5 development and future exact entries in both registries. Same bounded Atlas Time numbered story day delivery. Exact current technical paths and task scope; prior entries, source safety and gate semantics preserved. No release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "6337b6382837d176a1bec1fe80f4f0e692f50d2bd4fa8b356a1013f43a4186bb",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_STORY_DAY_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T01:35:33.423Z",
+      "rationale": "Standing direct owner authorization for autonomous V6/DNA5 development and future exact entries in both registries. Same bounded Atlas Time numbered story day delivery. Exact current technical paths and task scope; prior entries, source safety and gate semantics preserved. No release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "049afe18501d160e0117718bcf1ac427893c719426bc02d576854cb0a6140276",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_STORY_DAY_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T01:35:33.423Z",
+      "rationale": "Standing direct owner authorization for autonomous V6/DNA5 development and future exact entries in both registries. Same bounded Atlas Time numbered story day delivery. Exact current technical paths and task scope; prior entries, source safety and gate semantics preserved. No release qualification."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "0663be4c656022d4ea5fd5bc4df51703154b2d7a31db8bbdaad2b35de9a3e0cd",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_STORY_DAY_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T01:35:33.423Z",
+      "rationale": "Standing direct owner authorization for autonomous V6/DNA5 development and future exact entries in both registries. Same bounded Atlas Time numbered story day delivery. Exact current technical paths and task scope; prior entries, source safety and gate semantics preserved. No release qualification."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "5f69320c7c5b8adc11452da5c2960f552b0d40a1e2857549c2d1e4f42f851633",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_STORY_DAY_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T01:35:33.423Z",
+      "rationale": "Standing direct owner authorization for autonomous V6/DNA5 development and future exact entries in both registries. Same bounded Atlas Time numbered story day delivery. Exact current technical paths and task scope; prior entries, source safety and gate semantics preserved. No release qualification."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "a1452178fcc807a621897083e23059d19834e8823ad90d1304b28f011301726d",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_STORY_DAY_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T01:35:33.423Z",
+      "rationale": "Standing direct owner authorization for autonomous V6/DNA5 development and future exact entries in both registries. Same bounded Atlas Time numbered story day delivery. Exact current technical paths and task scope; prior entries, source safety and gate semantics preserved. No release qualification."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "f2831e76853e53fb24aae02ae25a431a93191efc9158332b684e5e4d220d68f7",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_STORY_DAY_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T01:35:33.423Z",
+      "rationale": "Standing direct owner authorization for autonomous V6/DNA5 development and future exact entries in both registries. Same bounded Atlas Time numbered story day delivery. Exact current technical paths and task scope; prior entries, source safety and gate semantics preserved. No release qualification."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "bf8534c686dd16bdc468c0a167815f6f58be6d9c596cce1121b509a8f5c18c07",
+      "approvedBy": "owner-delegated-codex:YALKEN_ATLAS_TEMPORAL_STORY_DAY_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T01:35:33.423Z",
+      "rationale": "Standing direct owner authorization for autonomous V6/DNA5 development and future exact entries in both registries. Same bounded Atlas Time numbered story day delivery. Exact current technical paths and task scope; prior entries, source safety and gate semantics preserved. No release qualification."
     }
   ],
   "evidenceStampIds": [
