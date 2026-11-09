@@ -458,7 +458,10 @@ test('DOCX import safe create command surface: contour section does not reparse 
 
 function readSourceForComposer() {
   const editor = fs.readFileSync(path.join(REPO_ROOT, 'src/renderer/editor.js'), 'utf8');
-  return editor.slice(editor.indexOf('function composeDocumentContent()'), editor.indexOf('function composeEditorSnapshot()'));
+  const start = editor.indexOf('function composeDocumentContent()');
+  const end = editor.indexOf('function composeEditorSnapshot(', start);
+  assert.ok(start >= 0 && end > start, 'extract only the current production composer, regardless of snapshot parameters');
+  return editor.slice(start, end);
 }
 
 async function acknowledgedImportHarness(t, options = {}) {

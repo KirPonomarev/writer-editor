@@ -1,3 +1,7 @@
+# 2026-11-10 — P05 exact proof and companion closure
+
+Clean-head phase03 declaration/preflight04 admits24 same-chain paths. Required inherited DOCX composer endpoint and X16 imported-binding oracle repairs pass35/35 with every original negative retained, plus actual runtime full-count and missing-import controls. Rawd44d047c; original broader714/707/7 and all red/setup failures retained. Markdown source61/61 remains unchanged. Refresh only exact existing machine companions and standing-authorized append-only witnesses; native/all8/CI/merge still pending. No new result, dependency, capability or infrastructure.
+
 # 2026-11-09 — P05 Markdown new-project source checkpoint
 
 Admitted exact phase02 correction: real Markdown preview reference -> fresh manifest-last project -> separate protected open, shared existing DOCX publication body, old buffers/legacy APIs preserved. Strict UTF8 refusal follows its own retained counterexample. Focused61/61 no skips receipt68c90dfc; broader714/707/7 retains a dirty-worktree check, demonstrated inherited DOCX composer extractor and X16 imported-binding parser failures. Current metadata pins also need normal refresh. No native, push, PR, CI, merge or P05/full Mac acceptance yet. Preserve source WIP before clean-head prospective proof/companion amendment; all prior original bytes/errors/profiles remain.

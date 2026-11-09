@@ -3,7 +3,7 @@
 TASK_ID: YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109
 TYPE: CORE
 DOCUMENT_CLASS: PROCESS
-STATUS: PHASE02_SOURCE_IMPLEMENTED_PROOFS_AND_NATIVE_PENDING
+STATUS: CURRENT_BINDING_CLOSURE_PENDING_ACTUAL_NATIVE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
 ACTIVE_EXECUTION_CANON: v3.13a-final
@@ -41,6 +41,18 @@ Phase01 diff budget: task at most180 lines, each factual prefix at most35lines a
 - test/contracts/p05-markdown-new-project.contract.test.js
 - test/contracts/revision-bridge-markdown-file-authority-command-surface.contract.test.js
 - test/unit/markdown-import-product-parity-ui-flow.test.js
+- test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js
+- scripts/ops/x16-ws02-export-markdown-mindmap-bridge-state.mjs
+- test/contracts/x16-ws02-export-markdown-mindmap-bridge.contract.test.js
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+- docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json
+- docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/r24/corrective/interop-current-certification-deltas.mjs
+- docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
 
 ### Phase02 prospective amendment
 
@@ -58,9 +70,11 @@ Phase02 diff budget: at most1500 non-generated changed lines across the exact al
 
 Phase02 observed result: focused61/61 without skips/todo, receipt68c90dfcf709180c5c810880bd3b91326a3ba065fe009bf4373f9618aa487caa. Raw broader44-file714/707/7 in1bc2c72205110c3673df1b5326d14d0b360cac3e4f288c602175826daaa26ccf is not green. Exact unchanged-source cause610abbe8ffdff735163fc7cfbe6160a2824408dde6402fb2db8383d421ebbc71 demonstrates an obsolete DOCX composer extraction endpoint and unbound X16 imported capability constant; the remaining scope assertion requires clean checkout. Existing complete source pins also reject current WIP as retained in3892ee32. A normal unaccepted checkpoint must precede prospective clean-head admission of those two exact proof repairs and required metadata/witness companions. No old assertion, production capability, frozen carrier or oracle is removed. The invalid-UTF8 counterexample1f0c06fb635c407aa451e582fc7a63ee006ba7b85aa3cc17d59b7f198f2cba4a precedes strict source decoding; valid BOM/CRLF/CR and literal Unicode/rich IR controls pass. The four-format/eight-direction actual native denominator remains pending.
 
+Phase03 is prospectively admitted before its first write by declaration04 fd141b05a930f3891b85f8ffc5a1ffc37e833da36894e3e4c9b4256b120947d9 and clean-head preflight04 273ef1f4945a5101be141b0082474beb568285a519f99056af13ac61075508d4 exit0 at normal unaccepted source checkpoint0e926e944f206c97a4fcb28eea3f635c917ab5ad. Exactly24 allowlisted paths, same P05 outcome/rollback/delivery base. Both demonstrated proof files are REQUIRED in the existing inventory. Correct the DOCX fixture endpoint with explicit extraction bounds and unchanged original ACK assertions; give only X16 WS02 its same-repository actual imported capability scope, fail closed on unavailable import and compare full binding count to the real ESM producer. Preserve every stage/derived/capability/advisory negative. No other X16 script, capability registry, frozen source or export dirty-status test changes. Append a distinct current P05 certification delta bound to the original delivery base/tree, retaining all prior literal declarations/selections. Use the existing pinned current-bindings finalizer for exactly seven derived companions with compact preimages and durable external journal, then append standing-authorized current technical witnesses to both registries with all old bytes/entries intact. No authority or native/release acceptance comes from these digests. Phase03 factual-prefix budget is60 lines each and WORKLOG25, with every pre-existing byte preserved. Manual non-generated source/test/docs budget remains1600 changed lines; deterministic bundle, inventory/claim bindings and data-only certification literals are separately machine-generated. Native/build admission and all required gates remain mandatory.
+
 ## DENYLIST
 
-Every unlisted repository path, including scripts, OPS/governance, dependencies, lockfiles, workflows, renderer HTML/styles and legacy parser/safeCreate writers. The phase02 allowlist supersedes phase01 source exclusion only after the successful prospective preflight stated above. No old WP700 through709 reopening from narrative PENDING, new tracker/registry/framework, new format/provider/merge/transport, UI redesign, heap/timeout increase, weakened test, default private profile, Word/native, Google, signing/notary/public distribution, Black Box, reset/stash/clean/rebase/force push or deletion of the project. Preserve all original failures, controls, historical profiles and frozen bytes.
+Every unlisted repository path, including other scripts/OPS, dependencies, lockfiles, workflows, renderer HTML/styles and legacy parser/safeCreate writers. The prospective phase02/03 allowlists supersede their prior exclusions only after the successful clean-head preflights stated above. No old WP700 through709 reopening from narrative PENDING, new tracker/registry/framework, new format/provider/merge/transport, UI redesign, heap/timeout increase, weakened test, default private profile, Word/native, Google, signing/notary/public distribution, Black Box, reset/stash/clean/rebase/force push or deletion of the project. Preserve all original failures, controls, historical profiles and frozen bytes.
 
 ## CONTRACT / SHAPES
 

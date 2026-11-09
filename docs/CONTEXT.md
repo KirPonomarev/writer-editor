@@ -1,3 +1,16 @@
+# CURRENT — P05 proof repairs complete; current bindings and native pending
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109
+CLEAN_PHASE03_BASE: 0e926e944f206c97a4fcb28eea3f635c917ab5ad
+STATUS: PROOF_REPAIRS_VERIFIED_UNACCEPTED_NO_PUSH_PR_OR_NATIVE
+
+Prospective declaration04 fd141b05a930f3891b85f8ffc5a1ffc37e833da36894e3e4c9b4256b120947d9 and clean preflight04 273ef1f4945a5101be141b0082474beb568285a519f99056af13ac61075508d4 admit exactly24 paths in the same P05 delivery. The current required DOCX ACK fixture now extracts only the unchanged composer with explicit valid endpoint bounds. X16 WS02 resolves the actual pure imported product capability binding from the same repository and fails closed when unavailable; full count agrees with the independent real ESM producer. All original ACK receipt/stale/content/equivalence and X16 stage/derived/capability/advisory negative assertions remain. Full repaired35/35, no skips/todo, rawd44d047c9d66afcc1e0445d341fa549cd20fdc5432fa670c2bf4ccfc0eee14ee; original X16 red59a611c2 and inherited causal610abbe8 remain. No capability registry, composer, other X16 evaluator or historical dirty-status contract changed. Markdown source remains checkpoint0e926e94 with focused61/61 and retained original broader714/707/7.
+
+NEXT: finish the exact existing current-binding finalizer and append-only standing-authorized technical witnesses, preserving all historical declarations/rows and source preimages. Then normal clean checkpoint, current required software, exact rebuilt actual eight-route native, normal GitHub delivery and exact merged verification. No P05/all8/full Mac acceptance from hash refresh or process exit alone. Full Mac NOT_READY, UNFROZEN, all17 UNKNOWN; Word/native PAUSED, Black Box last; sole executor.
+
+--- Earlier checkpoints and factual bodies preserved byte exact below ---
+
 # CURRENT — P05 Markdown new-project correction; qualification pending
 
 DOCUMENT_CLASS: FACTUAL_STATUS
