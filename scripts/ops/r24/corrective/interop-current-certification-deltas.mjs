@@ -3942,11 +3942,11 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "6067e510f294c7fe7ed866dd23f64c32d5e7911163c23ecd71ac0dc365f80454"
+      "sha256": "611062654744dd5084f0faa37571613a60c1b02d261506598c63f1ddd3604793"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "28f905fb5812f4e8bea47aefbff5b66cc1790cdebd8f65f5604acb73cc65dd2c"
+      "sha256": "c0b1c990c11ec8981a43e329f816835caf3523b705b6f9ec05dd6bd77b3dd3cb"
     },
     {
       "path": "docs/WORKLOG.md",
@@ -3982,11 +3982,11 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "52b6f75a2af5250d54255039dfc8ae75dc9d837ceb5a7b614d72d7db8ac9f101"
+      "sha256": "d3741161acb2e593c0f5a7f363aa2dfdc5775aaa7c48ee628282a3397f60ce03"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "180595924fd58775de4636728d48c3bcb68e5d54bf4bf22bfaebaeb90986e361"
+      "sha256": "daeaafc6998b92d11af0897018f432ad27a9462f145aaa20afa1da9c40ada6da"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -4146,7 +4146,7 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "db2486f70332a152a6659a403fc5f8d7c646c32b956b2d413c41e17f2499c605"
+      "sha256": "cb5debdb358544f6ad7f3935477e1899e64632a0478cb4142ab2e21762b57451"
     },
     {
       "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -4202,11 +4202,11 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "3059d99022b152deea4623b22d78272d3a272df8ae9fbc2917c2ba20f51830f8"
+      "sha256": "0a069c42979ce1dce651bd110a20f8b9cdc9780482769c2f6d163bb48c147926"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "6085db7cfa761da9176cea04c77ad10bf5caf328e05f25b68dd857220cce14ec"
+      "sha256": "88f65963318d209a2f54962c523f14dd5f5ed4a20ceeece2d33dc331e08c51ff"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -4666,7 +4666,7 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-09--atlas-global-composite.md",
-      "sha256": "e639f82885401c4ed9a38378237ab32c9ca60e5151061019085d70ff87b6504e"
+      "sha256": "5724c4428995579e92ab3cf2235d244397bf3995a441b7efb89bfc4f13067e39"
     },
     {
       "path": "src/derived/atlas/deriveAtlasGlobalCompositeGraphNavigation.mjs",
@@ -4703,12 +4703,20 @@ const R24_INTEROP_ATLAS_GLOBAL_COMPOSITE_20261109_DELTA = Object.freeze({
     {
       "path": "test/contracts/yalken-atlas-v5-er-c06-atlas-rail-responsive-accessibility.contract.test.js",
       "sha256": "c9c39e27f8b2fabf1c2e1cf348670617586324aae12baaa52c3e19bbb28cfb3f"
+    },
+    {
+      "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
+      "sha256": "f78023023f8fe177bb41fafde1559d39409c7167f9e7989c50d2f1e78f848802"
+    },
+    {
+      "path": "test/unit/r24-wp307-writer-local-profile.test.js",
+      "sha256": "3d8c98722d0d57c6cc5b7b82bd5708b9f4b0b6b14be6cf03a13c943fd4a60d0b"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "271d7a17deabecb90316fa4385ce85f3e65cdd441ce01d4fa5281e981b5b4a54"
+      "sha256": "c0e21ba5523bc84b010d841b625fae94742a01562353c5ff2ce57e148578026b"
     }
   ]
 });

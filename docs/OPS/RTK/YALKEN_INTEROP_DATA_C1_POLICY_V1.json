@@ -1457,11 +1457,11 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile.test.js",
-        "sha256": "967711402a2a07a1531d2c7e825a8401989ecb38e0336e9626cc6beec4064205"
+        "sha256": "3d8c98722d0d57c6cc5b7b82bd5708b9f4b0b6b14be6cf03a13c943fd4a60d0b"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
-        "sha256": "97fb6f3522277b8d139d788b729b051d0e5dd7191455c3552fa7df1d5f57d869"
+        "sha256": "f78023023f8fe177bb41fafde1559d39409c7167f9e7989c50d2f1e78f848802"
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -2905,11 +2905,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "6067e510f294c7fe7ed866dd23f64c32d5e7911163c23ecd71ac0dc365f80454"
+        "sha256": "611062654744dd5084f0faa37571613a60c1b02d261506598c63f1ddd3604793"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "28f905fb5812f4e8bea47aefbff5b66cc1790cdebd8f65f5604acb73cc65dd2c"
+        "sha256": "c0b1c990c11ec8981a43e329f816835caf3523b705b6f9ec05dd6bd77b3dd3cb"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -3453,7 +3453,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "180595924fd58775de4636728d48c3bcb68e5d54bf4bf22bfaebaeb90986e361"
+        "sha256": "daeaafc6998b92d11af0897018f432ad27a9462f145aaa20afa1da9c40ada6da"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4485,7 +4485,7 @@
       },
       {
         "path": "docs/tasks/2026-11-09--atlas-global-composite.md",
-        "sha256": "e639f82885401c4ed9a38378237ab32c9ca60e5151061019085d70ff87b6504e"
+        "sha256": "5724c4428995579e92ab3cf2235d244397bf3995a441b7efb89bfc4f13067e39"
       },
       {
         "path": "src/derived/atlas/deriveAtlasGlobalCompositeGraphNavigation.mjs",

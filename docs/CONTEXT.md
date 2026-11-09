@@ -1,3 +1,23 @@
+# CURRENT — M25 historical profile oracle repair pending
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_GLOBAL_COMPOSITE_MAC_20261109
+BINDING_BASE_SHA: 60e7d2e1c38760226f194666c551b6a38a38bb8f
+LATEST_OBSERVED_CANDIDATE: b6665922620fd94db50eed159750a2c40c668aa3
+STATUS: CURRENT_HISTORICAL_PROFILE_ORACLE_REPAIR_PENDING_NO_PUSH_OR_PR
+
+At the exact observed candidate, 34 non-default software stages passed their declared blocking requirements, including complete certification515 pins, DATA977 paths, post-audit63, RTK4419, C1C335, affected2335, WP104 13 and independent E0 all40 mutants/8200 case occurrences. Full audit retains six moderate development findings as an advisory; production audit has zero vulnerabilities. Separate Electron lane executes12 tests, followed by20 Atlas event contracts; these are distinct denominators.
+
+The full default invocation actually ended exit1 after1763.3s:4618 tests,4557 pass,2 fail,59 unchanged named skips,0 cancelled/todo. Receipt8cb248078b0842234dffb95be6ed44ddbd00c25ebc92b3560289decc4ba9f767 and complete unit artifact343cb792608584e60f4663a3170cad02f8fb543c4515d16500021d2a9938acbd preserve the original failure. The whole40-case historical profile/mutant family reproduced exactly38 pass/2 fail in0.45s; receiptf26e9868604dafa8ee2fbd84fb257252b7932979553177895a58201862647d74. V8 correctly retains its original12 queries; its test incorrectly compares the moving current13-query registry. The history-denied mutant still targets the former array tail and therefore does not alter source. Fresh clean declaration09/preflight admits only those two existing test files plus necessary current companions. Keep the original12 literal oracle and explicitly require only the current one-query extension; retarget the same history mutant to its exact array declaration. No runtime, old admission, test-case/name/count or skip change. Run this complete40-case family before another expensive wave.
+
+Actual rebuilt own68 native atb666 independently proved current graph/list/source navigation, preservation of unsaved text under bounded owned write denial, restored ordinary Save and same-profile cold with two normal exits0. Independentbc94de9bb036d6075726fc54f645f571e1177d87cbab2375de09374b2ca8c40d; closed profile64a8c212ac5f392cea514c4745aff621eb553c6e3cf485f197f1f3ac44dbb14c. All1495 runtime inputs and7252 bundle entries match earlier observed graph code. Existing49 profiles21 bundles remained exact. One cold cache warning of unknown cause and the earlier R1 default-profile tool relaunch limitation remain preserved; neither clean-cache nor unrelated default-state preservation is claimed.
+
+Four generated own default-test anchors refer only to already-removed synthetic fixtures. Complete carrierf4a345b1a5d78fe93a1d4f844e105afdd71701e4816bac830ecc741c7e5587ec and same-volume relocation07560425702112f259d9d3dd9989022213b45c5767b215d4e7792ae4f207b47f preserve all4 bytes/inodes/modes/mtime/xattrs without deleting files. The source worktree was restored clean before declaration09. Original failures, owned runtimes/profiles, unlaunched own66 and all earlier histories remain intact.
+
+NEXT: finish the two-test repair, current exact companions and frozen candidate gates/native/full normal delivery, then exact merged verification. Only after full M25 closure proceed to the verified owner P05 import/export order. Full Mac remains NOT_READY, UNFROZEN, all17 qualification UNKNOWN; Office/native PAUSED and Black Box after full Mac. No push or PR yet. Prepared R6 delivery procedures are unexecuted drafts; they cannot authorize delivery of the failed R6 candidate.
+
+--- Earlier factual checkpoints and their original errors/queues preserved byte exact below ---
+
 # CURRENT — M25 native observed; exact certification closure pending
 
 DOCUMENT_CLASS: FACTUAL_STATUS

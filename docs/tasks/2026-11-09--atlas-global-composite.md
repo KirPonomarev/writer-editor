@@ -8,7 +8,7 @@ BINDING_BASE_SHA: 60e7d2e1c38760226f194666c551b6a38a38bb8f
 HEAD_SHA_AT_START: 60e7d2e1c38760226f194666c551b6a38a38bb8f
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/atlas-global-composite-20261109
-STATUS: CURRENT_SHARED_DELIVERY_ADMISSION_REPAIR_PENDING
+STATUS: CURRENT_HISTORICAL_PROFILE_ORACLE_REPAIR_PENDING
 DOCUMENT_CLASS: PROCESS
 CLAIM_BOUNDARY: Single bounded product integration; not Stage08 or Full Mac qualification.
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true POST_MERGE_EXACT_HEAD_REQUIRED=true
@@ -19,6 +19,8 @@ OWNER_AUTHORITY: Standing full Mac V6 and DNA5, direct sole executor, normal del
 The author explicitly opens a composite read-only graph spanning Plot, Idea, Meaning, Atlas and manual maps. Source projections remain distinct. A bounded graph and equivalent keyboard list expose nodes, typed links and source refs; explicit source actions lead to existing source presentations without losing unsaved editor text. Closing the view or changing source, project, capability, lifecycle or query generation prevents stale publication.
 
 ## ARTIFACT
+
+Current R6 full default ended4618/4557pass/2fail/59prior skips atb666; original full artifact343cb792608584e60f4663a3170cad02f8fb543c4515d16500021d2a9938acbd remains intact. Complete40-case family reproduces exactly the stale V8 moving-registry oracle and missing history-denied mutation target. Fresh declaration09 admits only the two existing test files, with no runtime or test-denominator change; pin the original twelve identities and preserve all mutation kills/negative controls. All34 other software stages and current own68 native were independently verified at their original identity. Source checkpoint and delivery remain pending; no PR or release acceptance. Full Mac all17 UNKNOWN.
 
 Existing E08 C01-C05 source modules already execute their original 21 cases with no failures, skips or todo at the exact base. Current shared query registry rejects query.atlasGlobalCompositeGraph and Main, preload and renderer contain zero callers. READ_ONLY_INTEGRATION_GAP_01 SHA a907fb6dc0fe1d21a11d2f84877274957c447d6adb5e1b2c921f96fdabddc6c2 and original baseline 5bee171c530593fdf8c23668f3f348cdbe5f8bb8b291d158cdac77cccbb8162a retain the cause. Original source inventory 744c1397b32a3b7e60f9979414a2ddb5bf0c6b8ba054db5163a0986c5ec76243 covers all tracked bytes/modes/blobs.
 

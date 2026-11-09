@@ -452,6 +452,11 @@ test('V7 rejects malformed policy identity own-key holes reordered arrays and fo
 test('V8 admits exactly twelve existing Atlas readers with the unchanged ordered V7 author commands', () => {
   const m = require('../../src/core/writer-local-profile-v1.cjs'), registry = require('../../src/shared/productCommandRegistry.cjs');
   const queries = require('../../src/shared/workspaceQueryRegistry.cjs').ATLAS_WORKSPACE_QUERY_IDS;
+  const historicalQueries = ['query.atlasOverview', 'query.atlasEntityDossier', 'query.atlasRelationDossier',
+    'query.atlasMatrices', 'query.atlasHeatmap', 'query.atlasTemporalLayout', 'query.atlasContinuityLedgerSurface',
+    'query.atlasReportsSavedQueries', 'query.atlasDiagnosticsStageAcceptance', 'query.atlasCurrentScene',
+    'query.manualMapWorkbench', 'query.projectionInspector'];
+  assert.deepEqual([...queries].sort(), [...historicalQueries, 'query.atlasGlobalCompositeGraph'].sort());
   assert.equal(typeof m.createWriterAtlasReadSurfacesProfileProjection, 'function', 'existing-reader successor is not implemented');
   assert.equal(typeof m.isActiveWriterAtlasReadSurfacesProfile, 'function');
   const options = { isPackaged: true, platform: 'darwin' }, old = m.createWriterAtlasExplicitSuppressionProfileProjection(options);
@@ -461,7 +466,7 @@ test('V8 admits exactly twelve existing Atlas readers with the unchanged ordered
   assert.deepEqual(active.admittedQueryIds, [...old.admittedQueryIds, 'query.atlasOverview', 'query.atlasRelationDossier',
     'query.atlasMatrices', 'query.atlasHeatmap', 'query.atlasTemporalLayout', 'query.atlasContinuityLedgerSurface',
     'query.atlasReportsSavedQueries', 'query.atlasDiagnosticsStageAcceptance', 'query.projectionInspector']);
-  assert.deepEqual([...active.admittedQueryIds].sort(), [...queries].sort()); assert.equal(active.admittedQueryIds.length, 12);
+  assert.deepEqual([...active.admittedQueryIds].sort(), [...historicalQueries].sort()); assert.equal(active.admittedQueryIds.length, 12);
   for (const key of ['optionalSystemsEnabled', 'signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation'])
     assert.equal(active[key], false, key);
   for (const value of [active, active.admittedCommandIds, active.admittedQueryIds]) assert.equal(Object.isFrozen(value), true);
