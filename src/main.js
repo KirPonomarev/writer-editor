@@ -324,6 +324,9 @@ let activeReviewSessionLifecycle = 'passive';
 const activeDocxActivationRequestDigestGuard = createDocxActivationRequestDigestGuard({ maxEntries: 128 });
 let reviewExactTextApplyReconciliationState = { userRelevant: [], errors: [] };
 let pendingMarkdownLocalFilePreview = null;
+let markdownLocalFilePreviewGeneration = 0;
+let markdownNewProjectAttempt = null;
+const markdownNewProjectCompleted = new Map();
 let pendingProjectArchiveImportPreview = null;
 let appInitializationPromise = Promise.resolve();
 let editorStartupReadyPromise = Promise.resolve();
@@ -22898,7 +22901,80 @@ async function handleDocxNewProjectCreateCommand(payload = {}) {
 }
 // DOCX_NEW_PROJECT_CREATE_END
 
+// MARKDOWN_NEW_PROJECT_CREATE_START
+async function handleMarkdownNewProjectCreateCommand(payload = {}) {
+  const failure = code => makeProjectLifecycleError('E_MARKDOWN_NEW_PROJECT_CREATE', code);
+  if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !['requestId', 'markdownImportPreviewRef', 'projectName', 'action'].includes(key))
+    || typeof payload.requestId !== 'string' || !/^[A-Za-z0-9._:-]{1,120}$/u.test(payload.requestId)
+    || typeof payload.markdownImportPreviewRef !== 'string' || !/^mdp_[a-f0-9]{24}$/u.test(payload.markdownImportPreviewRef)
+    || payload.action !== 'create' || payload.projectName !== undefined && typeof payload.projectName !== 'string')
+    return failure('MARKDOWN_NEW_PROJECT_PAYLOAD_INVALID');
+  const pending = pendingMarkdownLocalFilePreview;
+  const assertPublication = () => {
+    userBookmarkCapability('cmd.project.lifecycle.create');
+    const age = pending ? Date.now() - pending.createdAtMs : -1;
+    if (!pending || pending !== pendingMarkdownLocalFilePreview || pending.previewId !== payload.markdownImportPreviewRef
+      || !isMarkdownImportPreviewContextCurrent(pending.context, pending.window)
+      || pending.generation !== markdownLocalFilePreviewGeneration
+      || !Number.isFinite(age) || age < 0 || age > MARKDOWN_LOCAL_FILE_PREVIEW_TTL_MS)
+      throw Error('MARKDOWN_IMPORT_REFERENCE_CONTEXT_CHANGED');
+    if (pending.reservedRequestId && pending.reservedRequestId !== payload.requestId)
+      throw Error('MARKDOWN_IMPORT_REFERENCE_ALREADY_USED');
+  };
+  try {
+    assertPublication();
+    const projectName = payload.projectName === undefined ? 'Рукопись из Markdown' : payload.projectName;
+    const binding = JSON.stringify([pending.context.key, pending.previewId, pending.source.sourceSha256,
+      computeHash(pending.source.canonicalContent), projectName]);
+    const completed = markdownNewProjectCompleted.get(payload.requestId);
+    if (completed) {
+      if (completed.binding !== binding) return failure('MARKDOWN_NEW_PROJECT_REQUEST_CONFLICT');
+      return { ...completed.result, idempotent: true };
+    }
+    let attempt = markdownNewProjectAttempt;
+    if (attempt && attempt.requestId === payload.requestId && attempt.binding !== binding)
+      return failure('MARKDOWN_NEW_PROJECT_REQUEST_CONFLICT');
+    if (attempt?.promise && attempt.requestId !== payload.requestId) return failure('MARKDOWN_NEW_PROJECT_BUSY');
+    if (!attempt || attempt.requestId !== payload.requestId) {
+      attempt = { requestId: payload.requestId, binding, ownership: {}, identity: {
+        projectId: crypto.randomUUID(), projectName, operationId: `markdown-new-${crypto.randomUUID()}`, createdAtUtc: new Date().toISOString(),
+      } };
+      markdownNewProjectAttempt = attempt;
+    }
+    if (attempt.promise) return await attempt.promise;
+    pending.reservedRequestId = payload.requestId;
+    const assertAttempt = () => {
+      assertPublication();
+      if (markdownNewProjectAttempt !== attempt) throw Error('MARKDOWN_NEW_PROJECT_ATTEMPT_CHANGED');
+    };
+    attempt.promise = (async () => {
+      const { createMarkdownNewProject } = await import('./product/docxNewProjectCreateV1.mjs');
+      assertAttempt();
+      const transactionAuthority = await getMainProjectManifestAuthority();
+      assertAttempt();
+      const created = await createMarkdownNewProject({ source: pending.source, identity: attempt.identity,
+        parentDirectoryPath: fileManager.getDocumentsPath(), transactionAuthority,
+        assertPublication: assertAttempt, ownership: attempt.ownership, initialDirectories: Object.values(PROJECT_SUBFOLDERS) });
+      const result = { ok: true, created: true, projectCreated: true, target: 'new-project', requestId: payload.requestId,
+        projectId: created.projectId, projectName: created.projectName, summary: created.summary, idempotent: created.idempotent };
+      markdownNewProjectCompleted.set(payload.requestId, { binding, result });
+      while (markdownNewProjectCompleted.size > 8) markdownNewProjectCompleted.delete(markdownNewProjectCompleted.keys().next().value);
+      // Registration is derived; its failure cannot unpublish or repeat creation.
+      try { await touchProjectLibraryIndexForBinding(created); } catch { result.libraryRefreshPending = true; }
+      return result;
+    })();
+    try { return await attempt.promise; } finally { attempt.promise = null; }
+  } catch (error) {
+    return failure(/^[A-Z][A-Z0-9_]{1,95}$/u.test(error?.code || error?.message || '')
+      ? error.code || error.message : 'MARKDOWN_NEW_PROJECT_CREATE_FAILED');
+  }
+}
+// MARKDOWN_NEW_PROJECT_CREATE_END
+
 async function handleProjectLifecycleCreateCommand(payload = {}) {
+  if (payload && Object.hasOwn(payload, 'docxImportPreviewRef') && Object.hasOwn(payload, 'markdownImportPreviewRef'))
+    return makeProjectLifecycleError('E_PROJECT_CREATE_PAYLOAD_INVALID', 'PROJECT_CREATE_PAYLOAD_INVALID');
+  if (payload && Object.hasOwn(payload, 'markdownImportPreviewRef')) return handleMarkdownNewProjectCreateCommand(payload);
   if (payload && Object.hasOwn(payload, 'docxImportPreviewRef')) return handleDocxNewProjectCreateCommand(payload);
   if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => key !== 'projectName'))
     return makeProjectLifecycleError('E_PROJECT_CREATE_PAYLOAD_INVALID', 'PROJECT_CREATE_PAYLOAD_INVALID');
@@ -33299,6 +33375,28 @@ function remapMarkdownLocalFileError(commandId, result, fallbackCode, fallbackRe
   );
 }
 
+function captureMarkdownImportPreviewContext() {
+  return { key: JSON.stringify([getProjectRootPath(), docxImportPreviewProjectGeneration,
+    currentLifecycleSubjectId(), commentAuthoringSessionId, currentFilePath, lastSignaledEditGeneration]),
+  owner: activeStage10ApplicationBootstrap, contents: mainWindow?.webContents };
+}
+
+function isMarkdownImportPreviewContextCurrent(context, window) {
+  if (!context || !window || window !== mainWindow || window.isDestroyed()
+    || context.contents !== window.webContents || window.webContents.isDestroyed()
+    || context.owner !== activeStage10ApplicationBootstrap || context.key !== captureMarkdownImportPreviewContext().key) return false;
+  try {
+    userBookmarkCapability(MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID);
+    userBookmarkCapability('cmd.project.importMarkdownV1');
+    return true;
+  } catch { return false; } // The caller returns a typed refusal, never synthetic success.
+}
+
+function freezeMarkdownImportSource(value) {
+  if (value && typeof value === 'object') { Object.values(value).forEach(freezeMarkdownImportSource); Object.freeze(value); }
+  return value;
+}
+
 async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, options = {}) {
   const payloadState = validateMarkdownLocalFileIntentPayload(
     payload,
@@ -33306,6 +33404,13 @@ async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, 
     MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
   );
   if (payloadState.ok !== 1) return payloadState;
+  const context = captureMarkdownImportPreviewContext(), window = mainWindow;
+  const generation = ++markdownLocalFilePreviewGeneration;
+  pendingMarkdownLocalFilePreview = null;
+  const isCurrent = () => generation === markdownLocalFilePreviewGeneration && isMarkdownImportPreviewContextCurrent(context, window);
+  const stale = () => makeTypedMarkdownError(MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+    'E_MD_IMPORT_PREVIEW_STALE', 'local_file_preview_context_changed');
+  if (!isCurrent()) return stale();
   const requestId = normalizeMarkdownLocalFileRequestId(
     payload.requestId,
     'markdown-local-file-preview-request',
@@ -33323,6 +33428,7 @@ async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, 
       'local_file_picker_failed',
     );
   }
+  if (!isCurrent()) return stale();
   if (selected?.canceled === true) {
     return {
       ok: 1,
@@ -33364,6 +33470,7 @@ async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, 
         : 'local_file_read_failed',
     );
   }
+  if (!isCurrent()) return stale();
   if (!loaded || !Buffer.isBuffer(loaded.bytes) || loaded.bytes.length === 0) {
     return makeTypedMarkdownError(
       MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
@@ -33372,14 +33479,26 @@ async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, 
     );
   }
 
+  const sourceBytes = Buffer.from(loaded.bytes);
+  let markdownText;
+  try {
+    // Keep the existing valid UTF-8/BOM semantics, but never manufacture
+    // replacement characters from malformed external bytes.
+    markdownText = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(sourceBytes);
+  } catch {
+    return makeTypedMarkdownError(MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+      'MDV1_INPUT_ENCODING_INVALID', 'markdown_utf8_invalid');
+  }
+
   const sourceName = typeof selected?.sourceName === 'string' && selected.sourceName.trim()
     ? path.basename(selected.sourceName.trim())
     : path.basename(filePath);
   const preview = await handleImportMarkdownV1({
-    text: loaded.bytes.toString('utf8'),
+    text: markdownText,
     sourceName,
     preview: true,
   });
+  if (!isCurrent()) return stale();
   if (!preview || preview.ok !== 1 || !isPlainObjectValue(preview.previewResult)) {
     return remapMarkdownLocalFileError(
       MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
@@ -33389,12 +33508,19 @@ async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, 
     );
   }
 
+  const entries = preview.previewResult.safeCreatePlan?.entries;
+  if (!Array.isArray(entries) || entries.length !== 1 || typeof entries[0]?.content !== 'string')
+    return makeTypedMarkdownError(MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID, 'E_MD_IMPORT_PREVIEW_FAILED', 'local_file_preview_content_invalid');
+
   const previewId = `mdp_${crypto.randomBytes(12).toString('hex')}`;
   pendingMarkdownLocalFilePreview = {
     previewId,
+    context, window, generation,
     projectRoot: path.resolve(getProjectRootPath()),
     createdAtMs: Date.now(),
     previewPayload: cloneJsonSafe(preview.previewResult),
+    source: freezeMarkdownImportSource({ canonicalContent: entries[0].content,
+      sourceSha256: crypto.createHash('sha256').update(sourceBytes).digest('hex'), lossReport: cloneJsonSafe(preview.lossReport) }),
   };
   return {
     ok: 1,
@@ -33433,6 +33559,8 @@ async function handleMarkdownImportLocalFileAcceptCommandSurface(payload = {}) {
     || !Number.isFinite(previewAgeMs)
     || previewAgeMs < 0
     || previewAgeMs > MARKDOWN_LOCAL_FILE_PREVIEW_TTL_MS
+    || pending.reservedRequestId
+    || !isMarkdownImportPreviewContextCurrent(pending.context, pending.window)
   ) {
     return makeTypedMarkdownError(
       MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID,

@@ -3,11 +3,17 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const crypto = require('node:crypto');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
+}
+
+function markdownFlowContext(context) {
+  return Object.assign({ crypto, currentProjectId: 'old-project', currentDocumentId: 'old-document', pendingMarkdownImportAttempt: null,
+    EXTRA_COMMAND_IDS: { PROJECT_LIFECYCLE_CREATE: 'cmd.project.lifecycle.create', PROJECT_LIFECYCLE_OPEN: 'cmd.project.lifecycle.open' } }, context);
 }
 
 function loadMarkdownImportResolverHelpers(extraContext = {}) {
@@ -169,7 +175,7 @@ test('Markdown import product parity: resolver derives fallback label without en
   assert.equal(section.includes('entry.path'), false);
 });
 
-test('Markdown import product parity: local-file preview and accept stay pathless and avoid editor mutation', () => {
+test('Markdown import product parity: local-file preview and new-project commands stay pathless and avoid editor mutation', () => {
   const editor = read('src/renderer/editor.js');
   const start = editor.indexOf('async function handleMarkdownImportUiPath()');
   assert.notEqual(start, -1);
@@ -179,15 +185,15 @@ test('Markdown import product parity: local-file preview and accept stay pathles
 
   for (const marker of [
     'MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID',
-    'MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID',
+    'EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE',
+    'EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_OPEN',
     'summarizeMarkdownLocalFilePreview(previewValue)',
     'window.confirm(',
-    'previewId,',
+    'markdownImportPreviewRef: previewId',
     'await loadTree();',
-    'await openImportedMarkdownSceneAfterSafeCreate(previewPayload, createdSceneIds);',
-    'Imported Markdown scenes:',
-    'opened imported scene',
-    'createdSceneIds.length > 0',
+    'Markdown imported into a new project',
+    'New project saved. Open it from the project library when ready.',
+    'Create a new project from this Markdown file?',
   ]) {
     assert.ok(fullImportFunction.includes(marker), marker);
   }
@@ -203,13 +209,14 @@ test('Markdown import product parity: local-file preview and accept stay pathles
     'content:',
     'scene:',
     'currentDocumentPath =',
+    'MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID',
   ]) {
     assert.equal(fullImportFunction.includes(forbidden), false, forbidden);
   }
   assert.ok(fullImportFunction.includes("updateStatusText('Import Markdown preview unavailable');"));
 });
 
-test('Markdown import product parity: confirmed preview executes token-only accept, refresh, and open', async () => {
+test('Markdown import product parity: confirmed preview creates a new project by token, then separately opens and refreshes it', async () => {
   const editor = read('src/renderer/editor.js');
   const start = editor.indexOf('async function handleMarkdownImportUiPath()');
   const end = editor.indexOf('async function handleMarkdownExportUiPath()', start);
@@ -248,17 +255,14 @@ test('Markdown import product parity: confirmed preview executes token-only acce
           },
         };
       }
-      if (commandId === 'cmd.project.markdown.acceptLocalPreview') {
-        return {
-          ok: true,
-          value: {
-            ok: true,
-            safeCreate: true,
-            createdSceneIds: ['scene-1234abcd90'],
-          },
-        };
-      }
       throw new Error('unexpected bridge command');
+    },
+    dispatchUiCommand: async (commandId, payload) => {
+      calls.push(['dispatch', commandId, payload]);
+      if (commandId === 'cmd.project.lifecycle.create') return { ok: true,
+        value: { created: true, target: 'new-project', projectId: 'new-project' } };
+      if (commandId === 'cmd.project.lifecycle.open') return { ok: true };
+      throw Error('unexpected lifecycle command');
     },
     resolveMarkdownLocalFileBridgeValue: (result) => result?.ok === true && result?.value?.ok === true
       ? result.value
@@ -290,7 +294,7 @@ test('Markdown import product parity: confirmed preview executes token-only acce
     },
   };
   const handleMarkdownImportUiPath = vm.runInNewContext(`${source}
-handleMarkdownImportUiPath`, context);
+handleMarkdownImportUiPath`, markdownFlowContext(context));
 
   await handleMarkdownImportUiPath();
 
@@ -300,16 +304,19 @@ handleMarkdownImportUiPath`, context);
     'summarize',
     'confirm',
     'status',
-    'bridge',
+    'dispatch',
+    'dispatch',
     'loadTree',
-    'openImportedMarkdownSceneAfterSafeCreate',
     'status',
   ]);
   assert.deepEqual(Object.keys(calls[1][2]), ['requestId']);
-  assert.deepEqual(Object.keys(calls[5][2]), ['requestId', 'previewId']);
-  assert.equal(calls[5][2].previewId, 'mdp_1234567890abcdef12345678');
-  assert.deepEqual(calls[7][2], ['scene-1234abcd90']);
-  assert.equal(calls[8][1], 'Imported Markdown scenes: 1; opened imported scene');
+  assert.deepEqual(Object.keys(calls[5][2]), ['requestId', 'markdownImportPreviewRef', 'action']);
+  assert.equal(calls[5][1], 'cmd.project.lifecycle.create');
+  assert.equal(calls[5][2].markdownImportPreviewRef, 'mdp_1234567890abcdef12345678');
+  assert.equal(calls[5][2].action, 'create');
+  assert.equal(calls[6][1], 'cmd.project.lifecycle.open');
+  assert.equal(calls[6][2].projectId, 'new-project');
+  assert.equal(calls[8][1], 'Markdown imported into a new project');
 });
 
 test('Markdown import product parity: missing preview payload fails closed without mutation', async () => {
@@ -349,7 +356,7 @@ test('Markdown import product parity: missing preview payload fails closed witho
     },
   };
   const handleMarkdownImportUiPath = vm.runInNewContext(`${source}
-handleMarkdownImportUiPath`, context);
+handleMarkdownImportUiPath`, markdownFlowContext(context));
 
   await handleMarkdownImportUiPath();
 
@@ -396,7 +403,7 @@ test('Markdown import product parity: preview decline never sends accept or writ
     updateStatusText: (message) => calls.push(['status', message]),
   };
   const handleMarkdownImportUiPath = vm.runInNewContext(`${source}
-handleMarkdownImportUiPath`, context);
+handleMarkdownImportUiPath`, markdownFlowContext(context));
 
   await handleMarkdownImportUiPath();
 
@@ -404,16 +411,87 @@ handleMarkdownImportUiPath`, context);
   assert.deepEqual(calls.at(-1), ['status', 'Markdown import preview ready; losses: 1']);
 });
 
-test('Markdown import product parity: generated bundle carries shipped accept-open path', () => {
+test('Markdown import product parity: generated bundle carries shipped create-then-open path', () => {
   const bundle = read('src/renderer/editor.bundle.js');
   for (const marker of [
-    'opened-imported-markdown-scene',
-    'imported-markdown-scene-not-found',
-    'no-created-markdown-scene-locator',
-    'Imported Markdown scenes:',
+    'Markdown imported into a new project',
+    'New project saved. Open it from the project library when ready.',
+    'markdownImportPreviewRef',
     'cmd.project.markdown.previewLocalFile',
-    'cmd.project.markdown.acceptLocalPreview',
+    'cmd.project.lifecycle.create',
+    'cmd.project.lifecycle.open',
   ]) {
     assert.ok(bundle.includes(marker), marker);
   }
+});
+
+function freshProjectFlow(options = {}) {
+  const editor = read('src/renderer/editor.js'), start = editor.indexOf('async function handleMarkdownImportUiPath()');
+  const source = editor.slice(start, editor.indexOf('async function handleMarkdownExportUiPath()', start));
+  const calls = [], context = markdownFlowContext({
+    MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID: 'cmd.project.markdown.previewLocalFile',
+    window: { confirm: () => { calls.push(['confirm']); return true; } },
+    invokePreloadUiCommandBridge: async () => {
+      calls.push(['preview']);
+      if (options.preview) await options.preview(context);
+      return { ok: true, value: { ok: 1, previewId: 'mdp_1234567890abcdef12345678', previewResult: {}, lossReport: { count: 1 } } };
+    },
+    dispatchUiCommand: async (id, payload) => {
+      calls.push([id, JSON.parse(JSON.stringify(payload))]);
+      if (id === 'cmd.project.lifecycle.create') {
+        if (options.create) await options.create(context);
+        return options.failedCreate ? { ok: false } : { ok: true, value: { created: true, target: 'new-project', projectId: 'new-project' } };
+      }
+      if (options.open === 'throw') throw Error('OPEN_FAILED');
+      if (options.open === 'cancel') return { ok: false, value: { cancelled: true } };
+      context.currentProjectId = 'new-project'; context.currentDocumentId = 'new-document';
+      return { ok: true };
+    },
+    resolveMarkdownLocalFileBridgeValue: result => result.value,
+    summarizeMarkdownLocalFilePreview: () => 'Markdown preview; losses: 1', getMarkdownLossCount: () => 1,
+    loadTree: async () => { calls.push(['tree']); if (options.tree) await options.tree(context); },
+    updateStatusText: text => calls.push(['status', text]),
+    setPlainText: () => { throw Error('AUTHORING_TEXT_MUTATION'); }, markAsModified: () => { throw Error('AUTHORING_STATE_MUTATION'); },
+    openImportedMarkdownSceneAfterSafeCreate: () => { throw Error('OLD_PROJECT_SCENE_MUST_NOT_OPEN'); },
+  });
+  return { calls, context, run: vm.runInNewContext(source + '\nhandleMarkdownImportUiPath', context) };
+}
+
+for (const open of ['cancel', 'throw']) test(`Markdown new-project UI preserves completed creation after open ${open}`, async () => {
+  const h = freshProjectFlow({ open }); await h.run();
+  assert.equal(h.calls.filter(row => row[0] === 'cmd.project.lifecycle.create').length, 1);
+  assert.equal(h.calls.filter(row => row[0] === 'cmd.project.lifecycle.open').length, 1);
+  assert.equal(h.calls.some(row => row[0] === 'tree'), false);
+  assert.deepEqual(h.calls.at(-1), ['status', 'New project saved. Open it from the project library when ready.']);
+  assert.equal(h.context.currentProjectId, 'old-project'); assert.equal(h.context.currentDocumentId, 'old-document');
+  assert.equal(h.context.pendingMarkdownImportAttempt, null);
+});
+
+test('Markdown new-project UI does not open or report imported text after unconfirmed creation', async () => {
+  const h = freshProjectFlow({ failedCreate: true }); await h.run();
+  assert.equal(h.calls.some(row => row[0] === 'cmd.project.lifecycle.open' || row[0] === 'tree'), false);
+  assert.deepEqual(h.calls.at(-1), ['status', 'Markdown import could not be confirmed. Check the project library before trying again.']);
+});
+
+for (const boundary of ['preview', 'create', 'tree']) test(`Markdown new-project UI discards stale ${boundary} completion`, async () => {
+  const h = freshProjectFlow({ [boundary]: async context => { context.currentProjectId = 'foreign-project'; } });
+  await h.run();
+  assert.equal(h.calls.some(row => row[0] === 'status' && row[1].includes('Markdown imported into')), false);
+  if (boundary === 'preview') assert.equal(h.calls.some(row => row[0] === 'confirm'), false);
+  if (boundary === 'create') assert.equal(h.calls.some(row => row[0] === 'cmd.project.lifecycle.open'), false);
+  assert.equal(h.context.currentProjectId, 'foreign-project'); assert.equal(h.context.pendingMarkdownImportAttempt, null);
+});
+
+test('Markdown new-project UI rejects overlapping action while creation is pending, then opens with loss feedback', async () => {
+  let release; const paused = new Promise(resolve => { release = resolve; });
+  const h = freshProjectFlow({ create: async () => paused });
+  const first = h.run();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.context.pendingMarkdownImportAttempt.phase, 'creating');
+  await h.run(); assert.equal(h.calls.filter(row => row[0] === 'preview').length, 1);
+  release(); await first;
+  assert.equal(h.calls.filter(row => row[0] === 'cmd.project.lifecycle.create').length, 1);
+  assert.deepEqual(h.calls.at(-1), ['status', 'Markdown imported into a new project; losses: 1']);
+  assert.equal(h.context.currentProjectId, 'new-project'); assert.equal(h.context.currentDocumentId, 'new-document');
+  assert.equal(h.context.pendingMarkdownImportAttempt, null);
 });

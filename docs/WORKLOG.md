@@ -1,3 +1,7 @@
+# 2026-11-09 — P05 Markdown new-project source checkpoint
+
+Admitted exact phase02 correction: real Markdown preview reference -> fresh manifest-last project -> separate protected open, shared existing DOCX publication body, old buffers/legacy APIs preserved. Strict UTF8 refusal follows its own retained counterexample. Focused61/61 no skips receipt68c90dfc; broader714/707/7 retains a dirty-worktree check, demonstrated inherited DOCX composer extractor and X16 imported-binding parser failures. Current metadata pins also need normal refresh. No native, push, PR, CI, merge or P05/full Mac acceptance yet. Preserve source WIP before clean-head prospective proof/companion amendment; all prior original bytes/errors/profiles remain.
+
 # 2026-11-09 — M25 delivered; protected finite P05 entry
 
 PR2217 closed normally at d62c3523c97a67a0dd2f18b2e9c0d7ef5df3530c: candidate36/merged31 local stages, both exact20-job hosted runs and separately rebuilt own70 graph/Save/cold with two ordinary exits0. Final schema report8f8206ed4a6c57c8af9bfce0b41fb7b8c9923ef8202a5d4cbc44fcbd36c3619a; protected old profiles/bundles, full closed52-file carrier, original failures and limits retained. Full Mac/all17 remain open.

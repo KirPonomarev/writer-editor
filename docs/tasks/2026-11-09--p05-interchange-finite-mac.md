@@ -3,14 +3,14 @@
 TASK_ID: YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109
 TYPE: CORE
 DOCUMENT_CLASS: PROCESS
-STATUS: PHASE01_CAUSAL_GAP_CONFIRMED_SOURCE_UNCHANGED
+STATUS: PHASE02_SOURCE_IMPLEMENTED_PROOFS_AND_NATIVE_PENDING
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
 ACTIVE_EXECUTION_CANON: v3.13a-final
 BINDING_BASE_SHA: d62c3523c97a67a0dd2f18b2e9c0d7ef5df3530c
 BRANCH: codex/p05-interchange-finite-mac-20261109
 DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_REQUIRED=true POST_MERGE_EXACT_HEAD_VERIFICATION_REQUIRED=true
-DESIGN_TOOL_ROUTER: Existing interface unchanged; exact typed router value is in validated declaration01.
+DESIGN_TOOL_ROUTER: Applicable evidence route in validated declaration03; existing confirmation and project lifecycle form, no new visual zone.
 CLAIM_BOUNDARY: Eight existing P05 directions and concrete demonstrated gaps; no full Mac qualification or new format.
 
 ## MICRO_GOAL
@@ -33,10 +33,34 @@ Phase01 diff budget: task at most180 lines, each factual prefix at most35lines a
 - docs/CONTEXT.md
 - docs/HANDOFF.md
 - docs/WORKLOG.md
+- src/main.js
+- src/core/markdown-new-project-v1.mjs
+- src/product/docxNewProjectCreateV1.mjs
+- src/renderer/editor.js
+- src/renderer/editor.bundle.js
+- test/contracts/p05-markdown-new-project.contract.test.js
+- test/contracts/revision-bridge-markdown-file-authority-command-surface.contract.test.js
+- test/unit/markdown-import-product-parity-ui-flow.test.js
+
+### Phase02 prospective amendment
+
+The clean normal phase01 checkpoint is a44aa98b654e0f7dfbb9485987b50abd36b02b95, still unaccepted and unpushed; delivery base remains d62c3523c97a67a0dd2f18b2e9c0d7ef5df3530c. Fresh phase02 entry0b4103598615b43a2c0c6bb49e5e64c3e987c8877dfbdec3136074f348abb71c records exact registry/worktree, writable UUID/encrypted/unlocked disks, unchanged owner checkout, no index lock/live Yalken, fresh remote main and bootstrap READY. The same-task normative and scoped factual reads remain as stated above; this is no full-history/P03-cache claim.
+
+Before any new source/test write, declaration03 SHA81f7680f1b77598aeb7899f53d578014300c17e5714566832baa66938b3d43d7 and actual preflight03 SHAe4bb602e553ab17c49d3f704a95f6e55726cc18897e22b486d4b191f96bc1ad2 exit0 prospectively admit exactly the expanded allowlist. Rejected declaration02 duplicated two read-path entries; its original bytes/error remain, no repository mutation preceded corrected preflight. The executed distinguishing cause above, not a narrative status, is the reason for this correction.
+
+O: Local Markdown preview followed by confirmation creates one fresh project and preserves the old project's entire graph and unsaved authoring buffer. T: Existing canonical preview/import and lifecycle.create/open Commands -> current Kernel/Main capability -> immutable private preview reference -> pure real Markdown preparation -> existing owned lease/fence manifest-last publication -> derived library registration -> separate protected open. H: Replacing the primary old-scene acceptance with reference-only lifecycle creation should produce one new manifest/UUID, exactly the admitted canonical Markdown IR and zero old-project writes; cancel/failed opening should leave the new project available without repeating import. P: Negative-first maintained actual-entry test, real persistence/authority and preserved DOCX controls, independent literal text/IR/raw roster, actual rebuilt native and mandatory delivery gates. B/I remain the protected states/exact identities above.
+
+FEATURE_INTEGRATION_MANIFEST_V1: PHASE02_EXISTING_SEAM_CORRECTION. Product Core prepares a genuine Markdown document/project manifest and tree identities, never a fabricated DOCX plan. Command Kernel remains the current dispatch/capability owner. Main alone owns bounded source selection, immutable byte-snapshot admission, opaque preview token/TTL and one request/source/context/name reservation. Before picker, after each await and before publication, revalidate live window/webContents, project/lifecycle/session/current file/edit generation and actual command capability. Renderer receives pathless read-only preview/loss projections and dispatches only ref/request/name/action; raw IR, hashes and paths grant no authority. Reject mixed DOCX/Markdown refs. Existing DOCX and Markdown wrappers share the same existing physical fresh-project publication body with exclusive/no-follow creates, exact graph/hash readback, owned lease/fence and manifest-last durable commit. No second storage writer, speculative framework, runtime registry or dependency. Cancellation, invalid/stale/revoked/foreign/existing target and unexpected member fail closed; rollback removes only proven owned unpublished objects and preserves published roots. Legacy Markdown parse/safeCreate/local accept APIs and all existing negative oracles remain protected. Old authoring state is unchanged by off-side creation; lifecycle.open separately owns Save/discard/cancel. Repeated request checks the same result instead of creating again; a failed open never becomes another import. No new Event, Query, worker, shell contribution or visual zone. The existing finite source/parser limits, keyboard/native menus and typing hot path remain.
+
+SURFACE_MANIFEST_V1: NO_NEW_VISUAL_ZONE_EXISTING_IMPORT_CONFIRMATION. The sole flow change says Create new project, retains source/loss summary and explicit confirmation/cancel, and distinguishes a published project from successful navigation. Before async UI publication compare the current attempt/project/document; recovery names the project library. Existing CSS/HTML/layout/font/tokens/color/motion stay outside scope. The accepted V6 INT03 direction and current DOCX create-then-open form are the local design evidence; brain:refs current output and ghostwriter/novelwriter notes are contextual, no copied code or service. ui-craft copy/a11y guidance applies without independent design/lab scaffolding or owner questions.
+
+Phase02 diff budget: at most1500 non-generated changed lines across the exact allowlist, including meaningful regression tests; generated editor.bundle.js is deterministic from its reviewed source. Task at most220 lines, each factual prefix at most35 lines, WORKLOG at most15 lines; original factual bytes preserved. No dependency, parser rewrite, legacy writer edit or other-format improvement. Source/IR/closure carrier bytes remain on T777; only the explicitly owned P05 runtime may hold temporary APFS test/build/profile state. Separate exact native admission is still required before any new app run.
+
+Phase02 observed result: focused61/61 without skips/todo, receipt68c90dfcf709180c5c810880bd3b91326a3ba065fe009bf4373f9618aa487caa. Raw broader44-file714/707/7 in1bc2c72205110c3673df1b5326d14d0b360cac3e4f288c602175826daaa26ccf is not green. Exact unchanged-source cause610abbe8ffdff735163fc7cfbe6160a2824408dde6402fb2db8383d421ebbc71 demonstrates an obsolete DOCX composer extraction endpoint and unbound X16 imported capability constant; the remaining scope assertion requires clean checkout. Existing complete source pins also reject current WIP as retained in3892ee32. A normal unaccepted checkpoint must precede prospective clean-head admission of those two exact proof repairs and required metadata/witness companions. No old assertion, production capability, frozen carrier or oracle is removed. The invalid-UTF8 counterexample1f0c06fb635c407aa451e582fc7a63ee006ba7b85aa3cc17d59b7f198f2cba4a precedes strict source decoding; valid BOM/CRLF/CR and literal Unicode/rich IR controls pass. The four-format/eight-direction actual native denominator remains pending.
 
 ## DENYLIST
 
-Every unlisted repository path in phase01, including src, test, scripts, OPS/governance, dependencies, lockfiles and workflows. No source mutation before causal proof and prospective scope amendment. No old WP700 through709 reopening from narrative PENDING, new tracker/registry/framework, new format/provider/merge/transport, UI redesign, heap/timeout increase, weakened test, default private profile, Word/native, Google, signing/notary/public distribution, Black Box, reset/stash/clean/rebase/force push or deletion of the project. Preserve all original failures, controls, historical profiles and frozen bytes.
+Every unlisted repository path, including scripts, OPS/governance, dependencies, lockfiles, workflows, renderer HTML/styles and legacy parser/safeCreate writers. The phase02 allowlist supersedes phase01 source exclusion only after the successful prospective preflight stated above. No old WP700 through709 reopening from narrative PENDING, new tracker/registry/framework, new format/provider/merge/transport, UI redesign, heap/timeout increase, weakened test, default private profile, Word/native, Google, signing/notary/public distribution, Black Box, reset/stash/clean/rebase/force push or deletion of the project. Preserve all original failures, controls, historical profiles and frozen bytes.
 
 ## CONTRACT / SHAPES
 

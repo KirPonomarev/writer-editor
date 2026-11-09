@@ -2,9 +2,9 @@ import fs from 'node:fs/promises';
 import { constants } from 'node:fs';
 import path from 'node:path';
 import { prepareDocxNewProjectSteps } from '../core/docx-new-project-v1.mjs';
+import { prepareMarkdownNewProjectSteps } from '../core/markdown-new-project-v1.mjs';
 import { sha256Hex } from '../core/browser-safe-hash.mjs';
 
-const need = (ok, code) => { if (!ok) throw Object.assign(Error(code), { code }); };
 const same = (a, b) => a && b && a.dev === b.dev && a.ino === b.ino;
 const absent = async target => { try { await fs.lstat(target); return false; } catch (e) { if (e.code === 'ENOENT') return true; throw e; } };
 async function syncDirectory(target) {
@@ -17,11 +17,29 @@ async function syncDirectory(target) {
 // ownership is a private Main reservation; no renderer payload can supply it.
 export async function createDocxNewProject({ plan, identity, parentDirectoryPath, transactionAuthority,
   assertPublication, ownership, initialDirectories = [] }) {
+  return createPreparedNewProject({ plan, identity, parentDirectoryPath, transactionAuthority,
+    assertPublication, ownership, initialDirectories }, prepareDocxNewProjectSteps, 'DOCX_NEW_PROJECT', 'DOCX fresh project publication');
+}
+
+// The two real import formats share the same owned persistence path. Neither
+// wrapper accepts a caller-supplied preparation function or publication model.
+export async function createMarkdownNewProject({ source, identity, parentDirectoryPath, transactionAuthority,
+  assertPublication, ownership, initialDirectories = [] }) {
+  return createPreparedNewProject({ source, identity, parentDirectoryPath, transactionAuthority,
+    assertPublication, ownership, initialDirectories }, prepareMarkdownNewProjectSteps, 'MARKDOWN_NEW_PROJECT', 'Markdown fresh project publication');
+}
+
+async function createPreparedNewProject({ plan, source, identity, parentDirectoryPath, transactionAuthority,
+  assertPublication, ownership, initialDirectories }, prepareSteps, errorPrefix, publicationLabel) {
+  const need = (ok, code) => { if (!ok) {
+    const typed = code.replace(/^DOCX_NEW_PROJECT/u, errorPrefix);
+    throw Object.assign(Error(typed), { code: typed });
+  } };
   need(typeof assertPublication === 'function' && ownership && typeof ownership === 'object'
     && transactionAuthority?.withProjectLease && transactionAuthority?.commitManifestText, 'DOCX_NEW_PROJECT_AUTHORITY');
   // Capture all source data before the first asynchronous callback. A caller
   // cannot replace a later scene or identity while preparation is paused.
-  const preparation = prepareDocxNewProjectSteps(structuredClone({ plan, ...identity }));
+  const preparation = prepareSteps(structuredClone({ plan, source, ...identity }));
   need(path.isAbsolute(parentDirectoryPath), 'DOCX_NEW_PROJECT_PARENT');
   need(Array.isArray(initialDirectories) && initialDirectories.length <= 16
     && initialDirectories.every(name => typeof name === 'string' && /^[a-z][a-z0-9-]{0,31}$/u.test(name)), 'DOCX_NEW_PROJECT_DIRECTORIES');
@@ -115,7 +133,7 @@ export async function createDocxNewProject({ plan, identity, parentDirectoryPath
       await guard(); await syncDirectory(root); await syncDirectory(parent);
       await guard();
       const publication = await transactionAuthority.commitManifestText({ projectId: model.projectId, lease,
-        targetPath: manifestPath, expectedText: null, nextText: model.manifestText, label: 'DOCX fresh project publication' });
+        targetPath: manifestPath, expectedText: null, nextText: model.manifestText, label: publicationLabel });
       need(publication?.ok && publication.readbackVerified && publication.durablePublication
         && publication.previousHash === '' && publication.nextHash === model.manifestSha256
         && publication.fencingGeneration === lease.fencingGeneration, 'DOCX_NEW_PROJECT_MANIFEST_UNCONFIRMED');

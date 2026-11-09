@@ -1,3 +1,18 @@
+# CURRENT — P05 Markdown new-project correction; qualification pending
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109
+CLEAN_PHASE02_BASE: a44aa98b654e0f7dfbb9485987b50abd36b02b95
+STATUS: SOURCE_IMPLEMENTED_UNACCEPTED_NO_PUSH_PR_OR_NATIVE
+
+Prospective declaration03 81f7680f1b77598aeb7899f53d578014300c17e5714566832baa66938b3d43d7 and clean preflight03 e4bb602e553ab17c49d3f704a95f6e55726cc18897e22b486d4b191f96bc1ad2 admitted the exact existing-seam correction. Maintained red f373794b confirms missing lifecycle routing and mixed format reference admission; its separate task H2 formatting rejection is preserved and corrected without changing E0. Current primary Markdown UI confirms new project, dispatches private-reference lifecycle.create, then separate protected open. Main binds snapshot/TTL/window/contents/owner/project/lifecycle/session/file/edit generation and current capability; one request reserves one UUID. Genuine Markdown Core preparation and DOCX reuse the same exclusive/no-follow/lease/fence/readback/manifest-last writer. Legacy Markdown APIs remain protected. Independently read length-framed literal rich IR, old/foreign graph, conflict/replay/overlap, cancellation/stale/revoked/rollback/lost-ack and derived-library controls pass. A second executed input counterexample1f0c06fb shows invalid UTF8 silently accepted; strict decoding now refuses it before conversion, preserving valid BOM/newline semantics. No dependency, visual redesign, timeout/heap increase or old data/profile change.
+
+Current focused61/61, zero skip/todo, receipt68c90dfcf709180c5c810880bd3b91326a3ba065fe009bf4373f9618aa487caa. The broader44-file run is714 cases/707 pass/7 fail, zero skip/todo, raw1bc2c72205110c3673df1b5326d14d0b360cac3e4f288c602175826daaa26ccf. One failure is its historical clean-status assertion against owned WIP. Exact-base/current causal610abbe8ffdff735163fc7cfbe6160a2824408dde6402fb2db8383d421ebbc71 proves the four DOCX ACK failures use the same unchanged composer106c75d7 but an obsolete no-argument end marker that evaluates unrelated renderer code; both versions throw treeContainer undefined. The two X16 advisory baseline failures use an unchanged source parser with an unbound imported PRODUCT_COMMAND_CAPABILITY_BINDING. A scoped real imported binding counterexample works; no old assertion or capability is weakened. Current metadata diagnosis3892ee32 retains inventory one-new/two-changed paths, DATA runtime pins and missing complete certification successor; C2A historical control itself passes. No all-route/native/CI/merge qualification follows from these source tests.
+
+NEXT: preserve one normal unaccepted source checkpoint, then clean-head prospectively admit only the demonstrated fixture/parser repairs and required exact machine companions/witnesses. Retain all original failures and historical bytes, finish P05 actual rebuilt eight-route Mac and full delivery, then the accepted CLI tasks and remaining V6/DNA5. Full Mac NOT_READY, UNFROZEN, all17 UNKNOWN; Word/native PAUSED, Black Box last. Sole executor, no agents/chats/timers.
+
+--- Phase01 and earlier factual bodies preserved byte exact below ---
+
 # CURRENT — M25 closed; finite P05 interchange diagnosis
 
 DOCUMENT_CLASS: FACTUAL_STATUS
