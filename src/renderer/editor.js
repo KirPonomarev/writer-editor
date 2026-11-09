@@ -17223,10 +17223,19 @@ function getAtlasTemporalCalendarPayload(draft, reject) {
 }
 
 function getAtlasTemporalAnchorPayload(sceneId, draft, reject) {
+  const storyFormat = (draft.storyTimeFormat || '').trim();
+  if (storyFormat && storyFormat !== 'ordinalDay') return reject('Choose a supported story time format.');
+  const storyOrdinal = storyFormat === 'ordinalDay';
+  const rangeFields = {
+    story: storyOrdinal
+      ? ['storyDay', 'storyEndDay', 'storyPrecisionNote']
+      : ['storyDate', 'storyEndDate', 'storyPrecisionNote'],
+    narrative: ['narrativeDay', 'narrativeEndDay', 'narrativePrecisionNote'],
+  };
   function getAtlasTemporalRangePayload(draft, dimension, reject) {
     const story = dimension === 'story';
-    const startField = story ? 'storyDate' : 'narrativeDay';
-    const endField = story ? 'storyEndDate' : 'narrativeEndDay';
+    const numeric = !story || storyOrdinal;
+    const [startField, endField] = rangeFields[dimension];
     const start = (draft[startField] || '').trim();
     const end = (draft[endField] || '').trim();
     const selectedKind = (draft[`${dimension}RangeKind`] || '').trim();
@@ -17250,20 +17259,23 @@ function getAtlasTemporalAnchorPayload(sceneId, draft, reject) {
     if (kind === 'until' && (start || !end)) return reject(`For a ${label} range until an end, enter only the end bound.`);
     if (kind !== 'exact' && !precisionNote) return reject(`Explain the approximate or open ${label} range.`);
     const calendarId = (draft.storyCalendarId || '').trim();
-    if (story && !calendarId) return reject('Enter the calendar ID for the story date.');
-    if (!story && [start, end].some((value) => value && readAtlasTemporalWholeDay(value) === null)) {
-      return reject('Enter a whole number for each narrative day.');
+    if (!numeric && !calendarId) return reject('Enter the calendar ID for the story date.');
+    if (numeric && [start, end].some((value) => value && readAtlasTemporalWholeDay(value) === null)) {
+      return reject(`Enter a whole number for each ${label} day.`);
     }
+    if (story && storyOrdinal && start && end && readAtlasTemporalWholeDay(start) > readAtlasTemporalWholeDay(end)) {
+      return reject('Enter a story start day at or before the end day.');
+    }
+    const point = (value) => !value ? null : numeric
+      ? { pointKind: 'ordinalDay', dayIndex: readAtlasTemporalWholeDay(value) }
+      : { pointKind: 'calendarDate', calendarId, value };
     if (kind === 'exact') {
-      const range = story ? exactAtlasCalendarRange(calendarId, start)
-        : exactAtlasNarrativeRange(readAtlasTemporalWholeDay(start));
-      if (end) range.end = story ? { pointKind: 'calendarDate', calendarId, value: end }
-        : { pointKind: 'ordinalDay', dayIndex: readAtlasTemporalWholeDay(end) };
+      const range = numeric ? exactAtlasNarrativeRange(readAtlasTemporalWholeDay(start))
+        : exactAtlasCalendarRange(calendarId, start);
+      if (end) range.end = point(end);
       if (precisionNote) range.precisionNote = precisionNote;
       return range;
     }
-    const point = (value) => !value ? null : story ? { pointKind: 'calendarDate', calendarId, value }
-      : { pointKind: 'ordinalDay', dayIndex: readAtlasTemporalWholeDay(value) };
     return {
       rangeKind: kind === 'approximate' ? 'approximate' : 'open',
       start: point(start),
@@ -17271,13 +17283,11 @@ function getAtlasTemporalAnchorPayload(sceneId, draft, reject) {
       precisionNote,
     };
   }
-  const rangeFields = {
-    story: ['storyDate', 'storyEndDate', 'storyPrecisionNote'],
-    narrative: ['narrativeDay', 'narrativeEndDay', 'narrativePrecisionNote'],
-  };
   const hasRangeInput = (dimension) => [...rangeFields[dimension], `${dimension}RangeKind`]
     .some((field) => (draft[field] || '').trim());
-  if (!hasRangeInput('story') && !hasRangeInput('narrative')) return reject('Enter a story date or a narrative day.');
+  if (!hasRangeInput('story') && !hasRangeInput('narrative')) {
+    return reject(storyOrdinal ? 'Enter a story day or a narrative day.' : 'Enter a story date or a narrative day.');
+  }
   const storyRange = getAtlasTemporalRangePayload(draft, 'story', reject);
   if (!storyRange) return null;
   const narrativeRange = getAtlasTemporalRangePayload(draft, 'narrative', reject);
@@ -17403,9 +17413,38 @@ function appendAtlasTemporalAuthorControls(parent) {
     scene[key] = value;
     scenes.set(sceneId, scene);
   };
+  const storyRows = [];
+  const appendStoryField = (host, ordinal, config) => {
+    const row = document.createElement('div');
+    const input = appendAtlasSurfaceField(row, { datasetName: 'atlasTemporalField', ...config }, scene, (key, value) => {
+      if ((scene.storyTimeFormat === 'ordinalDay') === ordinal) setSceneField(key, value);
+    });
+    storyRows.push({ row, input, ordinal });
+    host.appendChild(row);
+  };
+  const syncStoryRows = () => {
+    const ordinal = scene.storyTimeFormat === 'ordinalDay';
+    for (const entry of storyRows) {
+      entry.row.hidden = entry.ordinal !== ordinal;
+      entry.input.disabled = entry.row.hidden || !projectId || !sceneId;
+    }
+  };
+  const storyFormat = appendAtlasSurfaceSelect(fields, {
+    datasetName: 'atlasTemporalField', fieldName: 'storyTimeFormat', label: 'Story time format',
+    emptyLabel: 'Calendar date', options: [{ value: 'ordinalDay', label: 'Numbered day' }],
+    onChange: () => { if (isCurrent()) syncStoryRows(); },
+  }, scene, setSceneField);
+  storyFormat.disabled = !projectId || !sceneId;
+  appendStoryField(fields, false, {
+    fieldName: 'storyCalendarId', label: 'Calendar ID for story date', placeholder: 'An existing calendar ID',
+  });
+  appendStoryField(fields, false, {
+    fieldName: 'storyDate', label: 'Story date (optional)', placeholder: 'Keep saved date if untouched',
+  });
+  appendStoryField(fields, true, {
+    fieldName: 'storyDay', label: 'Story day (optional)', placeholder: 'Whole day, for example -2 or 0',
+  });
   for (const [fieldName, label, placeholder] of [
-    ['storyCalendarId', 'Calendar ID for story date', 'An existing calendar ID'],
-    ['storyDate', 'Story date (optional)', 'Keep saved date if untouched'],
     ['narrativeDay', 'Narrative day (optional)', 'Keep saved day if untouched'],
     ['note', 'Note (optional)', 'Keep saved note if untouched'],
   ]) {
@@ -17440,10 +17479,16 @@ function appendAtlasTemporalAuthorControls(parent) {
       { fieldName: `${dimension}PrecisionNote`, label: `${label} precision or reason`,
         placeholder: 'Required for approximate, open or unknown time' },
     ]) {
+      if (dimension === 'story' && config.fieldName === endField) {
+        appendStoryField(rangeFields, false, config);
+        appendStoryField(rangeFields, true, { ...config, fieldName: 'storyEndDay', label: 'Story end day (optional)' });
+        continue;
+      }
       const input = appendAtlasSurfaceField(rangeFields, { datasetName: 'atlasTemporalField', ...config }, scene, setSceneField);
       input.disabled = !projectId || !sceneId;
     }
   }
+  syncStoryRows();
   rangeDetails.appendChild(rangeFields);
 
   const actions = document.createElement('div');

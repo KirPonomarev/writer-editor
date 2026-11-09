@@ -31,8 +31,18 @@ class Element {
   }
 }
 
-async function fixture() {
+async function fixture({ useMainPreparation = false } = {}) {
   const core = await import('../../src/core/runtime.mjs');
+  let prepareTemporalAnchor;
+  if (useMainPreparation) {
+    const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+    const methods = ['isPlainObjectValue', 'cloneJsonSafe', 'prepareAtlasTemporalAnchorPayload'].map((name) => {
+      const method = main.match(new RegExp('^function ' + name + '\\([\\s\\S]*?^\\}', 'm'));
+      assert.ok(method, name);
+      return method[0];
+    });
+    prepareTemporalAnchor = vm.runInThisContext('(() => {\n' + methods.join('\n') + '\nreturn prepareAtlasTemporalAnchorPayload;\n})()');
+  }
   const created = core.applyCoreSequence(core.createInitialCoreState(), [
     { type: core.CORE_COMMAND_IDS.PROJECT_CREATE, payload: { projectId: 'project-a', title: 'First', sceneId: 'scene-a' } },
     { type: core.CORE_COMMAND_IDS.PROJECT_CREATE, payload: { projectId: 'project-b', title: 'Second', sceneId: 'scene-a' } },
@@ -67,7 +77,10 @@ async function fixture() {
     async dispatchUiCommand(type, payload) {
       const command = { type, payload: structuredClone(payload) };
       requests.push(command);
-      const result = core.reduceCoreState(state, command);
+      const payloadForCore = prepareTemporalAnchor && type === 'atlas.sceneTemporalAnchor.set' && Object.hasOwn(command.payload, 'preserveUntouchedTemporalFields')
+        ? prepareTemporalAnchor(command.payload, { projectId: context.currentProjectId, coreState: state })
+        : command.payload;
+      const result = core.reduceCoreState(state, { type, payload: payloadForCore });
       state = result.state;
       return result;
     },
@@ -110,6 +123,7 @@ async function fixture() {
   }
   return {
     open, context, requests, statuses, originalScenes,
+    coreState: () => state,
     project: (id = 'project-a') => state.data.projects[id],
     calendar: (id) => state.data.projects['project-a'].atlas?.calendarDefinitions?.[id],
     anchor: (id) => state.data.projects['project-a'].atlas?.sceneTemporalAnchors?.[id],
@@ -433,5 +447,149 @@ test('Atlas Time keeps advanced drafts scene-owned and refuses detached and fore
   const foreign = f.open();
   assert.equal(foreign.field('narrativeRangeKind').value, '');
   assert.equal(foreign.field('narrativePrecisionNote').value, '');
+  assert.deepEqual(f.project().scenes, f.originalScenes);
+});
+
+test('Atlas Time authors numbered story zero without a calendar and retains independent narrative time', async () => {
+  const f = await fixture();
+  const form = f.open();
+  form.enter({ storyTimeFormat: 'ordinalDay', storyDay: ' 0 ', narrativeDay: '8', note: 'Author note.' });
+  form.click(anchorAction);
+  assert.equal(f.requests.length, 1);
+  const anchor = f.anchor('scene-a');
+  assert.equal(anchor.storyRange.rangeKind, 'exact');
+  assert.deepEqual(anchor.storyRange.start, anchor.storyRange.end);
+  assert.equal(anchor.storyRange.start.pointKind, 'ordinalDay');
+  assert.equal(anchor.storyRange.start.dayIndex, 0);
+  assert.equal(anchor.storyRange.start.calendarId, '');
+  assert.equal(anchor.narrativeRange.start.dayIndex, 8);
+  assert.equal(anchor.note, 'Author note.');
+  assert.deepEqual(f.project().scenes, f.originalScenes);
+});
+
+test('Atlas Time switches story formats without recoding either draft or submitting a command', async () => {
+  const f = await fixture();
+  const form = f.open();
+  form.enter({ calendarId: 'calendar-local', calendarName: 'Local calendar' });
+  form.click(calendarAction);
+  form.enter({ storyCalendarId: 'calendar-local', storyDate: '0', storyEndDate: 'Dusk' });
+  assert.equal(form.field('storyDay').disabled, true);
+  assert.equal(form.field('storyDay').parentElement.parentElement.hidden, true);
+  form.enter({ storyTimeFormat: 'ordinalDay', storyDay: '-2', storyEndDay: '0' });
+  assert.equal(form.field('storyDate').disabled, true);
+  assert.equal(form.field('storyDate').parentElement.parentElement.hidden, true);
+  assert.equal(form.field('storyDay').disabled, false);
+  assert.equal(form.field('storyDay').parentElement.parentElement.hidden, false);
+  assert.equal(f.requests.length, 1);
+  form.enter({ storyTimeFormat: '' });
+  assert.equal(form.field('storyDate').value, '0');
+  assert.equal(form.field('storyEndDate').value, 'Dusk');
+  assert.equal(form.field('storyDate').disabled, false);
+  assert.equal(form.field('storyDay').value, '-2');
+  assert.equal(form.field('storyDay').disabled, true);
+  form.click(anchorAction);
+  const calendar = f.anchor('scene-a').storyRange;
+  assert.equal(calendar.start.pointKind, 'calendarDate');
+  assert.equal(calendar.start.value, '0');
+  assert.equal(calendar.end.value, 'Dusk');
+  form.enter({ storyTimeFormat: 'ordinalDay', storyRangeKind: 'approximate', storyPrecisionNote: 'Approximately these days.' });
+  form.click(anchorAction);
+  const numeric = f.anchor('scene-a').storyRange;
+  assert.equal(numeric.rangeKind, 'approximate');
+  assert.equal(numeric.precisionNote, 'Approximately these days.');
+  assert.deepEqual([numeric.start.pointKind, numeric.end.pointKind], ['ordinalDay', 'ordinalDay']);
+  assert.deepEqual([numeric.start.dayIndex, numeric.end.dayIndex], [-2, 0]);
+  assert.equal(numeric.start.calendarId, '');
+  assert.deepEqual(f.project().scenes, f.originalScenes);
+});
+
+test('Atlas Time stores either open numbered story bound and explicitly unknown time without inventing a point', async () => {
+  const f = await fixture();
+  const form = f.open();
+  form.enter({ storyTimeFormat: 'ordinalDay', storyRangeKind: 'from', storyDay: '0', storyPrecisionNote: 'No end yet.' });
+  form.click(anchorAction);
+  let range = f.anchor('scene-a').storyRange;
+  assert.equal(range.rangeKind, 'open');
+  assert.equal(range.start.pointKind, 'ordinalDay');
+  assert.equal(range.start.dayIndex, 0);
+  assert.equal(range.end, null);
+  form.enter({ storyRangeKind: 'until', storyDay: '', storyEndDay: '-2', storyPrecisionNote: 'No start yet.' });
+  form.click(anchorAction);
+  range = f.anchor('scene-a').storyRange;
+  assert.equal(range.start, null);
+  assert.equal(range.end.pointKind, 'ordinalDay');
+  assert.equal(range.end.dayIndex, -2);
+  form.enter({ storyRangeKind: 'unknown', storyEndDay: '', storyPrecisionNote: 'Author has not chosen.' });
+  form.click(anchorAction);
+  range = f.anchor('scene-a').storyRange;
+  assert.equal(range.rangeKind, 'unknown');
+  assert.equal(range.start, null);
+  assert.equal(range.end, null);
+  assert.equal(range.precisionNote, 'Author has not chosen.');
+  assert.equal(f.requests.length, 3);
+  assert.deepEqual(f.project().scenes, f.originalScenes);
+});
+
+test('Atlas Time rejects malformed story days and unsupported format without a product write', async () => {
+  const f = await fixture();
+  const form = f.open();
+  form.enter({ storyTimeFormat: 'ordinalDay' });
+  form.click(anchorAction);
+  for (const value of ['1e3', '2.5', '9007199254740992', 'day 3']) {
+    form.enter({ storyDay: value });
+    form.click(anchorAction);
+  }
+  form.enter({ storyDay: '0', storyEndDay: '-2' });
+  form.click(anchorAction);
+  assert.equal(f.requests.length, 0);
+  assert.ok(f.statuses.every(({visible}) => visible));
+  form.enter({ storyTimeFormat: 'invalid', storyEndDay: '', narrativeDay: '8' });
+  form.click(anchorAction);
+  assert.equal(f.requests.length, 0);
+  assert.deepEqual(f.project().scenes, f.originalScenes);
+});
+
+test('Atlas Time preserves a saved story value when a fresh scene draft only switches format and edits narrative time', async () => {
+  const f = await fixture({ useMainPreparation: true });
+  const initial = f.open();
+  initial.enter({ storyTimeFormat: 'ordinalDay', storyDay: '0', narrativeDay: '2' });
+  initial.click(anchorAction);
+  const saved = structuredClone(f.anchor('scene-a').storyRange);
+  f.open({ currentProjectId: 'project-b' });
+  const form = f.open({ currentProjectId: 'project-a' });
+  form.enter({ storyTimeFormat: 'ordinalDay', narrativeDay: '4' });
+  form.click(anchorAction);
+  assert.equal(f.requests.length, 2);
+  const payload = f.requests.at(-1).payload;
+  assert.ok(payload.preserveUntouchedTemporalFields.includes('storyRange'));
+  assert.deepEqual(f.anchor('scene-a').storyRange, saved);
+  assert.equal(f.anchor('scene-a').narrativeRange.start.dayIndex, 4);
+  assert.deepEqual(f.project().scenes, f.originalScenes);
+});
+
+test('Atlas Time numbered authoring feeds the existing numeric axis without changing manuscript or query state', async () => {
+  const f = await fixture();
+  const a = f.open();
+  a.enter({ storyTimeFormat: 'ordinalDay', storyDay: '0', narrativeDay: '4' });
+  a.click(anchorAction);
+  const b = f.open({ currentDocumentId: 'scene-b' });
+  b.enter({ storyTimeFormat: 'ordinalDay', storyDay: '-2', narrativeDay: '5' });
+  b.click(anchorAction);
+  assert.equal(f.requests.length, 2);
+  const core = await import('../../src/core/runtime.mjs');
+  const derived = await import('../../src/derived/index.mjs');
+  const before = core.hashCoreState(f.coreState());
+  const result = derived.deriveAtlasTemporalLayout({
+    coreState: f.coreState(), params: { projectId: 'project-a', sliderValue: -2 },
+    capabilitySnapshot: { platformId: 'node', capabilities: {
+      atlasTemporalLayout: true, atlasSceneTemporalAnchors: true, atlasRelationSegmentsPerspective: true,
+      atlasCalendarDefinitions: true, atlasObservationAggregate: true, atlasTemporalContinuity: true,
+    }},
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.value.layoutPacket.axis.label, 'story time');
+  assert.deepEqual(result.value.layoutPacket.events.map(({sceneId,timeValue}) => [sceneId,timeValue]), [['scene-b',-2],['scene-a',0]]);
+  assert.deepEqual(result.value.timeSliderState.selectedSceneIds, ['scene-b']);
+  assert.equal(core.hashCoreState(f.coreState()), before);
   assert.deepEqual(f.project().scenes, f.originalScenes);
 });

@@ -1,3 +1,11 @@
+# Delivery closure — Atlas Time range authoring
+
+STATUS: TERMINAL_DELIVERY_PASS_BOUNDED_SCOPE
+
+M22 PR2214 closed at exact merged 12d719ce735cfdd15c2c2d853edb7a70ab727545; candidate 551e635f69dbc4cc7c15c2a9517899e7c4a079c7, tested tree 2202994225543eae98bd9713920756ba8c6d5423. Candidate/main required CI 20/20 each, merged local27 56034ed0721dd1ac1eafb92ac0739c85b29b4a7b32e93f089423d164f7886826, separate rebuilt own58 AUTHOR 9 and COLD with all six physical files literal, two real exits0; independent native 5e1c1cb2359162ec0c7b94e08d84007f7ff4bd1357671d057a99a6b3c37be552. Merged CI cae69030780fa90c760bd09caa067da536183c48a04906e7545019300b6eb3f3, guardrails a3e4d1baefba643c00a2fd9f39506dfec671ee01505ab75a6a4dc8a128c5916a. Final19 report ATLAS_TEMPORAL_RANGE_AUTHORING_FINAL_REPORT_01.json SHA2cc2328332837190014d60637f70afbf9a5338b4a77e2e4351883d4516dd6298. This is bounded Atlas Time authoring; full Mac NOT_READY, all17 UNKNOWN.
+
+Original pre-delivery task is preserved below. Its pending status and native ordinal targets are historical, and actual exact proofs are in the final report.
+
 # Atlas Time — явные авторские границы
 
 TASK_ID: YALKEN_ATLAS_TEMPORAL_RANGE_AUTHORING_MAC_20261108
