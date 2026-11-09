@@ -36,6 +36,7 @@ Existing E08 C01-C05 source modules already execute their original 21 cases with
 - docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
 - docs/tasks/2026-11-09--atlas-continuity-save-freshness.md
 - docs/tasks/2026-11-09--atlas-global-composite.md
+- scripts/ops/release-candidate.mjs
 - scripts/ops/r24/corrective/interop-current-certification-deltas.mjs
 - scripts/ops/rtk-interop-data-c1.mjs
 - scripts/ops/sector-m-scope-map.json
@@ -141,3 +142,7 @@ Fresh direct owner pause verified from userMessage01a1c016-fbc2-7f63-8f84-130310
 
 RESUMED: Direct owner goal status ACTIVE after the reboot pause. Fresh registry/worktree/mount UUID/encryption checks and bootstrap succeeded. Every one of20 checkpoint WIP files independently matches9d96881fe11eca277c8094cf37d8f7717ccaa20c8c1893a7bb865136ad4de5c0; no competing local writer, HEAD and freshly fetched origin/main remain60e7d2e1c38760226f194666c551b6a38a38bb8f. Historical V10/V11 expectations are restored to the original exact twelve queries; current V14 still requires thirteen. Preserve original841/838/3 raw; next verify those cases cheaply, reconcile existing current metadata, make a local unaccepted source checkpoint and admit the existing release-verifier current factory selector in this same chain before native and full delivery. No historical profile/capability predicate is widened.
 
+
+### Current V2 selector admission
+
+Same open M25 chain continues at unaccepted source checkpoint f7000f225d4c742767562773a61a6352b11c7542. Clean preflight7835e9d479bac434eb9f82d365dcbd34e47b313c3d81a2a999b82a60334461cb admits exactly34 paths, adding only existing release-candidate.mjs to reconcile actual V14 with current V2. Original base60e7d2e1c38760226f194666c551b6a38a38bb8f remains the delivery base; no rebase or push. Historical V1/V13, all17 UNKNOWN, UNFROZEN and release-denial predicates remain protected.
