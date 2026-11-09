@@ -975,7 +975,8 @@
     "test/contracts/rtk-lab01-build-bound-profiles.contract.test.js",
     "docs/tasks/2026-11-08--atlas-temporal-coordinate.md",
     "docs/tasks/2026-11-08--atlas-temporal-range-authoring.md",
-    "docs/tasks/2026-11-09--atlas-temporal-story-day.md"
+    "docs/tasks/2026-11-09--atlas-temporal-story-day.md",
+    "docs/tasks/2026-11-09--atlas-continuity-save-freshness.md"
   ],
   "protectedFiles": [
     {
@@ -1216,7 +1217,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "018f14522294d63ee1c58994fe55a6aa657ca0051950385f43fb8c9b089f0ad6"
+        "sha256": "f58ff638f0fe3e3393109d37a78ed586de099720a4d2efeadc5c7d06b62059dd"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1380,7 +1381,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "af046da1b9f76d5a993f21f75f984bc688739dd45dd14ece397f9e5f64bf09e6"
+        "sha256": "e6baae1bd3e1823c4f9f787923e44d60a52112b4c1aedc7d0f4a270ca51e6462"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2896,11 +2897,11 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "03865d89af9c21ad4cfbe0ee217756b04038245cc9c1ed9b50685f2fcde02e6e"
+        "sha256": "e8e31570cdd20ee9ac60e34098456e0b03905954d55b3085fcf87e917f4ac9fa"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "83882bb78b7b0006693cf29e762b33afbf9cc36c8c8c03c4797a7a209b97e262"
+        "sha256": "8cdb18abdc8895ea2530464ab73ec464fc390f0e247f299505608a26c61ab9ad"
       },
       {
         "path": "docs/WORKLOG.md",
@@ -3444,7 +3445,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "46f8eb6e9841a30d5b57404b5dab0a8438e07e01ce62e697de5a353e57fcdfb0"
+        "sha256": "4a13cebf15951a21c3f62fd561f6ee9ba676fa245b025ab0506d41c1255b699a"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3576,7 +3577,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "f2831e76853e53fb24aae02ae25a431a93191efc9158332b684e5e4d220d68f7"
+        "sha256": "63b2479d75f6f94f679f7b3ee490d46df1bad3c351646487421160b062559792"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4056,7 +4057,7 @@
       },
       {
         "path": "test/unit/navigator-derived-counters-renderer.test.js",
-        "sha256": "cbb7da96b6acfc620b76dc56337d0dc3d311c83356408fc252d4003ea91df203"
+        "sha256": "c1e2758a85c7609e382b130d5d1addcd11dc164c7af063500e74e0fa5ef66d67"
       },
       {
         "path": "scripts/ops/r24/corrective/current-bindings-finalizer.mjs",
@@ -4468,7 +4469,11 @@
       },
       {
         "path": "docs/tasks/2026-11-09--atlas-temporal-story-day.md",
-        "sha256": "ab028186c03a519a64ad786cef9a7f36c796863e3e1d04432118bf58d0bb30c2"
+        "sha256": "81560bb33591b4e4c9b5833977fbe9a0a2cec0420ae785f52273c57b6be3f09a"
+      },
+      {
+        "path": "docs/tasks/2026-11-09--atlas-continuity-save-freshness.md",
+        "sha256": "9687d55b4e989df89345d9fcfdfdac08753a616fcf3441cc5c4e596879c6cf9e"
       }
     ],
     "followupRepair": {

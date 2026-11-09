@@ -595,6 +595,7 @@
       "docs/tasks/2026-11-08--atlas-temporal-coordinate.md",
       "docs/tasks/2026-11-08--atlas-temporal-range-authoring.md",
       "docs/tasks/2026-11-09--atlas-temporal-story-day.md",
+      "docs/tasks/2026-11-09--atlas-continuity-save-freshness.md",
       "src/derived/atlas/deriveAtlasTemporalLayout.mjs"
     ]
   },
