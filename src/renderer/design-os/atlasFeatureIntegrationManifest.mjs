@@ -4,6 +4,18 @@ export const ATLAS_DESIGN_OS_BINDING_SOURCE = 'DESIGN_OS_SLOT_RESOLVER';
 
 const ATLAS_SURFACE_CONTRIBUTIONS = Object.freeze([
   {
+    surfaceKey: 'globalComposite',
+    surfaceId: 'surface.atlas.globalComposite',
+    queryRegistryKey: 'ATLAS_GLOBAL_COMPOSITE_GRAPH',
+    providerId: 'query.atlasGlobalCompositeGraph',
+    slotId: 'rightRail.context.atlas.globalComposite',
+    hostKind: 'rightRail',
+    stateClass: 'DERIVED_STATE',
+    commandIds: [],
+    capabilityIds: [],
+    explicitOpenRequired: true,
+  },
+  {
     surfaceKey: 'currentScene',
     surfaceId: 'surface.atlas.currentScene',
     queryRegistryKey: 'ATLAS_CURRENT_SCENE',

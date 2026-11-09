@@ -57,7 +57,9 @@ function inferNodeTrustState(node = {}) {
   const explicit = normalizeTrustState(node.trustState || node.evidenceTrustState || node.authorTrustState);
   if (explicit !== TRUST_UNKNOWN) return explicit;
   const sourceProjection = normalizeString(node.sourceProjection);
-  if (sourceProjection === 'manualMap') return TRUST_AUTHOR_CONFIRMED;
+  // These read models contain canonical explicit author records; their
+  // placement in a computed composite does not make them mined observations.
+  if (['manualMap', 'manualMap.graph', 'idea.projection', 'meaning.projection'].includes(sourceProjection)) return TRUST_AUTHOR_CONFIRMED;
   return TRUST_ALGORITHMIC_OBSERVATION;
 }
 

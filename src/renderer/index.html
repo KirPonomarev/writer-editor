@@ -1096,6 +1096,7 @@
             <button type="button" class="right-rail-atlas-nav__button" id="atlas-surface-tab-heatmap" data-atlas-surface-button="heatmap" aria-controls="atlas-surface-panel-heatmap" aria-selected="false" role="tab">Heatmap</button>
             <button type="button" class="right-rail-atlas-nav__button" id="atlas-surface-tab-temporal" data-atlas-surface-button="temporal" aria-controls="atlas-surface-panel-temporal" aria-selected="false" role="tab">Time</button>
             <button type="button" class="right-rail-atlas-nav__button" id="atlas-surface-tab-continuity" data-atlas-surface-button="continuity" aria-controls="atlas-surface-panel-continuity" aria-selected="false" role="tab">Ledger</button>
+            <button type="button" class="right-rail-atlas-nav__button" id="atlas-surface-tab-global-composite" data-atlas-surface-button="globalComposite" aria-controls="atlas-surface-panel-global-composite" aria-selected="false" role="tab" hidden>Граф</button>
           </nav>
           <div
             id="atlas-surface-panel-journey"
@@ -1286,6 +1287,17 @@
             role="tabpanel"
             aria-labelledby="atlas-surface-tab-current-scene"
           ></div>
+          <div
+            id="atlas-surface-panel-global-composite"
+            class="right-rail-shell right-rail-shell--atlas"
+            data-atlas-surface-shell="globalComposite"
+            role="tabpanel"
+            aria-labelledby="atlas-surface-tab-global-composite"
+            hidden
+          >
+            <div class="right-rail-surface" data-atlas-global-composite-host
+              data-atlas-global-composite-provider="query.atlasGlobalCompositeGraph"></div>
+          </div>
         </div>
         <div class="sidebar__resize-handle sidebar__resize-handle--right" data-right-sidebar-resizer aria-hidden="true"></div>
       </aside>

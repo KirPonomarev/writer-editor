@@ -21,11 +21,13 @@ test('ER C06: Atlas tab owns one local surface navigator and one initially activ
   const buttonMatches = html.match(/data-atlas-surface-button="/g) || [];
   const shellMatches = html.match(/data-atlas-surface-shell="/g) || [];
 
-  assert.equal(buttonMatches.length, 13);
-  assert.equal(shellMatches.length, 13);
+  assert.equal(buttonMatches.length, 14);
+  assert.equal(shellMatches.length, 14);
   assert.match(html, /data-atlas-surface-nav role="tablist"/u);
   assert.match(html, /data-atlas-surface-button="currentScene"[\s\S]{0,180}aria-selected="true"/u);
   assert.match(html, /id="atlas-surface-panel-current-scene"[\s\S]{0,260}data-atlas-surface-shell="currentScene"/u);
+  assert.match(html, /data-atlas-surface-button="globalComposite"[^>]*aria-selected="false"[^>]*role="tab"[^>]*hidden/u);
+  assert.match(html, /id="atlas-surface-panel-global-composite"[^>]*data-atlas-surface-shell="globalComposite"[^>]*aria-labelledby="atlas-surface-tab-global-composite"[^>]*hidden/u);
 
   for (const surface of [
     'journey',
@@ -40,6 +42,7 @@ test('ER C06: Atlas tab owns one local surface navigator and one initially activ
     'heatmap',
     'temporal',
     'continuity',
+    'globalComposite',
   ]) {
     assert.match(html, new RegExp(`data-atlas-surface-button="${surface}"`, 'u'), surface);
     assert.match(html, new RegExp(`role="tabpanel"[\\s\\S]{0,180}data-atlas-surface-shell="${surface}"|data-atlas-surface-shell="${surface}"[\\s\\S]{0,180}role="tabpanel"`, 'u'), surface);
@@ -73,6 +76,7 @@ test('ER C06: renderer refreshes only the active Atlas sub-surface', () => {
     'refreshAtlasHeatmap',
     'refreshAtlasTemporalLayout',
     'refreshAtlasContinuityLedgerSurface',
+    'refreshAtlasGlobalCompositeGraph',
   ]) {
     assert.match(refreshActive, new RegExp(`${call}\\(`, 'u'), call);
   }

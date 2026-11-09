@@ -127,8 +127,8 @@ test('WP307 independent oracles kill activation and optional-system mutants', (t
     {
       id: 'history-denied',
       transform: (value) => value.replace(
-        "  'query.projectionInspector',\n]);",
-        "  'query.projectionInspector',\n  'query.sceneHistory',\n]);",
+        'const OPTIONAL_QUERY_IDS = Object.freeze([\n',
+        "const OPTIONAL_QUERY_IDS = Object.freeze([\n  'query.sceneHistory',\n",
       ),
       oracle: (module) => {
         const profile = module.createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' });

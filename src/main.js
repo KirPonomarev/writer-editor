@@ -284,7 +284,7 @@ const {
   getProductCommandRecord,
 } = require('./shared/productCommandRegistry.cjs');
 const {
-  createWriterAtlasAssociationsProfileProjection,
+  createWriterAtlasGlobalCompositeProfileProjection,
   evaluateWriterLocalCommandAccess,
   evaluateWriterLocalQueryAccess,
 } = require('./core/writer-local-profile-v1.cjs');
@@ -702,6 +702,7 @@ const ATLAS_DIAGNOSTICS_STAGE_ACCEPTANCE_QUERY_ID = WORKSPACE_QUERY_IDS.ATLAS_DI
 const ATLAS_CURRENT_SCENE_QUERY_ID = WORKSPACE_QUERY_IDS.ATLAS_CURRENT_SCENE;
 const MANUAL_MAP_WORKBENCH_QUERY_ID = WORKSPACE_QUERY_IDS.MANUAL_MAP_WORKBENCH;
 const PROJECTION_INSPECTOR_QUERY_ID = WORKSPACE_QUERY_IDS.PROJECTION_INSPECTOR;
+const ATLAS_GLOBAL_COMPOSITE_GRAPH_QUERY_ID = WORKSPACE_QUERY_IDS.ATLAS_GLOBAL_COMPOSITE_GRAPH;
 const ATLAS_ANALYTICS_QUERY_IDS = new Set([
   ATLAS_OVERVIEW_QUERY_ID,
   ATLAS_ENTITY_DOSSIER_QUERY_ID,
@@ -19668,7 +19669,7 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
     const profile = getWriterLocalRuntimeProfile();
     return !isDirty && languageContext.every((value, index) => value === now[index])
       && languageContext[0] && !languageContext[0].isDestroyed() && !languageContext[0].webContents.isDestroyed()
-      && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'].includes(profile.profileId)
+      && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14'].includes(profile.profileId)
       && evaluateWriterLocalQueryAccess({ profile, queryId }).allowed;
   };
   const authoredRequested = payload && Object.getOwnPropertyDescriptor(payload, 'includeAuthoredAssociations')?.value === true
@@ -19680,7 +19681,7 @@ async function runScheduledAtlasAnalyticsQuery(queryId, payload, handler) {
     if (!authoredContext) return true;
     const profile = getWriterLocalRuntimeProfile(), window = authoredContext[0];
     return window && !window.isDestroyed() && !window.webContents.isDestroyed()
-      && profile.profileId === 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'
+      && ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14'].includes(profile.profileId)
       && evaluateWriterLocalQueryAccess({ profile, queryId }).allowed
       && (payload.sourceScope?.kind === 'BOOK' || !isDirty)
       && readAuthoredContext().every((value, index) => value === authoredContext[index]);
@@ -20319,7 +20320,7 @@ async function handleWorkspaceAtlasEntityDossierQuery(payload = {}) {
 }
 
 async function handleWorkspaceAtlasRelationDossierQuery(payload = {}) {
-  if (getWriterLocalRuntimeProfile().profileId === 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13') {
+  if (['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14'].includes(getWriterLocalRuntimeProfile().profileId)) {
     if (!isPlainObjectValue(payload) || ['projectId', 'authoredOffset', 'selectedAssociationId'].some(key => {
       const d = Object.getOwnPropertyDescriptor(payload, key);
       return d && (!Object.hasOwn(d, 'value') || !d.enumerable || (key === 'authoredOffset'
@@ -20375,7 +20376,7 @@ async function handleWorkspaceAtlasRelationDossierQuery(payload = {}) {
     return {
       ok: true,
       atlasRelationDossier: { ...dossier.value,
-        ...(getWriterLocalRuntimeProfile().profileId === 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13' ? {
+        ...(['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14'].includes(getWriterLocalRuntimeProfile().profileId) ? {
           authoredAssociations: (await import(pathToFileURL(path.join(__dirname, 'derived/atlas/deriveAtlasAuthoredAssociations.mjs')).href))
             .deriveAtlasAuthoredAssociations({ coreState, params: { projectId, offset: safePayload.authoredOffset, selectedAssociationId: safePayload.selectedAssociationId } }),
         } : {}),
@@ -20401,7 +20402,7 @@ async function handleWorkspaceAtlasMatricesQuery(payload = {}) {
     if (safePayload.includeAuthoredAssociations !== true || !safePayload.projectId || !Object.hasOwn(safePayload, 'sourceScope')) {
       return { ok: true, atlasMatrices: makeAtlasMatricesFallback(safePayload.projectId, 'ATLAS_AUTHORED_ASSOCIATION_REQUEST_INVALID') };
     }
-    if (getWriterLocalRuntimeProfile().profileId !== 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13') {
+    if (!['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14'].includes(getWriterLocalRuntimeProfile().profileId)) {
       return { ok: true, atlasMatrices: makeAtlasMatricesFallback(safePayload.projectId, 'ATLAS_AUTHORED_ASSOCIATION_PROFILE_UNAVAILABLE') };
     }
   }
@@ -20522,6 +20523,42 @@ async function handleWorkspaceAtlasHeatmapQuery(payload = {}) {
         error && typeof error.code === 'string' ? error.code : 'ATLAS_HEATMAP_READ_FAILED',
       ),
     };
+  }
+}
+
+let atlasGlobalCompositeQueryPromise = null;
+async function handleWorkspaceAtlasGlobalCompositeGraphQuery(payload = {}) {
+  try {
+    if (!atlasGlobalCompositeQueryPromise) {
+      atlasGlobalCompositeQueryPromise = import(pathToFileURL(path.join(__dirname, 'main', 'atlasGlobalCompositeQuery.mjs')).href)
+        .then(({ createAtlasGlobalCompositeQuery }) => {
+          const captureContext = () => [mainWindow, activeStage10ApplicationBootstrap, getProjectRootPath(),
+            app.getPath('userData'), currentLifecycleSubjectId(), commentAuthoringSessionId,
+            lastSignaledEditGeneration, currentFilePath, currentProjectName, isDirty];
+          return createAtlasGlobalCompositeQuery({
+            canRead: () => {
+              const profile = getWriterLocalRuntimeProfile();
+              return profile.profileId === 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14'
+                && [ATLAS_GLOBAL_COMPOSITE_GRAPH_QUERY_ID, ATLAS_OVERVIEW_QUERY_ID, ATLAS_TEMPORAL_LAYOUT_QUERY_ID,
+                  MANUAL_MAP_WORKBENCH_QUERY_ID, PROJECTION_INSPECTOR_QUERY_ID]
+                  .every(queryId => evaluateWriterLocalQueryAccess({ profile, queryId }).allowed);
+            },
+            captureContext,
+            isContextCurrent: context => {
+              const window = context[0];
+              return window && !window.isDestroyed() && !window.webContents.isDestroyed()
+                && captureContext().every((value, index) => value === context[index]);
+            },
+            readCoreState: buildProductCoreStateForCurrentProject,
+            // Payload validation and explicit intent precede the shared scheduler.
+            schedule: (safePayload, read) => runScheduledAtlasAnalyticsQuery(ATLAS_GLOBAL_COMPOSITE_GRAPH_QUERY_ID, safePayload, read),
+          });
+        }).catch(error => { atlasGlobalCompositeQueryPromise = null; throw error; });
+    }
+    return await (await atlasGlobalCompositeQueryPromise)(payload);
+  } catch (error) {
+    logDevError('query.atlasGlobalCompositeGraph', error);
+    return { ok: false, error: { code: error?.code || 'E_ATLAS_COMPOSITE_READ_FAILED' } };
   }
 }
 
@@ -20831,7 +20868,7 @@ async function handleWorkspaceAtlasCurrentSceneQuery(payload = {}, analysisJob =
   const assertContext = () => {
     const profile = getWriterLocalRuntimeProfile();
     if (!app.isPackaged || process.platform !== 'darwin' || process.arch !== 'arm64'
-      || !['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'].includes(profile.profileId)
+      || !['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14'].includes(profile.profileId)
       || !evaluateWriterLocalQueryAccess({ profile, queryId: ATLAS_CURRENT_SCENE_QUERY_ID }).allowed
       || !context[0] || context[0].isDestroyed() || context[0].webContents.isDestroyed()
       || !context[1] || context[1].getProjectId?.() !== safePayload.projectId || isDirty
@@ -36067,6 +36104,7 @@ const WORKSPACE_QUERY_BRIDGE_HANDLERS = new Map([
   [ATLAS_CURRENT_SCENE_QUERY_ID, handleWorkspaceAtlasCurrentSceneQuery],
   [MANUAL_MAP_WORKBENCH_QUERY_ID, handleWorkspaceManualMapWorkbenchQuery],
   [PROJECTION_INSPECTOR_QUERY_ID, handleWorkspaceProjectionInspectorQuery],
+  [ATLAS_GLOBAL_COMPOSITE_GRAPH_QUERY_ID, handleWorkspaceAtlasGlobalCompositeGraphQuery],
 ]);
 
 guardedProtocolHandle('ui:workspace-query-bridge', async (_, request) => {
@@ -38253,7 +38291,7 @@ guardedHandle('ui:open-section', async (_, payload) => {
 });
 
 function getWriterLocalRuntimeProfile() {
-  return createWriterAtlasAssociationsProfileProjection({
+  return createWriterAtlasGlobalCompositeProfileProjection({
     isPackaged: app.isPackaged === true,
     platform: process.platform,
   });
@@ -40709,7 +40747,7 @@ function isSceneLanguagePayloadValid(commandId, payload) {
   if (commandId === 'atlas.languageTag.set' && typeof payload.languageCode !== 'string') return false;
   for (const key of ['startOffset', 'endOffset']) if (Object.hasOwn(payload, key) && !Number.isSafeInteger(payload[key])) return false;
   const bound = Object.hasOwn(payload, 'expectedManifestRevision') || Object.hasOwn(payload, 'expectedSceneRevision')
-    || ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'].includes(getWriterLocalRuntimeProfile().profileId);
+    || ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14'].includes(getWriterLocalRuntimeProfile().profileId);
   return !bound || payload.scopeKind === 'scene' && typeof payload.projectId === 'string' && Boolean(payload.projectId.trim())
     && typeof payload.sceneId === 'string' && Boolean(payload.sceneId.trim())
     && typeof payload.expectedManifestRevision === 'string' && typeof payload.expectedSceneRevision === 'string'
@@ -40719,7 +40757,7 @@ function isSceneLanguagePayloadValid(commandId, payload) {
 
 async function prepareSceneLanguageIntent(commandId, payload, binding, previousHash, guard) {
   const bound = Object.hasOwn(payload, 'expectedManifestRevision') || Object.hasOwn(payload, 'expectedSceneRevision')
-    || ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'].includes(getWriterLocalRuntimeProfile().profileId);
+    || ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14'].includes(getWriterLocalRuntimeProfile().profileId);
   if (!bound) return null;
   const refuse = code => { throw Object.assign(new Error(code), { code }); };
   if (!isSceneLanguagePayloadValid(commandId, payload)) refuse('E_PRODUCT_COMMAND_PAYLOAD_INVALID');
@@ -41575,7 +41613,7 @@ async function dispatchProductCommandBridge(commandId, payload = {}, hostEffectP
   let associationGuard = null;
   if (commandId === 'atlas.association.record') {
     try {
-      if (!app.isPackaged || process.platform !== 'darwin' || getWriterLocalRuntimeProfile().profileId !== 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13') {
+      if (!app.isPackaged || process.platform !== 'darwin' || !['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14'].includes(getWriterLocalRuntimeProfile().profileId)) {
         throw Object.assign(new Error('ATLAS_ASSOCIATION_PROFILE_UNAVAILABLE'), { code: 'E_ATLAS_ASSOCIATION_PROFILE_UNAVAILABLE' });
       }
       associationGuard = captureAtlasAssociationPreparationGuard(commandId, record); associationGuard();

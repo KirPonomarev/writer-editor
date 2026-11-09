@@ -596,7 +596,13 @@
       "docs/tasks/2026-11-08--atlas-temporal-range-authoring.md",
       "docs/tasks/2026-11-09--atlas-temporal-story-day.md",
       "docs/tasks/2026-11-09--atlas-continuity-save-freshness.md",
-      "src/derived/atlas/deriveAtlasTemporalLayout.mjs"
+      "src/derived/atlas/deriveAtlasTemporalLayout.mjs",
+      "docs/tasks/2026-11-09--atlas-global-composite.md",
+      "src/derived/atlas/deriveAtlasGlobalCompositeGraphNavigation.mjs",
+      "src/main/atlasGlobalCompositeQuery.mjs",
+      "src/renderer/atlasGlobalCompositeSurface.mjs",
+      "test/contracts/yalken-atlas-v5-e08-c04-trust-filters-batch-navigation-accessibility-parity.contract.test.js",
+      "test/unit/atlas-global-composite.test.js"
     ]
   },
   "allowPrefixByPhase": {

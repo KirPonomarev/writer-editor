@@ -44,7 +44,13 @@ test('P0 04: Atlas feature integration manifest binds product, command, projecti
   assert.equal(YALKEN_ATLAS_FEATURE_INTEGRATION_MANIFEST_V1.authorityMap.commandAuthority.includes('Command Kernel'), true);
   assert.equal(YALKEN_ATLAS_FEATURE_INTEGRATION_MANIFEST_V1.authorityMap.designAuthority.includes('Design OS slot resolver'), true);
   assert.equal(YALKEN_ATLAS_FEATURE_INTEGRATION_MANIFEST_V1.requiredDesignOsPorts.includes('ShellProjectionPort'), true);
-  assert.equal(YALKEN_ATLAS_FEATURE_INTEGRATION_MANIFEST_V1.surfaceManifests.length, 15);
+  assert.equal(YALKEN_ATLAS_FEATURE_INTEGRATION_MANIFEST_V1.surfaceManifests.length, 16);
+  assert.deepEqual(
+    YALKEN_ATLAS_FEATURE_INTEGRATION_MANIFEST_V1.surfaceManifests.map((surface) => surface.surfaceKey),
+    ['globalComposite', 'currentScene', 'journey', 'manualMap', 'projection', 'overview',
+      'workspace', 'workspaceDossier', 'entity', 'relation', 'matrices', 'reports',
+      'diagnostics', 'heatmap', 'temporal', 'continuity'],
+  );
   assert.deepEqual(
     YALKEN_ATLAS_FEATURE_INTEGRATION_MANIFEST_V1.negativeBypassChecks,
     [
@@ -67,11 +73,22 @@ test('P0 04: Atlas feature integration manifest binds product, command, projecti
   assert.equal(result.ok, true, JSON.stringify(result, null, 2));
   assert.equal(result.resolverId, ATLAS_DESIGN_OS_SLOT_RESOLVER_ID);
   assert.equal(result.source, ATLAS_DESIGN_OS_BINDING_SOURCE);
-  assert.equal(result.bindingCount, 15);
+  assert.equal(result.bindingCount, 16);
   assert.equal(result.bindings.every((binding) => binding.source === 'DESIGN_OS_SLOT_RESOLVER'), true);
   assert.equal(result.bindings.every((binding) => binding.productMutation === false), true);
   assert.equal(result.bindings.every((binding) => binding.storageAuthority === false), true);
   assert.equal(result.bindings.every((binding) => binding.networkAuthority === false), true);
+
+  const globalComposite = getAtlasFeatureSurfaceBinding(result, 'globalComposite');
+  assert.equal(globalComposite.surfaceId, 'surface.atlas.globalComposite');
+  assert.equal(globalComposite.providerId, 'query.atlasGlobalCompositeGraph');
+  assert.equal(globalComposite.slotId, 'rightRail.context.atlas.globalComposite');
+  assert.equal(globalComposite.hostKind, 'rightRail');
+  assert.equal(globalComposite.stateClass, 'DERIVED_STATE');
+  assert.equal(globalComposite.explicitOpenRequired, true);
+  assert.equal(globalComposite.dispatchAuthority, 'none');
+  assert.deepEqual(globalComposite.commandIds, []);
+  assert.deepEqual(globalComposite.capabilityIds, []);
 
   const relation = getAtlasFeatureSurfaceBinding(result, 'relation');
   assert.equal(relation.providerId, 'query.atlasRelationDossier');
