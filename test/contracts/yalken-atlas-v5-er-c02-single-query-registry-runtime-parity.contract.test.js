@@ -115,6 +115,14 @@ const ATLAS_SURFACE_CONTRACTS = Object.freeze([
     refreshName: 'refreshProjectionInspector',
     htmlProvider: 'data-projection-inspector-provider="query.projectionInspector"',
   }),
+  Object.freeze({
+    surface: 'globalComposite',
+    registryKey: 'ATLAS_GLOBAL_COMPOSITE_GRAPH',
+    constName: 'ATLAS_GLOBAL_COMPOSITE_GRAPH_QUERY_ID',
+    handlerName: 'handleWorkspaceAtlasGlobalCompositeGraphQuery',
+    refreshName: 'refreshAtlasGlobalCompositeGraph',
+    htmlProvider: 'data-atlas-global-composite-provider="query.atlasGlobalCompositeGraph"',
+  }),
 ]);
 
 function readText(filePath) {

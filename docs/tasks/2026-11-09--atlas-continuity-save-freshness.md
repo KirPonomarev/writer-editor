@@ -79,3 +79,8 @@ Use AGENT_FINAL_REPORT_V1; exact commits, scope, original and current observed d
 ## FAIL_PROTOCOL
 
 Retain actual raw output and exit; distinguish cheaply before fixing. No weakened predicates, silent rebase, stale acceptance, hidden failures or repeat of expensive work without changed inputs.
+
+
+## Exact terminal delivery closure — 9 November 2026
+
+PR2216 merged at60e7d2e1c38760226f194666c551b6a38a38bb8f; candidate1027f0b97e8a8868ebbeecd664b5df9c7f247390, identical tree757519e07f3b237dda61de69e2bb1122c2d3fc71. Candidate/main CI20/20 each, actual merged28 local stages and separately rebuilt own63 Save/cold with two ordinary exits and independent artifact/profile/source/Pulse readback. Final schema report ATLAS_CONTINUITY_SAVE_FRESHNESS_FINAL_REPORT_01.json SHA71be77f439361016ab6c4ae3dc593640eae4c9a03b506884b0342f73f1c08043. Original failures, reboot/remount provenance and absent temporary-runtime limitations remain retained. Bounded result closed; full Mac NOT_READY and all17 UNKNOWN.

@@ -1,3 +1,28 @@
+# CURRENT — Atlas global composite: explicit product route
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_GLOBAL_COMPOSITE_MAC_20261109
+BINDING_BASE_SHA: 60e7d2e1c38760226f194666c551b6a38a38bb8f
+BRANCH: codex/atlas-global-composite-20261109
+STATUS: RESUMED_SOURCE_CHECKS_AND_CURRENT_BINDINGS_PENDING
+
+PR2216 is closed at exact merged 60e7d2e1c38760226f194666c551b6a38a38bb8f, candidate1027f0b97e8a8868ebbeecd664b5df9c7f247390, same tree757519e07f3b237dda61de69e2bb1122c2d3fc71. Candidate and main CI each20/20, actual merged28 local stages and separately rebuilt own63 native Save/cold with two normal exits and independently read source/Pulse/profile/artifact bytes. Final schema report ATLAS_CONTINUITY_SAVE_FRESHNESS_FINAL_REPORT_01.json SHA71be77f439361016ab6c4ae3dc593640eae4c9a03b506884b0342f73f1c08043 closes only that bounded Save freshness result. Reboot/remount provenance and absent closed temporary runtime limitations remain in its original report; do not replay old pending instructions below.
+
+Current MAP finds the existing pure global composite, navigation, LOD and scheduler implementations, with21 original E08 cases passing, but no registered product query or Main/preload/renderer caller. Gap a907fb6dc0fe1d21a11d2f84877274957c447d6adb5e1b2c921f96fdabddc6c2; full original source inventory744c1397b32a3b7e60f9979414a2ddb5bf0c6b8ba054db5163a0986c5ec76243. Fresh declaration2a7b6e97727567fea4d7d9bc3eb03cd2c41432625d1bbc02d0edf3b17039031b and clean exact branch preflight0c2c1eb1f9a461b9575945040dbfcb94cd85d11b1373c881222285379179da49 precede this task and semantic edits. E0 passes. New V14 may inherit35 commands and add only explicit read-only composite query, preserving old V1-V13 projections and protected data.
+
+NEXT: Finish the focused historical controls and current binding reconciliation; prepare the clean same-chain release-verifier admission, then early rebuilt owned native, required gates and full normal delivery. Full Mac V6/DNA5 NOT_READY, candidateUNFROZEN, all17 qualification UNKNOWN. Office PAUSED; Black Box after full Mac. Sole executor, no subagents, new chats or independent infrastructure.
+
+
+CURRENT_SOURCE_PROGRESS: Existing graph/query/profile and finite DOM35 cases pass without skips (314fa51179964e1f1387719181ab63f160365a8e4c385149e2f8a2fb20ce9c4e); actual literal Main current V14 read/no-write, mid-read revocation and historical V13 denial pass4 (a12f5eed0ae73ebc0c0df11be1bc5faa91b6a5b8998d56412f3896cdea1338a6). Renderer is connected and regenerated, raw build587933367cfface78ba63d64d2d41c437bdc507d563535b80bb0a8af34d8779d. Original RED/raw, corrected oracle limitation and exact original prospective bytes (bc80e582e667339f0ba1fbd0e5ea850712c067f515aa1a14facbbb13cc52ecc2) are retained. Whole connected affected invocation is terminal:841 tests,838 pass,3 fail,0 skipped/cancel/todo, raw record785c63820ca744a763ed09604ab9cd5af2f9a5efec168cff2bebc85f9ad31b6f. Failures are the expected stale renderer certification hash and two historical V10/V11 expectations inadvertently expanded to13 by the current-target fixture update; restore their original exact twelve-query expectations after explicit resume. No native or delivery acceptance. The release verifier still selects historical V13: its single current factory selector requires a same-chain scope amendment after the verified source checkpoint, before edit/native/delivery; do not bypass it or call stale cut green.
+
+FOLLOWING_FINITE_QUEUE: Direct owner message01a1bced-02f1-7512-b85e-c8277530f608 in turn01a1bced-02d7-7a33-a1db-888f1b096105 on8Nov2026, independently read through official read_thread, authorized useful corrections to the preceding audit. Accepted order in that same original exchange: finish active delivery, then one bounded honest scripts/run-tests.js --dry-run delivery, then one bounded scripts/brain.mjs brain:status delivery with real CLI controls and subsequent real use. M25 already began; finish its one chain safely, then those TWO sequential deliveries before another product outcome. No parallel work, runner/framework/dependency, CI waiver, new tracker or independent cleanup. Source fixture and all mandatory gates/hardstops stay protected.
+
+OWNER_PAUSE: Fresh direct owner userMessage01a1c016-fbc2-7f63-8f84-13031084a772 in turn01a1c016-fba2-7453-8762-5aa8574a7d19, official read_thread independently confirms safe reboot pause. No new tests, build, delivery, writer or cleanup until explicit resume. Existing healthy test reached terminal before any stop signal; no process was killed. WIP, original raw failures and all profiles remain.
+
+RESUMED: Direct owner goal status ACTIVE after the reboot pause. Fresh registry/worktree/mount UUID/encryption checks and bootstrap succeeded. Every one of20 checkpoint WIP files independently matches9d96881fe11eca277c8094cf37d8f7717ccaa20c8c1893a7bb865136ad4de5c0; no competing local writer, HEAD and freshly fetched origin/main remain60e7d2e1c38760226f194666c551b6a38a38bb8f. Historical V10/V11 expectations are restored to the original exact twelve queries; current V14 still requires thirteen. Preserve original841/838/3 raw; next verify those cases cheaply, reconcile existing current metadata, make a local unaccepted source checkpoint and admit the existing release-verifier current factory selector in this same chain before native and full delivery. No historical profile/capability predicate is widened.
+
+--- Earlier factual checkpoints preserved byte exact below ---
+
 # CURRENT HANDOFF — Atlas Continuity Ledger: saved revision freshness
 
 DOCUMENT_CLASS: FACTUAL_STATUS

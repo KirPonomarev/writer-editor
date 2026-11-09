@@ -49,6 +49,7 @@ const OPTIONAL_QUERY_IDS = Object.freeze([
   'query.atlasCurrentScene',
   'query.manualMapWorkbench',
   'query.projectionInspector',
+  'query.atlasGlobalCompositeGraph',
 ]);
 const OPTIONAL_QUERY_ID_SET = new Set(OPTIONAL_QUERY_IDS);
 
@@ -181,6 +182,7 @@ function manualMapProfileAccess(profile, selected, optional) {
 }
 
 function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord = null } = {}) {
+  if (isWriterAtlasGlobalCompositeProfileCandidate(profile)) return evaluateGlobalCompositeAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasAssociationsProfileCandidate(profile)) return evaluateAtlasAssociationsAccess(profile, commandId, productCommandRecord);
   if (isWriterSceneLanguageTagProfileCandidate(profile)) return evaluateSceneLanguageTagCommandAccess(profile, commandId, productCommandRecord);
   if (isWriterIdeaMeaningAuthoringProfileCandidate(profile)) return evaluateIdeaMeaningAuthoringCommandAccess(profile, commandId, productCommandRecord);
@@ -217,6 +219,7 @@ function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRe
 }
 
 function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
+  if (isWriterAtlasGlobalCompositeProfileCandidate(profile)) return evaluateGlobalCompositeAccess(profile, queryId);
   if (isWriterAtlasAssociationsProfileCandidate(profile)) return evaluateAtlasAssociationsAccess(profile, queryId);
   if (isWriterSceneLanguageTagProfileCandidate(profile)) return evaluateSceneLanguageTagQueryAccess(profile, queryId);
   if (isWriterIdeaMeaningAuthoringProfileCandidate(profile)) return evaluateIdeaMeaningAuthoringQueryAccess(profile, queryId);
@@ -705,7 +708,59 @@ function evaluateAtlasAssociationsAccess(profile, identifier, productCommandReco
   return Object.freeze({ allowed, reason: allowed ? '' : WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED, profileId: WRITER_ATLAS_ASSOCIATIONS_PROFILE_ID });
 }
 
+// V14 preserves every V1-V13 projection and admits only one extra read query.
+const WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_ID = 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14';
+const WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v14';
+const WRITER_ATLAS_GLOBAL_COMPOSITE_QUERY_ID = 'query.atlasGlobalCompositeGraph';
+const WRITER_ATLAS_GLOBAL_COMPOSITE_QUERY_IDS = Object.freeze([...WRITER_ATLAS_ASSOCIATIONS_QUERY_IDS,
+  WRITER_ATLAS_GLOBAL_COMPOSITE_QUERY_ID]);
+function createWriterAtlasGlobalCompositeProfileProjection(options = {}) {
+  const inherited = createWriterAtlasAssociationsProfileProjection(options);
+  return inherited.active ? Object.freeze({ ...inherited, profileId: WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_ID,
+    schemaVersion: WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_SCHEMA_VERSION,
+    admittedQueryIds: WRITER_ATLAS_GLOBAL_COMPOSITE_QUERY_IDS }) : inherited;
+}
+function isWriterAtlasGlobalCompositeProfileCandidate(profile) {
+  if (!profile || typeof profile !== 'object') return false;
+  const value = key => Object.getOwnPropertyDescriptor(profile, key)?.value;
+  const queries = value('admittedQueryIds');
+  return normalizeIdentity(value('profileId')).startsWith(WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_ID)
+    || normalizeIdentity(value('schemaVersion')).startsWith(WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_SCHEMA_VERSION)
+    || Array.isArray(queries) && Reflect.ownKeys(queries).some(key =>
+      Object.getOwnPropertyDescriptor(queries, key)?.value === WRITER_ATLAS_GLOBAL_COMPOSITE_QUERY_ID);
+}
+function isActiveWriterAtlasGlobalCompositeProfile(profile) {
+  if (!isPlainObject(profile) || !isWriterAtlasGlobalCompositeProfileCandidate(profile)) return false;
+  const expected = createWriterAtlasGlobalCompositeProfileProjection({ isPackaged: true, platform: 'darwin' });
+  return Reflect.ownKeys(profile).length === Reflect.ownKeys(expected).length && Reflect.ownKeys(expected).every(key => {
+    const d = Object.getOwnPropertyDescriptor(profile, key);
+    if (!d?.enumerable || !Object.hasOwn(d, 'value')) return false;
+    const value = d.value;
+    return Array.isArray(expected[key]) ? Array.isArray(value) && value.length === expected[key].length
+      && Reflect.ownKeys(value).length === value.length + 1 && expected[key].every((id, index) => {
+        const item = Object.getOwnPropertyDescriptor(value, String(index));
+        return item?.enumerable && Object.hasOwn(item, 'value') && item.value === id;
+      }) : value === expected[key];
+  });
+}
+function evaluateGlobalCompositeAccess(profile, identifier, productCommandRecord) {
+  const query = productCommandRecord === undefined, id = normalizeIdentity(identifier);
+  const selected = query ? WRITER_ATLAS_GLOBAL_COMPOSITE_QUERY_IDS.includes(identifier)
+    : WRITER_ATLAS_ASSOCIATIONS_COMMAND_IDS.includes(identifier) && isPlainObject(productCommandRecord)
+      && productCommandRecord.id === identifier && productCommandRecord.domain === identifier.split('.')[0];
+  const optional = query ? OPTIONAL_QUERY_IDS.some(value => id === value || id.startsWith(value + '.'))
+    : isOptionalWriterLocalCommand(identifier, productCommandRecord) || OPTIONAL_PRODUCT_DOMAINS.some(domain => id.startsWith(domain + '.'));
+  const allowed = isActiveWriterAtlasGlobalCompositeProfile(profile) && (!optional || selected);
+  return Object.freeze({ allowed, reason: allowed ? '' : WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,
+    profileId: WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_ID });
+}
+
 module.exports = Object.freeze({
+  WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_ID,
+  WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_SCHEMA_VERSION,
+  WRITER_ATLAS_GLOBAL_COMPOSITE_QUERY_IDS,
+  createWriterAtlasGlobalCompositeProfileProjection,
+  isActiveWriterAtlasGlobalCompositeProfile,
   WRITER_ATLAS_ASSOCIATIONS_PROFILE_ID,
   WRITER_ATLAS_ASSOCIATIONS_PROFILE_SCHEMA_VERSION,
   WRITER_ATLAS_ASSOCIATIONS_COMMAND_IDS,

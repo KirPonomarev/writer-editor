@@ -4,6 +4,34 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
+test('E08 C04: actual canonical author projections retain trust in the real composite, without promoting Plot', async () => {
+  const core = await loadModule('src/core/runtime.mjs');
+  const derived = await loadModule('src/derived/index.mjs');
+  const projectId = 'actual-composite-trust';
+  const built = core.applyCoreSequence(core.createInitialCoreState(), [
+    { type: core.CORE_COMMAND_IDS.PROJECT_CREATE, payload: { projectId, sceneId: 'scene-a', title: 'Trust' } },
+    { type: core.CORE_COMMAND_IDS.IDEA_CREATE, payload: { projectId, ideaId: 'idea-a', title: 'Авторская идея' } },
+    { type: core.CORE_COMMAND_IDS.MEANING_PROMOTE, payload: { projectId, meaningId: 'meaning-a', title: 'Смысл',
+      interpretation: 'Решение автора', source: { kind: 'idea', ideaId: 'idea-a' } } },
+    { type: core.CORE_COMMAND_IDS.MANUAL_MAP_CREATE, payload: { projectId, mapId: 'map-a', title: 'Авторская карта' } },
+    { type: core.CORE_COMMAND_IDS.MANUAL_MAP_NODE_ADD, payload: { projectId, mapId: 'map-a', nodeId: 'node-a', label: 'Узел' } },
+  ]);
+  assert.equal(built.ok, true, JSON.stringify(built.error));
+  const original = structuredClone(built.state);
+  const graph = derived.deriveAtlasGlobalCompositeGraph({ coreState: built.state, params: { projectId } });
+  assert.equal(graph.ok, true, JSON.stringify(graph.error));
+  const author = derived.deriveAtlasGlobalCompositeGraphNavigationPacket({ graph: graph.value,
+    trustFilter: { allowedTrustStates: ['AUTHOR_CONFIRMED'] } });
+  assert.deepEqual(author.nodes.map(node => node.sourceProjection).sort(),
+    ['idea.projection', 'manualMap.graph', 'meaning.projection']);
+  const observed = derived.deriveAtlasGlobalCompositeGraphNavigationPacket({ graph: graph.value,
+    trustFilter: { allowedTrustStates: ['ALGORITHMIC_OBSERVATION'] } });
+  assert.ok(observed.nodes.length > 0);
+  assert.deepEqual(observed.nodes.map(node => node.sourceProjection).sort(),
+    ['crossProjection.impactPreview', 'plot.projection', 'plot.projection']);
+  assert.deepEqual(built.state, original);
+});
+
 async function loadModule(relativePath) {
   const fileUrl = pathToFileURL(path.join(process.cwd(), relativePath)).href;
   return import(fileUrl);

@@ -250,7 +250,7 @@ test('WP307 profile contract carries no persistence, network or external authori
 // Actual Main under an inert Electron host: no app/renderer/native launch.
 // Only the host platform is explicit so the packaged-Darwin policy is also
 // exercised on non-Mac CI; Kernel, project owner, lease and filesystem are real.
-async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false, historicalV7Constructor = false, historicalV8Constructor = false, historicalV9Constructor = false, historicalV10Constructor = false, historicalV11Constructor = false } = {}) {
+async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false, historicalV7Constructor = false, historicalV8Constructor = false, historicalV9Constructor = false, historicalV10Constructor = false, historicalV11Constructor = false, historicalV13Constructor = false } = {}) {
   const os = require('node:os'), Module = require('node:module');
   const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'yalken-full-mac-map-'));
   const marker = crypto.randomUUID(), markerPath = path.join(root, '.owner');
@@ -315,7 +315,7 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
           createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection,
           createWriterIdeaMeaningAuthoringProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection,
           createWriterSceneLanguageTagProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection,
-          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection };
+          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV8Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin'); assert.equal(historicalV7Constructor, false);
@@ -324,7 +324,7 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
           createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection,
           createWriterIdeaMeaningAuthoringProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection,
           createWriterSceneLanguageTagProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection,
-          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection };
+          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV9Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin'); assert.equal(historicalV7Constructor || historicalV8Constructor, false);
@@ -332,21 +332,27 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
         return { ...loaded, createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection,
           createWriterIdeaMeaningAuthoringProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection,
           createWriterSceneLanguageTagProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection,
-          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection };
+          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV10Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin'); assert.equal(historicalV7Constructor || historicalV8Constructor || historicalV9Constructor, false);
         t.diagnostic('HISTORICAL_V10_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
         return { ...loaded, createWriterIdeaMeaningAuthoringProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection,
           createWriterSceneLanguageTagProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection,
-          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection };
+          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV11Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin');
         assert.equal(historicalV7Constructor || historicalV8Constructor || historicalV9Constructor || historicalV10Constructor, false);
         t.diagnostic('HISTORICAL_V11_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
         return { ...loaded, createWriterSceneLanguageTagProfileProjection: loaded.createWriterIdeaMeaningAuthoringProfileProjection,
-          createWriterAtlasAssociationsProfileProjection: loaded.createWriterIdeaMeaningAuthoringProfileProjection };
+          createWriterAtlasAssociationsProfileProjection: loaded.createWriterIdeaMeaningAuthoringProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterIdeaMeaningAuthoringProfileProjection };
+      }
+      if (request === './core/writer-local-profile-v1.cjs' && historicalV13Constructor) {
+        assert.equal(packaged, true); assert.equal(platform, 'darwin');
+        assert.equal(historicalV7Constructor || historicalV8Constructor || historicalV9Constructor || historicalV10Constructor || historicalV11Constructor, false);
+        t.diagnostic('HISTORICAL_V13_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
+        return { ...loaded, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasAssociationsProfileProjection };
       }
       if (request !== './main/projectArchiveDarwinPublication.cjs') return loaded;
       return { ...loaded, createDarwinExclusiveFilePublisher: options => {
@@ -2415,7 +2421,7 @@ test('actual V9 Source entity selection persists alias under the explicitly chos
 
 async function scopedAliasActualMainFixture(t) {
   const x = await reattachmentMainFixture(t, true), h = x.h;
-  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13');
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14');
   const key = (await import('../../src/product/stage10ProjectIdentityKey.mjs')).stage10ProjectPathIdentity(x.projectId);
   assert.equal(key.ok, true);
   const firstPayload = { projectId: x.projectId, entityId: x.entityId, aliasId: 'scoped-alias-original', value: 'Северная', scope: 'scene', sceneId: x.sceneId };
@@ -3301,12 +3307,12 @@ async function sceneLanguageMainFixture(t, packaged = false, beforeProject) {
   return x;
 }
 
-test('current literal Main selects exact V13 thirty-five commands and unchanged twelve queries', async t => {
+test('current literal Main selects exact V14 thirty-five commands and thirteen bounded queries', async t => {
   const h = await fullMacMainFixture(t), active = h.main.__profile();
-  assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'); assert.equal(active.schemaVersion, 'writer-local-profile.v13');
+  assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14'); assert.equal(active.schemaVersion, 'writer-local-profile.v14');
   assert.deepEqual(active.admittedCommandIds, [...profile.createWriterIdeaMeaningAuthoringProfileProjection({ isPackaged: true, platform: 'darwin' }).admittedCommandIds, ...SCENE_LANGUAGE_MAIN_IDS, 'atlas.association.record']);
-  assert.equal(active.admittedCommandIds.length, 35); assert.deepEqual(active.admittedQueryIds, READ_SURFACE_QUERY_IDS);
-  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13');
+  assert.equal(active.admittedCommandIds.length, 35); assert.deepEqual(active.admittedQueryIds, [...READ_SURFACE_QUERY_IDS, 'query.atlasGlobalCompositeGraph']);
+  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14');
   for (const key of ['optionalSystemsEnabled', 'signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation']) assert.equal(active[key], false);
 });
 
@@ -4223,12 +4229,12 @@ test('ENV epoch actual unchanged guarded Main refuses capture and restore before
     actualEpochIds: restored.history.epochs.map(row => row.epochId), priorRecordsUnchanged: true, protectedRosterUnchanged: true, nativeAcceptance: false }));
 });
 
-test('ENV epoch query absence is genuine read-only empty0 and both commands remain FREE under current strict V13', async t => {
+test('ENV epoch query absence is genuine read-only empty0 and both commands remain FREE under current strict V14', async t => {
   const x = await environmentEpochFixture(t), before = environmentEpochWholeRoster(x.h), current = await x.epochRead();
   assert.equal(current.revision, 0); assert.deepEqual(current.epochs, []); assert.equal(fs.existsSync(x.epochPath), false);
   assert.deepEqual(environmentEpochWholeRoster(x.h), before);
-  const active = x.h.main.__profile(); assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13');
-  assert.equal(active.admittedCommandIds.length, 35); assert.equal(active.admittedQueryIds.length, 12);
+  const active = x.h.main.__profile(); assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14');
+  assert.equal(active.admittedCommandIds.length, 35); assert.equal(active.admittedQueryIds.length, 13);
   const entitlement = require('../../src/core/entitlement-law-v1.cjs');
   for (const id of [ENVIRONMENT_EPOCH_CAPTURE, ENVIRONMENT_EPOCH_RESTORE]) {
     assert.equal(entitlement.decideCommandEntitlement(id, entitlement.getProductEntitlementTier()).available, true);
@@ -4466,7 +4472,7 @@ async function environmentEpochSettingsRenderer(x, { actualAggregation = false }
     emit(name) { return this.listeners[name]?.({ target: this }); }
   }
   document.createElement = tag => new Element(tag); document.body = new Element('body');
-  assert.equal(x.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13');
+  assert.equal(x.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14');
   const c = { document, HTMLElement: Element, window: { __PRODUCT_PROFILE: 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13' }, console,
     currentProjectId: x.projectId, currentDocumentId: x.sceneId, currentTreeContentPublicationId: 'actual-main-scene',
     localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false,
@@ -4902,7 +4908,7 @@ test('THEME summary valid historical V1 profile remains an actual allowed Theme 
   const active = f.x.h.main.__profile(); assert.equal(active.profileId, 'WRITER_LOCAL_V1');
   assert.equal(profile.evaluateWriterLocalCommandAccess({ profile: active, commandId: THEME_SUMMARY_COMMAND_ID }).allowed, true);
   // Match the existing valid V1 Main projection with its expected caller identity; a stale current caller is a different negative.
-  const frame = new URL(f.x.h.shellUrl); assert.equal(frame.searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13');
+  const frame = new URL(f.x.h.shellUrl); assert.equal(frame.searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14');
   frame.searchParams.set('PRODUCT_PROFILE', active.profileId); f.x.h.shellUrl = frame.href;
   f.c.window.__PRODUCT_PROFILE = active.profileId;
   await f.change('dark'); assertThemeSummaryApplied(f, t, 'ACTUAL_VALID_V1_POLICY_CONTROL'); assertThemeSummaryNoLoss(f, before);
@@ -6222,4 +6228,40 @@ test('Atlas Time partial input preserves existing fields through the actual Comm
       assert.deepEqual(reattachmentWholeFixtureRoster(h), before);
     }
   });
+});
+
+test('composite actual Main: saved source graph is explicitly queried with complete no-write footprint', async t => {
+  const h = await fullMacMainFixture(t), f = await exactAtlasScene(h, 'Composite saved source');
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14');
+  const before = h.roster();
+  const hidden = await h.query('query.atlasGlobalCompositeGraph', { projectId: f.projectId });
+  assert.equal(hidden.ok, false); assert.deepEqual(h.roster(), before);
+  const response = await h.query('query.atlasGlobalCompositeGraph', { projectId: f.projectId, explicitOpen: true });
+  assert.equal(response.ok, true, JSON.stringify(response));
+  const view = response.atlasGlobalCompositeGraph;
+  assert.equal(view.schemaVersion, 'atlas.globalCompositeSurface.v1'); assert.equal(view.projectId, f.projectId);
+  assert.ok(view.list.rows.length > 0); assert.ok(view.graph.nodes.length <= 120); assert.ok(view.graph.edges.length <= 240);
+  assert.ok(view.list.rows.some(node => node.sourceProjection === 'plot.projection'));
+  assert.equal(view.authority.projectTruthMutation, false); assert.equal(view.authority.sourceProjectionWriteBack, false);
+  assert.deepEqual(h.roster(), before);
+  t.diagnostic('ACTUAL_MAIN_EXISTING_ENVELOPE_KERNEL_SAVED_SOURCE_READ_ONLY_NOT_NATIVE_ACCEPTANCE');
+});
+
+test('composite actual Main: revoking exact profile during real Core read refuses publication without source changes', async t => {
+  const h = await fullMacMainFixture(t), f = await exactAtlasScene(h, 'Composite revoked source');
+  const before = h.roster();
+  h.main.__host.afterCoreBinding(() => h.main.__host.revokeProfile());
+  const response = await h.query('query.atlasGlobalCompositeGraph', { projectId: f.projectId, explicitOpen: true });
+  assert.equal(response.ok, false); assert.match(JSON.stringify(response), /COMPOSITE_CONTEXT_STALE/u);
+  assert.equal(response.atlasGlobalCompositeGraph, undefined); assert.deepEqual(h.roster(), before);
+});
+
+test('composite historical actual Main V13: original thirty-five commands and twelve queries remain exact, composite refuses', async t => {
+  const h = await fullMacMainFixture(t, { historicalV13Constructor: true }), p = h.main.__profile();
+  assert.equal(p.profileId, 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13'); assert.equal(p.schemaVersion, 'writer-local-profile.v13');
+  assert.deepEqual(p.admittedQueryIds, READ_SURFACE_QUERY_IDS); assert.equal(p.admittedCommandIds.length, 35);
+  const f = await exactAtlasScene(h, 'Historical V13 composite refusal'), before = h.roster();
+  const response = await h.query('query.atlasGlobalCompositeGraph', { projectId: f.projectId, explicitOpen: true });
+  assert.equal(response.ok, false); assert.match(JSON.stringify(response), /WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED/u);
+  assert.deepEqual(h.roster(), before);
 });

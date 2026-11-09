@@ -25,6 +25,7 @@ const WORKSPACE_QUERY_IDS = Object.freeze({
   ATLAS_CURRENT_SCENE: 'query.atlasCurrentScene',
   MANUAL_MAP_WORKBENCH: 'query.manualMapWorkbench',
   PROJECTION_INSPECTOR: 'query.projectionInspector',
+  ATLAS_GLOBAL_COMPOSITE_GRAPH: 'query.atlasGlobalCompositeGraph',
 });
 
 const ATLAS_WORKSPACE_QUERY_IDS = Object.freeze([
@@ -40,6 +41,7 @@ const ATLAS_WORKSPACE_QUERY_IDS = Object.freeze([
   WORKSPACE_QUERY_IDS.ATLAS_CURRENT_SCENE,
   WORKSPACE_QUERY_IDS.MANUAL_MAP_WORKBENCH,
   WORKSPACE_QUERY_IDS.PROJECTION_INSPECTOR,
+  WORKSPACE_QUERY_IDS.ATLAS_GLOBAL_COMPOSITE_GRAPH,
 ]);
 
 const WORKSPACE_QUERY_RECORDS = Object.freeze([
@@ -69,6 +71,7 @@ const WORKSPACE_QUERY_RECORDS = Object.freeze([
   Object.freeze({ id: WORKSPACE_QUERY_IDS.ATLAS_CURRENT_SCENE, owner: 'atlas', projection: 'current-scene' }),
   Object.freeze({ id: WORKSPACE_QUERY_IDS.MANUAL_MAP_WORKBENCH, owner: 'manualMap', projection: 'workbench' }),
   Object.freeze({ id: WORKSPACE_QUERY_IDS.PROJECTION_INSPECTOR, owner: 'projectionInspector', projection: 'plot-idea-meaning' }),
+  Object.freeze({ id: WORKSPACE_QUERY_IDS.ATLAS_GLOBAL_COMPOSITE_GRAPH, owner: 'atlas', projection: 'global-composite' }),
 ]);
 
 const WORKSPACE_QUERY_ID_LIST = Object.freeze(WORKSPACE_QUERY_RECORDS.map((record) => record.id));
@@ -87,6 +90,7 @@ const ATLAS_WORKSPACE_QUERY_SURFACES = Object.freeze({
   currentScene: WORKSPACE_QUERY_IDS.ATLAS_CURRENT_SCENE,
   manualMapWorkbench: WORKSPACE_QUERY_IDS.MANUAL_MAP_WORKBENCH,
   projectionInspector: WORKSPACE_QUERY_IDS.PROJECTION_INSPECTOR,
+  globalComposite: WORKSPACE_QUERY_IDS.ATLAS_GLOBAL_COMPOSITE_GRAPH,
 });
 
 function isWorkspaceQueryIdAllowed(queryId) {
