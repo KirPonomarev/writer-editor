@@ -5616,6 +5616,22 @@ const R24_INTEROP_P05_INTERCHANGE_FINITE_MAC_20261109_DELTA = Object.freeze({
     {
       "path": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
       "sha256": "770aaea22571db1d3b37e1b4e9f83b33c5fce8d76d9f41cb5f874f7aa22a2240"
+    },
+    {
+      "path": "test/contracts/rtk-word-local-image-runtime.contract.test.js",
+      "sha256": "c09390f6aee473fec0372d35759e513c1a65b7f72121b75e10562f322d8776cd"
+    },
+    {
+      "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
+      "sha256": "3a4f32312c477b52037527ff65175193d94071dea35d2e9d16f1f19194c9e807"
+    },
+    {
+      "path": "scripts/ops/b2c10-command-bypass-negative-matrix-state.mjs",
+      "sha256": "d412e0b31d41ae0f6ef6d553e6b5ed62b312775c1bd800c9af1aedc50c4f7507"
+    },
+    {
+      "path": "test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
+      "sha256": "59351f1bb2867c76ad5c5ddf546af98501a2ac51130b669bfc6d2487e59744b3"
     }
   ],
   "guards": [

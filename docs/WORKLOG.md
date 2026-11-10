@@ -1,3 +1,4 @@
+2026-11-10 P05 phase44: 46-path preflighta68a9137; original RTK61 failures9d15e314/causec45cbac7; fixture-only inversef39d3590 and whole176/176e0bd70cd. Current227 bindings/final software/native carrier/delivery pending; original actual app unchanged.
 2026-11-10 P05 phase39: factual-only2a3bcca1/51642284; original2801 native8 directions6e4e4f73,warm/cold0,closedown77 243/109,older58/29 exactc51c5617; current final gates/native-carrier admission/Git delivery pending; all17 UNKNOWN.
 ## P05 phase37: full original IPC/DOCX chains147/147 c78a59e8; strict signature/inverse and renderer-port refusal verified, product bytes unchanged; current metadata and new native still pending.
 
