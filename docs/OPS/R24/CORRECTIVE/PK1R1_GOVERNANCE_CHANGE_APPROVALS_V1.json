@@ -3355,4 +3355,54 @@
   "approvedAtUtc": "2026-11-10T01:32:43.242Z",
   "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14 second known Mac source pin: projectCommands actual registered Markdown repair is now bound alongside Main. All69 source members and all17 UNKNOWN qualification requirements retained. Current-binding finalizer refreshes derived hash companions only; all previous registry bytes and failures retained. Technical witness only, no native or release acceptance."
 }
+,
+{
+  "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+  "sha256": "5c441fd804e533c25bf3c50f27f6dc8042c5283f80944aec99085c8ef31ab7d2",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T02:34:08.490Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 mandatory baseline host-root correction only: actual default run created four out-of-scope synthetic manifest-transition files because two Electron mocks pointed userData at repository ROOT. Original run cancelled and all records/errors retained; exact original fixture bodies5/5 and independent135-entry namespace zero-write oracle f80e110e. Add only these two current fixture memberships and derived digest companions; every original assertion, protected contract and old history retained. No product/packaged-input change, native or release acceptance."
+},
+{
+  "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+  "sha256": "60e98f738aa2dbdb6bc97d1dcfe9fd3c9372223447e9d5fcf8adf26d2a08cac6",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T02:34:08.490Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 mandatory baseline host-root correction only: actual default run created four out-of-scope synthetic manifest-transition files because two Electron mocks pointed userData at repository ROOT. Original run cancelled and all records/errors retained; exact original fixture bodies5/5 and independent135-entry namespace zero-write oracle f80e110e. Add only these two current fixture memberships and derived digest companions; every original assertion, protected contract and old history retained. No product/packaged-input change, native or release acceptance."
+},
+{
+  "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+  "sha256": "18e7fa07bbdc6914de532c7e98df966bd1f718f28a98062b355b6ce7a2e894a6",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T02:34:08.490Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 mandatory baseline host-root correction only: actual default run created four out-of-scope synthetic manifest-transition files because two Electron mocks pointed userData at repository ROOT. Original run cancelled and all records/errors retained; exact original fixture bodies5/5 and independent135-entry namespace zero-write oracle f80e110e. Add only these two current fixture memberships and derived digest companions; every original assertion, protected contract and old history retained. No product/packaged-input change, native or release acceptance."
+},
+{
+  "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+  "sha256": "e7a39356521180a95d4b82e2ce433c388de149808f37ce4f725eebf87d5798fc",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T02:34:08.490Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 mandatory baseline host-root correction only: actual default run created four out-of-scope synthetic manifest-transition files because two Electron mocks pointed userData at repository ROOT. Original run cancelled and all records/errors retained; exact original fixture bodies5/5 and independent135-entry namespace zero-write oracle f80e110e. Add only these two current fixture memberships and derived digest companions; every original assertion, protected contract and old history retained. No product/packaged-input change, native or release acceptance."
+},
+{
+  "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+  "sha256": "419fcb729489222afe653e9d94e4f563b260fb45d7f15233e33a347fe46b826a",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T02:34:08.490Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 mandatory baseline host-root correction only: actual default run created four out-of-scope synthetic manifest-transition files because two Electron mocks pointed userData at repository ROOT. Original run cancelled and all records/errors retained; exact original fixture bodies5/5 and independent135-entry namespace zero-write oracle f80e110e. Add only these two current fixture memberships and derived digest companions; every original assertion, protected contract and old history retained. No product/packaged-input change, native or release acceptance."
+},
+{
+  "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+  "sha256": "b123c1630be2a0cc909ddf4727518c1f3e4f1c9de2efa9108bfe05f8eac66174",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T02:34:08.490Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 mandatory baseline host-root correction only: actual default run created four out-of-scope synthetic manifest-transition files because two Electron mocks pointed userData at repository ROOT. Original run cancelled and all records/errors retained; exact original fixture bodies5/5 and independent135-entry namespace zero-write oracle f80e110e. Add only these two current fixture memberships and derived digest companions; every original assertion, protected contract and old history retained. No product/packaged-input change, native or release acceptance."
+},
+{
+  "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+  "sha256": "4847fcbf31fa15deca3bb05b0a74a4a5309b8194d24db8b5260ba2fd2a0c6a1c",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T02:34:08.490Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 mandatory baseline host-root correction only: actual default run created four out-of-scope synthetic manifest-transition files because two Electron mocks pointed userData at repository ROOT. Original run cancelled and all records/errors retained; exact original fixture bodies5/5 and independent135-entry namespace zero-write oracle f80e110e. Add only these two current fixture memberships and derived digest companions; every original assertion, protected contract and old history retained. No product/packaged-input change, native or release acceptance."
+}
 ],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}

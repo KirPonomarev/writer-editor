@@ -990,7 +990,8 @@
     "test/contracts/p05-markdown-new-project.contract.test.js",
     "test/unit/markdown-import-product-parity-ui-flow.test.js",
     "scripts/ops/x16-ws02-export-markdown-mindmap-bridge-state.mjs",
-    "test/contracts/x16-ws02-export-markdown-mindmap-bridge.contract.test.js"
+    "test/contracts/x16-ws02-export-markdown-mindmap-bridge.contract.test.js",
+    "test/unit/book-profile-persistence.test.js"
   ],
   "protectedFiles": [
     {
@@ -2911,15 +2912,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "e20e0e54f128a067a67bb069303ecfece5287ade3eeca51fc140795a3c3bb6cc"
+        "sha256": "614939153f171306ee3f819487cf0927b384a5b251e213e24a285808c72615d9"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "67357fe6c2e7b415fd411d6fcf209cd666c7d5fe7db0e12b3a673dae9422d015"
+        "sha256": "f5bcd336893ac4b94af54b0a6dd9446bfcf771f680636430597339100a72921d"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "b747aff5601efb739f9c69087d77753129903e7753aa7c79b5b13967dc75e027"
+        "sha256": "934c9d4eebdf487260e0e7580b383bd56e772bd755ca98277cfdde3ac37cab53"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3459,7 +3460,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "87925f65619b1311ff6e44e91e8e7ec7cd30ef27aa1e38f38918875cbd6f3a20"
+        "sha256": "60e98f738aa2dbdb6bc97d1dcfe9fd3c9372223447e9d5fcf8adf26d2a08cac6"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4523,7 +4524,7 @@
       },
       {
         "path": "docs/tasks/2026-11-09--p05-interchange-finite-mac.md",
-        "sha256": "f1c80baea80dd2f849ec37d2c2c58df4bc981ac6ad7b40325fdf00611ca49f56"
+        "sha256": "4b09950597772a94bde9759399a01f651edc21e557bd7fe771f1e5c31c03e517"
       },
       {
         "path": "src/core/markdown-new-project-v1.mjs",
@@ -4544,6 +4545,14 @@
       {
         "path": "test/contracts/x16-ws02-export-markdown-mindmap-bridge.contract.test.js",
         "sha256": "3e8e3551958c3f9177a4433fb13ef836365b7580148856e563089f52c9cdadf9"
+      },
+      {
+        "path": "test/unit/book-profile-persistence.test.js",
+        "sha256": "e451b008b419684a4ef76f8ce3e5cd5ed70ef91c41040c2a070afc756de37852"
+      },
+      {
+        "path": "test/unit/project-tree-identity-main.test.js",
+        "sha256": "73c492d86426b4256439cd879d29b3edde3514e73dcd51716bdcb5eba33f7be3"
       }
     ],
     "followupRepair": {

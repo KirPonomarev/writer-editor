@@ -1,3 +1,12 @@
+# CURRENT — P05 mandatory baseline fixture isolation
+
+Phase17 original fixture bodies5/5 no skip/todo, f80e110e, independently preserve all135 namespace entries with zero changed paths. Task E0 actual0 74df3bf7. Only host roots changed; every original test assertion and all1496 packaged source inputs remain unchanged. Whole default baseline is still unqualified after the explicitly recorded cancelled run.
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109
+
+Phase17 same-P05 baseline closure: e3f859c9 candidate03 actual offline build48bf7940 and official1487-leaf readback76096a5b bind ASAR73fa801e; admissionb881bb2b launched own73 PID32126 and opened only an empty synthetic draft. No native TXT/Markdown action or all8 acceptance. Current E3 WP10413, affected78/732/747, Electron35 and19 cheap rows pass. C1C335 process exits0 but its outer scope guard fails on owned test records. Original default setup refusal2328d680 led to genuine OS TMP declaration16/preflightaaebb24f. Full default then creates four untracked manifest transitions because two Electron test mocks use repository ROOT as userData; terminal run50b79bac is deliberately cancelled-15, no unit baseline PASS or full buffered unit TAP claim. Only four new closed files are losslessly isolated by hygiene20; carrier90ce7fd8 and resultda54bacb retain bytes/native metadata and disclose OS ctime changes. All131 other namespace entries, older empty directories and ignored fencing bytes remain exact in place; no deletion. Normal31-path preflight17 retryb7450384 passes clean. Admit only book-profile-persistence and first project-tree-identity-main host-root corrections; preserve every original assertion and real Main/lease/CAS execution. No production or1496 packaged-input change; current app must not be queried while source guard is dirty. Full Mac NOT_READY, UNFROZEN,17 UNKNOWN; Word/native PAUSED, Keychain/SecurityAgent refusal remains, no retry/bypass. No push/PR/merge.
+
 # CURRENT — P05 actual command and durable identity completion
 
 DOCUMENT_CLASS: FACTUAL_STATUS
