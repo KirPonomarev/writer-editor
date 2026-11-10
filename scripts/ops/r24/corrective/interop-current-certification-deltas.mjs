@@ -4775,15 +4775,15 @@ const R24_INTEROP_P05_INTERCHANGE_FINITE_MAC_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "aa64d7e9f738c6e01bd0de32f8ecb0b2c26ba6385019ca50b330e7cceea48c12"
+      "sha256": "6f4c0b5d6c446dae3b55e860fcaff2e746c80869a639bcc5908fbe0e2babc58b"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "69d3f2dd65f9922af7aa2b1d61bfeca3e2c9361db7be0797f97258af8a7d8a7c"
+      "sha256": "d42f3f8df867f3929ad9152a4546d434e7d5e89895401b6e6ebfe583d2ee535e"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "569fc273188fd22cdf57847e0b823d7f00961c05200ae71d23eb146d00b612fc"
+      "sha256": "735c5170fb37371413ba4040375be1bb989395e2e3f4f194a979c0b8d12c9e3d"
     },
     {
       "path": "AGENTS.md",
@@ -4815,11 +4815,11 @@ const R24_INTEROP_P05_INTERCHANGE_FINITE_MAC_20261109_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "6e51940a8a7e088e055f1c9a9c5c9de50e90852e46a3921ad6bb1152d30c60be"
+      "sha256": "e17459d3fdbafe4feec4fc1fd23267ee4f24756043def6b5c4cba0a374ee924e"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "f4420893f02ed5b25a425e60cd729a682bb73e3ef4b3aadb5f012295d26be2d0"
+      "sha256": "a95f43fe3ac674f01870eec9739ecfec8edc24b07824753eb8e5f494a81e6948"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -4979,7 +4979,7 @@ const R24_INTEROP_P05_INTERCHANGE_FINITE_MAC_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "c362dd6f6a90c698dacb4adaef87889f96f90c538e19920ae7fcc7364b8ecd2f"
+      "sha256": "f44bfe8556e67dd2ca4b2af320fcfdf12f79ec0acaa8cd104a88cf07ea6edddd"
     },
     {
       "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -5035,11 +5035,11 @@ const R24_INTEROP_P05_INTERCHANGE_FINITE_MAC_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "24236c9fb989a20e3584a3e639432d8384c849e4fea488d1579176f0282a20f8"
+      "sha256": "3395f70952bb27d88a67a7afeb79ab1a6c8ad62fb63a3c954affc6d482b94395"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "ff3cef8eb84b3d563081cef976208e4998fa38e147ceaff533de49be45111576"
+      "sha256": "5c46b096653e38fd6ab021b988167daec654424bafb6eccf0e0d50636ffcd187"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -5547,7 +5547,7 @@ const R24_INTEROP_P05_INTERCHANGE_FINITE_MAC_20261109_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-09--p05-interchange-finite-mac.md",
-      "sha256": "9e18f927073c88fe3af3753990276197347b8bab9b8f3b71a5b27dd0afe923e6"
+      "sha256": "ddc47595b56766f071c3888b3434328a408cc7d7192c5824b5e20ee0eb69ad1c"
     },
     {
       "path": "src/core/markdown-new-project-v1.mjs",
@@ -5641,7 +5641,7 @@ const R24_INTEROP_P05_INTERCHANGE_FINITE_MAC_20261109_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "fb445e7e158112bff5989324889483fece0ed7588cd03530009d3c40321850f4"
+      "sha256": "c5d0db6a79f350a64e82302b504f16e512c85620441ea6b51684e30cefa99370"
     }
   ]
 });

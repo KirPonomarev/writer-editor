@@ -1873,7 +1873,7 @@
       },
       {
         "path": "test/unit/sector-m-preload-ui-command-bridge.test.js",
-        "sha256": "b6203a560a5b15766593cfe157d0eedac013f345692b896a23f6a6cfd1709114"
+        "sha256": "efb77605722d8e4d113fc29cfadc4e918ec67779d257d0b2148919ddce47e748"
       },
       {
         "path": "test/contracts/rtk-word-generic-comments.contract.test.js",
@@ -2913,15 +2913,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "aa64d7e9f738c6e01bd0de32f8ecb0b2c26ba6385019ca50b330e7cceea48c12"
+        "sha256": "6f4c0b5d6c446dae3b55e860fcaff2e746c80869a639bcc5908fbe0e2babc58b"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "69d3f2dd65f9922af7aa2b1d61bfeca3e2c9361db7be0797f97258af8a7d8a7c"
+        "sha256": "d42f3f8df867f3929ad9152a4546d434e7d5e89895401b6e6ebfe583d2ee535e"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "569fc273188fd22cdf57847e0b823d7f00961c05200ae71d23eb146d00b612fc"
+        "sha256": "735c5170fb37371413ba4040375be1bb989395e2e3f4f194a979c0b8d12c9e3d"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3461,7 +3461,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "f4420893f02ed5b25a425e60cd729a682bb73e3ef4b3aadb5f012295d26be2d0"
+        "sha256": "a95f43fe3ac674f01870eec9739ecfec8edc24b07824753eb8e5f494a81e6948"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4525,7 +4525,7 @@
       },
       {
         "path": "docs/tasks/2026-11-09--p05-interchange-finite-mac.md",
-        "sha256": "9e18f927073c88fe3af3753990276197347b8bab9b8f3b71a5b27dd0afe923e6"
+        "sha256": "ddc47595b56766f071c3888b3434328a408cc7d7192c5824b5e20ee0eb69ad1c"
       },
       {
         "path": "src/core/markdown-new-project-v1.mjs",
