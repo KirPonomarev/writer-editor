@@ -1084,6 +1084,124 @@ function verifyDocxReviewReturnYrtk2Binding({
   };
 }
 
+function buildPendingNotesReviewPublicationProof(source, documentBuffer, revisionBridge, provisionalCompleteAnalysis, finalParse) {
+  const cryptoPort = createRtkReviewTransportCryptoPort();
+  const localAuthority = source.localAuthorityCapsule;
+  const finalPayload = finalParse.authorityCarrier?.selectedCarrier?.payload || {};
+  const bodyTypography = require('./core/word-review-typography-v1.cjs');
+  const bodyProfile = bodyTypography.validate(localAuthority.exportMap.exportTypography, { allowUndefined: true });
+  const noteProofs=[];let notePhaseMemo;
+  for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
+    const readback=analysis||provisionalCompleteAnalysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort,includePublicationPhaseIdentity:true});
+    if(!readback?.ok)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
+    const noteScenes=localAuthority.exportMap.scenes.map(scene=>{
+      const raw=localAuthority.baselineObservableContentBySceneId?.[scene.sceneId]??localAuthority.baselineFinalTextBySceneId?.[scene.sceneId];
+      if(typeof raw!=='string'||normalizeRtkSignedSha256(scene.rawSha256)!==`sha256:${cryptoPort.sha256Text(raw)}`)throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');
+      const envelope=require('./core/document-content-envelope-v1.cjs'),parsed=envelope.parseObservablePayload(raw);
+      if(parsed.issue||(!parsed.doc&&parsed.version!==1))throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');return {sceneId:scene.sceneId,document:parsed.doc||envelope.buildParagraphDocumentFromText(parsed.text)};});
+    const identity=normalizeRtkSignedSha256(readback.publicationPhaseIdentity);
+    if(!identity)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
+    const parsed=notePhaseMemo?.identity===identity?notePhaseMemo.parsed:revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets(),exportMap:localAuthority.exportMap,
+      baselineDocuments:noteScenes,baselineDocumentNotes:source.documentNotes,retainPendingScenes:true,documentSections:localAuthority.documentSections,
+      signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
+    if(!parsed.ok)throw Error(parsed.code||'WORD_BOOK_NOTES_PUBLICATION_PARSE');
+    const preview=parsed.contentPreview;
+    const bindings=localAuthority.exportMap.scenes.filter(scene=>scene.pendingCommentBinding).map(scene=>scene.pendingCommentBinding);
+    const resolved=bindings.length>0&&bindings.every(binding=>Array.isArray(binding.revisionSpans)&&binding.revisionSpans.length===0);
+    if(!isPlainObjectValue(preview)||!Array.isArray(preview.pendingNoteReferences)
+      &&!(preview.pendingNoteReferences===undefined&&resolved))throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
+    notePhaseMemo={identity,parsed};
+    const bound=require('./core/word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({document:source.notesDocument,
+      projectId:source.documentNotes.projectId,baseline:source.documentNotes,exportMap:localAuthority.exportMap,
+      scenes:noteScenes.map((scene,i)=>({...scene,returnedDocument:parsed.scenes[i].returnedDocument})),
+      returnedNotes:revisionBridge.parseDocumentNotesRichReturn(bytes,readback.reviewIr.documentNotes,{includeBreakProjection:true}),
+      returnedReferences:readback.reviewIr.documentNotes.references,
+      unionReferences:preview.pendingNoteReferences||readback.reviewIr.documentNotes.references});
+    for(const scene of bound) {
+      const before=pendingTextRevisions.readLedger(scene.beforeDoc),returned=pendingTextRevisions.readLedger(scene.returnedDoc);
+      if(before?.noteSourcePoints) {
+        const expected=pendingTextRevisions.noteProjection(scene.beforeDoc,'export').map(({noteId,paragraphIndex,offsetUtf16})=>({noteId,paragraphIndex,offsetUtf16}));
+        // Reproduce only the pinned LOCAL pending/comment emission branch.
+        // Authored font/language fields overlay these actual emitted values;
+        // clean and schema1 paths retain their strict comparison below.
+        const mapScene=localAuthority.exportMap.scenes.find(item=>item.sceneId===scene.sceneId);
+        const emitted=cloneJsonSafe(before),localBlocks=source.blocks.filter(block=>block.sceneId===scene.sceneId);
+        if(bodyProfile?.schemaVersion!==bodyTypography.V2&&source.commentExport?.threads?.length&&mapScene.pendingCommentBinding?.schemaVersion===2
+          &&localBlocks.every(block=>Array.isArray(block.pendingRevisionSegments))) {
+          const leaves=pendingTextRevisions.paragraphs(emitted.source);
+          leaves.forEach((paragraph,index)=>{paragraph.content=pendingTextRevisions.commentTransportSegments(
+            (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);});
+          emitted.revisions=emitted.revisions.map(revision=>pendingTextRevisions.commentTransportSegments(
+            [{node:{type:'text',text:'x'},revision}],{type:leaves[revision.paragraphIndex].type,attrs:localBlocks[revision.paragraphIndex].formatIr.paragraph})[0].revision);
+        }
+        // Core has independently validated the complete local v3 profile.
+        // Rebuild its emitted pPr only in this read-only expectation clone.
+        if(bodyProfile?.schemaVersion!==bodyTypography.V2&&scene.bodyParagraphEmission)pendingTextRevisions.paragraphs(emitted.source).forEach((paragraph,index)=> {
+          if(paragraph.type==='codeBlock')return;
+          if(!localBlocks[index].pendingRevisionSegments)paragraph.content=pendingTextRevisions.commentTransportSegments(
+            (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);
+          paragraph.attrs={...paragraph.attrs};
+          for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage'])paragraph.attrs[key]={
+            ...scene.bodyParagraphEmission[key],...paragraph.attrs[key]};
+        });
+        // The pinned pending/comment producer emits UTC seconds and legacy
+        // date minutes. Project that law only in this validated source clone;
+        // BODY_V2 run and formatting emission keeps its own typography law.
+        if(bodyProfile?.schemaVersion===bodyTypography.V2&&mapScene.pendingCommentBinding?.schemaVersion===2)
+          for(const revision of emitted.revisions)if(revision.dateUtc&&Number.isFinite(Date.parse(revision.dateUtc))) {
+            revision.dateUtc=new Date(revision.dateUtc).toISOString().replace(/\.\d{3}Z$/u,'Z');
+            if(revision.date&&Number.isFinite(Date.parse(revision.date)))
+              revision.date=new Date(revision.date).toISOString().replace(/:\d{2}\.\d{3}Z$/u,':00Z');
+          }
+        const expectedSemantics=scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography,bodyProfile?.schemaVersion===bodyTypography.V2);
+        if(bodyProfile?.schemaVersion===bodyTypography.V2||scene.bodyParagraphEmission) {
+          // Ordinary Word replacement groups are inferred on readback, not
+          // serialized. Predict them from our own emitted union intervals;
+          // retain canonical IDs and decisions outside this expectation.
+          const intervals=[],predicted=new Map(),occurrences=new Map();
+          pendingTextRevisions.exportDocument(emitted).paragraphs.forEach((paragraph,paragraphIndex)=>{
+            let offset=0;
+            for(const segment of paragraph.segments) {
+              const end=offset+(segment.node.type==='hardBreak'?1:segment.node.text.length),last=intervals.at(-1);
+              if(segment.revision) {
+                if(!occurrences.has(segment.revision.id))occurrences.set(segment.revision.id,occurrences.size);
+                if(last?.revision.id===segment.revision.id&&last.paragraphIndex===paragraphIndex&&last.to===offset)last.to=end;
+                else intervals.push({revision:segment.revision,paragraphIndex,from:offset,to:end});
+              }
+              offset=end;
+            }
+          });
+          for(let i=0;i<intervals.length-1;i++) {
+            const a=intervals[i],b=intervals[i+1],left=a.revision,right=b.revision;
+            if(left.operation!=='format'&&right.operation!=='format'&&!left.moveName&&!right.moveName&&!left.boundary&&!right.boundary
+              &&a.paragraphIndex===b.paragraphIndex&&a.to===b.from&&left.operation!==right.operation&&left.author===right.author) {
+              const groupId=`word-emitted-replacement-${i}`;
+              predicted.set(left.id,groupId);predicted.set(right.id,groupId);
+              i++;
+            }
+          }
+          // Project only group occurrences after canonical validation, so
+          // independent local decisions and Undo states remain untouched.
+          const ids=[...occurrences.keys()],groups=new Map(),revisionsById=new Map(emitted.revisions.map(revision=>[revision.id,revision]));
+          for(const paragraph of expectedSemantics.paragraphs)for(const segment of paragraph.segments)if(segment.revision) {
+            const revision=revisionsById.get(ids[segment.revision.occurrence]);
+            if(!revision)throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');
+            const key=predicted.get(revision.id)||revision.groupId;
+            if(key&&!groups.has(key))groups.set(key,groups.size);
+            segment.revision.group=key?groups.get(key):null;
+          }
+        }
+        if(stableRtkReviewTransportJson(expected)!==stableRtkReviewTransportJson(returned.noteSourcePoints)
+          ||stableRtkReviewTransportJson(expectedSemantics)
+            !==stableRtkReviewTransportJson(scenePendingExportSemantics(returned,localAuthority.exportMap.exportTypography)))throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');
+      }
+    }
+    noteProofs.push({phase,rosterCount:source.documentNotes.sourceBindings.length,completeBodies:true,sourceOccurrences:true});
+  }
+  if(finalPayload.documentNotesDigest!==source.documentNotes.protectedDigest)throw Error('WORD_BOOK_NOTES_PUBLICATION_DIGEST');
+  return {ok:true,proof:{policy:source.documentNotes.policy,protectedDigest:source.documentNotes.protectedDigest,noteProofs}};
+}
+
 async function buildFullManuscriptPublicationGate(source, documentBuffer, revisionBridge) {
   const exportCapsule = isPlainObjectValue(source?.exportCapsule) ? source.exportCapsule : {};
   if (exportCapsule.fullManuscript !== true) return null;
@@ -1283,116 +1401,8 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     || localAuthority.exportMap?.scenes?.length===1&&localAuthority.scope==='full-manuscript')
     && localAuthority.exportMap.scenes.some(scene=>scene.pendingCommentBinding?.schemaVersion===2)) {
     try {
-      const noteProofs=[];let notePhaseMemo;
-      for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
-        const readback=analysis||provisionalCompleteAnalysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort,includePublicationPhaseIdentity:true});
-        if(!readback?.ok)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
-        const noteScenes=localAuthority.exportMap.scenes.map(scene=>{
-          const raw=localAuthority.baselineObservableContentBySceneId?.[scene.sceneId]??localAuthority.baselineFinalTextBySceneId?.[scene.sceneId];
-          if(typeof raw!=='string'||normalizeRtkSignedSha256(scene.rawSha256)!==`sha256:${cryptoPort.sha256Text(raw)}`)throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');
-          const envelope=require('./core/document-content-envelope-v1.cjs'),parsed=envelope.parseObservablePayload(raw);
-          if(parsed.issue||(!parsed.doc&&parsed.version!==1))throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');return {sceneId:scene.sceneId,document:parsed.doc||envelope.buildParagraphDocumentFromText(parsed.text)};});
-        const identity=normalizeRtkSignedSha256(readback.publicationPhaseIdentity);
-        if(!identity)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
-        const parsed=notePhaseMemo?.identity===identity?notePhaseMemo.parsed:revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets(),exportMap:localAuthority.exportMap,
-          baselineDocuments:noteScenes,baselineDocumentNotes:source.documentNotes,retainPendingScenes:true,documentSections:localAuthority.documentSections,
-          signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
-        if(!parsed.ok)throw Error(parsed.code||'WORD_BOOK_NOTES_PUBLICATION_PARSE');
-        const preview=parsed.contentPreview;
-        const bindings=localAuthority.exportMap.scenes.filter(scene=>scene.pendingCommentBinding).map(scene=>scene.pendingCommentBinding);
-        const resolved=bindings.length>0&&bindings.every(binding=>Array.isArray(binding.revisionSpans)&&binding.revisionSpans.length===0);
-        if(!isPlainObjectValue(preview)||!Array.isArray(preview.pendingNoteReferences)
-          &&!(preview.pendingNoteReferences===undefined&&resolved))throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
-        notePhaseMemo={identity,parsed};
-        const bound=require('./core/word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({document:source.notesDocument,
-          projectId:source.documentNotes.projectId,baseline:source.documentNotes,exportMap:localAuthority.exportMap,
-          scenes:noteScenes.map((scene,i)=>({...scene,returnedDocument:parsed.scenes[i].returnedDocument})),
-          returnedNotes:revisionBridge.parseDocumentNotesRichReturn(bytes,readback.reviewIr.documentNotes,{includeBreakProjection:true}),
-          returnedReferences:readback.reviewIr.documentNotes.references,
-          unionReferences:preview.pendingNoteReferences||readback.reviewIr.documentNotes.references});
-        for(const scene of bound) {
-          const before=pendingTextRevisions.readLedger(scene.beforeDoc),returned=pendingTextRevisions.readLedger(scene.returnedDoc);
-          if(before?.noteSourcePoints) {
-            const expected=pendingTextRevisions.noteProjection(scene.beforeDoc,'export').map(({noteId,paragraphIndex,offsetUtf16})=>({noteId,paragraphIndex,offsetUtf16}));
-            // Reproduce only the pinned LOCAL pending/comment emission branch.
-            // Authored font/language fields overlay these actual emitted values;
-            // clean and schema1 paths retain their strict comparison below.
-            const mapScene=localAuthority.exportMap.scenes.find(item=>item.sceneId===scene.sceneId);
-            const emitted=cloneJsonSafe(before),localBlocks=source.blocks.filter(block=>block.sceneId===scene.sceneId);
-            if(bodyProfile?.schemaVersion!==bodyTypography.V2&&source.commentExport?.threads?.length&&mapScene.pendingCommentBinding?.schemaVersion===2
-              &&localBlocks.every(block=>Array.isArray(block.pendingRevisionSegments))) {
-              const leaves=pendingTextRevisions.paragraphs(emitted.source);
-              leaves.forEach((paragraph,index)=>{paragraph.content=pendingTextRevisions.commentTransportSegments(
-                (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);});
-              emitted.revisions=emitted.revisions.map(revision=>pendingTextRevisions.commentTransportSegments(
-                [{node:{type:'text',text:'x'},revision}],{type:leaves[revision.paragraphIndex].type,attrs:localBlocks[revision.paragraphIndex].formatIr.paragraph})[0].revision);
-            }
-            // Core has independently validated the complete local v3 profile.
-            // Rebuild its emitted pPr only in this read-only expectation clone.
-            if(bodyProfile?.schemaVersion!==bodyTypography.V2&&scene.bodyParagraphEmission)pendingTextRevisions.paragraphs(emitted.source).forEach((paragraph,index)=> {
-              if(paragraph.type==='codeBlock')return;
-              if(!localBlocks[index].pendingRevisionSegments)paragraph.content=pendingTextRevisions.commentTransportSegments(
-                (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);
-              paragraph.attrs={...paragraph.attrs};
-              for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage'])paragraph.attrs[key]={
-                ...scene.bodyParagraphEmission[key],...paragraph.attrs[key]};
-            });
-            // The pinned pending/comment producer emits UTC seconds and legacy
-            // date minutes. Project that law only in this validated source clone;
-            // BODY_V2 run and formatting emission keeps its own typography law.
-            if(bodyProfile?.schemaVersion===bodyTypography.V2&&mapScene.pendingCommentBinding?.schemaVersion===2)
-              for(const revision of emitted.revisions)if(revision.dateUtc&&Number.isFinite(Date.parse(revision.dateUtc))) {
-                revision.dateUtc=new Date(revision.dateUtc).toISOString().replace(/\.\d{3}Z$/u,'Z');
-                if(revision.date&&Number.isFinite(Date.parse(revision.date)))
-                  revision.date=new Date(revision.date).toISOString().replace(/:\d{2}\.\d{3}Z$/u,':00Z');
-              }
-            const expectedSemantics=scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography,bodyProfile?.schemaVersion===bodyTypography.V2);
-            if(bodyProfile?.schemaVersion===bodyTypography.V2||scene.bodyParagraphEmission) {
-              // Ordinary Word replacement groups are inferred on readback, not
-              // serialized. Predict them from our own emitted union intervals;
-              // retain canonical IDs and decisions outside this expectation.
-              const intervals=[],predicted=new Map(),occurrences=new Map();
-              pendingTextRevisions.exportDocument(emitted).paragraphs.forEach((paragraph,paragraphIndex)=>{
-                let offset=0;
-                for(const segment of paragraph.segments) {
-                  const end=offset+(segment.node.type==='hardBreak'?1:segment.node.text.length),last=intervals.at(-1);
-                  if(segment.revision) {
-                    if(!occurrences.has(segment.revision.id))occurrences.set(segment.revision.id,occurrences.size);
-                    if(last?.revision.id===segment.revision.id&&last.paragraphIndex===paragraphIndex&&last.to===offset)last.to=end;
-                    else intervals.push({revision:segment.revision,paragraphIndex,from:offset,to:end});
-                  }
-                  offset=end;
-                }
-              });
-              for(let i=0;i<intervals.length-1;i++) {
-                const a=intervals[i],b=intervals[i+1],left=a.revision,right=b.revision;
-                if(left.operation!=='format'&&right.operation!=='format'&&!left.moveName&&!right.moveName&&!left.boundary&&!right.boundary
-                  &&a.paragraphIndex===b.paragraphIndex&&a.to===b.from&&left.operation!==right.operation&&left.author===right.author) {
-                  const groupId=`word-emitted-replacement-${i}`;
-                  predicted.set(left.id,groupId);predicted.set(right.id,groupId);
-                  i++;
-                }
-              }
-              // Project only group occurrences after canonical validation, so
-              // independent local decisions and Undo states remain untouched.
-              const ids=[...occurrences.keys()],groups=new Map(),revisionsById=new Map(emitted.revisions.map(revision=>[revision.id,revision]));
-              for(const paragraph of expectedSemantics.paragraphs)for(const segment of paragraph.segments)if(segment.revision) {
-                const revision=revisionsById.get(ids[segment.revision.occurrence]);
-                if(!revision)throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');
-                const key=predicted.get(revision.id)||revision.groupId;
-                if(key&&!groups.has(key))groups.set(key,groups.size);
-                segment.revision.group=key?groups.get(key):null;
-              }
-            }
-            if(stableRtkReviewTransportJson(expected)!==stableRtkReviewTransportJson(returned.noteSourcePoints)
-              ||stableRtkReviewTransportJson(expectedSemantics)
-                !==stableRtkReviewTransportJson(scenePendingExportSemantics(returned,localAuthority.exportMap.exportTypography)))throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');
-          }
-        }
-        noteProofs.push({phase,rosterCount:source.documentNotes.sourceBindings.length,completeBodies:true,sourceOccurrences:true});
-      }
-      if(finalPayload.documentNotesDigest!==source.documentNotes.protectedDigest)throw Error('WORD_BOOK_NOTES_PUBLICATION_DIGEST');
-      documentNotesBinding={ok:true,proof:{policy:source.documentNotes.policy,protectedDigest:source.documentNotes.protectedDigest,noteProofs}};
+      documentNotesBinding = buildPendingNotesReviewPublicationProof(
+        source, documentBuffer, revisionBridge, provisionalCompleteAnalysis, finalParse);
     } catch(error) {return {ok:false,publishAllowed:false,code:'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH',reason:error.code||error.message};}
   } else if(source.documentNotes&&localAuthority.exportMap?.scenes?.length>1
     &&Object.hasOwn(source.documentNotes,'breakEmission')&&source.documentNotes.breakEmission?.schemaVersion!==1) {
@@ -5431,13 +5441,14 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   const parsed = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: documentBuffer,
     budgets: docxReviewReturnIntakeProductBudgets(), hmacSecret: source.forbiddenSecret,
     expectedAuthority: source.localAuthorityCapsule.expectedAuthority, returnedArtifactSha256: finalArtifactSha256,
-    baselineFinalText: source.sceneText }, { cryptoPort });
+    baselineFinalText: source.sceneText }, { cryptoPort, includePublicationPhaseIdentity: true });
   if (!parsed.ok || parsed.authorityCarrier?.status !== 'verified-baseline-bound')
     throw Error('REVIEW_DOCX_EXPORT_NOTE_AUTHORITY_MISMATCH');
   if (source.documentSections) {
     const proof = validateFullManuscriptDocumentSectionsReturn({ expected: source.documentSections, returned: parsed.reviewIr?.documentSections, signedDigest: parsed.authorityCarrier.selectedCarrier.payload.documentSectionsDigest });
     if (!proof.ok) throw Error('REVIEW_DOCX_EXPORT_SECTIONS_MISMATCH');
   }
+  let provisionalCompleteAnalysis = null;
   const commentProofs = [];
   if (source.commentExport) {
     const projection = source.commentExport, payload = parsed.authorityCarrier.selectedCarrier.payload;
@@ -5451,7 +5462,8 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
       if (!Buffer.isBuffer(source.provisionalSelfParseArtifact?.bytes)) throw Error('REVIEW_DOCX_EXPORT_COMMENT_PROVISIONAL_REQUIRED');
       const provisional = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({
         bytes: source.provisionalSelfParseArtifact.bytes, budgets: docxReviewReturnIntakeProductBudgets(),
-      }, { cryptoPort });
+      }, { cryptoPort, includePublicationPhaseIdentity: true });
+      provisionalCompleteAnalysis = provisional;
       const proof = compareCommentExportReadback(projection, provisional.reviewIr?.commentThreads);
       if (!provisional.ok || !proof.ok || provisional.reviewIr?.commentThreads?.length !== projection.threads.length)
         throw Error('REVIEW_DOCX_EXPORT_COMMENT_PROVISIONAL_MISMATCH');
@@ -5474,10 +5486,13 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   if (ledger && source.commentExport?.threads.length && !pendingCommentBinding)
     throw Error('PENDING_COMMENT_EXPORT_BINDING_REQUIRED');
   if (pendingCommentBinding && source.commentExport?.threads.length) {
-    if (!notesBinding.ok || source.documentNotes.notes.length || source.documentNotes.sourceBindings.length)
-      throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
+    if (!notesBinding.ok) throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
+    const documentNotesBinding = source.documentNotes.notes.length || source.documentNotes.sourceBindings.length
+      ? buildPendingNotesReviewPublicationProof(source, documentBuffer, revisionBridge, provisionalCompleteAnalysis, parsed)
+      : null;
     const returned = revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: documentBuffer, budgets: docxReviewReturnIntakeProductBudgets(),
       exportMap: source.localAuthorityCapsule.exportMap,
+      ...(documentNotesBinding ? { baselineDocumentNotes: source.documentNotes } : {}),
       baselineDocuments: [{sceneId: source.localAuthorityCapsule.exportMap.scenes[0].sceneId, document: baselineDocument.doc}],
       documentSections: source.documentSections, cryptoPort: createRtkReviewTransportCryptoPort(),
       signedSectionsDigest: parsed.authorityCarrier.selectedCarrier.payload.documentSectionsDigest,
@@ -5489,7 +5504,8 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
       exportTypography: source.localAuthorityCapsule.exportMap.exportTypography,
       exportParagraphs: source.localAuthorityCapsule.exportMap.scenes[0].blocks.map(block => block.formatIr.paragraph) });
     return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED',
-      pendingSemanticsVerified: true, finalArtifactSha256, ...commentPublication };
+      pendingSemanticsVerified: true, finalArtifactSha256, ...commentPublication,
+      ...(documentNotesBinding ? { documentNotesBinding } : {}) };
   }
   if (ledger?.schemaVersion === 3) {
     if (parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest !== source.documentNotes.protectedDigest

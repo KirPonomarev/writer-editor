@@ -70,6 +70,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     exportReview: handleReviewDocxExportPacketCommandSurface, exportFullReview: handleFullManuscriptReviewDocxExportPacketCommandSurface,
     sceneSource:readDocxReviewPacketExportSource,fullSource:readFullManuscriptDocxReviewPacketExportSource,reviewBuild:buildDocxReviewPacketBuffer,
     fullGate:async(source,bytes)=>buildFullManuscriptPublicationGate(source,bytes,await loadRevisionBridgeModule()),
+    sceneGate:async(source,bytes)=>buildSceneNoteReviewPublicationGate(source,bytes,await loadRevisionBridgeModule()),
     reviewActivate:handleDocxReviewPreviewSessionActivationCommandSurface,reviewLocalFile:handleDocxReviewPreviewSessionLocalFileCommandSurface,fullApply:handleReviewSurfaceApplyFullManuscriptExactTextReturnCommandSurface,
     confirmPending:confirmLocalWordPendingReturn,intakeBudgets:docxReviewReturnIntakeProductBudgets,
     reconcileStartup: reconcileReviewExactTextApplyJournalsAtStartup,
@@ -4474,4 +4475,86 @@ test('actual Main Word final caller revalidation closes the successful confirmat
   assert.equal(f.observe()[effect==='quit'?'quitCalls':'closeCalls'],1);
   assert.ok(f.events.indexOf('activated')<f.events.indexOf(effect==='quit'?'quit':'close'));
  }
+});
+
+
+// P05's imported native corpus combines a hidden deleted-text comment, a
+// reply and a pending note point. Reuse the real import preparation and Main.
+async function p05SceneCompositeFixture(t) {
+  const f = await fixture(t), bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const bytes = fs.readFileSync(path.join(ROOT, 'test/fixtures/docx-pending-deleted-comment-import.docx'));
+  assert.equal(sha(bytes), '796093baf899f924a0e9f401cbc9c241144931a96beecab71e20655a2641fabf');
+  const plan = bridge.buildDocxNovelImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(bytes));
+  assert.equal(plan.ok, true);
+  const core = await import('../../src/core/docx-new-project-v1.mjs');
+  const prepared = core.prepareDocxNewProject({ plan, projectId: 'ba52be5f-6a53-4fde-b87e-783b51d4e810', projectName: 'Роман',
+    operationId: 'p05-scene-review-composite', createdAtUtc: '2026-11-10T00:00:00.000Z' });
+  const entry = prepared.files.find(file => file.role === 'scene'), sceneId = 'roman/Imported/01_Alpha.txt';
+  fs.writeFileSync(f.alpha, entry.content);
+  for (const [role, relative] of [['notes', 'notes.craftsman.json'], ['comments', '.yalken/word-review/non-text-return-state.v1.json']]) {
+    const file = prepared.files.find(item => item.role === role), target = path.join(f.root, relative);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    // Only the owned fixture's scene path is rebound; all imported geometry,
+    // notes, source points and canonical revision identities are retained.
+    const state = JSON.parse(file.content.split(entry.relativePath).join(sceneId));
+    state.projectId = f.query.projectId;
+    fs.writeFileSync(target, JSON.stringify(state));
+  }
+  mountRenderer(f, () => entry.content, 0, null, () => ({ projectId: f.query.projectId, documentId: f.a.nodeId }));
+  f.probe.state({ filePath: f.alpha, projectName: 'Роман' });
+  return { f, bridge, sceneId };
+}
+
+test('P05 scene composite public Review export preserves imported revisions comments reply and note', async t => {
+  const { f, bridge } = await p05SceneCompositeFixture(t), before = f.capture();
+  const source = await f.probe.sceneSource();
+  assert.equal(source.commentExport.threads.length, 3);
+  assert.equal(source.commentExport.threads.reduce((sum, thread) => sum + thread.messages.length, 0), 4);
+  assert.equal(source.documentNotes.sourceBindings.length, 1);
+  assert.equal(source.localAuthorityCapsule.exportMap.scope, 'scene');
+  const built = await f.probe.reviewBuild(source);
+  assert.equal(built.publicationGate.publishAllowed, true);
+  assert.equal(built.publicationGate.pendingSemanticsVerified, true);
+  const outPath = path.join(f.temp, 'p05-scene-review.docx'); f.chooseSavePath(outPath);
+  const result = await f.probe.exportReview({ requestId: 'p05-scene-review-composite' });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.exported, true);
+  assert.deepEqual(f.capture(), before);
+  const preview = bridge.buildDocxNovelImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(fs.readFileSync(outPath)));
+  assert.equal(preview.ok, true);
+  const pending = require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const actual = envelope.parseObservablePayload(preview.candidateCreatePlan.entries[0].content).doc;
+  const expected = pending.projection(envelope.parseObservablePayload(read(f.alpha)).doc);
+  assert.deepEqual(pending.projection(actual), { ...expected,
+    revisions: expected.revisions.map((revision, index) => ({ ...revision, nativeId: String(index + 1) })) });
+  const state = f.probe.strict(f.root).record;
+  assert.equal(state.roundsById[state.lastRoundId].lifecycleState, 'PUBLISHED_ACTIVE');
+});
+
+test('P05 scene composite full Review control retains the existing protected book route', async t => {
+  const { f } = await p05SceneCompositeFixture(t), before = f.capture();
+  const source = await f.probe.fullSource(), built = await f.probe.reviewBuild(source);
+  assert.equal(built.publicationGate.publishAllowed, true, JSON.stringify(built.publicationGate));
+  assert.deepEqual(f.capture(), before);
+});
+
+for (const target of ['note-body', 'note-reference', 'revision', 'comment-anchor'])
+test('P05 scene composite refuses changed ' + target + ' in provisional and final packages', async t => {
+  const { f, bridge } = await p05SceneCompositeFixture(t), before = f.capture();
+  const source = await f.probe.sceneSource();
+  const original = require('../../src/export/docx/docxReviewPacketBuilder.js').buildDocxReviewPacketBuffer(source);
+  assert.equal((await f.probe.sceneGate(source, original)).publishAllowed, true);
+  const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: original }).parts;
+  const partName = target === 'note-body' ? 'word/footnotes.xml' : 'word/document.xml', originalPart = parts[partName];
+  if (target === 'note-body') parts['word/footnotes.xml'] = parts['word/footnotes.xml'].replace('Содержание сноски', 'Искажение сноски');
+  if (target === 'note-reference') parts['word/document.xml'] = parts['word/document.xml'].replace(/<w:footnoteReference\b[^>]*\/>/u, '');
+  if (target === 'revision') parts['word/document.xml'] = parts['word/document.xml'].replace('УДАЛЕНИЕ🧭', 'ПОДМЕНА🧭');
+  if (target === 'comment-anchor') parts['word/document.xml'] = parts['word/document.xml'].replace(/<w:commentRangeStart w:id="2"\/>/u, '');
+  assert.notEqual(parts[partName], originalPart, target + ' XML mutation must execute');
+  const changed = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, content]) => ({ name, content })));
+  assert.notEqual(sha(changed), sha(original), target + ' mutation must execute');
+  await assert.rejects(f.probe.sceneGate(source, changed));
+  source.provisionalSelfParseArtifact = { bytes: changed };
+  await assert.rejects(f.probe.sceneGate(source, original));
+  assert.deepEqual(f.capture(), before);
 });

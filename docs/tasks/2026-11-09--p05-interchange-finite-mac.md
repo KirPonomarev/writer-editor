@@ -65,6 +65,7 @@ Phase01 diff budget: task at most180 lines, each factual prefix at most35lines a
 - test/unit/docx-min-builder.test.js
 - src/core/runtime.mjs
 - test/unit/sector-m-s33-full-archive-import.test.js
+- test/contracts/rtk-word-scene-identity-main.contract.test.js
 
 ### Phase02 prospective amendment
 
@@ -132,6 +133,10 @@ FEATURE_INTEGRATION_MANIFEST_V1: EXISTING_SEAM: BOUND_TO_CURRENT_APPROVED_ENTRYP
 Actual native qualification requires a new task-owned profile and exact admitted artifact. Original owner checkout, 51pre-existing profiles/23bundles and closed own70/application are read-only protected. No candidate observation is relabelled merged; no code-presence/count-only/self-verification becomes PASS. Separate frozen text/IR/XML, standard ZIP/raw-file and persisted readers supplement actual UI open/Save/cold. OS-managed security identity restoration is not claimed.
 
 Startup: fresh registry/worktree/UUID/encryption/unlocked/write checks, bootstrap READY and full normative plus scoped factual reads precede declaration01/preflight017b1bab1b7ec542c30acaa1b81e0aa4326a689fae651d1f5fe2652c377f2bc9. Current source and frozen plan are read progressively. This is not a P03 checkpoint/full-history/cache claim. Only this sole agent writes. Local brain refs were read; novelwriter.md and ghostwriter.md supply context only, with no external service/code/dependency adoption.
+
+Phase28 prospective scene Review composite repair: clean a448 declaration6640c4d7/preflightd6dc6e02 admits37 paths before edits. Native R12 twice refuses after owner-handled Keychain; normal Quit0 and preservation578d0044 retain old56 profiles27 bundles and all10116 sources. Complete-Main exact-corpus RED7088dba2 throws PENDING_REVISIONS_COMPOSITE_UNSUPPORTED while parser authority, all3 threads/1 reply and1 note verify. Append actual Main regression before code. Factor the existing strict full-book pending-note publication proof for scene reuse; preserve scene protocol/scope, provisional/final parsing, signed source/map/digest, revision union/Current/Original, note bodies/occurrences, comment geometry and every original negative. No return-apply expansion, secret-store/UI/dependency change. New exact build/native admission is required after source change. Manual budget3000, task250, factual prefixes120 each,WORKLOG45; old bytes/assertions/failures retained. Same P05 chain, full Mac NOT_READY/UNFROZEN/all17 UNKNOWN.
+
+Phase28 observed: actual existing Main whole380/380, no skips/todo06e30c5b, follows maintained product RED ec77a521. All original tests and shared110-line proof preserved. Exact native saved-corpus readbacke032d4c3 plus independent Python oracleb4c3583d preserve both text projections,2 revisions,3 threads/1 reply/1 note and4 canonical files. Current V2 Main-only digest inverseab929d39 preserves all69 members/all17 UNKNOWN. E0 actual0 a71fc800. This is software/cause closure only; new exact actual native and required final software/delivery remain pending.
 
 ## IMPLEMENTATION_STEPS
 
