@@ -66,6 +66,7 @@ Phase01 diff budget: task at most180 lines, each factual prefix at most35lines a
 - src/core/runtime.mjs
 - test/unit/sector-m-s33-full-archive-import.test.js
 - test/contracts/rtk-word-scene-identity-main.contract.test.js
+- test/contracts/rtk-word-review-default-typography.contract.test.js
 
 ### Phase02 prospective amendment
 
@@ -137,6 +138,10 @@ Startup: fresh registry/worktree/UUID/encryption/unlocked/write checks, bootstra
 Phase28 prospective scene Review composite repair: clean a448 declaration6640c4d7/preflightd6dc6e02 admits37 paths before edits. Native R12 twice refuses after owner-handled Keychain; normal Quit0 and preservation578d0044 retain old56 profiles27 bundles and all10116 sources. Complete-Main exact-corpus RED7088dba2 throws PENDING_REVISIONS_COMPOSITE_UNSUPPORTED while parser authority, all3 threads/1 reply and1 note verify. Append actual Main regression before code. Factor the existing strict full-book pending-note publication proof for scene reuse; preserve scene protocol/scope, provisional/final parsing, signed source/map/digest, revision union/Current/Original, note bodies/occurrences, comment geometry and every original negative. No return-apply expansion, secret-store/UI/dependency change. New exact build/native admission is required after source change. Manual budget3000, task250, factual prefixes120 each,WORKLOG45; old bytes/assertions/failures retained. Same P05 chain, full Mac NOT_READY/UNFROZEN/all17 UNKNOWN.
 
 Phase28 observed: actual existing Main whole380/380, no skips/todo06e30c5b, follows maintained product RED ec77a521. All original tests and shared110-line proof preserved. Exact native saved-corpus readbacke032d4c3 plus independent Python oracleb4c3583d preserve both text projections,2 revisions,3 threads/1 reply/1 note and4 canonical files. Current V2 Main-only digest inverseab929d39 preserves all69 members/all17 UNKNOWN. E0 actual0 a71fc800. This is software/cause closure only; new exact actual native and required final software/delivery remain pending.
+
+Phase31 prospective finite-host correction: clean f6f58e7d declaration6f0da509/preflight12b1205a admits38 paths before edit. Current affected1142/1101/41 original failures637c0cd3 all belong to one finite typography host omitting the newly factored Main helper; the unchanged original positive fails1 and passes0 with only an in-memory actual helper dependency,af1b76b1. Add that one real declaration name to the existing extractor roster; preserve every old test byte/assertion via exact inverse. No product/renderer/dependency/package input changes. Refresh current seven companions and unique append-only witnesses, then normal unaccepted checkpoint/current gates and same native/delivery chain. Actual candidate06 ASAR882a8f4a/officialf62482d1 and closed own76 normal0 f65d6ea3 stay at original f6 identity; afterWarm7e290dd8 proves old57 profiles28 bundles/source10116 exact. Native DOCX attempts remain refusals/UNKNOWN and raw state is preserved. A separately admitted current-head cold continuation requires exact1496-input equality; no retag/rebuild without changed packaged bytes. Manual3000/task250/factual120 each/WORKLOG50; full Mac NOT_READY/UNFROZEN/all17 UNKNOWN.
+
+Phase31 observed: full original typography183/183, no skips/todo64102e42, after one dependency-name insertion with an exact inverse restoring every original assertion/test byte. Main/product SHA7668f7fb unchanged; full Main380/380 and independent exact Word corpus remain at their original identities. Current companions, ordinary checkpoint/final gates and separately admitted native cold with literal1496-input equality are still required. Native refusals remain UNKNOWN, not acceptance.
 
 ## IMPLEMENTATION_STEPS
 
