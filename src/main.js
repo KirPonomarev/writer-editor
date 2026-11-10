@@ -45,6 +45,9 @@ const {
 } = require('./utils/txtImportLocalFilePreview');
 const {
   applyTxtImportSafeCreate,
+  TXT_IMPORT_SAFE_CREATE_RECEIPT_SCHEMA,
+  TXT_IMPORT_SAFE_CREATE_RECEIPT_TYPE,
+  TXT_IMPORT_SAFE_CREATE_READY_REASON,
 } = require('./utils/txtImportSafeCreate');
 const {
   isPathInsideBoundary,
@@ -15164,7 +15167,11 @@ function validateTxtImportSafeCreateCommandResult(commandResult) {
       reason: 'TXT_IMPORT_SAFE_CREATE_CREATED_IDS_INVALID',
     };
   }
-  const forbiddenKey = findTxtImportLocalFilePreviewForbiddenKey(commandResult);
+  // Preview still forbids receipts. A completed write returns one canonical,
+  // pathless receipt, whose contents retain the same recursive safety checks.
+  const { receipt, ...resultFields } = commandResult;
+  const forbiddenKey = findTxtImportLocalFilePreviewForbiddenKey(resultFields)
+    || findTxtImportLocalFilePreviewForbiddenKey(receipt, ['receipt']);
   if (forbiddenKey) {
     return {
       ok: false,
@@ -15172,6 +15179,28 @@ function validateTxtImportSafeCreateCommandResult(commandResult) {
       details: { key: forbiddenKey },
     };
   }
+  const exact = (value, keys) => isPlainObjectValue(value)
+    && Object.keys(value).length === keys.length && keys.every(key => Object.hasOwn(value, key));
+  const hash = (value, length) => typeof value === 'string'
+    && new RegExp(`^[a-f0-9]{${length}}$`, 'u').test(value);
+  const text = value => typeof value === 'string' && value.length > 0;
+  const sceneId = commandResult.createdSceneIds[0];
+  const scene = Array.isArray(receipt?.createdScenes) ? receipt.createdScenes[0] : null;
+  if (!exact(commandResult, ['ok', 'requestId', 'commandId', 'commandOk', 'safeCreateOk', 'created', 'createdSceneIds', 'receipt'])
+    || commandResult.ok !== true || commandResult.commandOk !== true || !text(commandResult.requestId) || !text(sceneId)
+    || !exact(receipt, ['schemaVersion', 'type', 'reason', 'projectId', 'batchId', 'sourcePreviewHash', 'inputHash', 'outputHash', 'createdSceneIds', 'createdScenes'])
+    || receipt.schemaVersion !== TXT_IMPORT_SAFE_CREATE_RECEIPT_SCHEMA
+    || receipt.type !== TXT_IMPORT_SAFE_CREATE_RECEIPT_TYPE || receipt.reason !== TXT_IMPORT_SAFE_CREATE_READY_REASON
+    || !text(receipt.projectId) || !text(receipt.batchId) || !hash(receipt.sourcePreviewHash, 10)
+    || !hash(receipt.inputHash, 64) || !hash(receipt.outputHash, 64)
+    || !Array.isArray(receipt.createdSceneIds) || receipt.createdSceneIds.length !== 1 || receipt.createdSceneIds[0] !== sceneId
+    || !Array.isArray(receipt.createdScenes) || receipt.createdScenes.length !== 1
+    || !exact(scene, ['sceneId', 'kind', 'title', 'contentTextHash', 'bytesWritten', 'outputHash'])
+    || scene.sceneId !== sceneId || scene.kind !== 'scene' || !text(scene.title) || !hash(scene.contentTextHash, 10)
+    || !Number.isSafeInteger(scene.bytesWritten) || scene.bytesWritten < 0 || !hash(scene.outputHash, 64)) {
+    return { ok: false, reason: 'TXT_IMPORT_SAFE_CREATE_RECEIPT_INVALID' };
+  }
+
   return { ok: true };
 }
 

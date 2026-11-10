@@ -1,3 +1,8 @@
+# 2026-11-10 — P05 real TXT acknowledgement failure
+
+Native own71 published the exact frozen82-byte scene but rejected its own required receipt and left the old draft active. Original failure/readback/literal cause e5bb9530/171286cd/8150c7b8, normal Quit0/full closed carrier498e3490 and all52old profiles/24bundles protection410d10e2 are retained. Prospective28-path phase10 admits actual Main+real-writer regression and a closed receipt acknowledgement fix only; preview receipt prohibition and all old guards/tests remain. No cold/all8 acceptance; same P05 delivery.
+Focused whole TXT20/20 without skips/todo b01c46c2 follows actual Main real-writer RED81fdc8e6; original preview denial and all old bytes remain. Native acceptance is still pending.
+
 # 2026-11-10 — P05 exact current Mac source pin
 
 Clean691 resumed; WP10413/13 and finalizer31/31 pass. Current full-Mac query detects exactly one old Main pin among69; retained44902831/cause991c6292. Prospective declaration/preflight08 admits only current V2 cut and independent gate digest correction, preserving every original69-source/17-row/unknown/authority guard and whole negative family. Unlaunched native691 build36557eff and separate official1487-leaf proof09e0eee1 remain bound to that head, not acceptance. No runtime change; finish current companions, all8 native and full delivery.

@@ -3171,4 +3171,74 @@
       "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
       "approvedAtUtc": "2026-11-09T23:26:12.837Z",
       "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase08: exactly one Main source pin in current V2 cut and independent gate, whole unchanged747/747 including source corruption controls; retain all69 members,17 UNKNOWN rows, old V1, prior entries and predicates. Existing exact companions only. No native or release acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "c201fa3e8a6ff8baf9fbf336efdf5395127deba56133c0a73627b9458568e70d",
+      "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T23:56:22.623Z",
+      "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase10: actual native TXT published-but-reported-failure, literal/real-writer RED, closed canonical acknowledgement receipt with preview receipt prohibition and every recursive safety check retained. Focused whole20/20 and unchanged scope747/747; exact existing current companions and all old history retained. Technical witness only, no native/release acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "9b917166257a4cf1eeed06e4d597ab9f72cbb9704c5aea77170baba80d1cfb3c",
+      "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T23:56:22.623Z",
+      "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase10: actual native TXT published-but-reported-failure, literal/real-writer RED, closed canonical acknowledgement receipt with preview receipt prohibition and every recursive safety check retained. Focused whole20/20 and unchanged scope747/747; exact existing current companions and all old history retained. Technical witness only, no native/release acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "9f270533e3885d349c5708c8ecb671ecbf9beca0e40eb6d34f856784d7119fee",
+      "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T23:56:22.623Z",
+      "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase10: actual native TXT published-but-reported-failure, literal/real-writer RED, closed canonical acknowledgement receipt with preview receipt prohibition and every recursive safety check retained. Focused whole20/20 and unchanged scope747/747; exact existing current companions and all old history retained. Technical witness only, no native/release acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "9410afda7442c0b5ffa7d66d2c651247ec57279814242f196f9974a1657345bb",
+      "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T23:56:22.623Z",
+      "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase10: actual native TXT published-but-reported-failure, literal/real-writer RED, closed canonical acknowledgement receipt with preview receipt prohibition and every recursive safety check retained. Focused whole20/20 and unchanged scope747/747; exact existing current companions and all old history retained. Technical witness only, no native/release acceptance."
+    },
+    {
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "sha256": "a325e1a57c2be818dbc88ad3c0e1407a7b13c26e63ffe2184b36b76f3ab8a87e",
+      "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T23:56:22.623Z",
+      "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase10: actual native TXT published-but-reported-failure, literal/real-writer RED, closed canonical acknowledgement receipt with preview receipt prohibition and every recursive safety check retained. Focused whole20/20 and unchanged scope747/747; exact existing current companions and all old history retained. Technical witness only, no native/release acceptance."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "40bb53573f65b29f532e69f63514ee7e8b46d214d0405af0649dbe3fdcb57d32",
+      "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T23:56:22.623Z",
+      "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase10: actual native TXT published-but-reported-failure, literal/real-writer RED, closed canonical acknowledgement receipt with preview receipt prohibition and every recursive safety check retained. Focused whole20/20 and unchanged scope747/747; exact existing current companions and all old history retained. Technical witness only, no native/release acceptance."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "14ae7e5e0de0f9b3d552f5b796641bfe2e5de832e4e9d8609f70e413f0c7a246",
+      "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T23:56:22.623Z",
+      "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase10: actual native TXT published-but-reported-failure, literal/real-writer RED, closed canonical acknowledgement receipt with preview receipt prohibition and every recursive safety check retained. Focused whole20/20 and unchanged scope747/747; exact existing current companions and all old history retained. Technical witness only, no native/release acceptance."
+    },
+    {
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "sha256": "dda4b244cd7e8140aaff242e4b421880e831c522680066c27d12a3ce4c03c67c",
+      "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T23:56:22.623Z",
+      "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase10: actual native TXT published-but-reported-failure, literal/real-writer RED, closed canonical acknowledgement receipt with preview receipt prohibition and every recursive safety check retained. Focused whole20/20 and unchanged scope747/747; exact existing current companions and all old history retained. Technical witness only, no native/release acceptance."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "93ca539377a2007f3684b2d9e8cb0101b6d322ee3a8fee4a72255a73dd6e303c",
+      "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T23:56:22.623Z",
+      "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase10: actual native TXT published-but-reported-failure, literal/real-writer RED, closed canonical acknowledgement receipt with preview receipt prohibition and every recursive safety check retained. Focused whole20/20 and unchanged scope747/747; exact existing current companions and all old history retained. Technical witness only, no native/release acceptance."
+    },
+    {
+      "filePath": "test/contracts/post-mvp-txt-import-command-surface.contract.test.js",
+      "sha256": "c0e2096ae072d3dc15ae5b43225e5e35017b40113eed7e3b89f3659d15b452c1",
+      "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+      "approvedAtUtc": "2026-11-09T23:56:22.623Z",
+      "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase10: actual native TXT published-but-reported-failure, literal/real-writer RED, closed canonical acknowledgement receipt with preview receipt prohibition and every recursive safety check retained. Focused whole20/20 and unchanged scope747/747; exact existing current companions and all old history retained. Technical witness only, no native/release acceptance."
     }],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}

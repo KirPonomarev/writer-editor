@@ -1,3 +1,11 @@
+# CURRENT — P05 TXT published acknowledgement correction
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109
+
+Clean685 affected78/719/747 and preliminary20-row96ffb9ad passed blocking requirements; six moderate dev advisories retained. Actual own71 TXT preview/cancel is zero-write, but confirmation creates the exact82-byte scene then reports failure. Persisted171286cd and literal8150c7b8 identify the required receipt rejected by the preview denylist. Warm Quit0, full106-entry/50-file closed498e3490 and protection410d10e2 preserve all earlier52profiles/24bundles and original errors. Prospective28-path declaration/preflight10 admits only the existing TXT contract and Main acknowledgement seam, preserving preview receipt denial and recursive safety checks. No cold/all8/push/PR acceptance. Full Mac NOT_READY, UNFROZEN,17 UNKNOWN; Word/native PAUSED. Earlier bytes retained below.
+Focused whole TXT20/20 without skips/todo b01c46c2 follows actual Main real-writer RED81fdc8e6; original preview denial and all old bytes remain. Native acceptance is still pending.
+
 # CURRENT — P05 current Mac scope binding correction
 
 DOCUMENT_CLASS: FACTUAL_STATUS
