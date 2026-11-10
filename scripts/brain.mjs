@@ -47,46 +47,38 @@ async function ensureDir(dirPath) {
   await fs.mkdir(dirPath, { recursive: true });
 }
 
-function extractMdSection(markdown, heading) {
+function statusSectionEnd(lines, start, archivePrefix) {
+  const end = lines.findIndex((line, index) =>
+    index > start && (/^#{1,2}[ \t]+/u.test(line) ||
+      (line.startsWith(archivePrefix) && line.endsWith("---"))));
+  return end === -1 ? lines.length : end;
+}
+
+function extractLeadingFactualContext(markdown) {
   const lines = normalizeNewlines(markdown).split("\n");
-  const startIndex = lines.findIndex((line) => line.trim() === heading);
-  if (startIndex === -1) return null;
+  const start = lines.findIndex((line) => line.trim());
+  if (start === -1 || !/^#{1,2}[ \t]+CURRENT(?:[ \t]|$)/u.test(lines[start])) return null;
 
-  let endIndex = lines.length;
-  for (let i = startIndex + 1; i < lines.length; i += 1) {
-    if (lines[i].startsWith("## ")) {
-      endIndex = i;
-      break;
-    }
+  const block = lines.slice(start, statusSectionEnd(lines, start, "--- Earlier factual "));
+  if (!block.some((line) => line.trim() === "DOCUMENT_CLASS: FACTUAL_STATUS")) return null;
+  return block.join("\n").trimEnd();
+}
+
+function extractLatestDatedSection(markdown) {
+  const lines = normalizeNewlines(markdown).split("\n");
+  let start = -1;
+  let latest = "";
+  for (let index = 0; index < lines.length; index += 1) {
+    const date = /^## (\d{4}-\d{2}-\d{2})[ \t]*$/u.exec(lines[index])?.[1];
+    if (!date || date <= latest) continue;
+    const parsed = new Date(date + "T00:00:00.000Z");
+    if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) continue;
+    latest = date;
+    start = index;
   }
-
-  return lines.slice(startIndex, endIndex).join("\n").trim();
-}
-
-function stripFirstLineIfHeading(section, heading) {
-  const lines = normalizeNewlines(section).split("\n");
-  if (lines[0]?.trim() === heading) return lines.slice(1).join("\n").trim();
-  return section.trim();
-}
-
-function extractLastDatedSection(markdown) {
-  const text = normalizeNewlines(markdown);
-  const matches = [...text.matchAll(/^## (\d{4}-\d{2}-\d{2})\s*$/gm)];
-  if (matches.length === 0) return null;
-
-  const last = matches[matches.length - 1];
-  const startIndex = last.index ?? 0;
-  const startLineEnd = text.indexOf("\n", startIndex);
-  const contentStart = startLineEnd === -1 ? text.length : startLineEnd + 1;
-
-  const nextMatch = text.slice(contentStart).match(/^## \d{4}-\d{2}-\d{2}\s*$/m);
-  const contentEnd =
-    nextMatch && nextMatch.index != null ? contentStart + nextMatch.index : text.length;
-
-  return {
-    date: last[1],
-    body: text.slice(startIndex, contentEnd).trim(),
-  };
+  if (start === -1) return null;
+  const end = statusSectionEnd(lines, start, "--- Earlier worklog ");
+  return { date: latest, body: lines.slice(start + 1, end).join("\n").trim() };
 }
 
 async function listTaskFiles() {
@@ -219,6 +211,7 @@ function quoteForShell(message) {
 async function cmdStatus() {
   const today = formatDateYYYYMMDD();
   console.log(`Craftsman — status (${today})`);
+  console.log("Snapshot: local recorded documents; advisory only.");
   console.log("");
   console.log(`- CONTEXT: ${path.relative(repoRoot, contextPath)}`);
   console.log(`- WORKLOG: ${path.relative(repoRoot, worklogPath)}`);
@@ -227,50 +220,24 @@ async function cmdStatus() {
   console.log("");
 
   const context = (await fileExists(contextPath)) ? await fs.readFile(contextPath, "utf8") : "";
-  if (context) {
-    const project = extractMdSection(context, "## Проект");
-    const constraints = extractMdSection(context, "## Ключевые правила (MVP)");
-    const perspective = extractMdSection(context, "## Перспектива (после MVP)");
-    const nextSteps = extractMdSection(context, "## Следующие шаги (приоритет)");
-
-    if (project) {
-      console.log("== Проект ==");
-      console.log(stripFirstLineIfHeading(project, "## Проект"));
-      console.log("");
-    }
-
-    if (constraints) {
-      console.log("== MVP правила ==");
-      console.log(stripFirstLineIfHeading(constraints, "## Ключевые правила (MVP)"));
-      console.log("");
-    }
-
-    if (nextSteps) {
-      console.log("== Следующие шаги ==");
-      console.log(stripFirstLineIfHeading(nextSteps, "## Следующие шаги (приоритет)"));
-      console.log("");
-    }
-
-    if (perspective) {
-      console.log("== Перспектива (после MVP) ==");
-      console.log(stripFirstLineIfHeading(perspective, "## Перспектива (после MVP)"));
-      console.log("");
-    }
+  const current = extractLeadingFactualContext(context);
+  if (current) {
+    console.log("== CONTEXT: recorded current block ==");
+    console.log(current);
   } else {
-    console.log("[WARN] docs/CONTEXT.md not found.");
-    console.log("");
+    console.log("[WARN] docs/CONTEXT.md has no leading factual current block.");
   }
+  console.log("");
 
   const worklog = (await fileExists(worklogPath)) ? await fs.readFile(worklogPath, "utf8") : "";
-  const lastWorklog = worklog ? extractLastDatedSection(worklog) : null;
-  if (lastWorklog) {
-    console.log(`== WORKLOG: ${lastWorklog.date} ==`);
-    console.log(stripFirstLineIfHeading(lastWorklog.body, `## ${lastWorklog.date}`));
-    console.log("");
+  const latestWorklog = extractLatestDatedSection(worklog);
+  if (latestWorklog) {
+    console.log(`== WORKLOG: ${latestWorklog.date} ==`);
+    console.log(latestWorklog.body);
   } else {
-    console.log("[WARN] docs/WORKLOG.md not found or has no date sections.");
-    console.log("");
+    console.log("[WARN] docs/WORKLOG.md has no readable dated section.");
   }
+  console.log("");
 
   const tasks = await listTaskFiles();
   if (tasks.length === 0) {
@@ -284,7 +251,7 @@ async function cmdStatus() {
     console.log(`- ${filename}`);
   }
   if (tasks.length > 10) {
-    console.log(`(showing last 10; total: ${tasks.length})`);
+    console.log(`(showing last 10 by filename; total: ${tasks.length})`);
   }
 }
 

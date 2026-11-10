@@ -197,3 +197,72 @@ test('real bootstrap restores exact context and rejects partial or duplicate fre
   for (const arguments_ of [args.slice(0, 4), [...args, '--checkpoint', saved.opts.checkpointPath], [...args, '--run', 'write']]) assert.notEqual(run(arguments_).status, 0);
   assert.equal(f.git('status', '--porcelain=v1', '--untracked-files=all'), before);
 });
+
+function runBrainStatusWithDocs(t, {context, worklog, tasks = []} = {}) {
+  const repo = fs.mkdtempSync(path.join(os.tmpdir(), 'brain-status-'));
+  t.after(() => fs.rmSync(repo, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(repo, 'scripts'));
+  fs.mkdirSync(path.join(repo, 'docs', 'tasks'), {recursive: true});
+  for (const file of ['brain.mjs', 'agent-context-restoration.mjs', 'agent-guardrails-lib.mjs']) {
+    fs.copyFileSync(path.join(root, 'scripts', file), path.join(repo, 'scripts', file));
+  }
+  for (const [name, value] of [['CONTEXT.md', context], ['WORKLOG.md', worklog]]) {
+    if (value !== undefined) fs.writeFileSync(path.join(repo, 'docs', name), value, {flag: 'wx'});
+  }
+  for (const name of tasks) fs.writeFileSync(path.join(repo, 'docs', 'tasks', name), name, {flag: 'wx'});
+  const snapshot = () => ['', 'scripts', 'docs', 'docs/tasks'].flatMap(dir =>
+    fs.readdirSync(path.join(repo, dir), {withFileTypes: true}).map(entry => {
+      const rel = path.join(dir, entry.name);
+      return [rel, entry.isFile() ? hash(fs.readFileSync(path.join(repo, rel))) : entry.isDirectory() ? 'directory' : 'other'];
+    })).sort((a, b) => a[0].localeCompare(b[0]));
+  const before = snapshot();
+  const result = spawnSync(process.execPath, ['scripts/brain.mjs', 'status'], {
+    cwd: repo, encoding: 'utf8', timeout: 10000, maxBuffer: 1024 * 1024,
+  });
+  assert.deepEqual(snapshot(), before, 'status must leave all fixed inputs and the directory roster unchanged');
+  assert.equal(result.error, undefined);
+  assert.equal(result.signal, null);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stderr, '');
+  return result.stdout;
+}
+
+test('brain status shows only the leading recorded block and the newest date even when it is first', t => {
+  const stdout = runBrainStatusWithDocs(t, {
+    context: '# CURRENT — Current recording\n\nDOCUMENT_CLASS: FACTUAL_STATUS\nCURRENT_CONTEXT_MARKER\n\n--- Earlier factual bytes preserved below ---\n## Проект\nHISTORICAL_CONTEXT_MARKER\n',
+    worklog: '## 2026-11-10\nNEWEST_WORKLOG_MARKER\n## Legacy logs\nHISTORICAL_WORKLOG_SPILL\n## 2026-11-10\nDUPLICATE_DATE_MARKER\n## 2026-10-30\nOLDER_WORKLOG_MARKER\n',
+    tasks: [...Array.from({length: 11}, (_, i) => 'task-' + String(i).padStart(2, '0') + '.md'), 'README.md'],
+  });
+  assert.match(stdout, /^CURRENT_CONTEXT_MARKER$/mu);
+  assert.match(stdout, /^== WORKLOG: 2026-11-10 ==\nNEWEST_WORKLOG_MARKER$/mu);
+  assert.doesNotMatch(stdout, /HISTORICAL_CONTEXT_MARKER|HISTORICAL_WORKLOG_SPILL|DUPLICATE_DATE_MARKER|OLDER_WORKLOG_MARKER/u);
+  assert.match(stdout, /^Snapshot: local recorded documents; advisory only\.$/mu);
+  assert.match(stdout, /^== Tasks \(11\) ==$/mu);
+  assert.match(stdout, /^- task-10\.md$/mu);
+  assert.doesNotMatch(stdout, /^- (?:task-00|README)\.md$/mu);
+  assert.match(stdout, /^\(showing last 10 by filename; total: 11\)$/mu);
+});
+
+test('brain status also selects an appended latest section and preserves Unicode with CRLF inputs', t => {
+  const stdout = runBrainStatusWithDocs(t, {
+    context: '## CURRENT — Контекст 世界\r\n\r\nDOCUMENT_CLASS: FACTUAL_STATUS\r\nТекущая запись é\r\n## Earlier record\r\nOLD_CONTEXT\r\n',
+    worklog: '## 2026-10-30\r\nOLD_LOG\r\n## 2026-11-11\r\nСвежая запись 世界\r\n',
+  });
+  assert.match(stdout, /^## CURRENT — Контекст 世界\n\nDOCUMENT_CLASS: FACTUAL_STATUS\nТекущая запись é$/mu);
+  assert.match(stdout, /^== WORKLOG: 2026-11-11 ==\nСвежая запись 世界$/mu);
+  assert.doesNotMatch(stdout, /OLD_CONTEXT|OLD_LOG|\r/u);
+});
+
+test('brain status warns for absent or invalid inputs without promoting old Context or impossible dates', t => {
+  const invalid = runBrainStatusWithDocs(t, {
+    context: '# Historical record\n## Проект\nHISTORICAL_ONLY\n# CURRENT — Archived block\nDOCUMENT_CLASS: FACTUAL_STATUS\nARCHIVED_CURRENT_ONLY\n',
+    worklog: '## 2026-02-31\nIMPOSSIBLE_FEBRUARY\n## 2026-13-01\nIMPOSSIBLE_MONTH\n',
+  });
+  const absent = runBrainStatusWithDocs(t);
+  for (const stdout of [invalid, absent]) {
+    assert.match(stdout, /^\[WARN\] docs\/CONTEXT\.md has no leading factual current block\.$/mu);
+    assert.match(stdout, /^\[WARN\] docs\/WORKLOG\.md has no readable dated section\.$/mu);
+    assert.doesNotMatch(stdout, /HISTORICAL_ONLY|ARCHIVED_CURRENT_ONLY|IMPOSSIBLE_FEBRUARY|IMPOSSIBLE_MONTH|== WORKLOG: \d/u);
+    assert.match(stdout, /^\(no task files yet\)$/mu);
+  }
+});
