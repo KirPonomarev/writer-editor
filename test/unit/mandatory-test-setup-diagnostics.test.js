@@ -538,3 +538,79 @@ for (const channel of ['stdout', 'stderr']) test('mandatory caller refuses ' + c
   assert.match(result.stderr, /UNIT_LANE_OUTPUT_REFUSED=.*E_D29_WRITE_FAILURE/u,
     'the actual publication failure must remain explicit and readable');
 });
+
+// Planning controls observe the exact existing caller's child and filesystem
+// ports. They are not executed unit, governance, native or release evidence.
+for (const [name, args, mode, prelude] of [
+  ['default', ['--dry-run'], 'unit', []],
+  ['explicit', ['--dry-run', existingTest], 'unit', []],
+  ['electron', ['electron', '--dry-run'], 'electron', []],
+  ['electron explicit', ['electron', '--dry-run', existingTest], 'electron', []],
+  ['fast', ['fast', '--dry-run'], 'fast', []],
+  ['closeout', ['closeout', '--dry-run'], 'closeout', []],
+  ['required wave', ['--with-ops=test:ops', '--dry-run', existingTest], 'unit', ['test:ops']],
+  ['required promotion', ['--mode=promotion', '--with-ops=test:ops,test:rtk', '--dry-run'], 'unit', ['test:ops', 'test:rtk']],
+  ['fast with prelude', ['fast', '--with-ops=test:ops', '--dry-run'], 'fast', ['test:ops']],
+  ['closeout with prelude', ['closeout', '--with-ops=test:ops,test:rtk', '--dry-run'], 'closeout', ['test:ops', 'test:rtk']],
+]) test('dry-run ' + name + ' reports its validated plan without executing any test or governance child', () => {
+  const result = invoke({ args });
+  assert.equal(result.exitCode, 0, result.errors);
+  assert.equal(result.children.length, 0, 'planning must return before the first execution boundary');
+  assert.equal(result.attemptedWrites.length, 0, 'planning must not materialize test or evidence artifacts');
+  const plan = JSON.parse(result.output);
+  assert.equal(plan.mode, mode);
+  assert.equal(plan.dryRun, true);
+  assert.equal(plan.execution, 'NOT_RUN');
+  assert.equal(plan.checkMode, args.includes('--mode=promotion') ? 'promotion' : 'release');
+  assert.deepEqual(plan.requiredOpsPrelude, prelude);
+  assert.ok(plan.testFiles.length > 0, 'the validated nonempty cohort remains visible');
+  if (args.includes(existingTest)) assert.deepEqual(plan.testFiles, [existingTest]);
+  assert.doesNotMatch(result.output, /UNIT_LANE_EXECUTED|UNIT_LANE_FULL_ARTIFACT|# pass /u,
+    'a plan cannot emit executed-test or acceptance evidence');
+});
+
+test('dry-run preserves malformed input and setup refusals before every child', () => {
+  for (const args of [
+    ['--dry-run', '--mode='], ['--dry-run', '--unknown-option'],
+    ['--dry-run', 'test/unit/deliberately-absent-dry-run.test.js'],
+    ['fast', '--dry-run', existingTest],
+    ['--dry-run', '--with-ops=test:ops', '--with-ops=test:ops'],
+  ]) refusalBeforeChildren(invoke({ args }));
+  const bad = fs.realpathSync(process.platform === 'darwin' ? '/private/tmp' : os.tmpdir());
+  refusalBeforeChildren(invoke({ args: ['--dry-run'], platform: 'darwin', temporaryPath: bad }));
+});
+
+test('actual CLI dry-run leaves an independent marker absent while ordinary success and failure still execute', () => {
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'honest-test-cli-plan-'));
+  const fixture = path.join(scratch, 'execution-marker.test.js');
+  const bytes = "const test=require('node:test'),fs=require('node:fs');\n"
+    + "test('actual execution marker',()=>{fs.writeFileSync(process.env.YALKEN_CLI_TEST_MARKER,'executed\\n',{flag:'wx'});if(process.env.YALKEN_CLI_TEST_FAIL==='1')throw Error('owned failing execution control');});\n";
+  fs.writeFileSync(fixture, bytes, { flag: 'wx' });
+  const env = { ...process.env };
+  delete env.NODE_TEST_CONTEXT;
+  delete env.YALKEN_TEST_EVIDENCE_DIR;
+  for (const [name, options, fails] of [
+    ['plan', ['--dry-run'], false], ['success', [], false], ['failure', [], true],
+  ]) {
+    const marker = path.join(scratch, name + '.marker');
+    const result = actualSpawnSync(process.execPath, [runner, ...options, fixture], {
+      cwd: root, env: { ...env, YALKEN_CLI_TEST_MARKER: marker, YALKEN_CLI_TEST_FAIL: fails ? '1' : '0' },
+      encoding: 'utf8', maxBuffer: 1024 * 1024, timeout: 10000,
+    });
+    assert.equal(result.error, undefined);
+    assert.equal(result.signal, null);
+    if (name === 'plan') {
+      assert.equal(result.status, 0, result.stderr);
+      const plan = JSON.parse(result.stdout);
+      assert.equal(plan.execution, 'NOT_RUN');
+      assert.deepEqual(plan.command, [process.execPath, '--test', '--test-concurrency=1', fixture]);
+      assert.equal(fs.existsSync(marker), false, 'independent raw filesystem marker proves no selected test ran');
+    } else {
+      assert.equal(result.status === 0, !fails, result.stdout + result.stderr);
+      assert.equal(fs.readFileSync(marker, 'utf8'), 'executed\n');
+      assert.match(result.stdout, /^# tests 1$/mu);
+      assert.match(result.stdout, fails ? /^# fail 1$/mu : /^# pass 1$/mu);
+    }
+    assert.equal(fs.readFileSync(fixture, 'utf8'), bytes, 'execution cannot rewrite the source fixture');
+  }
+});
