@@ -1,3 +1,9 @@
+## CURRENT — P05 inherited certificate override admitted
+
+Phase33 insertion observed: current delta222 contains exactly the one new typography override; inverse0a77e6ef restores the whole prior source, all original221 rows and predecessor/selector bytes. Existing source-policy membership already covers it. Current companion finalization and real no-overlay committed-HEAD verification are pending; no product/test/binary/native acceptance change.
+
+Clean94829e6a: declaration46cf8b15/preflight7b677f44 admits the same38 paths for one missing current literal override. R15 real certificatec4239482 fails although all221 existing current pins match. Newly changed typography db5e0ff3 is absent from current delta and inherits fb8a41bc. One-blob diagnostic6fbe20f2 matches only historical test bytes; it is not real acceptance. Append current typography row221 ->222 without old member/guard/selector or protected-verifier change, refresh required metadata/witnesses, then real clean-HEAD gate. Main/product source unchanged; full typography183/183 and old Main380/380 preserved. Own76 stays closed109/53, no app running. R15 cold admission15f3ac36 was prepared but never RUN and must not be used after HEAD changes. Native refusals and full Mac NOT_READY/UNFROZEN/all17 UNKNOWN remain.
+
 ## CURRENT — P05 finite typography host correction admitted
 
 Phase31 result: full original typography183/183, zero skips/todo64102e42. One helper-name insertion only; reversing it reproduces all original test bytes/assertions. Product/Main SHA7668f7fb remains unchanged; candidate06 actual build/native history retains f6 identity. Required current companion/checkpoint gates and separately admitted exact-input-equal cold continuation remain pending; native refusals are preserved and unqualified.
