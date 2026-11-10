@@ -1,3 +1,7 @@
+## P05 phase37: full original IPC/DOCX chains147/147 c78a59e8; strict signature/inverse and renderer-port refusal verified, product bytes unchanged; current metadata and new native still pending.
+
+## P05 phase37: strict host-context wiring binding admitted93378207/c28c8d40; original source/security assertions retained, renderer-port injection negatives added.
+
 ## P05 phase36: picker budget cause3eecf294, admitted41 paths; source focused16/16 and whole70/70; one obsolete wiring-signature assertion requires prospective next admission. Native/final gates pending.
 
 2026-11-10 P05 phase33 insertion: exactly one override221->222, full inverse0a77e6ef and all predecessor/selector bytes intact. Real current-HEAD verification awaits current companion/checkpoint closure; no test/product/native change.

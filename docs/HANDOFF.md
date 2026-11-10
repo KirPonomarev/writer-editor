@@ -1,3 +1,9 @@
+## CURRENT — P05 exact native host binding admitted
+
+Clean6636: declaration93378207/preflightc28c8d40 admits42 paths, adding only the existing local-preview contract. Inverse201dbca3 isolates its old one-argument static matcher; require exact default host context and forwarding, retain all other assertions and add renderer-port injection refusals. Main/preload/bundle bytes stay fixed. Append one current override222 ->223 for the already-policy-admitted contract, then current companions/witnesses and real clean-HEAD gate. Full software/rebuilt native/delivery remain pending; old failures/profiles/history intact.
+
+Phase37 observed: whole original IPC/DOCX affected selection plus new injection test147/147, zero skips/todo c78a59e8. Inverse restores every original contract byte except the exact required host-context signature binding; original production bytes are unchanged from6636. All preceding failures and native/profile evidence retain their own identities. Current223-row binding finalization, final required software and new actual native build remain pending.
+
 ## CURRENT — P05 native DOCX dialog wait admitted
 
 Clean640: declaration28a5e5fe/preflight31851311 admits41 paths before edit. Native fresh-cold refusal8a5c91f1 is zero-write for32 project entries/library; normal0/full closed111/55 and old57/28/source preservation0f4d7840. Node148ad477 and real Electron/ASAR7f5f77c4 computation pass. Actual preload/registered/Main fake-clock3eecf294 reproduces human picker timeout at120000ms, discarded successful late preview and busy/no second picker; explicit cancel/fast control pass.

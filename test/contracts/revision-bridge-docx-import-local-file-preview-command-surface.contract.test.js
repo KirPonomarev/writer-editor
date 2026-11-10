@@ -374,7 +374,7 @@ test('DOCX local file preview command surface: command is bridge wired with expl
   );
   assert.match(
     mainSource,
-    /'cmd\.project\.docx\.previewLocalFile':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{\s*return handleDocxImportLocalFilePreviewCommandSurface\(payload\);/,
+    /'cmd\.project\.docx\.previewLocalFile':\s*async\s*\(payload\s*=\s*\{\},\s*context\s*=\s*\{\}\)\s*=>\s*\{\s*return handleDocxImportLocalFilePreviewCommandSurface\(payload,\s*context\);/,
   );
   assert.ok(projectCommandsSource.includes("PROJECT_DOCX_PREVIEW_LOCAL_FILE: 'cmd.project.docx.previewLocalFile'"));
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,'));
@@ -787,5 +787,19 @@ test('legacy accepted correlation without either source hash offers explicit New
       else { assert.equal(result.status, 'cancelled'); assert.equal(port.calls.readFile.length, 0); }
       assert.equal(JSON.stringify(saved), before);
     }
+  }
+});
+
+
+test('DOCX native wait: renderer cannot provide a host dialog port or context before picker or read', async () => {
+  for (const key of ['nativeDialogWaitPort', 'context', 'options', 'nativeDialog']) {
+    const port = instantiateDocxImportLocalFilePreviewCommandPort();
+    const result = await port.handleDocxImportLocalFilePreviewCommandSurface({
+      requestId: 'p05-forged-host-port', target: 'new-project', [key]: { run: 'renderer-has-no-host-port' },
+    });
+    assert.equal(result.ok, false); assert.equal(result.error.reason, 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_INPUT_INVALID');
+    assert.equal(port.calls.showOpenDialog.length, 0); assert.equal(port.calls.stat.length, 0);
+    assert.equal(port.calls.readFile.length, 0); assert.equal(port.calls.rememberAdmission.length, 0);
+    assertNoForbiddenPublicFields(result); assert.equal(JSON.stringify(result).includes('renderer-has-no-host-port'), false);
   }
 });
