@@ -548,3 +548,87 @@ test('Manual Map native wait: retired actual Main window refuses dialog before i
   assert.equal(result.ok, false); assert.equal(result.reason, 'E_MANUAL_MAP_NATIVE_DIALOG_OWNER_STALE');
   assert.equal(nativeCalls, 0, 'no dialog on a replacement window');
 });
+
+
+// P05: only a current Main-owned DOCX file picker may pause the active budget.
+const P05_DOCX_PICKER_COMMAND = 'cmd.project.docx.previewLocalFile';
+for (const kind of ['source', 'bundle']) for (const alias of ['bridge', 'internal']) for (const choice of ['preview', 'cancel']) {
+  test(`P05 DOCX native wait: ${kind}/${alias}/${choice} keeps the original outcome beyond human selection`, async () => {
+    const f = mmWaitFixture(kind), state = waitObserve(f.command(alias, P05_DOCX_PICKER_COMMAND,
+      { requestId: 'p05-native-picker', target: 'new-project' }));
+    await f.advance(20000); assert.equal(f.calls.length, 1); assert.equal(f.scheduled[0].ms, 120000);
+    assert.equal(validateIpcEnvelope(f.calls[0].envelope, f.calls[0].channel).ok, true);
+    f.emit(f.phase(0, 'open')); await f.advance(150001);
+    assert.equal(state.status, 'pending', 'the one current Main picker is still waiting for the user');
+    f.emit(f.phase(0, 'closed'));
+    const reply = { ok: true, value: { ok: true, status: choice === 'cancel' ? 'cancelled' : 'preview', writeEffects: false } };
+    f.calls[0].resolve(reply); await waitFlush();
+    assert.equal(state.status, 'fulfilled'); assert.equal(state.value, reply);
+    assert.equal(f.calls.length, 1); assert.equal(f.timers.size, 0); assert.equal(f.listenerCount(), 0);
+  });
+}
+for (const kind of ['source', 'bundle']) {
+  test(`P05 DOCX native wait: ${kind} preserves exact active remainder and rejects renewal or late result`, async () => {
+    const f = mmWaitFixture(kind), state = waitObserve(f.command('bridge', P05_DOCX_PICKER_COMMAND,
+      { requestId: 'p05-budget', target: 'new-project' }));
+    await f.advance(20000); assert.equal(f.calls.length, 1); f.emit(f.phase(0, 'open'));
+    await f.advance(240000); assert.equal(state.status, 'pending'); f.emit(f.phase(0, 'closed'));
+    await f.advance(99999); assert.equal(state.status, 'pending'); f.emit(f.phase(0, 'open')); await f.advance(1);
+    assert.equal(state.status, 'rejected'); assert.equal(state.error.code, 'E_BRIDGE_TIMEOUT');
+    const expired = waitSnapshot(state); f.calls[0].resolve({ ok: true, forbiddenLate: true }); await waitFlush();
+    assert.deepEqual(waitSnapshot(state), expired); assert.deepEqual(f.scheduled.map(x => x.ms), [120000, 100000]);
+    assert.equal(f.calls.length, 1); assert.equal(f.listenerCount(), 0);
+  });
+  test(`P05 DOCX native wait: ${kind} absent, forged or foreign phases cannot change the deadline`, async () => {
+    for (const attack of [null, {}, { v: 2 }, { correlationId: 'wrong-correlation' }, { commandId: 'cmd.project.save' },
+      { phase: 'closed' }, { phase: 'OPEN' }, { extra: true }]) {
+      const f = mmWaitFixture(kind), state = waitObserve(f.command('bridge', P05_DOCX_PICKER_COMMAND,
+        { requestId: 'p05-forged', target: 'new-project', timeoutMs: 9999999, nativeDialog: true }, { timeoutMs: 9999999 }));
+      await f.advance(30000); assert.equal(f.calls.length, 1);
+      if (attack !== null) f.emit(Object.keys(attack).length ? f.phase(0, 'open', attack) : attack);
+      await f.advance(90000); assert.equal(state.status, 'rejected'); assert.equal(state.error.code, 'E_BRIDGE_TIMEOUT');
+      assert.equal(f.calls.length, 1); assert.equal(f.listenerCount(), 0);
+      f.calls[0].resolve({ ok: true, late: true }); await waitFlush(); assert.equal(state.error.code, 'E_BRIDGE_TIMEOUT');
+    }
+  });
+}
+
+
+for (const replaced of [false, true]) test(`P05 DOCX native wait: actual versioned Main bridge ${replaced ? 'rejects retired owner' : 'binds native phases to its correlation'}`, async () => {
+  const root = path.join(__dirname, '..', '..'), source = fs.readFileSync(path.join(root, 'src/main.js'), 'utf8');
+  const frames = [], payload = { requestId: 'p05-main-picker', target: 'new-project' }; let handler, capturedPort, release, nativeCalls = 0;
+  const hold = new Promise(resolve => { release = resolve; });
+  const sender = { isDestroyed: () => false, send: (channel, packet) => frames.push({ channel, packet }) };
+  const owner = { isDestroyed: () => false, webContents: sender };
+  const context = vm.createContext({ ...require(path.join(root, 'src/core/ipc-envelope-v1.cjs')), Promise, mainWindow: owner,
+    COMMAND_BUS_ROUTE: 'command.bus', DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID: P05_DOCX_PICKER_COMMAND,
+    guardedProtocolHandle(channel, fn) { assert.equal(channel, 'ui:command-bridge'); handler = fn; },
+    UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS: new Set([P05_DOCX_PICKER_COMMAND]), PRODUCT_COMMAND_ID_SET: new Set(),
+    getWriterLocalRuntimeProfile: () => ({}), getProductCommandRecord: () => ({}), evaluateWriterLocalCommandAccess: () => ({ allowed: true }),
+    async dispatchMenuCommand(id, value, options) {
+      assert.equal(id, P05_DOCX_PICKER_COMMAND); assert.equal(value, payload); assert.deepEqual(Object.keys(value).sort(), ['requestId', 'target']);
+      assert.equal(options.route, 'command.bus'); capturedPort = options.nativeDialogWaitPort; await hold;
+      if (!capturedPort) return { ok: false, reason: 'MISSING_HOST_PORT' };
+      return capturedPort.run(async () => { nativeCalls++; return { ok: true, status: 'cancelled', writeEffects: false }; });
+    },
+    makeCommandBridgeSuccess: value => ({ ok: true, value }), makeCommandBridgeFailure: (reason, value) => ({ ok: false, reason, value }),
+    findCommandBridgeFailureReason: value => value?.reason, makeCommandBridgeException: error => ({ ok: false, reason: error.code || error.message }),
+  });
+  const start = source.indexOf("guardedProtocolHandle('ui:command-bridge',"), end = source.indexOf('const WORKSPACE_QUERY_BRIDGE_HANDLERS', start);
+  assert.ok(start >= 0 && end > start); vm.runInContext(source.slice(start, end), context, { filename: 'actual-main-docx-native-wait' });
+  const envelope = createEnvelope('ui:command-bridge', P05_DOCX_PICKER_COMMAND, payload), pending = handler({ sender }, envelope);
+  await waitFlush(); assert.ok(capturedPort, 'exact current Main caller creates the host port');
+  assert.equal(frames.length, 0); if (replaced) context.mainWindow = { ...owner };
+  release(); const result = await pending;
+  assert.equal(result.ok, !replaced); assert.equal(nativeCalls, replaced ? 0 : 1);
+  if (replaced) { assert.equal(result.reason, 'E_MANUAL_MAP_NATIVE_DIALOG_OWNER_STALE'); assert.equal(frames.length, 0); }
+  else {
+    assert.deepEqual(frames.map(x => x.packet.phase), ['open', 'closed']);
+    for (const { channel, packet } of frames) {
+      assert.equal(channel, MM_WAIT_CHANNEL); assert.equal(packet.commandId, P05_DOCX_PICKER_COMMAND);
+      assert.equal(packet.correlationId, envelope.correlationId); assert.equal(packet.v, 1);
+      assert.deepEqual(Object.keys(packet).sort(), ['commandId', 'correlationId', 'phase', 'v']);
+    }
+    assert.equal(result.value.status, 'cancelled'); assert.equal(result.value.writeEffects, false);
+  }
+});

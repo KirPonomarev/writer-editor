@@ -819,6 +819,7 @@ let atlasGlobalCompositePublication = null;
 let pendingDocxImportPreviewValue = null;
 let pendingDocxImportPreviewPlan = null;
 let pendingDocxImportAttempt = null;
+let pendingMarkdownImportAttempt = null;
 let toolbarColorPickerState = {
   open: false,
   mode: 'text',
@@ -8685,66 +8686,61 @@ async function handleProjectArchiveImportUiPath() {
 }
 
 async function handleMarkdownImportUiPath() {
-  updateStatusText('Preparing Markdown import preview');
-  const previewBridgeResult = await invokePreloadUiCommandBridge(
-    MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
-    { requestId: `markdown-local-preview-${Date.now()}` },
-  );
-  const previewValue = resolveMarkdownLocalFileBridgeValue(previewBridgeResult);
-  if (!previewValue) {
-    updateStatusText('Import Markdown preview unavailable');
-    return;
+  if (pendingMarkdownImportAttempt) return;
+  const attempt = { requestId: `markdown-import-${crypto.randomUUID()}`, projectId: currentProjectId,
+    documentId: currentDocumentId, phase: 'previewing' };
+  pendingMarkdownImportAttempt = attempt;
+  const isCurrent = () => pendingMarkdownImportAttempt === attempt
+    && (currentProjectId === attempt.projectId && currentDocumentId === attempt.documentId
+      || attempt.phase === 'opening' && currentProjectId === attempt.targetProjectId);
+  let published = false;
+  try {
+    updateStatusText('Preparing Markdown import preview');
+    const previewBridgeResult = await invokePreloadUiCommandBridge(
+      MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID, { requestId: attempt.requestId });
+    if (!isCurrent()) return;
+    const previewValue = resolveMarkdownLocalFileBridgeValue(previewBridgeResult);
+    if (!previewValue) { updateStatusText('Import Markdown preview unavailable'); return; }
+    if (previewValue.canceled === true) { updateStatusText('Import Markdown cancelled'); return; }
+    const previewPayload = previewValue.previewResult;
+    const previewId = typeof previewValue.previewId === 'string' ? previewValue.previewId.trim() : '';
+    if (!previewPayload || typeof previewPayload !== 'object' || Array.isArray(previewPayload)
+      || !/^mdp_[a-f0-9]{24}$/u.test(previewId)) {
+      updateStatusText('Import Markdown preview unavailable'); return;
+    }
+    const previewSummary = summarizeMarkdownLocalFilePreview(previewValue);
+    const confirmed = typeof window.confirm === 'function'
+      ? window.confirm(`${previewSummary}\n\nCreate a new project from this Markdown file?`)
+      : false;
+    if (!isCurrent()) return;
+    if (!confirmed) { updateStatusText(buildMarkdownPreviewReadyStatus(previewValue)); return; }
+    attempt.phase = 'creating';
+    updateStatusText('Creating a new project from Markdown');
+    const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE, {
+      requestId: attempt.requestId, markdownImportPreviewRef: previewId, action: 'create',
+    });
+    if (!isCurrent()) return;
+    const created = result?.value;
+    if (result?.ok !== true || created?.created !== true || created.target !== 'new-project'
+      || typeof created.projectId !== 'string' || !created.projectId || created.projectId === attempt.projectId) {
+      updateStatusText('Markdown import could not be confirmed. Check the project library before trying again.'); return;
+    }
+    published = true;
+    attempt.targetProjectId = created.projectId;
+    attempt.phase = 'opening';
+    const opened = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_OPEN, { projectId: created.projectId });
+    if (!isCurrent()) return;
+    if (opened?.ok !== true) { updateStatusText('New project saved. Open it from the project library when ready.'); return; }
+    await loadTree();
+    if (!isCurrent()) return;
+    const lossCount = getMarkdownLossCount(previewValue);
+    updateStatusText(`Markdown imported into a new project${lossCount > 0 ? `; losses: ${lossCount}` : ''}`);
+  } catch {
+    if (isCurrent()) updateStatusText(published ? 'New project saved. Open it from the project library when ready.'
+      : 'Markdown import could not be confirmed. Check the project library before trying again.');
+  } finally {
+    if (pendingMarkdownImportAttempt === attempt) pendingMarkdownImportAttempt = null;
   }
-  if (previewValue.canceled === true) {
-    updateStatusText('Import Markdown cancelled');
-    return;
-  }
-
-  const previewPayload = previewValue.previewResult
-    && typeof previewValue.previewResult === 'object'
-    && !Array.isArray(previewValue.previewResult)
-    ? previewValue.previewResult
-    : null;
-  const previewId = typeof previewValue.previewId === 'string' ? previewValue.previewId.trim() : '';
-  if (!previewPayload || !/^mdp_[a-f0-9]{24}$/u.test(previewId)) {
-    updateStatusText('Import Markdown preview unavailable');
-    return;
-  }
-
-  const previewSummary = summarizeMarkdownLocalFilePreview(previewValue);
-  const confirmed = typeof window.confirm === 'function'
-    ? window.confirm(`${previewSummary}\n\nCreate imported Markdown scene?`)
-    : false;
-  if (!confirmed) {
-    updateStatusText(buildMarkdownPreviewReadyStatus(previewValue));
-    return;
-  }
-
-  updateStatusText('Importing Markdown');
-  const acceptBridgeResult = await invokePreloadUiCommandBridge(
-    MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID,
-    {
-      requestId: `markdown-local-accept-${Date.now()}`,
-      previewId,
-    },
-  );
-  const safeCreateValue = resolveMarkdownLocalFileBridgeValue(acceptBridgeResult);
-  if (!safeCreateValue || safeCreateValue.safeCreate !== true) {
-    updateStatusText('Import Markdown safe create failed');
-    return;
-  }
-
-  const createdSceneIds = Array.isArray(safeCreateValue.createdSceneIds)
-    ? safeCreateValue.createdSceneIds
-    : [];
-  await loadTree();
-  const openResult = await openImportedMarkdownSceneAfterSafeCreate(previewPayload, createdSceneIds);
-  const openSuffix = openResult.opened
-    ? '; opened imported scene'
-    : (createdSceneIds.length > 0 ? `; ${openResult.reason}` : '');
-  const lossCount = getMarkdownLossCount(previewValue);
-  const lossSuffix = lossCount > 0 ? `; losses: ${lossCount}` : '';
-  updateStatusText(`Imported Markdown scenes: ${createdSceneIds.length}${openSuffix}${lossSuffix}`);
 }
 
 async function handleMarkdownExportUiPath() {
@@ -23739,7 +23735,8 @@ async function runSavedEnvironmentEpoch(action) {
 function hasFullEnvironmentAuthoringPending() {
   return Boolean(wordCommentDraft || wordCommentBusy || manuscriptDrafts.size || notesMutationPending || storyDrafts.size || storyMutationPending
     || metadataUpdateDebounceId || metadataUpdatePending || metadataUpdateInFlight || treeMutationPending || pendingRevisionBusy
-    || pendingDocxImportAttempt?.phase === 'accepting' || pendingDocxImportAttempt?.phase === 'opening' || manualMapHasRetainedDraft()
+    || pendingDocxImportAttempt?.phase === 'accepting' || pendingDocxImportAttempt?.phase === 'opening'
+    || pendingMarkdownImportAttempt?.phase === 'creating' || pendingMarkdownImportAttempt?.phase === 'opening' || manualMapHasRetainedDraft()
     || [...sceneLanguageAuthorDrafts.values()].some(entry => entry.fields.languageCode || entry.pending?.active)
     || [...ideaMeaningAuthorDrafts.values()].some(entry => entry.pending?.active
       || ['ideaTitle', 'ideaSummary', 'meaningTitle', 'meaningInterpretation'].some(key => Boolean(entry.fields[key]))));

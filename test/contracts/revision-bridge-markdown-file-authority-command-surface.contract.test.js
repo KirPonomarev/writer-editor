@@ -54,6 +54,7 @@ function instantiateMarkdownLocalFilePort(options = {}) {
   };
   const sandbox = {
     Buffer,
+    TextDecoder,
     MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID: 'cmd.project.markdown.exportLocalFile',
     MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID: 'cmd.project.markdown.acceptLocalPreview',
     MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID: 'cmd.project.markdown.previewLocalFile',
@@ -64,6 +65,13 @@ function instantiateMarkdownLocalFilePort(options = {}) {
     cloneJsonSafe,
     crypto,
     currentFilePath: '/project/roman/scene.txt',
+    docxImportPreviewProjectGeneration: 1,
+    currentLifecycleSubjectId: () => 'project-1',
+    commentAuthoringSessionId: 'session-1',
+    lastSignaledEditGeneration: 0,
+    activeStage10ApplicationBootstrap: {},
+    markdownLocalFilePreviewGeneration: 0,
+    userBookmarkCapability: () => {},
     confirmMarkdownExportLosses: async () => {
       calls.confirmations += 1;
       return true;
@@ -148,7 +156,7 @@ function instantiateMarkdownLocalFilePort(options = {}) {
         return { schemaVersion: 'markdown-scene.v1', source: value };
       },
     }),
-    mainWindow: {},
+    mainWindow: { isDestroyed: () => false, webContents: { isDestroyed: () => false } },
     makeTypedMarkdownError,
     module: { exports: {} },
     exports: {},

@@ -18,14 +18,16 @@ async function loadModule(relativePath) {
   return import(fileUrl);
 }
 
-async function loadMainWithElectronStub() {
+async function loadMainWithElectronStub(userDataRoot) {
+  assert.ok(path.isAbsolute(userDataRoot));
   const mainPath = path.join(ROOT, 'src', 'main.js');
   const fileManagerPath = path.join(ROOT, 'src', 'utils', 'fileManager.js');
   const originalLoad = Module._load;
   const electronStub = {
     app: {
       getPath: (name) => {
-        if (name === 'documents' || name === 'userData' || name === 'appData') {
+        if (name === 'userData') return userDataRoot;
+        if (name === 'documents' || name === 'appData') {
           return ROOT;
         }
         return ROOT;
@@ -135,7 +137,7 @@ test('book profile persistence: canonical bookProfile survives manifest write an
   const documentPath = path.join(projectRoot, 'roman', 'chapter-1.txt');
   const manifestPath = path.join(projectRoot, 'project.craftsman.json');
 
-  const { main, fileManager } = await loadMainWithElectronStub();
+  const { main, fileManager } = await loadMainWithElectronStub(tempRoot);
   const bookProfile = await loadModule('src/core/bookProfile.mjs');
   const canonicalBookProfile = bookProfile.createDefaultBookProfile({
     profileId: 'stage02-book-profile',

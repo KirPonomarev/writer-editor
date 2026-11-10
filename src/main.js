@@ -45,6 +45,9 @@ const {
 } = require('./utils/txtImportLocalFilePreview');
 const {
   applyTxtImportSafeCreate,
+  TXT_IMPORT_SAFE_CREATE_RECEIPT_SCHEMA,
+  TXT_IMPORT_SAFE_CREATE_RECEIPT_TYPE,
+  TXT_IMPORT_SAFE_CREATE_READY_REASON,
 } = require('./utils/txtImportSafeCreate');
 const {
   isPathInsideBoundary,
@@ -324,6 +327,9 @@ let activeReviewSessionLifecycle = 'passive';
 const activeDocxActivationRequestDigestGuard = createDocxActivationRequestDigestGuard({ maxEntries: 128 });
 let reviewExactTextApplyReconciliationState = { userRelevant: [], errors: [] };
 let pendingMarkdownLocalFilePreview = null;
+let markdownLocalFilePreviewGeneration = 0;
+let markdownNewProjectAttempt = null;
+const markdownNewProjectCompleted = new Map();
 let pendingProjectArchiveImportPreview = null;
 let appInitializationPromise = Promise.resolve();
 let editorStartupReadyPromise = Promise.resolve();
@@ -1078,6 +1084,124 @@ function verifyDocxReviewReturnYrtk2Binding({
   };
 }
 
+function buildPendingNotesReviewPublicationProof(source, documentBuffer, revisionBridge, provisionalCompleteAnalysis, finalParse) {
+  const cryptoPort = createRtkReviewTransportCryptoPort();
+  const localAuthority = source.localAuthorityCapsule;
+  const finalPayload = finalParse.authorityCarrier?.selectedCarrier?.payload || {};
+  const bodyTypography = require('./core/word-review-typography-v1.cjs');
+  const bodyProfile = bodyTypography.validate(localAuthority.exportMap.exportTypography, { allowUndefined: true });
+  const noteProofs=[];let notePhaseMemo;
+  for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
+    const readback=analysis||provisionalCompleteAnalysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort,includePublicationPhaseIdentity:true});
+    if(!readback?.ok)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
+    const noteScenes=localAuthority.exportMap.scenes.map(scene=>{
+      const raw=localAuthority.baselineObservableContentBySceneId?.[scene.sceneId]??localAuthority.baselineFinalTextBySceneId?.[scene.sceneId];
+      if(typeof raw!=='string'||normalizeRtkSignedSha256(scene.rawSha256)!==`sha256:${cryptoPort.sha256Text(raw)}`)throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');
+      const envelope=require('./core/document-content-envelope-v1.cjs'),parsed=envelope.parseObservablePayload(raw);
+      if(parsed.issue||(!parsed.doc&&parsed.version!==1))throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');return {sceneId:scene.sceneId,document:parsed.doc||envelope.buildParagraphDocumentFromText(parsed.text)};});
+    const identity=normalizeRtkSignedSha256(readback.publicationPhaseIdentity);
+    if(!identity)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
+    const parsed=notePhaseMemo?.identity===identity?notePhaseMemo.parsed:revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets(),exportMap:localAuthority.exportMap,
+      baselineDocuments:noteScenes,baselineDocumentNotes:source.documentNotes,retainPendingScenes:true,documentSections:localAuthority.documentSections,
+      signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
+    if(!parsed.ok)throw Error(parsed.code||'WORD_BOOK_NOTES_PUBLICATION_PARSE');
+    const preview=parsed.contentPreview;
+    const bindings=localAuthority.exportMap.scenes.filter(scene=>scene.pendingCommentBinding).map(scene=>scene.pendingCommentBinding);
+    const resolved=bindings.length>0&&bindings.every(binding=>Array.isArray(binding.revisionSpans)&&binding.revisionSpans.length===0);
+    if(!isPlainObjectValue(preview)||!Array.isArray(preview.pendingNoteReferences)
+      &&!(preview.pendingNoteReferences===undefined&&resolved))throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
+    notePhaseMemo={identity,parsed};
+    const bound=require('./core/word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({document:source.notesDocument,
+      projectId:source.documentNotes.projectId,baseline:source.documentNotes,exportMap:localAuthority.exportMap,
+      scenes:noteScenes.map((scene,i)=>({...scene,returnedDocument:parsed.scenes[i].returnedDocument})),
+      returnedNotes:revisionBridge.parseDocumentNotesRichReturn(bytes,readback.reviewIr.documentNotes,{includeBreakProjection:true}),
+      returnedReferences:readback.reviewIr.documentNotes.references,
+      unionReferences:preview.pendingNoteReferences||readback.reviewIr.documentNotes.references});
+    for(const scene of bound) {
+      const before=pendingTextRevisions.readLedger(scene.beforeDoc),returned=pendingTextRevisions.readLedger(scene.returnedDoc);
+      if(before?.noteSourcePoints) {
+        const expected=pendingTextRevisions.noteProjection(scene.beforeDoc,'export').map(({noteId,paragraphIndex,offsetUtf16})=>({noteId,paragraphIndex,offsetUtf16}));
+        // Reproduce only the pinned LOCAL pending/comment emission branch.
+        // Authored font/language fields overlay these actual emitted values;
+        // clean and schema1 paths retain their strict comparison below.
+        const mapScene=localAuthority.exportMap.scenes.find(item=>item.sceneId===scene.sceneId);
+        const emitted=cloneJsonSafe(before),localBlocks=source.blocks.filter(block=>block.sceneId===scene.sceneId);
+        if(bodyProfile?.schemaVersion!==bodyTypography.V2&&source.commentExport?.threads?.length&&mapScene.pendingCommentBinding?.schemaVersion===2
+          &&localBlocks.every(block=>Array.isArray(block.pendingRevisionSegments))) {
+          const leaves=pendingTextRevisions.paragraphs(emitted.source);
+          leaves.forEach((paragraph,index)=>{paragraph.content=pendingTextRevisions.commentTransportSegments(
+            (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);});
+          emitted.revisions=emitted.revisions.map(revision=>pendingTextRevisions.commentTransportSegments(
+            [{node:{type:'text',text:'x'},revision}],{type:leaves[revision.paragraphIndex].type,attrs:localBlocks[revision.paragraphIndex].formatIr.paragraph})[0].revision);
+        }
+        // Core has independently validated the complete local v3 profile.
+        // Rebuild its emitted pPr only in this read-only expectation clone.
+        if(bodyProfile?.schemaVersion!==bodyTypography.V2&&scene.bodyParagraphEmission)pendingTextRevisions.paragraphs(emitted.source).forEach((paragraph,index)=> {
+          if(paragraph.type==='codeBlock')return;
+          if(!localBlocks[index].pendingRevisionSegments)paragraph.content=pendingTextRevisions.commentTransportSegments(
+            (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);
+          paragraph.attrs={...paragraph.attrs};
+          for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage'])paragraph.attrs[key]={
+            ...scene.bodyParagraphEmission[key],...paragraph.attrs[key]};
+        });
+        // The pinned pending/comment producer emits UTC seconds and legacy
+        // date minutes. Project that law only in this validated source clone;
+        // BODY_V2 run and formatting emission keeps its own typography law.
+        if(bodyProfile?.schemaVersion===bodyTypography.V2&&mapScene.pendingCommentBinding?.schemaVersion===2)
+          for(const revision of emitted.revisions)if(revision.dateUtc&&Number.isFinite(Date.parse(revision.dateUtc))) {
+            revision.dateUtc=new Date(revision.dateUtc).toISOString().replace(/\.\d{3}Z$/u,'Z');
+            if(revision.date&&Number.isFinite(Date.parse(revision.date)))
+              revision.date=new Date(revision.date).toISOString().replace(/:\d{2}\.\d{3}Z$/u,':00Z');
+          }
+        const expectedSemantics=scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography,bodyProfile?.schemaVersion===bodyTypography.V2);
+        if(bodyProfile?.schemaVersion===bodyTypography.V2||scene.bodyParagraphEmission) {
+          // Ordinary Word replacement groups are inferred on readback, not
+          // serialized. Predict them from our own emitted union intervals;
+          // retain canonical IDs and decisions outside this expectation.
+          const intervals=[],predicted=new Map(),occurrences=new Map();
+          pendingTextRevisions.exportDocument(emitted).paragraphs.forEach((paragraph,paragraphIndex)=>{
+            let offset=0;
+            for(const segment of paragraph.segments) {
+              const end=offset+(segment.node.type==='hardBreak'?1:segment.node.text.length),last=intervals.at(-1);
+              if(segment.revision) {
+                if(!occurrences.has(segment.revision.id))occurrences.set(segment.revision.id,occurrences.size);
+                if(last?.revision.id===segment.revision.id&&last.paragraphIndex===paragraphIndex&&last.to===offset)last.to=end;
+                else intervals.push({revision:segment.revision,paragraphIndex,from:offset,to:end});
+              }
+              offset=end;
+            }
+          });
+          for(let i=0;i<intervals.length-1;i++) {
+            const a=intervals[i],b=intervals[i+1],left=a.revision,right=b.revision;
+            if(left.operation!=='format'&&right.operation!=='format'&&!left.moveName&&!right.moveName&&!left.boundary&&!right.boundary
+              &&a.paragraphIndex===b.paragraphIndex&&a.to===b.from&&left.operation!==right.operation&&left.author===right.author) {
+              const groupId=`word-emitted-replacement-${i}`;
+              predicted.set(left.id,groupId);predicted.set(right.id,groupId);
+              i++;
+            }
+          }
+          // Project only group occurrences after canonical validation, so
+          // independent local decisions and Undo states remain untouched.
+          const ids=[...occurrences.keys()],groups=new Map(),revisionsById=new Map(emitted.revisions.map(revision=>[revision.id,revision]));
+          for(const paragraph of expectedSemantics.paragraphs)for(const segment of paragraph.segments)if(segment.revision) {
+            const revision=revisionsById.get(ids[segment.revision.occurrence]);
+            if(!revision)throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');
+            const key=predicted.get(revision.id)||revision.groupId;
+            if(key&&!groups.has(key))groups.set(key,groups.size);
+            segment.revision.group=key?groups.get(key):null;
+          }
+        }
+        if(stableRtkReviewTransportJson(expected)!==stableRtkReviewTransportJson(returned.noteSourcePoints)
+          ||stableRtkReviewTransportJson(expectedSemantics)
+            !==stableRtkReviewTransportJson(scenePendingExportSemantics(returned,localAuthority.exportMap.exportTypography)))throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');
+      }
+    }
+    noteProofs.push({phase,rosterCount:source.documentNotes.sourceBindings.length,completeBodies:true,sourceOccurrences:true});
+  }
+  if(finalPayload.documentNotesDigest!==source.documentNotes.protectedDigest)throw Error('WORD_BOOK_NOTES_PUBLICATION_DIGEST');
+  return {ok:true,proof:{policy:source.documentNotes.policy,protectedDigest:source.documentNotes.protectedDigest,noteProofs}};
+}
+
 async function buildFullManuscriptPublicationGate(source, documentBuffer, revisionBridge) {
   const exportCapsule = isPlainObjectValue(source?.exportCapsule) ? source.exportCapsule : {};
   if (exportCapsule.fullManuscript !== true) return null;
@@ -1277,116 +1401,8 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     || localAuthority.exportMap?.scenes?.length===1&&localAuthority.scope==='full-manuscript')
     && localAuthority.exportMap.scenes.some(scene=>scene.pendingCommentBinding?.schemaVersion===2)) {
     try {
-      const noteProofs=[];let notePhaseMemo;
-      for(const [phase,bytes,analysis] of [['provisional',source.provisionalSelfParseArtifact.bytes,null],['final',documentBuffer,finalParse]]) {
-        const readback=analysis||provisionalCompleteAnalysis||revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets()},{cryptoPort,includePublicationPhaseIdentity:true});
-        if(!readback?.ok)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
-        const noteScenes=localAuthority.exportMap.scenes.map(scene=>{
-          const raw=localAuthority.baselineObservableContentBySceneId?.[scene.sceneId]??localAuthority.baselineFinalTextBySceneId?.[scene.sceneId];
-          if(typeof raw!=='string'||normalizeRtkSignedSha256(scene.rawSha256)!==`sha256:${cryptoPort.sha256Text(raw)}`)throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');
-          const envelope=require('./core/document-content-envelope-v1.cjs'),parsed=envelope.parseObservablePayload(raw);
-          if(parsed.issue||(!parsed.doc&&parsed.version!==1))throw Error('WORD_BOOK_NOTES_PUBLICATION_BASELINE');return {sceneId:scene.sceneId,document:parsed.doc||envelope.buildParagraphDocumentFromText(parsed.text)};});
-        const identity=normalizeRtkSignedSha256(readback.publicationPhaseIdentity);
-        if(!identity)throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
-        const parsed=notePhaseMemo?.identity===identity?notePhaseMemo.parsed:revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({bytes,budgets:docxReviewReturnIntakeProductBudgets(),exportMap:localAuthority.exportMap,
-          baselineDocuments:noteScenes,baselineDocumentNotes:source.documentNotes,retainPendingScenes:true,documentSections:localAuthority.documentSections,
-          signedSectionsDigest:localAuthority.documentSections?.protectedDigest,cryptoPort});
-        if(!parsed.ok)throw Error(parsed.code||'WORD_BOOK_NOTES_PUBLICATION_PARSE');
-        const preview=parsed.contentPreview;
-        const bindings=localAuthority.exportMap.scenes.filter(scene=>scene.pendingCommentBinding).map(scene=>scene.pendingCommentBinding);
-        const resolved=bindings.length>0&&bindings.every(binding=>Array.isArray(binding.revisionSpans)&&binding.revisionSpans.length===0);
-        if(!isPlainObjectValue(preview)||!Array.isArray(preview.pendingNoteReferences)
-          &&!(preview.pendingNoteReferences===undefined&&resolved))throw Error('WORD_BOOK_NOTES_PUBLICATION_PARSE');
-        notePhaseMemo={identity,parsed};
-        const bound=require('./core/word-note-return-delta-v1.cjs').bindUnchangedBookPendingNotes({document:source.notesDocument,
-          projectId:source.documentNotes.projectId,baseline:source.documentNotes,exportMap:localAuthority.exportMap,
-          scenes:noteScenes.map((scene,i)=>({...scene,returnedDocument:parsed.scenes[i].returnedDocument})),
-          returnedNotes:revisionBridge.parseDocumentNotesRichReturn(bytes,readback.reviewIr.documentNotes,{includeBreakProjection:true}),
-          returnedReferences:readback.reviewIr.documentNotes.references,
-          unionReferences:preview.pendingNoteReferences||readback.reviewIr.documentNotes.references});
-        for(const scene of bound) {
-          const before=pendingTextRevisions.readLedger(scene.beforeDoc),returned=pendingTextRevisions.readLedger(scene.returnedDoc);
-          if(before?.noteSourcePoints) {
-            const expected=pendingTextRevisions.noteProjection(scene.beforeDoc,'export').map(({noteId,paragraphIndex,offsetUtf16})=>({noteId,paragraphIndex,offsetUtf16}));
-            // Reproduce only the pinned LOCAL pending/comment emission branch.
-            // Authored font/language fields overlay these actual emitted values;
-            // clean and schema1 paths retain their strict comparison below.
-            const mapScene=localAuthority.exportMap.scenes.find(item=>item.sceneId===scene.sceneId);
-            const emitted=cloneJsonSafe(before),localBlocks=source.blocks.filter(block=>block.sceneId===scene.sceneId);
-            if(bodyProfile?.schemaVersion!==bodyTypography.V2&&source.commentExport?.threads?.length&&mapScene.pendingCommentBinding?.schemaVersion===2
-              &&localBlocks.every(block=>Array.isArray(block.pendingRevisionSegments))) {
-              const leaves=pendingTextRevisions.paragraphs(emitted.source);
-              leaves.forEach((paragraph,index)=>{paragraph.content=pendingTextRevisions.commentTransportSegments(
-                (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);});
-              emitted.revisions=emitted.revisions.map(revision=>pendingTextRevisions.commentTransportSegments(
-                [{node:{type:'text',text:'x'},revision}],{type:leaves[revision.paragraphIndex].type,attrs:localBlocks[revision.paragraphIndex].formatIr.paragraph})[0].revision);
-            }
-            // Core has independently validated the complete local v3 profile.
-            // Rebuild its emitted pPr only in this read-only expectation clone.
-            if(bodyProfile?.schemaVersion!==bodyTypography.V2&&scene.bodyParagraphEmission)pendingTextRevisions.paragraphs(emitted.source).forEach((paragraph,index)=> {
-              if(paragraph.type==='codeBlock')return;
-              if(!localBlocks[index].pendingRevisionSegments)paragraph.content=pendingTextRevisions.commentTransportSegments(
-                (paragraph.content||[]).map(node=>({node,revision:null})),{type:localBlocks[index].formatIr.paragraph.nodeType,attrs:localBlocks[index].formatIr.paragraph}).map(segment=>segment.node);
-              paragraph.attrs={...paragraph.attrs};
-              for(const key of ['wordParagraphSpacing','wordParagraphMarkLanguage'])paragraph.attrs[key]={
-                ...scene.bodyParagraphEmission[key],...paragraph.attrs[key]};
-            });
-            // The pinned pending/comment producer emits UTC seconds and legacy
-            // date minutes. Project that law only in this validated source clone;
-            // BODY_V2 run and formatting emission keeps its own typography law.
-            if(bodyProfile?.schemaVersion===bodyTypography.V2&&mapScene.pendingCommentBinding?.schemaVersion===2)
-              for(const revision of emitted.revisions)if(revision.dateUtc&&Number.isFinite(Date.parse(revision.dateUtc))) {
-                revision.dateUtc=new Date(revision.dateUtc).toISOString().replace(/\.\d{3}Z$/u,'Z');
-                if(revision.date&&Number.isFinite(Date.parse(revision.date)))
-                  revision.date=new Date(revision.date).toISOString().replace(/:\d{2}\.\d{3}Z$/u,':00Z');
-              }
-            const expectedSemantics=scenePendingExportSemantics(emitted,localAuthority.exportMap.exportTypography,bodyProfile?.schemaVersion===bodyTypography.V2);
-            if(bodyProfile?.schemaVersion===bodyTypography.V2||scene.bodyParagraphEmission) {
-              // Ordinary Word replacement groups are inferred on readback, not
-              // serialized. Predict them from our own emitted union intervals;
-              // retain canonical IDs and decisions outside this expectation.
-              const intervals=[],predicted=new Map(),occurrences=new Map();
-              pendingTextRevisions.exportDocument(emitted).paragraphs.forEach((paragraph,paragraphIndex)=>{
-                let offset=0;
-                for(const segment of paragraph.segments) {
-                  const end=offset+(segment.node.type==='hardBreak'?1:segment.node.text.length),last=intervals.at(-1);
-                  if(segment.revision) {
-                    if(!occurrences.has(segment.revision.id))occurrences.set(segment.revision.id,occurrences.size);
-                    if(last?.revision.id===segment.revision.id&&last.paragraphIndex===paragraphIndex&&last.to===offset)last.to=end;
-                    else intervals.push({revision:segment.revision,paragraphIndex,from:offset,to:end});
-                  }
-                  offset=end;
-                }
-              });
-              for(let i=0;i<intervals.length-1;i++) {
-                const a=intervals[i],b=intervals[i+1],left=a.revision,right=b.revision;
-                if(left.operation!=='format'&&right.operation!=='format'&&!left.moveName&&!right.moveName&&!left.boundary&&!right.boundary
-                  &&a.paragraphIndex===b.paragraphIndex&&a.to===b.from&&left.operation!==right.operation&&left.author===right.author) {
-                  const groupId=`word-emitted-replacement-${i}`;
-                  predicted.set(left.id,groupId);predicted.set(right.id,groupId);
-                  i++;
-                }
-              }
-              // Project only group occurrences after canonical validation, so
-              // independent local decisions and Undo states remain untouched.
-              const ids=[...occurrences.keys()],groups=new Map(),revisionsById=new Map(emitted.revisions.map(revision=>[revision.id,revision]));
-              for(const paragraph of expectedSemantics.paragraphs)for(const segment of paragraph.segments)if(segment.revision) {
-                const revision=revisionsById.get(ids[segment.revision.occurrence]);
-                if(!revision)throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');
-                const key=predicted.get(revision.id)||revision.groupId;
-                if(key&&!groups.has(key))groups.set(key,groups.size);
-                segment.revision.group=key?groups.get(key):null;
-              }
-            }
-            if(stableRtkReviewTransportJson(expected)!==stableRtkReviewTransportJson(returned.noteSourcePoints)
-              ||stableRtkReviewTransportJson(expectedSemantics)
-                !==stableRtkReviewTransportJson(scenePendingExportSemantics(returned,localAuthority.exportMap.exportTypography)))throw Error('WORD_BOOK_NOTES_PUBLICATION_SOURCE');
-          }
-        }
-        noteProofs.push({phase,rosterCount:source.documentNotes.sourceBindings.length,completeBodies:true,sourceOccurrences:true});
-      }
-      if(finalPayload.documentNotesDigest!==source.documentNotes.protectedDigest)throw Error('WORD_BOOK_NOTES_PUBLICATION_DIGEST');
-      documentNotesBinding={ok:true,proof:{policy:source.documentNotes.policy,protectedDigest:source.documentNotes.protectedDigest,noteProofs}};
+      documentNotesBinding = buildPendingNotesReviewPublicationProof(
+        source, documentBuffer, revisionBridge, provisionalCompleteAnalysis, finalParse);
     } catch(error) {return {ok:false,publishAllowed:false,code:'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH',reason:error.code||error.message};}
   } else if(source.documentNotes&&localAuthority.exportMap?.scenes?.length>1
     &&Object.hasOwn(source.documentNotes,'breakEmission')&&source.documentNotes.breakEmission?.schemaVersion!==1) {
@@ -5425,13 +5441,14 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   const parsed = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: documentBuffer,
     budgets: docxReviewReturnIntakeProductBudgets(), hmacSecret: source.forbiddenSecret,
     expectedAuthority: source.localAuthorityCapsule.expectedAuthority, returnedArtifactSha256: finalArtifactSha256,
-    baselineFinalText: source.sceneText }, { cryptoPort });
+    baselineFinalText: source.sceneText }, { cryptoPort, includePublicationPhaseIdentity: true });
   if (!parsed.ok || parsed.authorityCarrier?.status !== 'verified-baseline-bound')
     throw Error('REVIEW_DOCX_EXPORT_NOTE_AUTHORITY_MISMATCH');
   if (source.documentSections) {
     const proof = validateFullManuscriptDocumentSectionsReturn({ expected: source.documentSections, returned: parsed.reviewIr?.documentSections, signedDigest: parsed.authorityCarrier.selectedCarrier.payload.documentSectionsDigest });
     if (!proof.ok) throw Error('REVIEW_DOCX_EXPORT_SECTIONS_MISMATCH');
   }
+  let provisionalCompleteAnalysis = null;
   const commentProofs = [];
   if (source.commentExport) {
     const projection = source.commentExport, payload = parsed.authorityCarrier.selectedCarrier.payload;
@@ -5445,7 +5462,8 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
       if (!Buffer.isBuffer(source.provisionalSelfParseArtifact?.bytes)) throw Error('REVIEW_DOCX_EXPORT_COMMENT_PROVISIONAL_REQUIRED');
       const provisional = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({
         bytes: source.provisionalSelfParseArtifact.bytes, budgets: docxReviewReturnIntakeProductBudgets(),
-      }, { cryptoPort });
+      }, { cryptoPort, includePublicationPhaseIdentity: true });
+      provisionalCompleteAnalysis = provisional;
       const proof = compareCommentExportReadback(projection, provisional.reviewIr?.commentThreads);
       if (!provisional.ok || !proof.ok || provisional.reviewIr?.commentThreads?.length !== projection.threads.length)
         throw Error('REVIEW_DOCX_EXPORT_COMMENT_PROVISIONAL_MISMATCH');
@@ -5468,10 +5486,13 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
   if (ledger && source.commentExport?.threads.length && !pendingCommentBinding)
     throw Error('PENDING_COMMENT_EXPORT_BINDING_REQUIRED');
   if (pendingCommentBinding && source.commentExport?.threads.length) {
-    if (!notesBinding.ok || source.documentNotes.notes.length || source.documentNotes.sourceBindings.length)
-      throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
+    if (!notesBinding.ok) throw Error('PENDING_REVISIONS_COMPOSITE_UNSUPPORTED');
+    const documentNotesBinding = source.documentNotes.notes.length || source.documentNotes.sourceBindings.length
+      ? buildPendingNotesReviewPublicationProof(source, documentBuffer, revisionBridge, provisionalCompleteAnalysis, parsed)
+      : null;
     const returned = revisionBridge.buildDocxPendingCommentReturnDocumentsFromZipBytes({ bytes: documentBuffer, budgets: docxReviewReturnIntakeProductBudgets(),
       exportMap: source.localAuthorityCapsule.exportMap,
+      ...(documentNotesBinding ? { baselineDocumentNotes: source.documentNotes } : {}),
       baselineDocuments: [{sceneId: source.localAuthorityCapsule.exportMap.scenes[0].sceneId, document: baselineDocument.doc}],
       documentSections: source.documentSections, cryptoPort: createRtkReviewTransportCryptoPort(),
       signedSectionsDigest: parsed.authorityCarrier.selectedCarrier.payload.documentSectionsDigest,
@@ -5483,7 +5504,8 @@ async function buildSceneNoteReviewPublicationGate(source, documentBuffer, revis
       exportTypography: source.localAuthorityCapsule.exportMap.exportTypography,
       exportParagraphs: source.localAuthorityCapsule.exportMap.scenes[0].blocks.map(block => block.formatIr.paragraph) });
     return { ok: true, publishAllowed: true, code: 'REVIEW_DOCX_EXPORT_NOTES_VERIFIED',
-      pendingSemanticsVerified: true, finalArtifactSha256, ...commentPublication };
+      pendingSemanticsVerified: true, finalArtifactSha256, ...commentPublication,
+      ...(documentNotesBinding ? { documentNotesBinding } : {}) };
   }
   if (ledger?.schemaVersion === 3) {
     if (parsed.authorityCarrier.selectedCarrier.payload.documentNotesDigest !== source.documentNotes.protectedDigest
@@ -14689,7 +14711,8 @@ function buildDocxImportLocalFilePreviewCommandResult(previewResult) {
   };
 }
 
-async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
+async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}, options = {}) {
+  const nativeDialogWaitPort = options.nativeDialogWaitPort;
   let referenceContext = typeof captureDocxImportPreviewContext === 'function'
     ? captureDocxImportPreviewContext() : null;
   if (typeof createDocxImportLocalFilePreview !== 'function') {
@@ -14763,7 +14786,9 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
     previewResult = await createDocxImportLocalFilePreview({ requestId: effectivePayload.requestId }, {
       pickLocalFile: async options => {
         assertCurrent();
-        const selected = await pickDocxImportLocalFilePreviewFile(options);
+        const selected = await (payload.target === 'new-project' && typeof nativeDialogWaitPort?.run === 'function'
+          ? nativeDialogWaitPort.run(() => pickDocxImportLocalFilePreviewFile(options))
+          : pickDocxImportLocalFilePreviewFile(options));
         assertCurrent();
         return selected;
       },
@@ -15161,7 +15186,11 @@ function validateTxtImportSafeCreateCommandResult(commandResult) {
       reason: 'TXT_IMPORT_SAFE_CREATE_CREATED_IDS_INVALID',
     };
   }
-  const forbiddenKey = findTxtImportLocalFilePreviewForbiddenKey(commandResult);
+  // Preview still forbids receipts. A completed write returns one canonical,
+  // pathless receipt, whose contents retain the same recursive safety checks.
+  const { receipt, ...resultFields } = commandResult;
+  const forbiddenKey = findTxtImportLocalFilePreviewForbiddenKey(resultFields)
+    || findTxtImportLocalFilePreviewForbiddenKey(receipt, ['receipt']);
   if (forbiddenKey) {
     return {
       ok: false,
@@ -15169,7 +15198,59 @@ function validateTxtImportSafeCreateCommandResult(commandResult) {
       details: { key: forbiddenKey },
     };
   }
+  const exact = (value, keys) => isPlainObjectValue(value)
+    && Object.keys(value).length === keys.length && keys.every(key => Object.hasOwn(value, key));
+  const hash = (value, length) => typeof value === 'string'
+    && new RegExp(`^[a-f0-9]{${length}}$`, 'u').test(value);
+  const text = value => typeof value === 'string' && value.length > 0;
+  const sceneId = commandResult.createdSceneIds[0];
+  const scene = Array.isArray(receipt?.createdScenes) ? receipt.createdScenes[0] : null;
+  if (!exact(commandResult, ['ok', 'requestId', 'commandId', 'commandOk', 'safeCreateOk', 'created', 'createdSceneIds', 'receipt'])
+    || commandResult.ok !== true || commandResult.commandOk !== true || !text(commandResult.requestId) || !text(sceneId)
+    || !exact(receipt, ['schemaVersion', 'type', 'reason', 'projectId', 'batchId', 'sourcePreviewHash', 'inputHash', 'outputHash', 'createdSceneIds', 'createdScenes'])
+    || receipt.schemaVersion !== TXT_IMPORT_SAFE_CREATE_RECEIPT_SCHEMA
+    || receipt.type !== TXT_IMPORT_SAFE_CREATE_RECEIPT_TYPE || receipt.reason !== TXT_IMPORT_SAFE_CREATE_READY_REASON
+    || !text(receipt.projectId) || !text(receipt.batchId) || !hash(receipt.sourcePreviewHash, 10)
+    || !hash(receipt.inputHash, 64) || !hash(receipt.outputHash, 64)
+    || !Array.isArray(receipt.createdSceneIds) || receipt.createdSceneIds.length !== 1 || receipt.createdSceneIds[0] !== sceneId
+    || !Array.isArray(receipt.createdScenes) || receipt.createdScenes.length !== 1
+    || !exact(scene, ['sceneId', 'kind', 'title', 'contentTextHash', 'bytesWritten', 'outputHash'])
+    || scene.sceneId !== sceneId || scene.kind !== 'scene' || !text(scene.title) || !hash(scene.contentTextHash, 10)
+    || !Number.isSafeInteger(scene.bytesWritten) || scene.bytesWritten < 0 || !hash(scene.outputHash, 64)) {
+    return { ok: false, reason: 'TXT_IMPORT_SAFE_CREATE_RECEIPT_INVALID' };
+  }
+
   return { ok: true };
+}
+
+async function publishTxtImportSceneIdentity(binding, targetPath, receipt, lease, guard) {
+  guard();
+  const source = await readRecoverySnapshot(targetPath, guard);
+  const assertSource = () => { guard(); assertRecoverySnapshot(source); };
+  assertSource();
+  if (source.raw === null || computeHash(source.raw) !== receipt.createdScenes[0].outputHash)
+    throw Error('TXT_IMPORT_CREATED_SOURCE_CHANGED');
+  const identity = await loadProjectTreeIdentityModule();
+  assertSource();
+  const raw = await fs.readFile(binding.manifestPath, 'utf8');
+  assertSource();
+  if (raw !== binding.manifestRaw) throw Error('TXT_IMPORT_MANIFEST_CHANGED');
+  const manifest = JSON.parse(raw);
+  if (manifest.projectId !== binding.projectId) throw Error('TXT_IMPORT_PROJECT_CHANGED');
+  let registry = manifest.treeIdentity;
+  for (const [candidatePath, kind] of [[path.dirname(targetPath), 'chapter-folder'], [targetPath, 'scene']]) {
+    const bindingKey = toProjectTreeBindingKey(binding.projectRoot, candidatePath);
+    const existing = Object.values(registry?.nodes || {}).find(node => node.bindingKey === bindingKey);
+    if (existing && (kind === 'scene' || existing.kind !== kind || existing.present !== true))
+      throw Error('TXT_IMPORT_IDENTITY_BINDING_CONFLICT');
+    const next = identity.upsertProjectTreeIdentityNode({ projectId: manifest.projectId, registry, bindingKey, kind });
+    if (!next.ok) throw Object.assign(Error(next.error?.reason || 'TXT_IMPORT_IDENTITY_INVALID'), { code: next.error?.code });
+    registry = next.value;
+  }
+  assertSource(); await lease.assertOwned(); assertSource();
+  await persistProjectTreeIdentityMigration(binding.manifestPath, binding.projectRoot, raw,
+    { ...manifest, treeIdentity: registry }, { lease, assertCurrent: assertSource });
+  assertSource();
 }
 
 async function handleTxtImportSafeCreateCommandSurface(payload = {}) {
@@ -15184,10 +15265,24 @@ async function handleTxtImportSafeCreateCommandSurface(payload = {}) {
     );
   }
 
+  const projectRoot = getProjectRootPath(), romanRoot = getProjectSectionPath('roman');
+  const window = mainWindow, contents = window?.webContents, owner = activeStage10ApplicationBootstrap;
+  const subject = currentLifecycleSubjectId(), session = commentAuthoringSessionId, file = currentFilePath;
+  const generation = lastSignaledEditGeneration, context = captureDocxImportPreviewContext();
+  const guard = () => {
+    userBookmarkCapability(TXT_IMPORT_SAFE_CREATE_COMMAND_ID);
+    if (!window || window !== mainWindow || window.isDestroyed() || window.webContents !== contents || contents.isDestroyed()
+      || projectRoot !== getProjectRootPath() || owner !== activeStage10ApplicationBootstrap
+      || subject !== currentLifecycleSubjectId() || session !== commentAuthoringSessionId || file !== currentFilePath
+      || generation !== lastSignaledEditGeneration || context !== captureDocxImportPreviewContext())
+      throw Error('TXT_IMPORT_CONTEXT_STALE');
+  };
+
   let projectBinding = null;
   try {
-    await ensureProjectStructure();
-    projectBinding = await resolveProjectBindingForFile(getProjectSectionPath('roman'));
+    guard(); await ensureProjectStructure(); guard();
+    projectBinding = await resolveProjectBindingForFile(romanRoot); guard();
+    if (projectBinding?.projectRoot !== projectRoot || !projectBinding.projectId) throw Error('TXT_IMPORT_PROJECT_BINDING_STALE');
   } catch (error) {
     return makeTxtImportSafeCreateTypedError(
       'E_TXT_IMPORT_SAFE_CREATE_PROJECT_BINDING_FAILED',
@@ -15198,69 +15293,101 @@ async function handleTxtImportSafeCreateCommandSurface(payload = {}) {
     );
   }
 
-  let safeCreateResult = null;
   try {
-    safeCreateResult = await applyTxtImportSafeCreate(
-      {
-        txtImportPreviewPlan: previewPlan,
-      },
-      {
-        projectRoot: getProjectRootPath(),
-        romanRoot: getProjectSectionPath('roman'),
-        projectId: projectBinding && typeof projectBinding.projectId === 'string'
-          ? projectBinding.projectId
-          : '',
-        queueDiskOperation,
-        operationLabel: 'safe create TXT import scene batch',
-        writeBatchAtomic: writeFlowSceneBatchAtomic,
-      },
-    );
+    const authority = await getMainProjectManifestAuthority(); guard();
+    return await authority.withProjectLease(projectBinding.projectId, async lease => {
+      await lease.assertOwned(); guard();
+      let publishedPath = '';
+      const writeBatch = async (batch, options) => {
+        guard(); await lease.assertOwned(); guard();
+        const entry = Array.isArray(batch?.entries) && batch.entries.length === 1 ? batch.entries[0] : null;
+        if (batch?.projectRoot !== projectRoot || typeof entry?.path !== 'string'
+          || path.dirname(entry.path) !== path.join(romanRoot, 'Imported')) throw Error('TXT_IMPORT_PRIVATE_WRITER_TARGET_INVALID');
+        if (await fs.readFile(projectBinding.manifestPath, 'utf8') !== projectBinding.manifestRaw) throw Error('TXT_IMPORT_MANIFEST_CHANGED');
+        guard();
+        const nodes = Object.values(projectBinding.manifest.treeIdentity?.nodes || {});
+        const sceneKey = toProjectTreeBindingKey(projectRoot, entry.path), folderKey = toProjectTreeBindingKey(projectRoot, path.dirname(entry.path));
+        if (nodes.some(node => node.bindingKey === sceneKey || node.bindingKey === folderKey
+          && (node.kind !== 'chapter-folder' || node.present !== true))) throw Error('TXT_IMPORT_IDENTITY_BINDING_CONFLICT');
+        const result = await writeFlowSceneBatchAtomic(batch, { ...options, beforeActivate: async event => {
+          guard(); await lease.assertOwned(); guard(); await options.beforeActivate(event); guard();
+        } });
+        guard();
+        if (result?.ok === true) publishedPath = entry.path;
+        return result;
+      };
+
+      let safeCreateResult = null;
+      try {
+        safeCreateResult = await applyTxtImportSafeCreate(
+          {
+            txtImportPreviewPlan: previewPlan,
+          },
+          {
+            projectRoot,
+            romanRoot,
+            projectId: projectBinding && typeof projectBinding.projectId === 'string'
+              ? projectBinding.projectId
+              : '',
+            queueDiskOperation,
+            operationLabel: 'safe create TXT import scene batch',
+            writeBatchAtomic: writeBatch,
+          },
+        );
+      } catch (error) {
+        return makeTxtImportSafeCreateTypedError(
+          'E_TXT_IMPORT_SAFE_CREATE_FAILED',
+          'TXT_IMPORT_SAFE_CREATE_FAILED',
+          {
+            message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+          },
+        );
+      }
+
+      if (!safeCreateResult || safeCreateResult.ok !== true) {
+        const safeCreateError = isPlainObjectValue(safeCreateResult?.error) ? safeCreateResult.error : {};
+        return makeTxtImportSafeCreateTypedError(
+          typeof safeCreateError.code === 'string'
+            ? `E_${safeCreateError.code}`
+            : 'E_TXT_IMPORT_SAFE_CREATE_FAILED',
+          typeof safeCreateError.reason === 'string'
+            ? safeCreateError.reason
+            : 'TXT_IMPORT_SAFE_CREATE_FAILED',
+          isPlainObjectValue(safeCreateError.details) ? safeCreateError.details : undefined,
+        );
+      }
+
+      const commandResult = {
+        ok: true,
+        requestId: typeof safePayload.requestId === 'string' && safePayload.requestId.trim()
+          ? safePayload.requestId.trim()
+          : 'txt-import-safe-create-request',
+        commandId: TXT_IMPORT_SAFE_CREATE_COMMAND_ID,
+        commandOk: true,
+        safeCreateOk: true,
+        created: true,
+        createdSceneIds: Array.isArray(safeCreateResult.value.createdSceneIds)
+          ? cloneJsonSafe(safeCreateResult.value.createdSceneIds)
+          : [],
+        receipt: cloneJsonSafe(safeCreateResult.value.receipt),
+      };
+      const resultShape = validateTxtImportSafeCreateCommandResult(commandResult);
+      if (!resultShape.ok) {
+        return makeTxtImportSafeCreateTypedError(
+          'E_TXT_IMPORT_SAFE_CREATE_INVALID_RESULT',
+          resultShape.reason,
+          isPlainObjectValue(resultShape.details) ? resultShape.details : undefined,
+        );
+      }
+      await publishTxtImportSceneIdentity(projectBinding, publishedPath, commandResult.receipt, lease, guard);
+      guard();
+      return commandResult;
+    });
   } catch (error) {
-    return makeTxtImportSafeCreateTypedError(
-      'E_TXT_IMPORT_SAFE_CREATE_FAILED',
-      'TXT_IMPORT_SAFE_CREATE_FAILED',
-      {
-        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
-      },
-    );
+    return makeTxtImportSafeCreateTypedError('E_TXT_IMPORT_IDENTITY_PUBLICATION_FAILED',
+      /^[A-Z][A-Z0-9_]{1,95}$/u.test(error?.code || error?.message || '')
+        ? error.code || error.message : 'TXT_IMPORT_IDENTITY_PUBLICATION_FAILED');
   }
-
-  if (!safeCreateResult || safeCreateResult.ok !== true) {
-    const safeCreateError = isPlainObjectValue(safeCreateResult?.error) ? safeCreateResult.error : {};
-    return makeTxtImportSafeCreateTypedError(
-      typeof safeCreateError.code === 'string'
-        ? `E_${safeCreateError.code}`
-        : 'E_TXT_IMPORT_SAFE_CREATE_FAILED',
-      typeof safeCreateError.reason === 'string'
-        ? safeCreateError.reason
-        : 'TXT_IMPORT_SAFE_CREATE_FAILED',
-      isPlainObjectValue(safeCreateError.details) ? safeCreateError.details : undefined,
-    );
-  }
-
-  const commandResult = {
-    ok: true,
-    requestId: typeof safePayload.requestId === 'string' && safePayload.requestId.trim()
-      ? safePayload.requestId.trim()
-      : 'txt-import-safe-create-request',
-    commandId: TXT_IMPORT_SAFE_CREATE_COMMAND_ID,
-    commandOk: true,
-    safeCreateOk: true,
-    created: true,
-    createdSceneIds: Array.isArray(safeCreateResult.value.createdSceneIds)
-      ? cloneJsonSafe(safeCreateResult.value.createdSceneIds)
-      : [],
-    receipt: cloneJsonSafe(safeCreateResult.value.receipt),
-  };
-  const resultShape = validateTxtImportSafeCreateCommandResult(commandResult);
-  if (!resultShape.ok) {
-    return makeTxtImportSafeCreateTypedError(
-      'E_TXT_IMPORT_SAFE_CREATE_INVALID_RESULT',
-      resultShape.reason,
-      isPlainObjectValue(resultShape.details) ? resultShape.details : undefined,
-    );
-  }
-  return commandResult;
 }
 // TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_END
 
@@ -22898,7 +23025,80 @@ async function handleDocxNewProjectCreateCommand(payload = {}) {
 }
 // DOCX_NEW_PROJECT_CREATE_END
 
+// MARKDOWN_NEW_PROJECT_CREATE_START
+async function handleMarkdownNewProjectCreateCommand(payload = {}) {
+  const failure = code => makeProjectLifecycleError('E_MARKDOWN_NEW_PROJECT_CREATE', code);
+  if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => !['requestId', 'markdownImportPreviewRef', 'projectName', 'action'].includes(key))
+    || typeof payload.requestId !== 'string' || !/^[A-Za-z0-9._:-]{1,120}$/u.test(payload.requestId)
+    || typeof payload.markdownImportPreviewRef !== 'string' || !/^mdp_[a-f0-9]{24}$/u.test(payload.markdownImportPreviewRef)
+    || payload.action !== 'create' || payload.projectName !== undefined && typeof payload.projectName !== 'string')
+    return failure('MARKDOWN_NEW_PROJECT_PAYLOAD_INVALID');
+  const pending = pendingMarkdownLocalFilePreview;
+  const assertPublication = () => {
+    userBookmarkCapability('cmd.project.lifecycle.create');
+    const age = pending ? Date.now() - pending.createdAtMs : -1;
+    if (!pending || pending !== pendingMarkdownLocalFilePreview || pending.previewId !== payload.markdownImportPreviewRef
+      || !isMarkdownImportPreviewContextCurrent(pending.context, pending.window)
+      || pending.generation !== markdownLocalFilePreviewGeneration
+      || !Number.isFinite(age) || age < 0 || age > MARKDOWN_LOCAL_FILE_PREVIEW_TTL_MS)
+      throw Error('MARKDOWN_IMPORT_REFERENCE_CONTEXT_CHANGED');
+    if (pending.reservedRequestId && pending.reservedRequestId !== payload.requestId)
+      throw Error('MARKDOWN_IMPORT_REFERENCE_ALREADY_USED');
+  };
+  try {
+    assertPublication();
+    const projectName = payload.projectName === undefined ? 'Рукопись из Markdown' : payload.projectName;
+    const binding = JSON.stringify([pending.context.key, pending.previewId, pending.source.sourceSha256,
+      computeHash(pending.source.canonicalContent), projectName]);
+    const completed = markdownNewProjectCompleted.get(payload.requestId);
+    if (completed) {
+      if (completed.binding !== binding) return failure('MARKDOWN_NEW_PROJECT_REQUEST_CONFLICT');
+      return { ...completed.result, idempotent: true };
+    }
+    let attempt = markdownNewProjectAttempt;
+    if (attempt && attempt.requestId === payload.requestId && attempt.binding !== binding)
+      return failure('MARKDOWN_NEW_PROJECT_REQUEST_CONFLICT');
+    if (attempt?.promise && attempt.requestId !== payload.requestId) return failure('MARKDOWN_NEW_PROJECT_BUSY');
+    if (!attempt || attempt.requestId !== payload.requestId) {
+      attempt = { requestId: payload.requestId, binding, ownership: {}, identity: {
+        projectId: crypto.randomUUID(), projectName, operationId: `markdown-new-${crypto.randomUUID()}`, createdAtUtc: new Date().toISOString(),
+      } };
+      markdownNewProjectAttempt = attempt;
+    }
+    if (attempt.promise) return await attempt.promise;
+    pending.reservedRequestId = payload.requestId;
+    const assertAttempt = () => {
+      assertPublication();
+      if (markdownNewProjectAttempt !== attempt) throw Error('MARKDOWN_NEW_PROJECT_ATTEMPT_CHANGED');
+    };
+    attempt.promise = (async () => {
+      const { createMarkdownNewProject } = await import('./product/docxNewProjectCreateV1.mjs');
+      assertAttempt();
+      const transactionAuthority = await getMainProjectManifestAuthority();
+      assertAttempt();
+      const created = await createMarkdownNewProject({ source: pending.source, identity: attempt.identity,
+        parentDirectoryPath: fileManager.getDocumentsPath(), transactionAuthority,
+        assertPublication: assertAttempt, ownership: attempt.ownership, initialDirectories: Object.values(PROJECT_SUBFOLDERS) });
+      const result = { ok: true, created: true, projectCreated: true, target: 'new-project', requestId: payload.requestId,
+        projectId: created.projectId, projectName: created.projectName, summary: created.summary, idempotent: created.idempotent };
+      markdownNewProjectCompleted.set(payload.requestId, { binding, result });
+      while (markdownNewProjectCompleted.size > 8) markdownNewProjectCompleted.delete(markdownNewProjectCompleted.keys().next().value);
+      // Registration is derived; its failure cannot unpublish or repeat creation.
+      try { await touchProjectLibraryIndexForBinding(created); } catch { result.libraryRefreshPending = true; }
+      return result;
+    })();
+    try { return await attempt.promise; } finally { attempt.promise = null; }
+  } catch (error) {
+    return failure(/^[A-Z][A-Z0-9_]{1,95}$/u.test(error?.code || error?.message || '')
+      ? error.code || error.message : 'MARKDOWN_NEW_PROJECT_CREATE_FAILED');
+  }
+}
+// MARKDOWN_NEW_PROJECT_CREATE_END
+
 async function handleProjectLifecycleCreateCommand(payload = {}) {
+  if (payload && Object.hasOwn(payload, 'docxImportPreviewRef') && Object.hasOwn(payload, 'markdownImportPreviewRef'))
+    return makeProjectLifecycleError('E_PROJECT_CREATE_PAYLOAD_INVALID', 'PROJECT_CREATE_PAYLOAD_INVALID');
+  if (payload && Object.hasOwn(payload, 'markdownImportPreviewRef')) return handleMarkdownNewProjectCreateCommand(payload);
   if (payload && Object.hasOwn(payload, 'docxImportPreviewRef')) return handleDocxNewProjectCreateCommand(payload);
   if (!isPlainObjectValue(payload) || Object.keys(payload).some(key => key !== 'projectName'))
     return makeProjectLifecycleError('E_PROJECT_CREATE_PAYLOAD_INVALID', 'PROJECT_CREATE_PAYLOAD_INVALID');
@@ -25188,7 +25388,10 @@ async function persistProjectManifestAtPath(
     error.reason = 'PROJECT_MANIFEST_EXPECTED_BYTES_REQUIRED';
     throw error;
   }
+  const assertCurrent = typeof options.assertCurrent === 'function' ? options.assertCurrent : () => {};
+  assertCurrent();
   const authority = await getMainProjectManifestAuthority();
+  assertCurrent();
   return authority.commitManifestText({
     projectId,
     targetPath: manifestPath,
@@ -33299,6 +33502,28 @@ function remapMarkdownLocalFileError(commandId, result, fallbackCode, fallbackRe
   );
 }
 
+function captureMarkdownImportPreviewContext() {
+  return { key: JSON.stringify([getProjectRootPath(), docxImportPreviewProjectGeneration,
+    currentLifecycleSubjectId(), commentAuthoringSessionId, currentFilePath, lastSignaledEditGeneration]),
+  owner: activeStage10ApplicationBootstrap, contents: mainWindow?.webContents };
+}
+
+function isMarkdownImportPreviewContextCurrent(context, window) {
+  if (!context || !window || window !== mainWindow || window.isDestroyed()
+    || context.contents !== window.webContents || window.webContents.isDestroyed()
+    || context.owner !== activeStage10ApplicationBootstrap || context.key !== captureMarkdownImportPreviewContext().key) return false;
+  try {
+    userBookmarkCapability(MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID);
+    userBookmarkCapability('cmd.project.importMarkdownV1');
+    return true;
+  } catch { return false; } // The caller returns a typed refusal, never synthetic success.
+}
+
+function freezeMarkdownImportSource(value) {
+  if (value && typeof value === 'object') { Object.values(value).forEach(freezeMarkdownImportSource); Object.freeze(value); }
+  return value;
+}
+
 async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, options = {}) {
   const payloadState = validateMarkdownLocalFileIntentPayload(
     payload,
@@ -33306,6 +33531,13 @@ async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, 
     MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
   );
   if (payloadState.ok !== 1) return payloadState;
+  const context = captureMarkdownImportPreviewContext(), window = mainWindow;
+  const generation = ++markdownLocalFilePreviewGeneration;
+  pendingMarkdownLocalFilePreview = null;
+  const isCurrent = () => generation === markdownLocalFilePreviewGeneration && isMarkdownImportPreviewContextCurrent(context, window);
+  const stale = () => makeTypedMarkdownError(MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+    'E_MD_IMPORT_PREVIEW_STALE', 'local_file_preview_context_changed');
+  if (!isCurrent()) return stale();
   const requestId = normalizeMarkdownLocalFileRequestId(
     payload.requestId,
     'markdown-local-file-preview-request',
@@ -33323,6 +33555,7 @@ async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, 
       'local_file_picker_failed',
     );
   }
+  if (!isCurrent()) return stale();
   if (selected?.canceled === true) {
     return {
       ok: 1,
@@ -33364,6 +33597,7 @@ async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, 
         : 'local_file_read_failed',
     );
   }
+  if (!isCurrent()) return stale();
   if (!loaded || !Buffer.isBuffer(loaded.bytes) || loaded.bytes.length === 0) {
     return makeTypedMarkdownError(
       MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
@@ -33372,14 +33606,26 @@ async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, 
     );
   }
 
+  const sourceBytes = Buffer.from(loaded.bytes);
+  let markdownText;
+  try {
+    // Keep the existing valid UTF-8/BOM semantics, but never manufacture
+    // replacement characters from malformed external bytes.
+    markdownText = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(sourceBytes);
+  } catch {
+    return makeTypedMarkdownError(MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+      'MDV1_INPUT_ENCODING_INVALID', 'markdown_utf8_invalid');
+  }
+
   const sourceName = typeof selected?.sourceName === 'string' && selected.sourceName.trim()
     ? path.basename(selected.sourceName.trim())
     : path.basename(filePath);
   const preview = await handleImportMarkdownV1({
-    text: loaded.bytes.toString('utf8'),
+    text: markdownText,
     sourceName,
     preview: true,
   });
+  if (!isCurrent()) return stale();
   if (!preview || preview.ok !== 1 || !isPlainObjectValue(preview.previewResult)) {
     return remapMarkdownLocalFileError(
       MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
@@ -33389,12 +33635,19 @@ async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, 
     );
   }
 
+  const entries = preview.previewResult.safeCreatePlan?.entries;
+  if (!Array.isArray(entries) || entries.length !== 1 || typeof entries[0]?.content !== 'string')
+    return makeTypedMarkdownError(MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID, 'E_MD_IMPORT_PREVIEW_FAILED', 'local_file_preview_content_invalid');
+
   const previewId = `mdp_${crypto.randomBytes(12).toString('hex')}`;
   pendingMarkdownLocalFilePreview = {
     previewId,
+    context, window, generation,
     projectRoot: path.resolve(getProjectRootPath()),
     createdAtMs: Date.now(),
     previewPayload: cloneJsonSafe(preview.previewResult),
+    source: freezeMarkdownImportSource({ canonicalContent: entries[0].content,
+      sourceSha256: crypto.createHash('sha256').update(sourceBytes).digest('hex'), lossReport: cloneJsonSafe(preview.lossReport) }),
   };
   return {
     ok: 1,
@@ -33433,6 +33686,8 @@ async function handleMarkdownImportLocalFileAcceptCommandSurface(payload = {}) {
     || !Number.isFinite(previewAgeMs)
     || previewAgeMs < 0
     || previewAgeMs > MARKDOWN_LOCAL_FILE_PREVIEW_TTL_MS
+    || pending.reservedRequestId
+    || !isMarkdownImportPreviewContextCurrent(pending.context, pending.window)
   ) {
     return makeTypedMarkdownError(
       MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID,
@@ -34282,14 +34537,18 @@ function annotateProjectTreeIdentities(roots, projectRoot, bindings) {
   roots.forEach(visit);
 }
 
-async function persistProjectTreeIdentityMigration(manifestPath, projectRoot, sourceText, manifest) {
+async function persistProjectTreeIdentityMigration(manifestPath, projectRoot, sourceText, manifest, options = {}) {
+  const assertCurrent = typeof options.assertCurrent === 'function' ? options.assertCurrent : () => {};
+  assertCurrent();
   const backupResult = await backupManager.createBackup(manifestPath, sourceText, { basePath: projectRoot });
   if (!backupResult || backupResult.success !== true) {
     throw new Error(backupResult?.error || 'PROJECT_TREE_IDENTITY_BACKUP_FAILED');
   }
+  assertCurrent();
   await persistProjectManifestAtPath(manifestPath, manifest, 'save project tree identity registry', {
-    expectedText: sourceText,
+    expectedText: sourceText, ...(options.lease ? { lease: options.lease } : {}), assertCurrent,
   });
+  assertCurrent();
 }
 
 async function createProjectTreeMoveRecovery(manifestPath, projectRoot, sourceText, options = {}) {
@@ -36044,7 +36303,8 @@ guardedProtocolHandle('ui:command-bridge', async (_, request) => {
   }
 
   // This host object is never read from the renderer payload or persisted with a command.
-  const nativeDialogCommand = commandId.startsWith('manualMap.export.');
+  const nativeDialogCommand = commandId.startsWith('manualMap.export.')
+    || commandId === DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID && payload.target === 'new-project';
   const ownerWindow = nativeDialogCommand ? mainWindow : null, sender = _?.sender;
   const nativeDialogWaitPort = nativeDialogCommand
     && ownerWindow?.webContents === sender ? {
@@ -36068,7 +36328,8 @@ guardedProtocolHandle('ui:command-bridge', async (_, request) => {
       ? await (nativeDialogWaitPort
         ? dispatchProductCommandBridge(commandId, payload, { nativeDialogWaitPort })
         : dispatchProductCommandBridge(commandId, payload))
-      : await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE, invocationSource: 'ui-command-bridge' });
+      : await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE, invocationSource: 'ui-command-bridge',
+        ...(nativeDialogWaitPort ? { nativeDialogWaitPort } : {}) });
     if (result && result.ok === true) return makeCommandBridgeSuccess(result);
     const reason = findCommandBridgeFailureReason(result) || 'COMMAND_EXECUTION_FAILED';
     return makeCommandBridgeFailure(reason, result);
@@ -39812,8 +40073,8 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.docx.importSafeCreate': async (payload = {}) => {
     return handleDocxImportSafeCreateCommandSurface(payload);
   },
-  'cmd.project.docx.previewLocalFile': async (payload = {}) => {
-    return handleDocxImportLocalFilePreviewCommandSurface(payload);
+  'cmd.project.docx.previewLocalFile': async (payload = {}, context = {}) => {
+    return handleDocxImportLocalFilePreviewCommandSurface(payload, context);
   },
   'cmd.project.importDocxV1': async () => {
     const delivered = sendCanonicalRuntimeCommand(
@@ -40588,6 +40849,7 @@ function dispatchMenuCommand(commandId, payload = {}, options = {}) {
 
   const invocationContext = Object.freeze({
     invocationSource: options.invocationSource === 'ui-command-bridge' ? 'ui-command-bridge' : 'native-menu',
+    ...(options.nativeDialogWaitPort ? { nativeDialogWaitPort: options.nativeDialogWaitPort } : {}),
   });
   return handler(payload, invocationContext);
 }

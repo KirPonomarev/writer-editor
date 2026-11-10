@@ -64,6 +64,7 @@ function hasAll(text, markers) {
 // or a native application journey. Unknown source shapes fail closed.
 export function evaluateCommandBridgeRegistration({ mainText, repoRoot }) {
   if (typeof mainText !== 'string') return { ok: false, sourceBound: false, cases: [] };
+  const docxPreviewCommandDeclaration = mainText.match(/^const DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID = '[^']+';$/mu);
   const channel = 'ui:command-bridge';
   const begin = "guardedProtocolHandle('ui:command-bridge', async (_, request) => {";
   const start = mainText.indexOf(begin);
@@ -77,7 +78,8 @@ export function evaluateCommandBridgeRegistration({ mainText, repoRoot }) {
     && policyEnd - policyStart < 16000 && registrations.length === 1
     && /const\s*\{\s*createCapabilityBoundRegistration,\s*createGuardedIpcRegistration,\s*\}\s*=\s*require\('\.\/core\/ipc-caller-identity-v1\.cjs'\)/u.test(mainText)
     && /const\s*\{\s*validateIpcEnvelope,\s*\}\s*=\s*require\('\.\/core\/ipc-envelope-v1\.cjs'\)/u.test(mainText)
-    && mainText.includes("const COMMAND_BUS_ROUTE = 'command.bus';");
+    && mainText.includes("const COMMAND_BUS_ROUTE = 'command.bus';")
+    && Boolean(docxPreviewCommandDeclaration);
   if (!sourceBound) return { ok: false, sourceBound: false, cases: [] };
 
   let createGuardedIpcRegistration;
@@ -151,7 +153,7 @@ export function evaluateCommandBridgeRegistration({ mainText, repoRoot }) {
       handlers, event, request,
     };
     try {
-      vm.runInNewContext(`${policySource}\n${handlerSource}\ntry {
+      vm.runInNewContext(`${docxPreviewCommandDeclaration[0]}\n${policySource}\n${handlerSource}\ntry {
         const pending = handlers.get('ui:command-bridge')(event, request);
         Promise.resolve(pending).then(value => { globalThis.observed = value; }, error => { globalThis.refused = true; });
       } catch (error) { globalThis.refused = true; }`, sandbox,

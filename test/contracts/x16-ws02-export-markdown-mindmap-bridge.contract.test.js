@@ -2,6 +2,8 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
+const fs = require('node:fs');
+const os = require('node:os');
 
 const REPO_ROOT = process.cwd();
 const MODULE_PATH = path.join(
@@ -49,6 +51,34 @@ test('x16 ws02 baseline: export markdown + mindmap bridge passes', async () => {
   assert.equal(state.dod.NEXT_TZ_DOD_06, true);
   assert.equal(state.acceptance.NEXT_TZ_ACCEPTANCE_01, true);
   assert.equal(state.acceptance.NEXT_TZ_ACCEPTANCE_02, true);
+});
+
+test('x16 ws02 parser includes the full actual runtime capability binding, including imported product commands', async () => {
+  const { CAPABILITY_BINDING } = await import('../../src/renderer/commands/capabilityPolicy.mjs');
+  const { evaluateX16Ws02ExportMarkdownMindmapBridgeState } = await loadModule();
+  const state = evaluateBaseline(evaluateX16Ws02ExportMarkdownMindmapBridgeState);
+  assert.equal(state.parseState.parsedRuntimeCapabilityBindingOk, true);
+  assert.equal(state.counts.runtimeCapabilityBindingCount, Object.keys(CAPABILITY_BINDING).length);
+  assert.ok(Object.keys(CAPABILITY_BINDING).length > 0);
+  for (const key of ['NEXT_TZ_NEGATIVE_01', 'NEXT_TZ_NEGATIVE_02', 'NEXT_TZ_NEGATIVE_03', 'NEXT_TZ_NEGATIVE_04', 'NEXT_TZ_NEGATIVE_05'])
+    assert.equal(state.negativeResults[key], true, key);
+});
+
+for (const kind of ['missing', 'missing-export']) test(`x16 ws02 fails closed on a ${kind} same-repository product binding without fallback`, async t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-p05-x16-import-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.mkdirSync(path.join(root, 'src/renderer/commands'), { recursive: true });
+  fs.copyFileSync(path.join(REPO_ROOT, 'src/renderer/commands/capabilityPolicy.mjs'), path.join(root, 'src/renderer/commands/capabilityPolicy.mjs'));
+  if (kind === 'missing-export') {
+    fs.mkdirSync(path.join(root, 'src/shared'), { recursive: true });
+    fs.writeFileSync(path.join(root, 'src/shared/productCommandRegistry.cjs'), 'module.exports = {};\n');
+  }
+  const { evaluateX16Ws02ExportMarkdownMindmapBridgeState } = await loadModule();
+  const state = evaluateX16Ws02ExportMarkdownMindmapBridgeState({ repoRoot: root });
+  assert.equal(state.ok, false);
+  assert.equal(state.parseState.parsedRuntimeCapabilityBindingOk, false);
+  assert.equal(state.parseState.parsedRuntimeCapabilityBindingReason, 'CAPABILITY_BINDING_IMPORT_UNAVAILABLE');
+  assert.equal(state.counts.runtimeCapabilityBindingCount, 0);
 });
 
 test('x16 ws02 negative 01: export markdown without stage flag is rejected', async () => {

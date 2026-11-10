@@ -260,3 +260,108 @@ test('docx min builder: separate doc paragraphs stay separate paragraphs without
   assert.deepEqual(runs, ['Paragraph alpha', 'Paragraph beta']);
   assert.equal(countOccurrences(documentXml, /<w:p(?:>| )/gu), 2);
 });
+
+async function importedDeletedCommentExport() {
+  const bytes = require('node:fs').readFileSync(path.join(__dirname, '../fixtures/docx-pending-deleted-comment-import.docx'));
+  const hash = value => require('node:crypto').createHash('sha256').update(value).digest('hex');
+  assert.equal(hash(bytes), '796093baf899f924a0e9f401cbc9c241144931a96beecab71e20655a2641fabf');
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const core = await import('../../src/core/docx-new-project-v1.mjs');
+  const pending = require('../../src/core/word-pending-text-revisions-v1.cjs');
+  const comments = require('../../src/export/docx/docxReviewPacketComments.js');
+  const source = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const notes = require('../../src/export/docx/docxReviewPacketNotes.js');
+  const plan = bridge.buildDocxNovelImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(bytes));
+  assert.equal(plan.ok, true);
+  const projectId = 'ba52be5f-6a53-4fde-b87e-783b51d4e810';
+  const prepared = core.prepareDocxNewProject({ plan, projectId, projectName: 'P05 deleted comment export',
+    operationId: 'p05-deleted-point-min', createdAtUtc: '2026-11-10T00:00:00.000Z' });
+  const scene = prepared.files.find(file => file.role === 'scene');
+  const parsed = require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(scene.content);
+  assert.equal(parsed.issue, null);
+  const doc = parsed.doc, sceneId = scene.relativePath;
+  const state = JSON.parse(prepared.files.find(file => file.role === 'comments').content);
+  const noteState = JSON.parse(prepared.files.find(file => file.role === 'notes').content);
+  const paragraphs = pending.paragraphs(pending.normalizeNode(doc)).map(block =>
+    (block.content || []).map(node => node.type === 'hardBreak' ? '\n' : node.text).join(''));
+  const formats = source.buildFormatIrParagraphs({ sceneId, doc, text: paragraphs.join('\n') });
+  const points = pending.noteProjection(doc, 'export');
+  const blocks = paragraphs.map((text, index) => ({ sceneId, blockId: `scene-note-block-${index}`,
+    documentParagraphIndex: index, text, formatIr: formats[index], pendingNoteSourcePoints: points
+      .filter(point => point.paragraphIndex === index).map(({ noteId, offsetUtf16 }) => ({ noteId, offsetUtf16 })) }));
+  const project = stateOverride => comments.buildCanonicalCommentExport(stateOverride || state, blocks, projectId, { sceneId });
+  const bind = projection => comments.bindPendingCommentExport({ commentExport: projection, scenes: [{ sceneId, doc }], blocks }).commentExport;
+  const deps = { ...await createRealBuilderDependencies(), noteBlocks: blocks, commentBlocks: blocks,
+    documentNotes: notes.buildCanonicalNotesExport(noteState, [], blocks, projectId) };
+  return { bridge, pending, comments, hash, projectId, sceneId, doc, state, noteState, paragraphs, blocks, project, bind, deps };
+}
+
+test('docx min builder: imported deleted-text comment exports its union range and returns to the exact Current point', async () => {
+  const h = await importedDeletedCommentExport();
+  const before = JSON.stringify([h.doc, h.state, h.noteState]);
+  const commentExport = h.bind(h.project());
+  const buffer = buildDocxMinBuffer({ doc: h.doc, bookProfile: { formatId: 'A4' } }, { ...h.deps, commentExport });
+  const xml = readStoredZipEntry(buffer, 'word/document.xml');
+  const start = xml.indexOf('<w:commentRangeStart w:id="2"');
+  const deleted = xml.indexOf('УДАЛЕНИЕ🧭');
+  const end = xml.indexOf('<w:commentRangeEnd w:id="2"');
+  assert.ok(start >= 0 && start < deleted && deleted < end, 'the hidden comment must enclose the deleted literal');
+  assert.equal(countOccurrences(xml, /<w:ins\b/gu), 1);
+  assert.equal(countOccurrences(xml, /<w:del\b/gu), 1);
+  assert.ok(readStoredZipEntry(buffer, 'word/footnotes.xml').includes('Содержание сноски сохраняется.'));
+  for (const body of ['Обсуждение вставки', 'Ответ к вставке', 'Обсуждение удаления', 'Именно второй повтор']) {
+    assert.ok(readStoredZipEntry(buffer, 'word/comments.xml').includes(body));
+  }
+  const returned = h.bridge.buildDocxNovelImportPreviewPlanFromContentPreview(h.bridge.buildDocxContentPreviewFromZipBytes(buffer));
+  assert.equal(returned.ok, true);
+  const entry = returned.candidateCreatePlan.entries[0];
+  const returnedDoc = require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(entry.content).doc;
+  const originalProjection = h.pending.projection(h.doc);
+  assert.deepEqual(originalProjection.revisions.map(revision => revision.nativeId), ['10', '11']);
+  // A newly generated Word package assigns its own native revision IDs.
+  assert.deepEqual(h.pending.projection(returnedDoc), { ...originalProjection,
+    revisions: originalProjection.revisions.map((revision, index) => ({ ...revision, nativeId: String(index + 1) })) });
+  assert.equal(entry.comments.length, 3);
+  assert.deepEqual(entry.comments.map(thread => thread.messages.map(message => message.body)),
+    [['Обсуждение вставки', 'Ответ к вставке'], ['Обсуждение удаления'], ['Именно второй повтор']]);
+  assert.deepEqual([entry.comments[1].kind, entry.comments[1].affinity, entry.comments[1].paragraphIndex,
+    entry.comments[1].startUtf16, entry.comments[1].selectedText], ['point', 'right', 2, 3, '']);
+  assert.deepEqual([entry.comments[1].pendingUnionLocator.unionStart, entry.comments[1].pendingUnionLocator.unionEnd],
+    [{ paragraphIndex: 2, offsetUtf16: 3 }, { paragraphIndex: 2, offsetUtf16: 13 }]);
+  assert.equal(entry.comments[2].paragraphIndex, 3, 'the repeated quote stays in the second occurrence');
+  assert.equal(entry.notes.length, 1);
+  assert.equal(commentExport.threads[1].anchor.kind, 'point', 'canonical Current anchor remains a point');
+  assert.equal(commentExport.threads[1].pendingAnchor.kind, undefined, 'nonempty Word span uses the existing standard range');
+  assert.equal(JSON.stringify([h.doc, h.state, h.noteState]), before);
+});
+
+test('docx min builder: a genuine zero-length pending comment remains a point', async () => {
+  const h = await importedDeletedCommentExport();
+  const state = structuredClone(h.state);
+  state.threads = [state.threads[2]];
+  state.threads[0].anchor = require('../../src/core/word-comment-authoring-v1.cjs').exactAnchor({ kind: 'point',
+    affinity: 'right', paragraphIndex: 3, startUtf16: 18, selectedText: '' }, h.sceneId, h.paragraphs);
+  const before = JSON.stringify(state), projection = h.bind(h.project(state));
+  assert.equal(projection.threads[0].pendingAnchor.kind, 'point');
+  assert.equal(projection.threads[0].pendingAnchor.startUtf16, projection.threads[0].pendingAnchor.endUtf16);
+  assert.doesNotThrow(() => buildDocxMinBuffer({ doc: h.doc, bookProfile: { formatId: 'A4' } }, { ...h.deps, commentExport: projection }));
+  assert.equal(JSON.stringify(state), before);
+});
+
+test('docx min builder: stale union geometry, current hash, split UTF16 and foreign comment scope still refuse', async () => {
+  const h = await importedDeletedCommentExport();
+  const geometry = structuredClone(h.state);
+  geometry.threads[1].anchor.pendingUnionLocator.geometrySha256 = '0'.repeat(64);
+  assert.throws(() => h.bind(h.project(geometry)), /PENDING_COMMENT_LOCATOR_STALE/);
+  const unionSplit = structuredClone(h.state);
+  unionSplit.threads[1].anchor.pendingUnionLocator.unionEnd.offsetUtf16 -= 1;
+  assert.throws(() => h.bind(h.project(unionSplit)), /PENDING_COMMENT_ENDPOINT_INVALID/);
+  const stale = structuredClone(h.state);
+  stale.threads[0].anchor.blockTextSha256 = '0'.repeat(64);
+  assert.throws(() => h.project(stale), /DOCX_COMMENT_ANCHOR_STALE/);
+  const split = structuredClone(h.state);
+  Object.assign(split.threads[0].anchor, { kind: 'point', affinity: 'right', selectedText: '',
+    selectedTextSha256: h.hash(''), startUtf16: 11 });
+  assert.throws(() => h.project(split), /DOCX_COMMENT_ANCHOR_UTF16_BOUNDARY/);
+  assert.throws(() => h.comments.buildCanonicalCommentExport(h.state, h.blocks, 'foreign-project', { sceneId: h.sceneId }), /DOCX_COMMENT_STATE_INVALID/);
+});

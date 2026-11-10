@@ -71,6 +71,7 @@ async function harness(t, initial = initialDoc()) {
   vm.runInContext(slice('async function readProjectManifestRawAtPath(', 'function isProjectBindingFutureSchema('), c);
   vm.runInContext(slice('function userBookmarkEnvelopeMetadataEqual(', 'let activePendingRecording ='), c);
   Object.assign(c, {
+    DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID: main.match(/^const DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID = '([^']+)';$/mu)[1],
     COMMAND_BUS_ROUTE: 'command.bus', PRODUCT_COMMAND_ID_SET: require('../../src/shared/productCommandRegistry.cjs').PRODUCT_COMMAND_ID_SET,
     UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS: new Set(['managePrompt', 'create', 'copy', 'rename', 'delete'].map(action => `cmd.project.bookmarks.${action}`)
       .concat(['cmd.project.media.insertLocal', 'cmd.project.review.applyExactTextChange', 'cmd.project.review.applyExactTextChangesBatch'])),

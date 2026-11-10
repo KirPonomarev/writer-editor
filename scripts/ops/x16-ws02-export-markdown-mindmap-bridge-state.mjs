@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 import {
   evaluateModeMatrixVerdict,
   CANONICAL_MODE_MATRIX_EVALUATOR_ID,
@@ -11,6 +12,7 @@ import { evaluateResolveActiveStageState } from './resolve-active-stage.mjs';
 
 const TOKEN_NAME = 'X16_WS02_EXPORT_MARKDOWN_MINDMAP_BRIDGE_OK';
 const EXPECTED_CANON_VERSION = 'v3.13a-final';
+const require = createRequire(import.meta.url);
 
 const DEFAULT_CANON_STATUS_PATH = 'docs/OPS/STATUS/CANON_STATUS.json';
 const DEFAULT_FAILSIGNAL_REGISTRY_PATH = 'docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json';
@@ -131,7 +133,7 @@ function parseArgs(argv = process.argv.slice(2)) {
   return out;
 }
 
-function parseCapabilityObjectFromSource(rawSource, exportName) {
+function parseCapabilityObjectFromSource(rawSource, exportName, productCapabilityBinding) {
   const pattern = new RegExp(`export\\s+const\\s+${exportName}\\s*=\\s*Object\\.freeze\\((\\{[\\s\\S]*?\\})\\);`);
   const match = String(rawSource || '').match(pattern);
   if (!match || !match[1]) {
@@ -142,8 +144,12 @@ function parseCapabilityObjectFromSource(rawSource, exportName) {
     };
   }
 
+  if (/\bPRODUCT_COMMAND_CAPABILITY_BINDING\b/u.test(match[1]) && !isObjectRecord(productCapabilityBinding)) {
+    return { ok: false, value: {}, reason: `${exportName}_IMPORT_UNAVAILABLE` };
+  }
+
   try {
-    const parsed = Function(`"use strict"; return (${match[1]});`)();
+    const parsed = Function('PRODUCT_COMMAND_CAPABILITY_BINDING', `"use strict"; return (${match[1]});`)(productCapabilityBinding);
     if (!isObjectRecord(parsed)) {
       return {
         ok: false,
@@ -635,7 +641,13 @@ function evaluateX16Ws02ExportMarkdownMindmapBridgeState(input = {}) {
   const tokenCatalogDoc = readJsonObject(tokenCatalogPath);
 
   const capabilityPolicySource = readText(capabilityPolicyPath);
-  const parsedRuntimeCapabilityBinding = parseCapabilityObjectFromSource(capabilityPolicySource, 'CAPABILITY_BINDING');
+  let productCapabilityBinding;
+  try {
+    // Resolve the existing pure registry from the same selected repository.
+    // Missing imports remain a typed parser failure, never an empty binding.
+    productCapabilityBinding = require(path.join(repoRoot, 'src/shared/productCommandRegistry.cjs')).PRODUCT_COMMAND_CAPABILITY_BINDING;
+  } catch { /* parseCapabilityObjectFromSource fails closed on an unavailable import. */ }
+  const parsedRuntimeCapabilityBinding = parseCapabilityObjectFromSource(capabilityPolicySource, 'CAPABILITY_BINDING', productCapabilityBinding);
   const parsedRuntimeCapabilityMatrix = parseCapabilityObjectFromSource(capabilityPolicySource, 'CAPABILITY_MATRIX');
 
   const canonLock = validateCanonLock(canonStatusDoc);

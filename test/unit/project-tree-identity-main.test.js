@@ -100,7 +100,9 @@ test('project tree identity migration is atomic, idempotent, and rename-stable',
   await fsPromises.mkdir(importedRoot, { recursive: true });
   await fsPromises.writeFile(scenePath, 'scene text', 'utf8');
 
-  const { main, fileManager } = await loadMainWithElectronStub();
+  const { main, fileManager } = await loadMainWithElectronStub({
+    tempRoot, documentsParent: path.join(tempRoot, 'Documents'), userDataRoot: tempRoot,
+  });
   const originalGetDocumentsPath = fileManager.getDocumentsPath;
   fileManager.getDocumentsPath = () => documentsRoot;
   t.after(() => { fileManager.getDocumentsPath = originalGetDocumentsPath; });

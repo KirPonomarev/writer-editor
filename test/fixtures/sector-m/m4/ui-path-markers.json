@@ -11,7 +11,10 @@
     "Imported Markdown v1",
     "Exported Markdown v1",
     "previewId,",
-    "Import Markdown safe create failed"
+    "Markdown import could not be confirmed. Check the project library before trying again.",
+    "markdownImportPreviewRef: previewId",
+    "created.target !== 'new-project'",
+    "Creating a new project from Markdown"
   ],
   "forbiddenMarkers": [
     "window.electronAPI.importMarkdownV1(",

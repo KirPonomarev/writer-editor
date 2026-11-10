@@ -49,10 +49,11 @@ function commandBridgeTimeoutMs(commandId) {
     : COMMAND_BRIDGE_TIMEOUT_MS;
 }
 
-// This closed policy accounts for one Main-owned native Save dialog, not execution time.
+// This closed policy excludes one Main-owned human dialog, never execution time.
 const MANUAL_MAP_NATIVE_DIALOG_WAIT_CHANNEL = 'ui:manual-map-native-dialog-wait';
 const MANUAL_MAP_NATIVE_DIALOG_COMMAND_IDS = Object.freeze([
   'manualMap.export.json', 'manualMap.export.imagePdf', 'manualMap.export.markdown',
+  'cmd.project.docx.previewLocalFile',
 ]);
 function isManualMapNativeDialogCommand(commandId) {
   return typeof commandId === 'string' && MANUAL_MAP_NATIVE_DIALOG_COMMAND_IDS.includes(commandId);
@@ -121,7 +122,8 @@ function invokeUiCommand(commandId, payload = {}) {
     typeof commandId === 'string' ? commandId : '',
     normalizeRequestPayload(payload),
   );
-  if (isManualMapNativeDialogCommand(envelope.commandId)) return invokeManualMapNativeDialogCommand(envelope);
+  if (isManualMapNativeDialogCommand(envelope.commandId)
+    && (envelope.commandId !== 'cmd.project.docx.previewLocalFile' || envelope.payload.target === 'new-project')) return invokeManualMapNativeDialogCommand(envelope);
   return withTimeoutBudget(
     () => ipcRenderer.invoke(UI_COMMAND_BRIDGE_CHANNEL, envelope),
     { timeoutMs: commandBridgeTimeoutMs(envelope.commandId), correlationId: envelope.correlationId },
@@ -291,7 +293,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ? safeRequest.payload
       : {};
     const envelope = createEnvelope(UI_COMMAND_BRIDGE_CHANNEL, commandId, payload);
-    if (isManualMapNativeDialogCommand(envelope.commandId)) return invokeManualMapNativeDialogCommand(envelope);
+    if (isManualMapNativeDialogCommand(envelope.commandId)
+      && (envelope.commandId !== 'cmd.project.docx.previewLocalFile' || envelope.payload.target === 'new-project')) return invokeManualMapNativeDialogCommand(envelope);
     return withTimeoutBudget(
       () => ipcRenderer.invoke(UI_COMMAND_BRIDGE_CHANNEL, envelope),
       { timeoutMs: commandBridgeTimeoutMs(envelope.commandId), correlationId: envelope.correlationId },

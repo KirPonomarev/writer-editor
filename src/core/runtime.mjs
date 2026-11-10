@@ -1969,15 +1969,32 @@ function normalizeAtlasPromiseState(value) {
 export function rebindAtlasContinuityFactsForProjectCopy(atlas, sourceProjectId, projectId) {
   try { atlas = rebindAtlasAuthoredAssociationsForProjectCopy(atlas, sourceProjectId, projectId); }
   catch (error) { throw typedError('E_PROJECT_ARCHIVE_COPY_AUTHOR_SCOPE_INVALID', 'project.archive.copy', error.code || 'COPY_ASSOCIATION_INVALID'); }
-  if (!isPlainObject(atlas) || !Object.hasOwn(atlas, 'continuityFactLedgers')) return atlas;
+  if (!isPlainObject(atlas) || (!Object.hasOwn(atlas, 'continuityFactLedgers')
+    && !Object.hasOwn(atlas, 'sceneTemporalAnchors'))) return atlas;
   const reject = reason => { throw typedError('E_PROJECT_ARCHIVE_COPY_AUTHOR_SCOPE_INVALID', 'project.archive.copy', reason); };
   if (!sourceProjectId || !projectId || sourceProjectId === projectId
-    || atlas.schemaVersion !== ATLAS_AUTHOR_SCHEMA_VERSION || !isPlainObject(atlas.continuityFactLedgers)) {
+    || atlas.schemaVersion !== ATLAS_AUTHOR_SCHEMA_VERSION
+    || (Object.hasOwn(atlas, 'continuityFactLedgers') && !isPlainObject(atlas.continuityFactLedgers))) {
     reject('COPY_CONTINUITY_FACT_SCHEMA_INVALID');
   }
   const kinds = Object.keys(createEmptyAtlasContinuityFactLedgers());
   const next = cloneJson(atlas);
-  for (const [kind, ledger] of Object.entries(atlas.continuityFactLedgers)) {
+  if (Object.hasOwn(atlas, 'sceneTemporalAnchors')) {
+    if (!isPlainObject(atlas.sceneTemporalAnchors)) reject('COPY_TEMPORAL_ANCHOR_SCHEMA_INVALID');
+    for (const [sceneId, anchor] of Object.entries(atlas.sceneTemporalAnchors)) {
+      if (!isPlainObject(anchor) || anchor.schemaVersion !== 'atlas.sceneTemporalAnchor.v1'
+        || !trimString(anchor.id) || !trimString(sceneId) || anchor.sceneId !== sceneId
+        || anchor.source !== 'author') reject('COPY_TEMPORAL_ANCHOR_SCHEMA_INVALID');
+      // Check raw ownership before deriving the new current record. Historical
+      // events and opaque scene/anchor IDs retain their original identities.
+      if (anchor.projectId !== sourceProjectId) reject('COPY_TEMPORAL_ANCHOR_PROJECT_MISMATCH');
+      const { sourceHash, ...base } = anchor;
+      if (sourceHash !== hashCanonicalValue(base)) reject('COPY_TEMPORAL_ANCHOR_HASH_INVALID');
+      const copied = { ...base, projectId };
+      next.sceneTemporalAnchors[sceneId] = { ...copied, sourceHash: hashCanonicalValue(copied) };
+    }
+  }
+  for (const [kind, ledger] of Object.entries(atlas.continuityFactLedgers || {})) {
     if (!kinds.includes(kind) || !isPlainObject(ledger)) reject('COPY_CONTINUITY_LEDGER_INVALID');
     for (const [id, fact] of Object.entries(ledger)) {
       const anchor = fact?.evidenceAnchor;
