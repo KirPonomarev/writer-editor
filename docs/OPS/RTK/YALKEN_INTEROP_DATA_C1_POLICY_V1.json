@@ -1533,7 +1533,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
-        "sha256": "606ad8b1100522032948693172f0ffa326f87f17f941e7b4b3b38cb904e2c044"
+        "sha256": "39f812f3560212611f2b8c4b3318cb144020c14692e2ba7e28411831c0c881af"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
@@ -2913,15 +2913,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "5dacb1cd1ec37ff6f206697047703a2ffce8a13f70a8202b4cc50a2a54afd383"
+        "sha256": "72221888d206cd16fb983e3c15c5ebf184df52548cfe68123b3327729cc05e5e"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "34da38aa09292bc6781a45140b14e1c3ca560f7cb7dd2a54a7756d1aaf2d8379"
+        "sha256": "35c4bf663f49467c46ce7cd7c0b7f9ee5e09b45fa9a7f9edeba90461ef6a4668"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "32c575f27fff1f6adca76dfda51d357813b7cb032b8d29fbac9a03b466891bb2"
+        "sha256": "bfea7cac127579a6c3f0be49baab690adca8023b649462d6b6fce1a675e106e3"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3461,7 +3461,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "60e98f738aa2dbdb6bc97d1dcfe9fd3c9372223447e9d5fcf8adf26d2a08cac6"
+        "sha256": "f948c0bb86789052f1b5e48b27d49bed40bf60a794a71f073a5789d4a1c11609"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4525,7 +4525,7 @@
       },
       {
         "path": "docs/tasks/2026-11-09--p05-interchange-finite-mac.md",
-        "sha256": "d8491259bb8dc56f695cd8864eb8f17b5afd7e866d943cc8e95656744dddabec"
+        "sha256": "95e1b516d909a6f041b0a427983a9861084d682e28b663707da58dea3c049640"
       },
       {
         "path": "src/core/markdown-new-project-v1.mjs",
@@ -4558,6 +4558,10 @@
       {
         "path": "test/fixtures/sector-m/m4/ui-path-markers.json",
         "sha256": "fd2d288e33512476090437637f03610183472d6f2f0efcbe43855add0f710255"
+      },
+      {
+        "path": "test/unit/docx-min-builder.test.js",
+        "sha256": "6e30f832d665ebd9724d21a2f3c78bef4ea53311190bc072f68e71bc97f4dc6c"
       }
     ],
     "followupRepair": {

@@ -296,6 +296,12 @@ function bindPendingCommentExport({commentExport, scenes, blocks, exportTypograp
       thread.pendingAnchor={...a,startUtf16:start.offsetUtf16,endUtf16:end.offsetUtf16,selectedText:quote,
         blockTextSha256:digest(union[start.paragraphIndex]),...(a.kind==='multi-paragraph-range'?{
           endBlockTextSha256:digest(union[end.paragraphIndex]),coveredParagraphsSha256:digest(JSON.stringify(union.slice(start.paragraphIndex,end.paragraphIndex+1)))}:{})};
+      // Current collapses a wholly deleted quote to a point; Word transports
+      // its validated, nonempty union span using the ordinary range form.
+      if(a.kind==='point'&&start.paragraphIndex===end.paragraphIndex&&start.offsetUtf16<end.offsetUtf16){
+        delete thread.pendingAnchor.kind;
+        delete thread.pendingAnchor.affinity;
+      }
     }
   }
   return {commentExport:projection,pendingCommentBindings};
