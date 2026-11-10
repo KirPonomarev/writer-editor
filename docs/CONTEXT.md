@@ -1,3 +1,9 @@
+# CURRENT — P05 native persistence and M4 baseline binding
+
+Own74 at c1d9695a used the original E3 build48bf7940 and ASAR73fa801e without retagging. Warm and two cold controllers exited0; saved TXT B02 buffer, Markdown heading/list/code and DOCX Original/Current/two revisions/three threads/reply/note reopened. Ordinary archive restore/copy/export retained typed files, meaningful empty directories and opaque bytes; edited copy reopened in its next process. Independent critical data oracle b6ffb829 and final physical d27a5f6e preserve55 old profiles,27 bundles and10116 exact current source objects; closed own74 carrier9f4d68f6 retains272 entries/121 files.
+
+Original current full default ac959fab returned1:4625 tests,4565 passes,1 obsolete M4 marker failure,59 skips,0 todo; complete TAP85949a37 remains failed. Declaration22 840cac30 and clean preflight e63b7c05 admit only its fixture diagnostic binding plus three explicit new-project flow markers, all other markers/forbidden calls and the original test body intact. No packaged product change. Rich DOCX Minimal refuses with typed cause UNKNOWN; Review/full-manuscript remains deferred after Keychain/SecurityAgent rejection; copied temporal-anchor owner scope remains UNKNOWN. All8 and full Mac are unqualified: NOT_READY,UNFROZEN,17 UNKNOWN; no push/PR/merge. Next: focused original M4/Markdown tests, exact current companions/witnesses and full default plus remaining C1C/RTK.
+
 # CURRENT — P05 mandatory baseline fixture isolation
 
 Phase17 original fixture bodies5/5 no skip/todo, f80e110e, independently preserve all135 namespace entries with zero changed paths. Task E0 actual0 74df3bf7. Only host roots changed; every original test assertion and all1496 packaged source inputs remain unchanged. Whole default baseline is still unqualified after the explicitly recorded cancelled run.

@@ -1,3 +1,4 @@
+2026-11-10 P05 phase22: own74 warm/two cold0, independent b6ffb829/d27a5f6e preserve saved literals and55 old profiles/27 bundles; original default ac959fab fails one obsolete M4 marker with59 skips, TAP85949a37. Declaration840cac30/preflight e63b7c05 admits fixture-only current failure wording plus three new-project markers; original tests/forbidden calls intact. Native rich-Min/Keychain/copied-temporal limitations remain; no all8/release/push/PR/merge.
 # 2026-11-10 — P05 mandatory baseline host-root correction
 
 Phase17 original fixture bodies5/5 no skip/todo, f80e110e, independently preserve all135 namespace entries with zero changed paths. Task E0 actual0 74df3bf7. Only host roots changed; every original test assertion and all1496 packaged source inputs remain unchanged. Whole default baseline is still unqualified after the explicitly recorded cancelled run.
