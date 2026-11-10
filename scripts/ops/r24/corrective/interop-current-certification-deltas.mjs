@@ -5632,6 +5632,10 @@ const R24_INTEROP_P05_INTERCHANGE_FINITE_MAC_20261109_DELTA = Object.freeze({
     {
       "path": "test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
       "sha256": "59351f1bb2867c76ad5c5ddf546af98501a2ac51130b669bfc6d2487e59744b3"
+    },
+    {
+      "path": "test/unit/sector-m-preload-ui-command-bridge.test.js",
+      "sha256": "efb77605722d8e4d113fc29cfadc4e918ec67779d257d0b2148919ddce47e748"
     }
   ],
   "guards": [
