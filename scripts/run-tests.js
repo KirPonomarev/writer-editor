@@ -619,6 +619,35 @@ try {
   process.exitCode = 1;
   return;
 }
+if (dryRun) {
+  let plan;
+  if (modeArg === 'fast') {
+    plan = buildFastLanePlan(rootDir);
+  } else if (modeArg === 'closeout') {
+    plan = {
+      mode: 'closeout',
+      failOnSkip: true,
+      testFiles: TOOLBAR_CLOSEOUT_TESTS.slice(),
+      command: [process.execPath, '--test', ...testFiles].join(' '),
+    };
+  } else {
+    plan = {
+      mode: modeArg === 'electron' ? 'electron' : 'unit',
+      testFiles: testFiles.map(file => path.relative(rootDir, file).split(path.sep).join('/')),
+      command: [process.execPath, '--test', '--test-concurrency=1', ...testFiles],
+      requiredSynthNegativeTests: cli.explicitTests.length === 0,
+      requiredPostTestGuards: cli.explicitTests.length === 0,
+    };
+  }
+  process.stdout.write(`${JSON.stringify({
+    ...plan,
+    dryRun: true,
+    execution: 'NOT_RUN',
+    checkMode,
+    requiredOpsPrelude: cli.opsPrelude.slice(),
+  }, null, 2)}\n`);
+  return;
+}
 const preludeExit = runRequiredOpsPrelude(rootDir, cli.opsPrelude);
 if (preludeExit !== 0) {
   process.exitCode = preludeExit;

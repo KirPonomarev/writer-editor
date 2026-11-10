@@ -1,3 +1,8 @@
+## 2026-11-10
+
+- Closed bounded P05 PR2218 at c687; schema reportc990a3af, candidate29 and CI20, merged27 and CI20, original native2801 and exact current1496-input carrier5bffc415. FullMac/all17 remain open.
+- Started only accepted honest test CLI dry-run: current declaration24f0a391/preflight28c0be11/E0d74f272f. Actual unchanged dry-run writes the same execution marker as ordinary control; independent raw cause37659496 precedes the fix. Original sources/assertions/errors preserved; brain:status follows full delivery.
+
 2026-11-10 P05 phase48: single static unit-call matcher after full baseline1 failure17fe493a/cause9324eb58; declarationfde5ff66/preflight3d710bd1, full unit+route31/31 2fef6a95. Product/native unchanged; current228 binding/final gates/carrier/delivery pending.
 2026-11-10 P05 phase44: 46-path preflighta68a9137; original RTK61 failures9d15e314/causec45cbac7; fixture-only inversef39d3590 and whole176/176e0bd70cd. Current227 bindings/final software/native carrier/delivery pending; original actual app unchanged.
 2026-11-10 P05 phase39: factual-only2a3bcca1/51642284; original2801 native8 directions6e4e4f73,warm/cold0,closedown77 243/109,older58/29 exactc51c5617; current final gates/native-carrier admission/Git delivery pending; all17 UNKNOWN.

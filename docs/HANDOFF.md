@@ -1,3 +1,18 @@
+# CURRENT — Honest test CLI dry-run
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_TEST_CLI_DRY_RUN_20261110
+BINDING_BASE_SHA: c687640676ef732c39fa2ba043d100fb51112fa5
+STATUS: SOURCE_WHOLE_73_VERIFIED_METADATA_AND_DELIVERY_PENDING
+
+P05 is CLOSED by PR2218 at c687, final schema reportc990a3af5cbcb8ae0978fdd9b496851b4f6bf1b0fedca8296b59ebcd404f3a35. Candidate29 expected stages and20CI jobs; merged27 local and20CI jobs pass, including fresh335C1C after one retained controlled stdin-stall interruption. Original actual native2801 eight directions stays separately identified; merged1496inputs/9915dependencies/1487ASAR/7252bundle/old58profiles29bundles/own77closed243entries109files exact5bffc415. Full Mac NOT_READY,UNFROZEN,all17UNKNOWN; native detailed invalid-MD/failed-Save codes and older missing bytes remain UNKNOWN.
+
+Accepted CLI task enters sole branch codex/test-cli-dry-run-20261110 with declaration24f0a391/preflight28c0be11 and E0d74f272f. Actual unchanged CLI --dry-run executes the owned test and writes its marker exactly like the ordinary control; fast plan writes none. Independent filesystem and full raw cause376594968a3a6e934ee9d51ca5c5ff536826f9b8d57e9a363099d8a0cd06f822 precede the fix. Original runnerbaa06fbd and mandatory suite5a7b1539 remain protected preimages. Initial task lexical rejections are retained, validator unchanged.
+
+SOURCE_PROOFS: Original runner plus appended controls42/31/11 RED3e1f2fff; final whole five suites73/73,zero skips/todo3a3504a1. Exact inverse520d4d80 preserves every original ordinary-run byte and540test-line prefix. Six actual CLI plans match independent501unit/4Electron/4fast/7closeout cohorts with no marker; ordinary success/failure still execute, raw a760cc46. NEXT: current exact companions, complete mandatory candidate gates, normal delivery and actual merged verification. Only afterward accepted brain:status, then remaining V6/DNA5 and full Mac before Black Box. No new runner/framework/dependency/tracker/agents/chats/timers; canonical owner/data/profiles/raw remain unchanged.
+
+--- Earlier factual bytes and their original execution identities preserved below ---
+
 2026-11-10 P05 phase48: prospective47-path declarationfde5ff66/preflight3d710bd1. R23 clean96d1 C1C335/335,RTK4427/4427,Electron35 and native-carrierd726a759 pass; full baseline17fe493a has4654/4594/1/59skips, original18MB unit59547dad retained. Cause9324eb58 original8/7/1 versus old-call-only static read8/8 isolates one obsolete unit call matcher. Strict exact-current-call inverse and entire unit plus unchanged dynamic route negatives31/31 2fef6a95 verify fixture-only closure; Main70df/product/1496inputs/69cut unchanged. Append one current unit override227->228, existing companions and unique append-only technical witnesses, then final current gates/carrier/normal delivery; original native2801 identity retained. Full Mac NOT_READY UNFROZEN/all17 UNKNOWN.
 
 2026-11-10 P05 phase44: declaration2ad399c4/preflighta68a9137 prospectively admits46 paths. R22 full RTK4427/4366/61 failure9d15e314 and C1C335/3350 retained; R23 actual-constant-only differentialc45cbac7 isolates two finite VM hosts/B2C10 context and a stale route-mutation anchor. Four-path inversef39d3590 preserves old assertions except exact current-call anchor; ordinary whole three suites plus stale-green176/176,zero skips/todoe0bd70cd. Add four unique current overrides223->227 and refresh existing mechanical companions/current unique witnesses. Main70df/product/native inputs unchanged; original2801 actual native8 directions6e4e4f73 remains separately identified. Final current29/default/carrier/Git delivery pending; full Mac NOT_READY UNFROZEN/all17 UNKNOWN.
