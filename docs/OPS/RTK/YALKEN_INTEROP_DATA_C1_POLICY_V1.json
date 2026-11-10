@@ -2225,7 +2225,7 @@
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-runtime.contract.test.js",
-        "sha256": "a9666bd79630f17985576d49a9c1d4c29ee11e594e48b8ee205c5e6b52e2d2f8"
+        "sha256": "3a4f32312c477b52037527ff65175193d94071dea35d2e9d16f1f19194c9e807"
       },
       {
         "path": "test/contracts/rtk-word-user-bookmarks-authoring.contract.test.js",
@@ -2325,7 +2325,7 @@
       },
       {
         "path": "test/contracts/rtk-word-local-image-runtime.contract.test.js",
-        "sha256": "47d5e5322b1849606f216aff8a0a2836af8631da887d4c5723d31a4d42792194"
+        "sha256": "c09390f6aee473fec0372d35759e513c1a65b7f72121b75e10562f322d8776cd"
       },
       {
         "path": "src/core/word-local-image-v1.cjs",
@@ -2913,15 +2913,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "80d58cd445af5dd2f0d67b5205ebbd3447a32d5b0b1b5c466a1c7a3c9f4f9383"
+        "sha256": "aa64d7e9f738c6e01bd0de32f8ecb0b2c26ba6385019ca50b330e7cceea48c12"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "3cc17e5f06cab1385565b2f94cce3d6ab861c536929a8ea3f34ea57d1ce46899"
+        "sha256": "69d3f2dd65f9922af7aa2b1d61bfeca3e2c9361db7be0797f97258af8a7d8a7c"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "83a2fb78bfb026e8d4880ab7de9e0a7aeb9d7b158c7dfb8292b6db9181494bd6"
+        "sha256": "569fc273188fd22cdf57847e0b823d7f00961c05200ae71d23eb146d00b612fc"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3417,7 +3417,7 @@
       },
       {
         "path": "scripts/ops/b2c10-command-bypass-negative-matrix-state.mjs",
-        "sha256": "6d2f195723cf7ea906abbb8379ccedc0f0bceb7f4bf63efa99860a18bed6c0aa"
+        "sha256": "d412e0b31d41ae0f6ef6d553e6b5ed62b312775c1bd800c9af1aedc50c4f7507"
       },
       {
         "path": "src/export/archive/projectArchiveExportHandler.js",
@@ -3433,7 +3433,7 @@
       },
       {
         "path": "test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
-        "sha256": "1c4e16183744b8ea9c20780ad68a2c0634fa700cdee4f725c65fadcafc21aedb"
+        "sha256": "59351f1bb2867c76ad5c5ddf546af98501a2ac51130b669bfc6d2487e59744b3"
       },
       {
         "path": "test/unit/macos-package-network-policy.test.js",
@@ -3461,7 +3461,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "a81a72b2df0ceffc577838512262a61919171336a9f1408ea65d05fd27a5ef35"
+        "sha256": "f4420893f02ed5b25a425e60cd729a682bb73e3ef4b3aadb5f012295d26be2d0"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4525,7 +4525,7 @@
       },
       {
         "path": "docs/tasks/2026-11-09--p05-interchange-finite-mac.md",
-        "sha256": "7094ad6f6870a13a676cbda33d18639bcb311d065b82eacd0a0f798ee0e8cafb"
+        "sha256": "9e18f927073c88fe3af3753990276197347b8bab9b8f3b71a5b27dd0afe923e6"
       },
       {
         "path": "src/core/markdown-new-project-v1.mjs",
