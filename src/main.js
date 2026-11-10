@@ -14711,7 +14711,8 @@ function buildDocxImportLocalFilePreviewCommandResult(previewResult) {
   };
 }
 
-async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
+async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}, options = {}) {
+  const nativeDialogWaitPort = options.nativeDialogWaitPort;
   let referenceContext = typeof captureDocxImportPreviewContext === 'function'
     ? captureDocxImportPreviewContext() : null;
   if (typeof createDocxImportLocalFilePreview !== 'function') {
@@ -14785,7 +14786,9 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
     previewResult = await createDocxImportLocalFilePreview({ requestId: effectivePayload.requestId }, {
       pickLocalFile: async options => {
         assertCurrent();
-        const selected = await pickDocxImportLocalFilePreviewFile(options);
+        const selected = await (payload.target === 'new-project' && typeof nativeDialogWaitPort?.run === 'function'
+          ? nativeDialogWaitPort.run(() => pickDocxImportLocalFilePreviewFile(options))
+          : pickDocxImportLocalFilePreviewFile(options));
         assertCurrent();
         return selected;
       },
@@ -36300,7 +36303,8 @@ guardedProtocolHandle('ui:command-bridge', async (_, request) => {
   }
 
   // This host object is never read from the renderer payload or persisted with a command.
-  const nativeDialogCommand = commandId.startsWith('manualMap.export.');
+  const nativeDialogCommand = commandId.startsWith('manualMap.export.')
+    || commandId === DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID && payload.target === 'new-project';
   const ownerWindow = nativeDialogCommand ? mainWindow : null, sender = _?.sender;
   const nativeDialogWaitPort = nativeDialogCommand
     && ownerWindow?.webContents === sender ? {
@@ -36324,7 +36328,8 @@ guardedProtocolHandle('ui:command-bridge', async (_, request) => {
       ? await (nativeDialogWaitPort
         ? dispatchProductCommandBridge(commandId, payload, { nativeDialogWaitPort })
         : dispatchProductCommandBridge(commandId, payload))
-      : await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE, invocationSource: 'ui-command-bridge' });
+      : await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE, invocationSource: 'ui-command-bridge',
+        ...(nativeDialogWaitPort ? { nativeDialogWaitPort } : {}) });
     if (result && result.ok === true) return makeCommandBridgeSuccess(result);
     const reason = findCommandBridgeFailureReason(result) || 'COMMAND_EXECUTION_FAILED';
     return makeCommandBridgeFailure(reason, result);
@@ -40068,8 +40073,8 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.docx.importSafeCreate': async (payload = {}) => {
     return handleDocxImportSafeCreateCommandSurface(payload);
   },
-  'cmd.project.docx.previewLocalFile': async (payload = {}) => {
-    return handleDocxImportLocalFilePreviewCommandSurface(payload);
+  'cmd.project.docx.previewLocalFile': async (payload = {}, context = {}) => {
+    return handleDocxImportLocalFilePreviewCommandSurface(payload, context);
   },
   'cmd.project.importDocxV1': async () => {
     const delivered = sendCanonicalRuntimeCommand(
@@ -40844,6 +40849,7 @@ function dispatchMenuCommand(commandId, payload = {}, options = {}) {
 
   const invocationContext = Object.freeze({
     invocationSource: options.invocationSource === 'ui-command-bridge' ? 'ui-command-bridge' : 'native-menu',
+    ...(options.nativeDialogWaitPort ? { nativeDialogWaitPort: options.nativeDialogWaitPort } : {}),
   });
   return handler(payload, invocationContext);
 }

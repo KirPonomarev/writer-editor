@@ -30,7 +30,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
   const alpha = path.join(imported, alphaFileName), beta = path.join(imported, '02_Beta.txt');
   if (!reopenTemp) { fs.writeFileSync(alpha, 'Alpha'); fs.writeFileSync(beta, 'Beta'); }
   const handles = new Map(), listeners = new Map();
-  let nextSavePath = null, saveDialogs = 0, onSaveDialog = null;
+  let nextSavePath = null, saveDialogs = 0, onSaveDialog = null, nextOpenChoice = null, openDialogs = 0;
   const warnings = [], pendingConfirmations = []; let messageResponse=0;
   const app = { isPackaged: packagedMac, getPath: name => name === 'documents' ? documents : name === 'userData' ? data : temp,
     setPath() {}, whenReady: () => new Promise(() => {}), on() {}, quit() {}, exit() {}, setName() {}, requestSingleInstanceLock: () => true };
@@ -40,7 +40,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
     app, BrowserWindow: { getFocusedWindow: () => null, getAllWindows: () => [] },
     screen: {},
     Menu: { buildFromTemplate: () => ({}), setApplicationMenu() {} },
-    dialog: { showMessageBox: async (_window, value) => { warnings.push(value); return { response: messageResponse }; }, showSaveDialog: async () => { saveDialogs++; if (onSaveDialog) onSaveDialog(); return nextSavePath ? { canceled: false, filePath: nextSavePath } : { canceled: true }; }, showOpenDialog: async () => ({ canceled: true }) },
+    dialog: { showMessageBox: async (_window, value) => { warnings.push(value); return { response: messageResponse }; }, showSaveDialog: async () => { saveDialogs++; if (onSaveDialog) onSaveDialog(); return nextSavePath ? { canceled: false, filePath: nextSavePath } : { canceled: true }; }, showOpenDialog: async () => { openDialogs++; return nextOpenChoice ? nextOpenChoice() : { canceled: true }; } },
     ipcMain: { on: (name, callback) => listeners.set(name, callback), handle: (name, callback) => handles.set(name, callback) },
     session: { defaultSession: { webRequest: { onHeadersReceived() {} } } } };
   const mainPath = path.join(ROOT, 'src/main.js'), originalLoad = Module._load;
@@ -49,6 +49,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
   compiled.filename = mainPath; compiled.paths = Module._nodeModulePaths(path.dirname(mainPath));
   const hooks = `\nmodule.exports.__probe = {
     useOwnedBridge(value) { loadRevisionBridgeModule=async()=>value; },
+    menuCommand: dispatchMenuCommand,
     state(values = {}) {
       if ('filePath' in values) currentFilePath = values.filePath;
       if ('projectName' in values) currentProjectName = values.projectName;
@@ -197,6 +198,7 @@ async function fixture(t, rich = false, alphaFileName = '01_Alpha.txt', packaged
   }
   return { temp, root, imported, alpha, beta, main, probe, a, b, parent, query, source, manifestPath, capture, move, installRound, handles, listeners,
     chooseMessageResponse: value => { messageResponse=value; },
+    chooseOpenDialog: choice => { nextOpenChoice = choice; }, openDialogs: () => openDialogs,
     chooseSavePath: (target, callback) => { nextSavePath = target; onSaveDialog = callback; }, saveDialogs: () => saveDialogs, warnings, pendingConfirmations };
 }
 
@@ -4557,4 +4559,26 @@ test('P05 scene composite refuses changed ' + target + ' in provisional and fina
   source.provisionalSelfParseArtifact = { bytes: changed };
   await assert.rejects(f.probe.sceneGate(source, original));
   assert.deepEqual(f.capture(), before);
+});
+
+
+for (const changedWindow of [false, true]) test(`P05 DOCX native wait actual Main: host picker port survives dispatch and ${changedWindow ? 'refuses a replaced owner' : 'preserves cancellation'}`, async t => {
+  const f = await fixture(t, false, '01_Alpha.txt', true), before = f.capture();
+  let release, runs = 0; const choice = new Promise(resolve => { release = resolve; });
+  f.chooseOpenDialog(() => choice);
+  const owner = { isDestroyed: () => false, webContents: { isDestroyed: () => false, send() {} } };
+  f.probe.state({ window: owner });
+  const pending = f.probe.menuCommand('cmd.project.docx.previewLocalFile',
+    { requestId: 'p05-owned-native-dialog', target: 'new-project' },
+    { route: 'command.bus', invocationSource: 'ui-command-bridge', nativeDialogWaitPort: { async run(open) { runs++; return open(); } } });
+  await new Promise(resolve => setImmediate(resolve));
+  const waiting = { nativeCalls: f.openDialogs(), hostCalls: runs };
+  if (changedWindow) f.probe.state({ window: { ...owner } });
+  release({ canceled: true }); const result = await pending;
+  assert.equal(waiting.nativeCalls, 1, 'actual native picker effect was pending before observation');
+  assert.equal(waiting.hostCalls, 1, 'existing canonical menu dispatch retains the Main-owned wait port');
+  assert.equal(result.ok, false, JSON.stringify(result));
+  assert.equal(result.error.code, changedWindow
+    ? 'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_FAILED' : 'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_PICKER_CANCELLED');
+  assert.deepEqual(f.capture(), before, 'no project writes on native cancellation or stale owner');
 });

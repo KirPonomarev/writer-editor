@@ -1,3 +1,5 @@
+## P05 phase36: picker budget cause3eecf294, admitted41 paths; source focused16/16 and whole70/70; one obsolete wiring-signature assertion requires prospective next admission. Native/final gates pending.
+
 2026-11-10 P05 phase33 insertion: exactly one override221->222, full inverse0a77e6ef and all predecessor/selector bytes intact. Real current-HEAD verification awaits current companion/checkpoint closure; no test/product/native change.
 2026-11-10 P05 phase33: declaration46cf8b15/preflight7b677f44 admits one current typography override after real certificate failure and one-blob diagnostic6fbe20f2. Preserve old221/history/gates; no product/test/binary change or native acceptance.
 2026-11-10 P05 phase31 result: original typography183/183 no skips/todo64102e42 after one inverse-exact dependency name. Main/product bytes unchanged; final gates/current checkpoint/native cold/delivery pending.

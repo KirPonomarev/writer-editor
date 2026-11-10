@@ -1,3 +1,11 @@
+## CURRENT — P05 native DOCX dialog wait admitted
+
+Clean640: declaration28a5e5fe/preflight31851311 admits41 paths before edit. Native fresh-cold refusal8a5c91f1 is zero-write for32 project entries/library; normal0/full closed111/55 and old57/28/source preservation0f4d7840. Node148ad477 and real Electron/ASAR7f5f77c4 computation pass. Actual preload/registered/Main fake-clock3eecf294 reproduces human picker timeout at120000ms, discarded successful late preview and busy/no second picker; explicit cancel/fast control pass.
+
+Extend only the existing Main-owned wait port to exact DOCX new-project local preview, preserving active caps, live owner/sender/correlation, one-shot remainder and every original guard. Negative-first source/bundle and actual Main tests, generated preload rebuild, exact69 current source pin refresh, companions/checkpoint and new actual native are required. No UI redesign, key/security change, scope widening by payload or full Mac acceptance; prior profiles/errors/records remain immutable.
+
+Phase36 source result: negative-first14/2/12 681a88a4, focused16/16 61fe6684 and whole original envelope/Word/Manual Map plus new cases70/70 f55e4495, zero skips/todo. Whole146/144/2 93d8d20d remains preserved: legacy no-target timeout now passes unchanged; one old static wiring assertion still requires the former single-argument handler. Preserve its failure and checkpoint unaccepted before a prospective additional test-path signature binding. No native/full software/delivery acceptance; rebuild/current metadata remain pending.
+
 ## CURRENT — P05 inherited certificate override admitted
 
 Phase33 insertion observed: current delta222 contains exactly the one new typography override; inverse0a77e6ef restores the whole prior source, all original221 rows and predecessor/selector bytes. Existing source-policy membership already covers it. Current companion finalization and real no-overlay committed-HEAD verification are pending; no product/test/binary/native acceptance change.
