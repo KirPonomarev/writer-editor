@@ -2913,15 +2913,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "cd7f71cc6e71a6b9d39ff578c6c25009a3ef7014e9df65e8c68e4a7906e3faea"
+        "sha256": "80d58cd445af5dd2f0d67b5205ebbd3447a32d5b0b1b5c466a1c7a3c9f4f9383"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "28fd866baee150fae16c57866dd5e36a50b58c59c67b088ec5ff148c03f38fbd"
+        "sha256": "3cc17e5f06cab1385565b2f94cce3d6ab861c536929a8ea3f34ea57d1ce46899"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "56fd6f87272c62863c8fa13c07d0ca258fbb1ab0c8dd2aea3180a6616f235d60"
+        "sha256": "83a2fb78bfb026e8d4880ab7de9e0a7aeb9d7b158c7dfb8292b6db9181494bd6"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -4525,7 +4525,7 @@
       },
       {
         "path": "docs/tasks/2026-11-09--p05-interchange-finite-mac.md",
-        "sha256": "15fc2f32c40cbc23d2d263d2003928d7e8f6d208d9393437992d225466596b22"
+        "sha256": "7094ad6f6870a13a676cbda33d18639bcb311d065b82eacd0a0f798ee0e8cafb"
       },
       {
         "path": "src/core/markdown-new-project-v1.mjs",
