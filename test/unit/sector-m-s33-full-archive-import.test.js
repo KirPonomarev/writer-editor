@@ -1696,3 +1696,128 @@ test('S33 authored COPY teardown refuses changed roots, outside links and unexpe
     }
   });
 });
+
+// Independent wire/hash oracle; COPY must not normalize author values or IDs.
+function temporalCopyHash(value) {
+  const canonical = value => value === null || typeof value !== 'object' ? JSON.stringify(value)
+    : Array.isArray(value) ? '[' + value.map(canonical).join(',') + ']'
+      : '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + canonical(value[key])).join(',') + '}';
+  return require('node:crypto').createHash('sha256').update(canonical(value)).digest('hex');
+}
+async function temporalCopyCore() {
+  const core = await import('../../src/core/runtime.mjs');
+  const projectId = 'project-temporal-copy-donor', sceneId = 'tree-node-33333333333333333333333333333333';
+  let result = core.reduceCoreState(core.createInitialCoreState(), {
+    type: 'project.create', payload: { projectId, sceneId, title: 'Temporal COPY' } });
+  assert.equal(result.ok, true);
+  const state = structuredClone(result.state);
+  const secondSceneId = 'tree-node-44444444444444444444444444444444';
+  state.data.projects[projectId].scenes[secondSceneId] = { id: secondSceneId, text: 'Соседняя сцена.' };
+  result = { ...result, state };
+  for (const id of [sceneId, secondSceneId]) {
+    const point = dayIndex => ({ pointKind: 'ordinalDay', dayIndex });
+    result = core.reduceCoreState(result.state, { type: 'atlas.sceneTemporalAnchor.set', payload: {
+      projectId, sceneId: id, anchorId: 'opaque-anchor:' + id, note: 'Сохранить e\u0301 🧭',
+      storyRange: { rangeKind: 'unknown', precisionNote: 'Автор ещё не определил' },
+      narrativeRange: { rangeKind: 'exact', start: point(-2), end: point(0) } } });
+    assert.equal(result.ok, true, JSON.stringify(result.error));
+  }
+  const project = result.state.data.projects[projectId];
+  project.atlas.futureAuthorField = { literal: ['e\u0301', '🧭'], history: [{ projectId }] };
+  return { core, projectId, sceneId, secondSceneId, state: result.state, atlas: project.atlas };
+}
+function assertTemporalCopy(before, copied, sourceId, copyId) {
+  const expected = structuredClone(before);
+  for (const anchor of Object.values(expected.sceneTemporalAnchors)) {
+    assert.equal(anchor.projectId, sourceId);
+    const { sourceHash, ...base } = anchor;
+    assert.equal(sourceHash, temporalCopyHash(base));
+    anchor.projectId = copyId;
+    const { sourceHash: ignored, ...next } = anchor;
+    anchor.sourceHash = temporalCopyHash(next);
+  }
+  assert.deepEqual(copied, expected, 'Only each current temporal owner and its exact hash change');
+}
+test('S33 temporal COPY rebinds both actual Core anchors without changing source, author values or opaque IDs', async () => {
+  const f = await temporalCopyCore(), before = structuredClone(f.atlas), copyId = 'project-temporal-copy';
+  const copied = f.core.rebindAtlasContinuityFactsForProjectCopy(f.atlas, f.projectId, copyId);
+  assert.deepEqual(f.atlas, before);
+  assert.equal(Object.keys(copied.sceneTemporalAnchors).length, 2);
+  assertTemporalCopy(before, copied, f.projectId, copyId);
+  const state = structuredClone(f.state), project = state.data.projects[f.projectId];
+  delete state.data.projects[f.projectId]; project.id = copyId; project.atlas = copied; state.data.projects[copyId] = project;
+  const old = copied.sceneTemporalAnchors[f.sceneId];
+  const updated = f.core.reduceCoreState(state, { type: 'atlas.sceneTemporalAnchor.set', payload: {
+    projectId: copyId, sceneId: f.sceneId, anchorId: old.id, expectedAnchorHash: temporalCopyHash(old),
+    storyRange: old.storyRange, narrativeRange: old.narrativeRange, note: 'Исправление в копии' } });
+  assert.equal(updated.ok, true, JSON.stringify(updated.error));
+  assert.equal(updated.state.data.projects[copyId].atlas.sceneTemporalAnchors[f.sceneId].projectId, copyId);
+  assert.deepEqual(f.atlas, before);
+});
+test('S33 temporal COPY validates and rebinds current anchors even without continuity ledgers', async () => {
+  const f = await temporalCopyCore(), atlas = structuredClone(f.atlas); delete atlas.continuityFactLedgers;
+  const before = structuredClone(atlas), copied = f.core.rebindAtlasContinuityFactsForProjectCopy(atlas, f.projectId, 'other-copy');
+  assertTemporalCopy(before, copied, f.projectId, 'other-copy'); assert.deepEqual(atlas, before);
+});
+const temporalCopyCorruptions = [
+  ['foreign owner', (a, id) => { a.sceneTemporalAnchors[id].projectId = 'foreign-project'; }, 'COPY_TEMPORAL_ANCHOR_PROJECT_MISMATCH'],
+  ['stale hash', (a, id) => { a.sceneTemporalAnchors[id].note += ' changed'; }, 'COPY_TEMPORAL_ANCHOR_HASH_INVALID'],
+  ['foreign schema', (a, id) => { a.sceneTemporalAnchors[id].schemaVersion = 'unknown.v1'; }, 'COPY_TEMPORAL_ANCHOR_SCHEMA_INVALID'],
+  ['wrong scene key', (a, id) => { a.sceneTemporalAnchors[id].sceneId = 'foreign-scene'; }, 'COPY_TEMPORAL_ANCHOR_SCHEMA_INVALID'],
+  ['missing anchor ID', (a, id) => { delete a.sceneTemporalAnchors[id].id; }, 'COPY_TEMPORAL_ANCHOR_SCHEMA_INVALID'],
+  ['non-author source', (a, id) => { a.sceneTemporalAnchors[id].source = 'derived'; }, 'COPY_TEMPORAL_ANCHOR_SCHEMA_INVALID'],
+  ['invalid dictionary', a => { a.sceneTemporalAnchors = []; }, 'COPY_TEMPORAL_ANCHOR_SCHEMA_INVALID'],
+];
+for (const [label, corrupt, reason] of temporalCopyCorruptions) test('S33 temporal COPY refuses raw ' + label + ' with source preserved', async () => {
+  const f = await temporalCopyCore(), atlas = structuredClone(f.atlas); corrupt(atlas, f.sceneId);
+  if (label === 'foreign owner') {
+    const { sourceHash, ...base } = atlas.sceneTemporalAnchors[f.sceneId];
+    atlas.sceneTemporalAnchors[f.sceneId].sourceHash = temporalCopyHash(base);
+  }
+  const before = structuredClone(atlas);
+  assert.throws(() => f.core.rebindAtlasContinuityFactsForProjectCopy(atlas, f.projectId, 'other-copy'),
+    error => error.code === 'E_PROJECT_ARCHIVE_COPY_AUTHOR_SCOPE_INVALID' && error.reason === reason);
+  assert.deepEqual(atlas, before);
+});
+for (const mode of ['restore', 'copy', 'foreign']) test('S33 temporal actual Main ' + mode + ' preserves raw archive and publishes only admitted ownership', async t => {
+  const input = await archiveBridgeFixture(t), f = await temporalCopyCore();
+  const file = path.join(input.source, PROJECT_MANIFEST_FILENAME), manifest = JSON.parse(await fsPromises.readFile(file));
+  manifest.projectId = f.projectId; manifest.atlas = structuredClone(f.atlas);
+  const secondPath = 'roman/Part One/Scene 02.txt', secondBytes = Buffer.from('Соседняя сцена.');
+  input.files.set(secondPath, secondBytes); await fsPromises.writeFile(path.join(input.source, secondPath), secondBytes);
+  manifest.treeIdentity = { schemaVersion: 1, nodes: {
+    'tree-node-11111111111111111111111111111111': { bindingKey: 'file:roman/Part One', kind: 'part', present: true },
+    [f.sceneId]: { bindingKey: 'file:roman/Part One/Scene 01.txt', kind: 'chapter-file', present: true },
+    [f.secondSceneId]: { bindingKey: 'file:' + secondPath, kind: 'chapter-file', present: true },
+  } };
+  if (mode === 'foreign') {
+    const anchor = manifest.atlas.sceneTemporalAnchors[f.sceneId]; anchor.projectId = 'foreign-project';
+    const { sourceHash, ...base } = anchor; anchor.sourceHash = temporalCopyHash(base);
+  }
+  await fsPromises.writeFile(file, JSON.stringify(manifest) + '\n');
+  const zip = (await buildProjectArchiveBuffer(input.source)).buffer; await fsPromises.writeFile(input.archivePath, zip);
+  const before = await completeBridgeFilesystemSnapshot(input.source), whole = await completeBridgeFilesystemSnapshot(input.tempRoot);
+  const requestId = 'p05-temporal-' + mode;
+  assert.equal((await input.invoke({ requestId })).value.preview, true);
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.tempRoot), whole, 'Preview is zero-write');
+  const result = await input.invoke({ requestId, confirmed: true, mode: mode === 'restore' ? 'restore' : 'copy', openAfterImport: false });
+  assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), before);
+  assert.deepEqual(await fsPromises.readFile(input.archivePath), zip);
+  if (mode === 'foreign') {
+    assert.equal(result.ok, false, 'A valid ZIP/hash cannot authorize foreign current ownership');
+    assert.deepEqual(await fsPromises.readdir(input.documentsRoot), []); return;
+  }
+  assert.equal(result.ok, true, JSON.stringify(result));
+  const copied = await readManifest(path.join(input.documentsRoot, 'Project Alpha'));
+  const roster = await physicalProjectRoster(path.join(input.documentsRoot, 'Project Alpha'));
+  assert.deepEqual(roster.directories, directoryFixturePaths);
+  for (const [name, bytes] of input.files) if (name !== PROJECT_MANIFEST_FILENAME)
+    assert.deepEqual(await fsPromises.readFile(path.join(input.documentsRoot, 'Project Alpha', name)), bytes);
+  if (mode === 'restore') {
+    assert.equal(copied.projectId, f.projectId); assert.deepEqual(copied, manifest);
+    assert.deepEqual(await fsPromises.readFile(path.join(input.documentsRoot, 'Project Alpha', PROJECT_MANIFEST_FILENAME)), await fsPromises.readFile(file));
+  } else {
+    assert.notEqual(copied.projectId, f.projectId); assert.equal(copied.copiedFromProjectId, f.projectId);
+    assertTemporalCopy(manifest.atlas, copied.atlas, f.projectId, copied.projectId);
+  }
+});
