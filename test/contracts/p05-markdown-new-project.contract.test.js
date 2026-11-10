@@ -379,3 +379,77 @@ test('protected legacy Markdown safe-create API still writes its own admitted sc
   assert.equal((await h.sandbox.handleMarkdownImportLocalFileAcceptCommandSurface({ previewId: preview.previewId })).ok, 0);
   assert.deepEqual(roster(h.oldRoot), closed);
 });
+
+// Actual registered command, capability runner, bridge serialization, literal
+// Main and real persistence. Electron transport remains a finite host port.
+async function registeredMarkdownHost(t, reply) {
+  const h = await actualMainHarness(t);
+  const { createCommandRegistry } = await import('../../src/renderer/commands/registry.mjs');
+  const { createCommandRunner } = await import('../../src/renderer/commands/runCommand.mjs');
+  const { registerProjectCommands, EXTRA_COMMAND_IDS } = await import('../../src/renderer/commands/projectCommands.mjs');
+  const bridge = require('../../src/shared/commandBridgeResponse.cjs');
+  const registry = createCommandRegistry(), requests = [];
+  registerProjectCommands(registry, { electronAPI: { invokeUiCommandBridge: async request => {
+    requests.push(copy(request));
+    assert.equal(request.commandId, EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE);
+    assert.equal(validateIpcEnvelope(createEnvelope('ui:command-bridge', request.commandId, request.payload), 'ui:command-bridge').ok, true);
+    const result = reply ? await reply(request) : await h.sandbox.handleProjectLifecycleCreateCommand(request.payload);
+    return result.ok ? bridge.makeCommandBridgeSuccess(result) : bridge.makeCommandBridgeFailure(result.error?.reason, result);
+  } } });
+  const runner = createCommandRunner(registry, { capability: { platformId: 'node' } });
+  return { ...h, requests, run: input => runner(EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE, input) };
+}
+
+test('INT03 real registered create command carries the private Markdown reference through Main and acknowledges the persisted new project', async t => {
+  const h = await registeredMarkdownHost(t), old = roster(h.oldRoot), preview = await h.preview();
+  assert.equal(preview.ok, 1);
+  const intent = { requestId: 'md-registered-one', markdownImportPreviewRef: preview.previewId, action: 'create', editorMode: 'tiptap' };
+  const result = await h.run(intent);
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.value.created, true); assert.equal(result.value.projectCreated, true);
+  assert.equal(result.value.target, 'new-project'); assert.equal(result.value.requestId, intent.requestId);
+  assert.equal(h.newRoots().length, 1);
+  const target = h.newRoots()[0], manifest = JSON.parse(fs.readFileSync(path.join(target, 'project.craftsman.json')));
+  assert.equal(manifest.projectId, result.value.projectId); assert.notEqual(manifest.projectId, oldProjectId);
+  assert.deepEqual(independentlyReadScene(path.join(target, 'roman/Imported/0001 Imported Markdown.txt')), expectedDocument);
+  assert.deepEqual(h.requests[0].payload, { requestId: intent.requestId, markdownImportPreviewRef: intent.markdownImportPreviewRef, action: 'create' });
+  assert.deepEqual(roster(h.oldRoot), old);
+  const closed = roster(h.projects), replay = await h.run(intent);
+  assert.equal(replay.ok, true); assert.equal(replay.value.idempotent, true);
+  assert.equal(replay.value.projectId, result.value.projectId); assert.deepEqual(roster(h.projects), closed);
+  assert.equal(h.state.registrations, 1);
+});
+
+test('INT03 registered Markdown carrier refuses malformed or mixed authority before IPC and retains ordinary named-project behavior', async t => {
+  const h = await registeredMarkdownHost(t), before = roster(h.projects);
+  const valid = { requestId: 'md-registered-negative', markdownImportPreviewRef: 'mdp_' + 'a'.repeat(24), action: 'create' };
+  for (const input of [
+    { ...valid, requestId: '' }, { ...valid, requestId: 'x'.repeat(121) },
+    { ...valid, markdownImportPreviewRef: '/foreign/file' }, { ...valid, action: 'preview' },
+    { ...valid, docxImportPreviewRef: 'foreign' }, { ...valid, projectRoot: '/foreign' },
+    { ...valid, content: 'renderer replacement' }, { ...valid, projectName: 42 }, { ...valid, editorMode: 'foreign' },
+  ]) {
+    assert.equal((await h.run(input)).ok, false, JSON.stringify(input));
+    assert.equal(h.requests.length, 0); assert.deepEqual(roster(h.projects), before);
+  }
+  const normal = await registeredMarkdownHost(t, async request => {
+    assert.deepEqual(request.payload, { projectName: 'Ordinary control' });
+    return { ok: true, projectId: '22222222-2222-4222-8222-222222222222' };
+  });
+  const created = await normal.run({ projectName: 'Ordinary control' });
+  assert.equal(created.ok, true); assert.equal(created.value.created, true); assert.equal(normal.requests.length, 1);
+});
+
+test('INT03 registered Markdown carrier cannot turn a mismatched or path-bearing Main acknowledgement into success', async t => {
+  const intent = { requestId: 'md-ack-negative', markdownImportPreviewRef: 'mdp_' + 'a'.repeat(24), action: 'create' };
+  const acknowledged = { ok: true, created: true, projectCreated: true, target: 'new-project', requestId: intent.requestId,
+    projectId: '22222222-2222-4222-8222-222222222222' };
+  const control = await registeredMarkdownHost(t, async () => acknowledged);
+  assert.equal((await control.run(intent)).ok, true); assert.equal(control.requests.length, 1);
+  for (const delta of [{ requestId: 'other' }, { projectId: '' }, { target: 'current-project' },
+    { created: false }, { projectCreated: false }, { outPath: '/foreign' }]) {
+    const h = await registeredMarkdownHost(t, async () => ({ ...acknowledged, ...delta }));
+    assert.equal((await h.run(intent)).ok, false, JSON.stringify(delta));
+    assert.equal(h.requests.length, 1, 'the negative must reach its altered Main acknowledgement');
+  }
+});

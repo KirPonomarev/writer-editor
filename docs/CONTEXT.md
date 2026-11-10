@@ -1,3 +1,12 @@
+# CURRENT — P05 actual command and durable identity completion
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109
+
+Clean a1c1a468 actual own72 exposes two remaining chain gaps: TXT file has no durable tree binding (literal differential8a0285a0); registered Markdown lifecycle-create rejects PROJECT_NAME_REQUIRED before Main (3c2ad627). Prospective declaration/preflight14 admits29 paths, only the existing command carrier, existing Main identity/manifest ports and meaningful same-chain tests. DOCX warm/persisted8752c358 and archive/plain exports32351d83 are partial, not all8 acceptance. Review export blocks Main in Keychain; tool safety rejects SecurityAgent access, no bypass/retry. Owned process required forced exit-9; full152-entry/67-file carrier ec984ae8 and prior53profile/25bundle proof b3fd2d80 preserve original state/errors. No normal Quit/cold. Affected78/721/747, Electron35, E0/C1C335/RTK4419 pass at a1c1a468; original WP10412/13 times out its nested E0 under competing work, retainedfb6f11ec. Isolate the unchanged gate on final source; no relaxed budget. Future own73/candidate03 must preserve54profiles/26bundles. Full Mac NOT_READY, UNFROZEN,17 UNKNOWN; Word/native PAUSED. Earlier bytes retained below.
+
+Owned phase14 WIP whole focused69/69, no skips/todo, 5cb76090 follows causal MD833ac7c/TXT5d1dccce. Real registered Markdown now reaches Main/persistence; TXT acknowledges only after a real lease, exact private-writer source check and atomic backed-up identity/CAS publication. Backup/CAS/capability/project/source failures retain recoverable text; a held lease is zero-write. Required renderer rebuiltf4d2fe09; source inverse164c6215 preserves every other Main byte and original tests. Native candidate03 is still unbuilt/unexecuted.
+
 # CURRENT — P05 TXT published acknowledgement correction
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -1732,6 +1732,39 @@ export function registerProjectCommands(registry, options = {}) {
       if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE, 'ELECTRON_API_UNAVAILABLE');
       }
+      if (getObjectOrNull(input) && Object.hasOwn(input, 'markdownImportPreviewRef')) {
+        const bad = (reason, details) => fail('E_MARKDOWN_NEW_PROJECT_CREATE', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE, reason, details);
+        const allowed = ['requestId', 'markdownImportPreviewRef', 'action', 'projectName', 'editorMode'];
+        if (Object.keys(input).some(key => !allowed.includes(key))
+          || typeof input.requestId !== 'string' || !/^[A-Za-z0-9._:-]{1,120}$/u.test(input.requestId)
+          || typeof input.markdownImportPreviewRef !== 'string' || !/^mdp_[a-f0-9]{24}$/u.test(input.markdownImportPreviewRef)
+          || input.action !== 'create' || input.projectName !== undefined && typeof input.projectName !== 'string'
+          || input.editorMode !== undefined && !['tiptap', 'legacy'].includes(input.editorMode)) {
+          return bad('MARKDOWN_NEW_PROJECT_PAYLOAD_INVALID');
+        }
+        let response;
+        try {
+          response = unwrapBridgeResponseValue(await invokeBridgeOnlyCommand(electronAPI, EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE, {
+            requestId: input.requestId, markdownImportPreviewRef: input.markdownImportPreviewRef, action: 'create',
+            ...(Object.hasOwn(input, 'projectName') ? { projectName: input.projectName } : {}),
+          }));
+        } catch (error) {
+          return bad('MARKDOWN_NEW_PROJECT_IPC_FAILED', { message: typeof error?.message === 'string' ? error.message : 'UNKNOWN' });
+        }
+        if (response?.ok !== true) {
+          return fail(typeof response?.error?.code === 'string' ? response.error.code : 'E_MARKDOWN_NEW_PROJECT_CREATE',
+            EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE,
+            response?.error?.reason || response?.reason || 'MARKDOWN_NEW_PROJECT_CREATE_UNCONFIRMED');
+        }
+        const resultKeys = ['ok', 'created', 'projectCreated', 'target', 'requestId', 'projectId', 'projectName', 'summary', 'idempotent', 'libraryRefreshPending'];
+        if (Object.keys(response).some(key => !resultKeys.includes(key))
+          || response.created !== true || response.projectCreated !== true || response.target !== 'new-project'
+          || response.requestId !== input.requestId || typeof response.projectId !== 'string'
+          || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/u.test(response.projectId)) {
+          return bad('MARKDOWN_NEW_PROJECT_CREATE_UNCONFIRMED');
+        }
+        return ok(response);
+      }
       const projectName = typeof input.projectName === 'string' ? input.projectName.trim() : '';
       if (!projectName) {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE, 'PROJECT_NAME_REQUIRED');

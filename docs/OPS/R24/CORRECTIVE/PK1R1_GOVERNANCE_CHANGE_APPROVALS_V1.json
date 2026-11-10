@@ -3241,4 +3241,118 @@
       "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
       "approvedAtUtc": "2026-11-09T23:56:22.623Z",
       "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase10: actual native TXT published-but-reported-failure, literal/real-writer RED, closed canonical acknowledgement receipt with preview receipt prohibition and every recursive safety check retained. Focused whole20/20 and unchanged scope747/747; exact existing current companions and all old history retained. Technical witness only, no native/release acceptance."
-    }],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}
+    },
+{
+  "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+  "sha256": "e76db590c2c6c74372ee78720843393bed7df61103995d3812247b5abe02b3e8",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:28:53.000Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14: actual native Markdown command carrier lost its admitted preview reference; TXT file publication lacked durable scene identity. Causal registered-command and literal Main identity RED controls preserved; rebuilt-renderer focused whole69/69 has no skip/todo. Exact current companions refreshed without weakening original tests, policies or history. Technical witness only; native candidate03 and full release are not yet qualified."
+},
+{
+  "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+  "sha256": "87925f65619b1311ff6e44e91e8e7ec7cd30ef27aa1e38f38918875cbd6f3a20",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:28:53.000Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14: actual native Markdown command carrier lost its admitted preview reference; TXT file publication lacked durable scene identity. Causal registered-command and literal Main identity RED controls preserved; rebuilt-renderer focused whole69/69 has no skip/todo. Exact current companions refreshed without weakening original tests, policies or history. Technical witness only; native candidate03 and full release are not yet qualified."
+},
+{
+  "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+  "sha256": "e5f9c05ec040552abf31260c54a9b1c809e9059bb8e28630f35cd44ba8a88904",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:28:53.000Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14: actual native Markdown command carrier lost its admitted preview reference; TXT file publication lacked durable scene identity. Causal registered-command and literal Main identity RED controls preserved; rebuilt-renderer focused whole69/69 has no skip/todo. Exact current companions refreshed without weakening original tests, policies or history. Technical witness only; native candidate03 and full release are not yet qualified."
+},
+{
+  "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+  "sha256": "2ba4bb3629bb7c86d2ee6bafcb79263b3800e79eca88b41521c371ae171b6a79",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:28:53.000Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14: actual native Markdown command carrier lost its admitted preview reference; TXT file publication lacked durable scene identity. Causal registered-command and literal Main identity RED controls preserved; rebuilt-renderer focused whole69/69 has no skip/todo. Exact current companions refreshed without weakening original tests, policies or history. Technical witness only; native candidate03 and full release are not yet qualified."
+},
+{
+  "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+  "sha256": "6cde97d0e209f4b4e96083c2527bba1f0834e5ced5ef6b28804ef6caefb24360",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:28:53.000Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14: actual native Markdown command carrier lost its admitted preview reference; TXT file publication lacked durable scene identity. Causal registered-command and literal Main identity RED controls preserved; rebuilt-renderer focused whole69/69 has no skip/todo. Exact current companions refreshed without weakening original tests, policies or history. Technical witness only; native candidate03 and full release are not yet qualified."
+},
+{
+  "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+  "sha256": "4b82e4733c2a93e3553df9e87f7f6c00d77a3eee3d7504d17efb097ff9aab031",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:28:53.000Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14: actual native Markdown command carrier lost its admitted preview reference; TXT file publication lacked durable scene identity. Causal registered-command and literal Main identity RED controls preserved; rebuilt-renderer focused whole69/69 has no skip/todo. Exact current companions refreshed without weakening original tests, policies or history. Technical witness only; native candidate03 and full release are not yet qualified."
+},
+{
+  "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+  "sha256": "3b0cfee25971578fa10c670607b5f4b283c5d9e0231496d5f8b6a53acb12d953",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:28:53.000Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14: actual native Markdown command carrier lost its admitted preview reference; TXT file publication lacked durable scene identity. Causal registered-command and literal Main identity RED controls preserved; rebuilt-renderer focused whole69/69 has no skip/todo. Exact current companions refreshed without weakening original tests, policies or history. Technical witness only; native candidate03 and full release are not yet qualified."
+},
+{
+  "filePath": "scripts/ops/release-candidate.mjs",
+  "sha256": "4298310a6b65b2b663afa93dc5932b044e37ea2de3779b94fbbc9f6c620c2d71",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:28:53.000Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14: actual native Markdown command carrier lost its admitted preview reference; TXT file publication lacked durable scene identity. Causal registered-command and literal Main identity RED controls preserved; rebuilt-renderer focused whole69/69 has no skip/todo. Exact current companions refreshed without weakening original tests, policies or history. Technical witness only; native candidate03 and full release are not yet qualified."
+},
+{
+  "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+  "sha256": "18a9bc9a85db3faee3ac3d7831f90479e0dce158a6b4cee7636cf7d1f4906914",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:28:53.000Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14: actual native Markdown command carrier lost its admitted preview reference; TXT file publication lacked durable scene identity. Causal registered-command and literal Main identity RED controls preserved; rebuilt-renderer focused whole69/69 has no skip/todo. Exact current companions refreshed without weakening original tests, policies or history. Technical witness only; native candidate03 and full release are not yet qualified."
+},
+{
+  "filePath": "test/contracts/p05-markdown-new-project.contract.test.js",
+  "sha256": "3ef27e61a3035fa2ecdf81ed0cc1b60552741cb155ced509fef5b4f4944686c0",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:28:53.000Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14: actual native Markdown command carrier lost its admitted preview reference; TXT file publication lacked durable scene identity. Causal registered-command and literal Main identity RED controls preserved; rebuilt-renderer focused whole69/69 has no skip/todo. Exact current companions refreshed without weakening original tests, policies or history. Technical witness only; native candidate03 and full release are not yet qualified."
+},
+{
+  "filePath": "test/contracts/post-mvp-txt-import-command-surface.contract.test.js",
+  "sha256": "c93e66de2ff5191d12fdb092ce7226964516a32ae9f61682f2fe853f9bce8eff",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:28:53.000Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14: actual native Markdown command carrier lost its admitted preview reference; TXT file publication lacked durable scene identity. Causal registered-command and literal Main identity RED controls preserved; rebuilt-renderer focused whole69/69 has no skip/todo. Exact current companions refreshed without weakening original tests, policies or history. Technical witness only; native candidate03 and full release are not yet qualified."
+}
+,
+{
+  "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+  "sha256": "8b2041fb674d8b651781332799f3013eef52b7c6fd76db3bebf069a28726c6da",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:32:43.242Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14 second known Mac source pin: projectCommands actual registered Markdown repair is now bound alongside Main. All69 source members and all17 UNKNOWN qualification requirements retained. Current-binding finalizer refreshes derived hash companions only; all previous registry bytes and failures retained. Technical witness only, no native or release acceptance."
+},
+{
+  "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+  "sha256": "6dcc373c42c66c8c54863fa25a2bdc619e01c877c403d2e6b9d1c08d6210e85e",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:32:43.242Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14 second known Mac source pin: projectCommands actual registered Markdown repair is now bound alongside Main. All69 source members and all17 UNKNOWN qualification requirements retained. Current-binding finalizer refreshes derived hash companions only; all previous registry bytes and failures retained. Technical witness only, no native or release acceptance."
+},
+{
+  "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+  "sha256": "79326dc9e066af75a5ae7664dfb28a537f942fddf664718d445a9da7ba9b5ed4",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:32:43.242Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14 second known Mac source pin: projectCommands actual registered Markdown repair is now bound alongside Main. All69 source members and all17 UNKNOWN qualification requirements retained. Current-binding finalizer refreshes derived hash companions only; all previous registry bytes and failures retained. Technical witness only, no native or release acceptance."
+},
+{
+  "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+  "sha256": "402ab3544440a14158af58e8653f01154f33e2d739624b5227b4dd3c490996b0",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:32:43.242Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14 second known Mac source pin: projectCommands actual registered Markdown repair is now bound alongside Main. All69 source members and all17 UNKNOWN qualification requirements retained. Current-binding finalizer refreshes derived hash companions only; all previous registry bytes and failures retained. Technical witness only, no native or release acceptance."
+},
+{
+  "filePath": "scripts/ops/release-candidate.mjs",
+  "sha256": "0b9f49d89356c0f2aae4a45b82076b710998063c90bc518bccb6344368de8288",
+  "approvedBy": "owner-delegated-codex:YALKEN_P05_INTERCHANGE_FINITE_MAC_20261109",
+  "approvedAtUtc": "2026-11-10T01:32:43.242Z",
+  "rationale": "Standing direct owner authorization for future current technical hashes in both registries. Same P05 phase14 second known Mac source pin: projectCommands actual registered Markdown repair is now bound alongside Main. All69 source members and all17 UNKNOWN qualification requirements retained. Current-binding finalizer refreshes derived hash companions only; all previous registry bytes and failures retained. Technical witness only, no native or release acceptance."
+}
+],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}

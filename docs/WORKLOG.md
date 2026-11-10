@@ -1,3 +1,9 @@
+# 2026-11-10 — P05 actual command and durable identity gaps
+
+Own72 native plus independent8a0285a0/3c2ad627 expose missing durable TXT identity and dropped Markdown create-reference carrier. Prospective29-path phase14 admits only these existing seams and stronger real-chain tests. DOCX8752c358/archive-export32351d83 partial; review Keychain block/tool-denied SecurityAgent retained. Forced exit-9/full152-entry67-file ec984ae8 and prior53profile25bundle b3fd2d80 preserved; no Quit/cold acceptance. Current affected78/721/747, Electron35, E0/C1C335/RTK4419 pass; nested WP104 timeoutfb6f11ec retained for isolated final-source verification. Same P05 chain, all17 UNKNOWN.
+
+Owned phase14 WIP whole focused69/69, no skips/todo, 5cb76090 follows causal MD833ac7c/TXT5d1dccce. Real registered Markdown now reaches Main/persistence; TXT acknowledges only after a real lease, exact private-writer source check and atomic backed-up identity/CAS publication. Backup/CAS/capability/project/source failures retain recoverable text; a held lease is zero-write. Required renderer rebuiltf4d2fe09; source inverse164c6215 preserves every other Main byte and original tests. Native candidate03 is still unbuilt/unexecuted.
+
 # 2026-11-10 — P05 real TXT acknowledgement failure
 
 Native own71 published the exact frozen82-byte scene but rejected its own required receipt and left the old draft active. Original failure/readback/literal cause e5bb9530/171286cd/8150c7b8, normal Quit0/full closed carrier498e3490 and all52old profiles/24bundles protection410d10e2 are retained. Prospective28-path phase10 admits actual Main+real-writer regression and a closed receipt acknowledgement fix only; preview receipt prohibition and all old guards/tests remain. No cold/all8 acceptance; same P05 delivery.

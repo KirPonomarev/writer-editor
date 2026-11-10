@@ -133,12 +133,17 @@ function txtFileRoster(root) {
   }
   visit(''); return rows;
 }
-function actualTxtMain(t) {
+async function actualTxtMain(t) {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(txtOs.tmpdir(), 'p05-txt-main-ack-')));
   t.after(() => fs.rmSync(root, { recursive: true }));
   const projectRoot = path.join(root, 'project'), romanRoot = path.join(projectRoot, 'roman');
   fs.mkdirSync(romanRoot, { recursive: true });
-  const manifest = JSON.stringify({ schemaVersion: 1, projectId: '11111111-1111-4111-8111-111111111111', projectName: 'Owned TXT' });
+  const identity = await import('../../src/core/projectTreeIdentity.mjs');
+  const projectId = '11111111-1111-4111-8111-111111111111';
+  const oldIdentity = identity.upsertProjectTreeIdentityNode({ projectId, registry: { schemaVersion: 1, nodes: {} },
+    bindingKey: 'file:roman/old.txt', kind: 'scene' });
+  assert.equal(oldIdentity.ok, true);
+  const manifest = JSON.stringify({ schemaVersion: 1, projectId, projectName: 'Owned TXT', treeIdentity: oldIdentity.value });
   fs.writeFileSync(path.join(projectRoot, 'project.craftsman.json'), manifest);
   fs.writeFileSync(path.join(romanRoot, 'old.txt'), 'Existing author text');
   const input = path.join(root, 'P05_TXT_BOM_MIXED.txt');
@@ -149,9 +154,19 @@ function actualTxtMain(t) {
   const source = read('src/main.js'), start = source.indexOf('// TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_START');
   const end = source.indexOf('// TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_END', start);
   assert.ok(start >= 0 && end > start, 'exact Main TXT section required');
+  const { createMainProjectManifestAuthority } = await import('../../src/product/mainProjectManifestAuthority.mjs');
+  const authority = createMainProjectManifestAuthority({ anchorRoot: path.join(root, '.authority'), useLeaseHeartbeatWorker: false });
+  const state = { root: projectRoot, subject: projectId, allowed: true, backupAllowed: true, failManifest: false, backups: 0, identityLoads: 0 };
   let producer;
   const context = {
-    fs: fs.promises, path, mainWindow: {},
+    fs: fs.promises, fsSync: fs, crypto: txtCrypto, path, currentFilePath: path.join(romanRoot, 'old.txt'),
+    mainWindow: { isDestroyed: () => false, webContents: { isDestroyed: () => false } },
+    currentProjectName: 'Owned TXT', DEFAULT_PROJECT_NAME: 'Owned TXT',
+    currentLifecycleSubjectId: () => state.subject, commentAuthoringSessionId: 'txt-session', lastSignaledEditGeneration: 0,
+    activeStage10ApplicationBootstrap: {}, captureDocxImportPreviewContext: () => JSON.stringify([state.root, 1]),
+    userBookmarkCapability: () => { if (!state.allowed) throw Error('CAPABILITY_DENIED'); },
+    ...require('../../src/core/io/path-boundary'),
+    normalizeStableProjectId: value => typeof value === 'string' ? value : '',
     isPlainObjectValue: value => Boolean(value && typeof value === 'object' && !Array.isArray(value)),
     cloneJsonSafe: value => value === undefined ? undefined : txtCopy(value),
     ...txtPreview, ...txtCreate,
@@ -160,16 +175,47 @@ function actualTxtMain(t) {
     writeFlowSceneBatchAtomic: require('../../src/utils/flowSceneBatchAtomic').writeFlowSceneBatchAtomic,
     dialog: { showOpenDialog: async () => ({ canceled: false, filePaths: [input] }) },
     fileManager: { getDocumentsPath: () => root },
-    getProjectRootPath: () => projectRoot,
-    getProjectSectionPath: section => { assert.equal(section, 'roman'); return romanRoot; },
+    getProjectRootPath: () => state.root,
+    getProjectSectionPath: section => { assert.equal(section, 'roman'); return path.join(state.root, 'roman'); },
+    loadProjectTreeIdentityModule: async () => {
+      state.identityLoads++;
+      if (state.afterIdentityLoad) state.afterIdentityLoad();
+      return identity;
+    },
+    ensureProjectManifest: async () => {
+      const manifestPath = path.join(state.root, 'project.craftsman.json'), manifestRaw = fs.readFileSync(manifestPath, 'utf8');
+      return { manifestPath, manifestRaw, manifest: JSON.parse(manifestRaw) };
+    },
+    getMainProjectManifestAuthority: async () => state.failManifest
+      ? { ...authority, commitManifestText: async () => { throw Object.assign(Error('INJECTED_CAS_FAILURE'), { code: 'E_INJECTED_CAS_FAILURE' }); } }
+      : authority,
+    isAllowedFilePath: file => file.startsWith(projectRoot + path.sep),
+    // Backup scheduling is a finite host port; its real bytes are retained.
+    // The original Main migration and actual lease/CAS/fsync authority run.
+    backupManager: { createBackup: async (file, text, options) => {
+      assert.equal(file, path.join(projectRoot, 'project.craftsman.json')); assert.equal(options.basePath, projectRoot);
+      if (!state.backupAllowed) return { success: false, error: 'INJECTED_BACKUP_FAILURE' };
+      fs.mkdirSync(path.join(projectRoot, 'backups'), { recursive: true });
+      fs.writeFileSync(path.join(projectRoot, 'backups', 'manifest-' + (++state.backups) + '.json'), text, { flag: 'wx' });
+      return { success: true };
+    } },
     ensureProjectStructure: async () => assert.equal(fs.statSync(romanRoot).isDirectory(), true),
     resolveProjectBindingForFile: async file => {
       assert.equal(file, romanRoot);
-      return JSON.parse(fs.readFileSync(path.join(projectRoot, 'project.craftsman.json'), 'utf8'));
+      const manifestPath = path.join(projectRoot, 'project.craftsman.json'), manifestRaw = fs.readFileSync(manifestPath, 'utf8');
+      return { projectId, projectRoot, manifestPath, manifestRaw, manifest: JSON.parse(manifestRaw) };
     },
     queueDiskOperation: async operation => operation(),
   };
   txtVm.runInNewContext(source.slice(start, end) + '\nfunction txtForbiddenKeys() { return Array.from(TXT_IMPORT_LOCAL_FILE_PREVIEW_FORBIDDEN_RESULT_KEYS); }', context);
+  const functions = ['computeHash', 'recoveryFailure', 'recoveryPhysicalIdentity', 'recoveryLeafIdentity', 'assertRecoverySnapshot', 'readRecoverySnapshot',
+    'toProjectTreeBindingKey', 'persistProjectManifestAtPath', 'persistProjectTreeIdentityMigration',
+    'upsertProjectTreeIdentityForPath', 'resolveProjectTreeNodeIdentity'].map(name => {
+    const begin = new RegExp('^(?:async )?function ' + name + '\\(', 'mu').exec(source);
+    assert.ok(begin, name); const finish = source.indexOf('\n}', begin.index); assert.ok(finish > begin.index);
+    return source.slice(begin.index, finish + 2);
+  });
+  txtVm.runInNewContext(functions.join('\n'), context);
   async function run() {
     const before = txtFileRoster(projectRoot);
     const preview = await context.handleTxtImportLocalFilePreviewCommandSurface({ requestId: 'p05-txt-preview' });
@@ -178,20 +224,23 @@ function actualTxtMain(t) {
     const accepted = await context.handleTxtImportSafeCreateCommandSurface({ requestId: 'p05-txt-create', txtImportPreviewPlan: preview.txtImportPreviewPlan });
     const imported = fs.readdirSync(path.join(romanRoot, 'Imported'));
     assert.equal(imported.length, 1, 'real writer published exactly one file');
-    assert.equal(fs.readFileSync(path.join(romanRoot, 'Imported', imported[0]), 'utf8'), expected);
+    assert.equal(fs.readFileSync(path.join(romanRoot, 'Imported', imported[0]), 'utf8'), state.expectedImportedText || expected);
     assert.equal(fs.readFileSync(path.join(romanRoot, 'old.txt'), 'utf8'), 'Existing author text');
-    assert.equal(fs.readFileSync(path.join(projectRoot, 'project.craftsman.json'), 'utf8'), manifest);
+    const after = JSON.parse(fs.readFileSync(path.join(projectRoot, 'project.craftsman.json'))), original = JSON.parse(manifest);
+    const { treeIdentity, ...fields } = after, { treeIdentity: oldRegistry, ...oldFields } = original;
+    assert.deepEqual(fields, oldFields);
+    for (const [id, record] of Object.entries(oldRegistry.nodes)) assert.deepEqual(treeIdentity.nodes[id], record);
     assert.equal(txtHash(fs.readFileSync(input)), originalHash);
     assert.equal(producer.ok, true, JSON.stringify(producer));
     const ack = { ok: true, requestId: 'p05-txt-create', commandId: 'cmd.project.txt.importSafeCreate', commandOk: true,
       safeCreateOk: true, created: true, createdSceneIds: producer.value.createdSceneIds, receipt: producer.value.receipt };
-    return { accepted, preview, ack };
+    return { accepted, preview, ack, importedPath: path.join(romanRoot, 'Imported', imported[0]) };
   }
-  return { context, projectRoot, run };
+  return { context, projectRoot, run, state, identity, manifest };
 }
 
 test('P05 TXT actual Main acknowledges the real published Unicode scene and refuses replay without another write', async t => {
-  const h = actualTxtMain(t), { accepted, preview } = await h.run();
+  const h = await actualTxtMain(t), { accepted, preview } = await h.run();
   assert.equal(accepted.ok, true, JSON.stringify(accepted));
   assert.equal(accepted.receipt.schemaVersion, txtCreate.TXT_IMPORT_SAFE_CREATE_RECEIPT_SCHEMA);
   assert.equal(accepted.receipt.reason, txtCreate.TXT_IMPORT_SAFE_CREATE_READY_REASON);
@@ -203,7 +252,7 @@ test('P05 TXT actual Main acknowledges the real published Unicode scene and refu
 });
 
 test('P05 TXT permits only the canonical receipt at the acknowledgement root while every preview prohibition remains', async t => {
-  const h = actualTxtMain(t), { ack, preview } = await h.run();
+  const h = await actualTxtMain(t), { ack, preview } = await h.run();
   assert.equal(h.context.validateTxtImportSafeCreateCommandResult(ack).ok, true);
   const localPreview = { ...preview }; delete localPreview.commandId; delete localPreview.commandOk;
   assert.equal(h.context.validateTxtImportLocalFilePreviewSuccessResult(localPreview).ok, true);
@@ -228,4 +277,52 @@ test('P05 TXT permits only the canonical receipt at the acknowledgement root whi
     const altered = txtCopy(ack); mutate(altered);
     assert.equal(h.context.validateTxtImportSafeCreateCommandResult(altered).ok, false, JSON.stringify(altered));
   }
+});
+
+test('P05 TXT acknowledgement follows durable identity publication and the literal Main resolver opens the real file', async t => {
+  const h = await actualTxtMain(t), { accepted, importedPath } = await h.run();
+  assert.equal(accepted.ok, true, JSON.stringify(accepted));
+  const relative = path.relative(h.projectRoot, importedPath).split(path.sep).join('/');
+  const manifest = JSON.parse(fs.readFileSync(path.join(h.projectRoot, 'project.craftsman.json')));
+  const nodeId = h.identity.createDeterministicTreeNodeId(manifest.projectId, 'file:' + relative);
+  assert.equal(manifest.treeIdentity.nodes[nodeId]?.present, true, 'new scene must exist in the durable registry, not only the read-only projection');
+  assert.equal(manifest.treeIdentity.nodes[nodeId].kind, 'scene');
+  const resolved = await h.context.resolveProjectTreeNodeIdentity(nodeId, manifest.projectId);
+  assert.equal(resolved.nodePath, importedPath);
+  await assert.rejects(h.context.resolveProjectTreeNodeIdentity(nodeId, 'foreign-project'), /TREE_NODE_PROJECT_MISMATCH/u);
+  assert.ok(h.state.backups > 0);
+  assert.deepEqual(fs.readFileSync(path.join(h.projectRoot, 'backups/manifest-1.json')), Buffer.from(h.manifest));
+});
+
+test('P05 TXT refuses an acknowledgement when identity backup, CAS, capability, source or project context fails; written text remains recoverable', async t => {
+  for (const fault of ['backup', 'cas', 'capability', 'source', 'project']) await t.test(fault, async child => {
+    const h = await actualTxtMain(child), foreign = path.join(path.dirname(h.projectRoot), 'foreign');
+    fs.mkdirSync(foreign); fs.writeFileSync(path.join(foreign, 'project.craftsman.json'), '{"projectId":"foreign"}');
+    const originalForeign = txtFileRoster(foreign);
+    if (fault === 'backup') h.state.backupAllowed = false;
+    if (fault === 'cas') h.state.failManifest = true;
+    if (fault === 'capability') h.state.afterIdentityLoad = () => { h.state.allowed = false; };
+    if (fault === 'source') h.state.afterIdentityLoad = () => {
+      h.state.expectedImportedText = 'Owned external replacement\n';
+      const directory = path.join(h.projectRoot, 'roman/Imported');
+      fs.writeFileSync(path.join(directory, fs.readdirSync(directory)[0]), h.state.expectedImportedText);
+    };
+    if (fault === 'project') h.state.afterIdentityLoad = () => { h.state.root = foreign; };
+    const { accepted } = await h.run();
+    assert.equal(accepted.ok, false, JSON.stringify(accepted)); assert.ok(h.state.identityLoads > 0);
+    assert.equal(fs.readFileSync(path.join(h.projectRoot, 'project.craftsman.json'), 'utf8'), h.manifest);
+    assert.deepEqual(txtFileRoster(foreign), originalForeign);
+  });
+});
+
+test('P05 TXT held real project lease refuses before publishing any file or identity', async t => {
+  const h = await actualTxtMain(t), authority = await h.context.getMainProjectManifestAuthority();
+  const preview = await h.context.handleTxtImportLocalFilePreviewCommandSurface({ requestId: 'lease-preview' });
+  assert.equal(preview.ok, true);
+  await authority.withProjectLease('11111111-1111-4111-8111-111111111111', async () => {
+    const before = txtFileRoster(h.projectRoot);
+    const result = await h.context.handleTxtImportSafeCreateCommandSurface({ requestId: 'lease-create', txtImportPreviewPlan: preview.txtImportPreviewPlan });
+    assert.equal(result.ok, false); assert.equal(result.error.reason, 'E_PROJECT_LEASE_HELD');
+    assert.deepEqual(txtFileRoster(h.projectRoot), before);
+  });
 });

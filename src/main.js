@@ -15204,6 +15204,36 @@ function validateTxtImportSafeCreateCommandResult(commandResult) {
   return { ok: true };
 }
 
+async function publishTxtImportSceneIdentity(binding, targetPath, receipt, lease, guard) {
+  guard();
+  const source = await readRecoverySnapshot(targetPath, guard);
+  const assertSource = () => { guard(); assertRecoverySnapshot(source); };
+  assertSource();
+  if (source.raw === null || computeHash(source.raw) !== receipt.createdScenes[0].outputHash)
+    throw Error('TXT_IMPORT_CREATED_SOURCE_CHANGED');
+  const identity = await loadProjectTreeIdentityModule();
+  assertSource();
+  const raw = await fs.readFile(binding.manifestPath, 'utf8');
+  assertSource();
+  if (raw !== binding.manifestRaw) throw Error('TXT_IMPORT_MANIFEST_CHANGED');
+  const manifest = JSON.parse(raw);
+  if (manifest.projectId !== binding.projectId) throw Error('TXT_IMPORT_PROJECT_CHANGED');
+  let registry = manifest.treeIdentity;
+  for (const [candidatePath, kind] of [[path.dirname(targetPath), 'chapter-folder'], [targetPath, 'scene']]) {
+    const bindingKey = toProjectTreeBindingKey(binding.projectRoot, candidatePath);
+    const existing = Object.values(registry?.nodes || {}).find(node => node.bindingKey === bindingKey);
+    if (existing && (kind === 'scene' || existing.kind !== kind || existing.present !== true))
+      throw Error('TXT_IMPORT_IDENTITY_BINDING_CONFLICT');
+    const next = identity.upsertProjectTreeIdentityNode({ projectId: manifest.projectId, registry, bindingKey, kind });
+    if (!next.ok) throw Object.assign(Error(next.error?.reason || 'TXT_IMPORT_IDENTITY_INVALID'), { code: next.error?.code });
+    registry = next.value;
+  }
+  assertSource(); await lease.assertOwned(); assertSource();
+  await persistProjectTreeIdentityMigration(binding.manifestPath, binding.projectRoot, raw,
+    { ...manifest, treeIdentity: registry }, { lease, assertCurrent: assertSource });
+  assertSource();
+}
+
 async function handleTxtImportSafeCreateCommandSurface(payload = {}) {
   const safePayload = isPlainObjectValue(payload) ? payload : {};
   const previewPlan = isPlainObjectValue(safePayload.txtImportPreviewPlan)
@@ -15216,10 +15246,24 @@ async function handleTxtImportSafeCreateCommandSurface(payload = {}) {
     );
   }
 
+  const projectRoot = getProjectRootPath(), romanRoot = getProjectSectionPath('roman');
+  const window = mainWindow, contents = window?.webContents, owner = activeStage10ApplicationBootstrap;
+  const subject = currentLifecycleSubjectId(), session = commentAuthoringSessionId, file = currentFilePath;
+  const generation = lastSignaledEditGeneration, context = captureDocxImportPreviewContext();
+  const guard = () => {
+    userBookmarkCapability(TXT_IMPORT_SAFE_CREATE_COMMAND_ID);
+    if (!window || window !== mainWindow || window.isDestroyed() || window.webContents !== contents || contents.isDestroyed()
+      || projectRoot !== getProjectRootPath() || owner !== activeStage10ApplicationBootstrap
+      || subject !== currentLifecycleSubjectId() || session !== commentAuthoringSessionId || file !== currentFilePath
+      || generation !== lastSignaledEditGeneration || context !== captureDocxImportPreviewContext())
+      throw Error('TXT_IMPORT_CONTEXT_STALE');
+  };
+
   let projectBinding = null;
   try {
-    await ensureProjectStructure();
-    projectBinding = await resolveProjectBindingForFile(getProjectSectionPath('roman'));
+    guard(); await ensureProjectStructure(); guard();
+    projectBinding = await resolveProjectBindingForFile(romanRoot); guard();
+    if (projectBinding?.projectRoot !== projectRoot || !projectBinding.projectId) throw Error('TXT_IMPORT_PROJECT_BINDING_STALE');
   } catch (error) {
     return makeTxtImportSafeCreateTypedError(
       'E_TXT_IMPORT_SAFE_CREATE_PROJECT_BINDING_FAILED',
@@ -15230,69 +15274,101 @@ async function handleTxtImportSafeCreateCommandSurface(payload = {}) {
     );
   }
 
-  let safeCreateResult = null;
   try {
-    safeCreateResult = await applyTxtImportSafeCreate(
-      {
-        txtImportPreviewPlan: previewPlan,
-      },
-      {
-        projectRoot: getProjectRootPath(),
-        romanRoot: getProjectSectionPath('roman'),
-        projectId: projectBinding && typeof projectBinding.projectId === 'string'
-          ? projectBinding.projectId
-          : '',
-        queueDiskOperation,
-        operationLabel: 'safe create TXT import scene batch',
-        writeBatchAtomic: writeFlowSceneBatchAtomic,
-      },
-    );
+    const authority = await getMainProjectManifestAuthority(); guard();
+    return await authority.withProjectLease(projectBinding.projectId, async lease => {
+      await lease.assertOwned(); guard();
+      let publishedPath = '';
+      const writeBatch = async (batch, options) => {
+        guard(); await lease.assertOwned(); guard();
+        const entry = Array.isArray(batch?.entries) && batch.entries.length === 1 ? batch.entries[0] : null;
+        if (batch?.projectRoot !== projectRoot || typeof entry?.path !== 'string'
+          || path.dirname(entry.path) !== path.join(romanRoot, 'Imported')) throw Error('TXT_IMPORT_PRIVATE_WRITER_TARGET_INVALID');
+        if (await fs.readFile(projectBinding.manifestPath, 'utf8') !== projectBinding.manifestRaw) throw Error('TXT_IMPORT_MANIFEST_CHANGED');
+        guard();
+        const nodes = Object.values(projectBinding.manifest.treeIdentity?.nodes || {});
+        const sceneKey = toProjectTreeBindingKey(projectRoot, entry.path), folderKey = toProjectTreeBindingKey(projectRoot, path.dirname(entry.path));
+        if (nodes.some(node => node.bindingKey === sceneKey || node.bindingKey === folderKey
+          && (node.kind !== 'chapter-folder' || node.present !== true))) throw Error('TXT_IMPORT_IDENTITY_BINDING_CONFLICT');
+        const result = await writeFlowSceneBatchAtomic(batch, { ...options, beforeActivate: async event => {
+          guard(); await lease.assertOwned(); guard(); await options.beforeActivate(event); guard();
+        } });
+        guard();
+        if (result?.ok === true) publishedPath = entry.path;
+        return result;
+      };
+
+      let safeCreateResult = null;
+      try {
+        safeCreateResult = await applyTxtImportSafeCreate(
+          {
+            txtImportPreviewPlan: previewPlan,
+          },
+          {
+            projectRoot,
+            romanRoot,
+            projectId: projectBinding && typeof projectBinding.projectId === 'string'
+              ? projectBinding.projectId
+              : '',
+            queueDiskOperation,
+            operationLabel: 'safe create TXT import scene batch',
+            writeBatchAtomic: writeBatch,
+          },
+        );
+      } catch (error) {
+        return makeTxtImportSafeCreateTypedError(
+          'E_TXT_IMPORT_SAFE_CREATE_FAILED',
+          'TXT_IMPORT_SAFE_CREATE_FAILED',
+          {
+            message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+          },
+        );
+      }
+
+      if (!safeCreateResult || safeCreateResult.ok !== true) {
+        const safeCreateError = isPlainObjectValue(safeCreateResult?.error) ? safeCreateResult.error : {};
+        return makeTxtImportSafeCreateTypedError(
+          typeof safeCreateError.code === 'string'
+            ? `E_${safeCreateError.code}`
+            : 'E_TXT_IMPORT_SAFE_CREATE_FAILED',
+          typeof safeCreateError.reason === 'string'
+            ? safeCreateError.reason
+            : 'TXT_IMPORT_SAFE_CREATE_FAILED',
+          isPlainObjectValue(safeCreateError.details) ? safeCreateError.details : undefined,
+        );
+      }
+
+      const commandResult = {
+        ok: true,
+        requestId: typeof safePayload.requestId === 'string' && safePayload.requestId.trim()
+          ? safePayload.requestId.trim()
+          : 'txt-import-safe-create-request',
+        commandId: TXT_IMPORT_SAFE_CREATE_COMMAND_ID,
+        commandOk: true,
+        safeCreateOk: true,
+        created: true,
+        createdSceneIds: Array.isArray(safeCreateResult.value.createdSceneIds)
+          ? cloneJsonSafe(safeCreateResult.value.createdSceneIds)
+          : [],
+        receipt: cloneJsonSafe(safeCreateResult.value.receipt),
+      };
+      const resultShape = validateTxtImportSafeCreateCommandResult(commandResult);
+      if (!resultShape.ok) {
+        return makeTxtImportSafeCreateTypedError(
+          'E_TXT_IMPORT_SAFE_CREATE_INVALID_RESULT',
+          resultShape.reason,
+          isPlainObjectValue(resultShape.details) ? resultShape.details : undefined,
+        );
+      }
+      await publishTxtImportSceneIdentity(projectBinding, publishedPath, commandResult.receipt, lease, guard);
+      guard();
+      return commandResult;
+    });
   } catch (error) {
-    return makeTxtImportSafeCreateTypedError(
-      'E_TXT_IMPORT_SAFE_CREATE_FAILED',
-      'TXT_IMPORT_SAFE_CREATE_FAILED',
-      {
-        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
-      },
-    );
+    return makeTxtImportSafeCreateTypedError('E_TXT_IMPORT_IDENTITY_PUBLICATION_FAILED',
+      /^[A-Z][A-Z0-9_]{1,95}$/u.test(error?.code || error?.message || '')
+        ? error.code || error.message : 'TXT_IMPORT_IDENTITY_PUBLICATION_FAILED');
   }
-
-  if (!safeCreateResult || safeCreateResult.ok !== true) {
-    const safeCreateError = isPlainObjectValue(safeCreateResult?.error) ? safeCreateResult.error : {};
-    return makeTxtImportSafeCreateTypedError(
-      typeof safeCreateError.code === 'string'
-        ? `E_${safeCreateError.code}`
-        : 'E_TXT_IMPORT_SAFE_CREATE_FAILED',
-      typeof safeCreateError.reason === 'string'
-        ? safeCreateError.reason
-        : 'TXT_IMPORT_SAFE_CREATE_FAILED',
-      isPlainObjectValue(safeCreateError.details) ? safeCreateError.details : undefined,
-    );
-  }
-
-  const commandResult = {
-    ok: true,
-    requestId: typeof safePayload.requestId === 'string' && safePayload.requestId.trim()
-      ? safePayload.requestId.trim()
-      : 'txt-import-safe-create-request',
-    commandId: TXT_IMPORT_SAFE_CREATE_COMMAND_ID,
-    commandOk: true,
-    safeCreateOk: true,
-    created: true,
-    createdSceneIds: Array.isArray(safeCreateResult.value.createdSceneIds)
-      ? cloneJsonSafe(safeCreateResult.value.createdSceneIds)
-      : [],
-    receipt: cloneJsonSafe(safeCreateResult.value.receipt),
-  };
-  const resultShape = validateTxtImportSafeCreateCommandResult(commandResult);
-  if (!resultShape.ok) {
-    return makeTxtImportSafeCreateTypedError(
-      'E_TXT_IMPORT_SAFE_CREATE_INVALID_RESULT',
-      resultShape.reason,
-      isPlainObjectValue(resultShape.details) ? resultShape.details : undefined,
-    );
-  }
-  return commandResult;
 }
 // TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_END
 
@@ -25293,7 +25369,10 @@ async function persistProjectManifestAtPath(
     error.reason = 'PROJECT_MANIFEST_EXPECTED_BYTES_REQUIRED';
     throw error;
   }
+  const assertCurrent = typeof options.assertCurrent === 'function' ? options.assertCurrent : () => {};
+  assertCurrent();
   const authority = await getMainProjectManifestAuthority();
+  assertCurrent();
   return authority.commitManifestText({
     projectId,
     targetPath: manifestPath,
@@ -34439,14 +34518,18 @@ function annotateProjectTreeIdentities(roots, projectRoot, bindings) {
   roots.forEach(visit);
 }
 
-async function persistProjectTreeIdentityMigration(manifestPath, projectRoot, sourceText, manifest) {
+async function persistProjectTreeIdentityMigration(manifestPath, projectRoot, sourceText, manifest, options = {}) {
+  const assertCurrent = typeof options.assertCurrent === 'function' ? options.assertCurrent : () => {};
+  assertCurrent();
   const backupResult = await backupManager.createBackup(manifestPath, sourceText, { basePath: projectRoot });
   if (!backupResult || backupResult.success !== true) {
     throw new Error(backupResult?.error || 'PROJECT_TREE_IDENTITY_BACKUP_FAILED');
   }
+  assertCurrent();
   await persistProjectManifestAtPath(manifestPath, manifest, 'save project tree identity registry', {
-    expectedText: sourceText,
+    expectedText: sourceText, ...(options.lease ? { lease: options.lease } : {}), assertCurrent,
   });
+  assertCurrent();
 }
 
 async function createProjectTreeMoveRecovery(manifestPath, projectRoot, sourceText, options = {}) {
