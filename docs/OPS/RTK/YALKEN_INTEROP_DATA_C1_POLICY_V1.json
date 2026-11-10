@@ -992,7 +992,8 @@
     "scripts/ops/x16-ws02-export-markdown-mindmap-bridge-state.mjs",
     "test/contracts/x16-ws02-export-markdown-mindmap-bridge.contract.test.js",
     "test/unit/book-profile-persistence.test.js",
-    "test/fixtures/sector-m/m4/ui-path-markers.json"
+    "test/fixtures/sector-m/m4/ui-path-markers.json",
+    "docs/tasks/2026-11-10--test-cli-dry-run.md"
   ],
   "protectedFiles": [
     {
@@ -2913,15 +2914,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "6f4c0b5d6c446dae3b55e860fcaff2e746c80869a639bcc5908fbe0e2babc58b"
+        "sha256": "f9746838d3dde57ac9ca23a4bb2f79fde190aebf4c72a0d98410e007a3c42839"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "d42f3f8df867f3929ad9152a4546d434e7d5e89895401b6e6ebfe583d2ee535e"
+        "sha256": "ae68d2160ab57972cd434f951b31e5aaba000ef5a75d1f786e590f718aa4849c"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "735c5170fb37371413ba4040375be1bb989395e2e3f4f194a979c0b8d12c9e3d"
+        "sha256": "dd74dca06434c97f2f47b3f7586c7995402cbed6328d3a9ff338c6c05fb9a1c2"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3461,7 +3462,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "a95f43fe3ac674f01870eec9739ecfec8edc24b07824753eb8e5f494a81e6948"
+        "sha256": "a3d3a3f1552991fd55c426ad51e1d6185d3512ae3b0bb1eb1d9fec95d983f069"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3737,7 +3738,7 @@
       },
       {
         "path": "scripts/run-tests.js",
-        "sha256": "baa06fbd364e0b3e298f52206d10e0c022b0ef625f0d8bf88d7f04f2cc72fe64"
+        "sha256": "10da304bb90c36541a2897838c728df6ab1f2dee241fd007369fdb4441708a4d"
       },
       {
         "path": "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
@@ -4205,7 +4206,7 @@
       },
       {
         "path": "test/unit/mandatory-test-setup-diagnostics.test.js",
-        "sha256": "5a7b15396c72da6cb5da76d8e4d3f7fbc9ffb6e194fa7a56716e566fcaa51732"
+        "sha256": "b6f24fa6f631db45eda1655dd7f222b0b63e35bb28cc0378e00d2d46598c1b49"
       },
       {
         "path": "scripts/test-diagnostics.cjs",
@@ -4562,6 +4563,10 @@
       {
         "path": "test/unit/docx-min-builder.test.js",
         "sha256": "6e30f832d665ebd9724d21a2f3c78bef4ea53311190bc072f68e71bc97f4dc6c"
+      },
+      {
+        "path": "docs/tasks/2026-11-10--test-cli-dry-run.md",
+        "sha256": "5f2b1a325dc0ee7b42f52551e6d5fb6bc24522e16c550f18ae3648011e85b5cb"
       }
     ],
     "followupRepair": {
