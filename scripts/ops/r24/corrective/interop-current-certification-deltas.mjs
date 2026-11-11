@@ -8455,6 +8455,14 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     {
       "path": "src/core/atlas-language-range-tag-v2.mjs",
       "sha256": "6b9ce27d7e28fac16a82b137db042aa8b4ae0b4370da0cf71d05b05a06370393"
+    },
+    {
+      "path": "src/derived/atlas/deriveAtlasCurrentSceneDossier.mjs",
+      "sha256": "38d344bad30f20f512fa1842ca11a9c4ff4d1487156707e433d6c94b4fe0a096"
+    },
+    {
+      "path": "src/renderer/styles.css",
+      "sha256": "5f9375ae227a6b837a34b15c4c647c74ca6286e66d55ddecb502ba35a526ff5a"
     }
   ],
   "guards": [
