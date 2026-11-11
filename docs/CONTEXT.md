@@ -1,3 +1,20 @@
+# CURRENT — Honest brain status
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_BRAIN_STATUS_20261111
+BINDING_BASE_SHA: c6fc6f2982edda056cd3372f04e263678a99be34
+STATUS: SOURCE_WHOLE_22_AND_ACTUAL_STATUS_VERIFIED_DELIVERY_PENDING
+
+The preceding CLI task is CLOSED: PR2219 merged c6fc6f2982edda056cd3372f04e263678a99be34; candidate and merged CI20, actual merged22 local and original1496-input native carrier5c707973. Final schema report d2ea3ab5879e5d0c0a27372888761d93e3405834a8f4a69fe50543072a13086e. Original actual native2801 remains separately identified; full Mac NOT_READY, UNFROZEN, all17 UNKNOWN.
+
+Only the next accepted brain status CLI correction is active. On the unchanged base the real command exits0, omits the leading recorded Context and reports Worklog2026-10-30 although its latest date is2026-11-10. Original raw and independent oracle 4ff878702d5d23d1554d96cc2c12369697b5a0f1b9cbe9047bb857d5d49ace33; no input or Git change. Current task declaration 7c082c3c997766ae86f7a834b4d3eb78fc6c4ee2ce3792abe80089f56608a2db, preflight 713b9e4648327b3bb5f22a81019b1458e9832cffe191492d9893bf7eb68b93d3 and task E0 97fa3d6100197d0444fec8b3fbc5d9334dbb3323777ffb27d3f795c70e744f7e precede source edits.
+
+SOURCE_PROOF: Three real CLI controls failed on original source; exact RED 5b0d285852bd4863e211975d0f2db3ce513a1706fae14398af8f568078118c69. Corrected status and all old P03/handoff checks pass22/22 with no skips or todo; two-block source inverse and exact199-line old test prefix 403dab819795270edaa99c83800ec859fd566021a65703becec3fae877a38154. Actual npm status 4e194b301fff114f7be8f1a67dc6d79fc1b36342e5af06995d6f382365443ec6 shows recorded Context and Worklog2026-11-11 with no input or Git write.
+
+NEXT: Refresh existing exact companions, complete all required software/native-input, normal Git delivery and actual merged checks/use. No product or packaged-input mutation, no new tracker, framework, agents or chats. Black Box follows full Mac.
+
+--- Earlier factual bytes and their original execution identities preserved below ---
+
 # CURRENT — Honest test CLI dry-run
 
 DOCUMENT_CLASS: FACTUAL_STATUS
