@@ -3468,7 +3468,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "c138d675b5dcae3451a6705f9fcfc9d00e783f425613340faa656588e38d2c92"
+        "sha256": "e6ed159d61319914d64414d60f2be91c7500edd83ba96cbf422cbc9a615b9bcd"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3496,7 +3496,7 @@
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
-        "sha256": "18b93c8d166be439139d804cab0ed90f0c421b6feb638e1026543c73cdc214d8"
+        "sha256": "5b212324a3268176d1f659ef7fe82807e68e38495204216d922769f9630e92b9"
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",

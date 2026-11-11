@@ -7610,11 +7610,11 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "096220177684296ecb5e4041eb3dc95ed854771051c149516d088aa919331833"
+      "sha256": "e962b9afdb4afae74339a015fe7d5afa8d6ec68f68518fa0740809f4479d29b3"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "c138d675b5dcae3451a6705f9fcfc9d00e783f425613340faa656588e38d2c92"
+      "sha256": "e6ed159d61319914d64414d60f2be91c7500edd83ba96cbf422cbc9a615b9bcd"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -7622,7 +7622,7 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
-      "sha256": "18b93c8d166be439139d804cab0ed90f0c421b6feb638e1026543c73cdc214d8"
+      "sha256": "5b212324a3268176d1f659ef7fe82807e68e38495204216d922769f9630e92b9"
     },
     {
       "path": "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs",
@@ -7774,7 +7774,7 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "eded9e50f267324a0b3d9d86abef4c9dd915fa7c0c392263b206bc628183ac69"
+      "sha256": "afd1ce2f7d3bb539920af7d7b862363fb21cafe8ce48e8cc9d4815716a65914e"
     },
     {
       "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -7830,11 +7830,11 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "ea26829c15bd92e9a16df110db2881674f02edcc518c164f6c1eb3992e8a8ac9"
+      "sha256": "2bd16fa2a98bab16dca4a910fcd4b386e0235b0f022dbbd058d802557fd4b66a"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "c49de3a187a691d9fcc2090a27318a21138931105a44baabd4551c48e762f549"
+      "sha256": "8313a266118e1b6fcb8f74d3128d45ea15e7ab59a77692cac5207dcbe9e2825a"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -8476,7 +8476,7 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "037bd8a7fffd071e37518122d18c7c33e270c64502b3d51509789fc163d794e3"
+      "sha256": "f6a4b72901bd0a530fcc3e192f8cdf192726b9d12850476e3037ade5c8f98467"
     }
   ]
 });
