@@ -2922,15 +2922,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "281efada7fa7a849577346eff0ec38682f7e5069f2800db69ce4cfbf0118a02e"
+        "sha256": "180f5a582193d6bfe0006148095ec05ea0f59a6869a9a2b6ab31358e26c078b5"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "c53532188f1c84355d298d71d1a2ea0a8ff58ecf657d371ec2d99bde21e78a8a"
+        "sha256": "e1cb82f9c168f1eb1e6b2e5a2660d4c257660e57cb1ca54bd2e617aecda90a94"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "8873ef941be7f16ce8753001ca8c71c08ebddc3aa468a55eec024f76ed4fdfcf"
+        "sha256": "499b09bca4638bc7a16867a1d380cae636912dfbf5d0e7dbceff14a30e04fb41"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3470,7 +3470,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "755bd828876ef608482b01656640141167b70c33c469acdbe4302f7141b6e27a"
+        "sha256": "2de05968fce5f2ec93c3bc583a3c19187e7f93dc82214f74a76015274d3f8e2a"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3498,7 +3498,7 @@
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
-        "sha256": "203468a2c8c511e20ff878aac117b0a11feb222bb836983f191f466d13f9630b"
+        "sha256": "3ff4858cb0de364d09093f41a93fd91d202ea56624d707cebdbe07099721edc0"
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
@@ -4602,7 +4602,7 @@
       },
       {
         "path": "docs/tasks/2026-11-11--atlas-project-language.md",
-        "sha256": "e6349e90d899205bdf2a1f15ee8ab111bc2736e74e6cce9ae879631cfa0e0575"
+        "sha256": "55dc677a03a3c85e2d5502b44b67ce3b7def59a9face6fe0893ed8042b60322c"
       },
       {
         "path": "test/unit/atlas-project-language.test.js",
