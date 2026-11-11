@@ -7502,6 +7502,10 @@ const R24_INTEROP_BRAIN_STATUS_20261111_DELTA = Object.freeze({
     {
       "path": "scripts/brain.mjs",
       "sha256": "f8ed7c5ef06741a2d2dd919f4765b210adc15a51d6cb9e2b940e57d7aaa03154"
+    },
+    {
+      "path": "test/contracts/agent-context-restoration.contract.test.mjs",
+      "sha256": "f1954c45b6c9f5e613e8e74b765a0892d06d6fb064938c69a441c94456779346"
     }
   ],
   "guards": [

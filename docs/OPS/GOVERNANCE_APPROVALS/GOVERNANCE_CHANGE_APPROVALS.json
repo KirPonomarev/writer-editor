@@ -33878,6 +33878,20 @@
       "approvedBy": "owner-delegated-codex:YALKEN_BRAIN_STATUS_20261111",
       "approvedAtUtc": "2026-11-11T00:05:43.853Z",
       "rationale": "Standing owner delegation for unique current technical witnesses in the sole brain status CLI delivery. Clean source 39cb0d71471148dd7d12a62298de71fe69d6fadc, preflight 75bde05aa16dde1871cfcf84cd1d5bd2966d98e72a3aeac08f3e16ba232d494e. Actual original status mismatch 4ff878702d5d23d1554d96cc2c12369697b5a0f1b9cbe9047bb857d5d49ace33, genuine RED3 5b0d285852bd4863e211975d0f2db3ce513a1706fae14398af8f568078118c69, whole historical and current22 403dab819795270edaa99c83800ec859fd566021a65703becec3fae877a38154, actual npm read-only status 4e194b301fff114f7be8f1a67dc6d79fc1b36342e5af06995d6f382365443ec6. Unchanged finalizer applied only seven existing companions f3ab74582f247a609e5eec9048dc258561cd85fbefe238a3d1bcce7566bf43a3; current231 bindings and DATA839 preserve every historical literal and member. Bind only current changed bytes, preserve all old approval rows, duplicates and primary mismatches. No bypass. Full software, unchanged native inputs, normal Git delivery and actual merged checks remain required. Full Mac NOT_READY UNFROZEN all17 UNKNOWN; no signing, notarization, distribution, credentials or other authority."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "e55cb890c24311e70a4e2432313a3a76d3d0e0ecb2782725cdb8a5f084c8b34f",
+      "approvedBy": "owner-delegated-codex:YALKEN_BRAIN_STATUS_20261111",
+      "approvedAtUtc": "2026-11-11T07:17:01.624Z",
+      "rationale": "Standing owner delegation, same brain status delivery. Exact one-path omission demonstrated by785ec166 and prepared underf9d58a35. One current test binding appended; all old literal bytes and failed f4da preserved. Existing finalizer confirms seven unchanged generated outputsded61e65. Only the new certificate and resulting PK1 registry hashes receive technical witnesses. No source/test/cap/gate/policy weakening, no approval env bypass, no product or release authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "02c457ba317991fdd2828a9315864c2501de55e7f50ee78ac805517d914debf2",
+      "approvedBy": "owner-delegated-codex:YALKEN_BRAIN_STATUS_20261111",
+      "approvedAtUtc": "2026-11-11T07:17:01.624Z",
+      "rationale": "Standing owner delegation, same brain status delivery. Exact one-path omission demonstrated by785ec166 and prepared underf9d58a35. One current test binding appended; all old literal bytes and failed f4da preserved. Existing finalizer confirms seven unchanged generated outputsded61e65. Only the new certificate and resulting PK1 registry hashes receive technical witnesses. No source/test/cap/gate/policy weakening, no approval env bypass, no product or release authority."
     }
 ],
   "evidenceStampIds": [
