@@ -1,3 +1,13 @@
+## CURRENT — Project-language native82 observed; final test binding/delivery pending
+
+Clean6e072cec/treeb091d37e actual native82 ASAR0005dca3 passes independent11-check oracle83a6d9c7: immediate scene Set/Clear labels without Refresh, retained it-IT draft, project Set/replace/invalid/Clear, exact emoji/NFD manuscript and cold manifest, whole manual scene/range records and persisted Kernel chain. Warm0/cold0 closed; own82 carrier187addc4 holds160 entries/71files plus native metadata. All earlier failed native81/raw/errors retained; protected set now64 known profiles/35 bundles, older missing bytes stay UNKNOWN.
+
+Exact current8 admission55231586 and CHEAP11 bd6ab6d7 execute: production audit0; full audit1 has the same six moderate DEV findings; strict doctor0, AtlasEvent123, PostAudit63 and finalizer31 pass. Static detector542bab32 scans the current editor1407539 bytes with complete coverage/zero findings/no overrides. Local Audit/Heuristic/Finalize bindingsad5a4878 preserve scope/deferred global observations; judged score70 is not CI/release evidence. Initial Home Create AX behavior and full dark/narrow-window/contrast/key-traversal qualification remain UNKNOWN outside this component.
+
+Whole release contract471a4851 fails747/748 because one current schema expectation still says v15 after profileId becameV16. In-memory differential84e0cc31 passes1/1 without physical writes. Declarationa324311e/preflight7c54f174 precede the one-literal correction; maintained source0c651367 passes1/1, with full1497 physical package-input equality independently verified in8bd1b2c7. All production code, package inputs, old assertions and historical profile expectations remain exact. This is test/metadata repair, not a new product contour.
+
+Next: commit the bounded schema/factual correction, refresh exact companions and source, finish all required software/native/normal delivery and merged proofs. No push/PR yet. Full Mac NOT_READY UNFROZEN all17 UNKNOWN; Word/native PAUSED, Black Box after full Mac. All older factual suffixes retained below.
+
 ## CURRENT — Project-language native81 exposed one stale read label; same-chain correction active
 
 Clean source11adf7b8 was rebuilt as native81 ASAR86c277a9, all1488 official ASAR leaves and7252 bundle entries checked. Actual UI project Set/replace, manual ru-RU scene and en-US UTF16 fragment, normal warm0/cold0 and project Clear preserve exact manuscript and saved overrides. Cold manifest8adafe2b is byte-identical to pre-cold. This is partial diagnostic evidence, not native acceptance or release completion.

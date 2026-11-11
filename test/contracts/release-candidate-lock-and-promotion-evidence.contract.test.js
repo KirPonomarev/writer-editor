@@ -535,7 +535,7 @@ test('full Mac V2 derives the complete original dependency cut while every quali
   assert.equal(cut.fullProductScope.workload.metricIds.length, 13); assert.equal(cut.fullProductScope.workload.proxyTimingAccepted, false);
   assert.deepEqual(cut.minimumInterchange.routes.map(row => row.direction), MAC_DIRECTIONS); assert.deepEqual(cut.profiles.reviewCommandExceptions, MAC_REVIEW);
   assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
-  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v15');
+  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v16');
   assert.deepEqual(cut.profiles.runtime.admittedCommandIds, [
     'manualMap.create', 'manualMap.node.add', 'manualMap.node.update', 'manualMap.node.delete',
     'manualMap.edge.add', 'manualMap.edge.update', 'manualMap.edge.delete',
