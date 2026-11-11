@@ -602,7 +602,10 @@
       "src/main/atlasGlobalCompositeQuery.mjs",
       "src/renderer/atlasGlobalCompositeSurface.mjs",
       "test/contracts/yalken-atlas-v5-e08-c04-trust-filters-batch-navigation-accessibility-parity.contract.test.js",
-      "test/unit/atlas-global-composite.test.js"
+      "test/unit/atlas-global-composite.test.js",
+      "docs/tasks/2026-11-11--atlas-range-language.md",
+      "src/core/atlas-language-range-tag-v2.mjs",
+      "src/derived/atlas/deriveAtlasMixedLanguageRouter.mjs"
     ]
   },
   "allowPrefixByPhase": {

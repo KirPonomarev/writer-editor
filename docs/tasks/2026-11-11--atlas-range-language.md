@@ -38,7 +38,7 @@ Hypothesis: a versioned range record carrying the immutable original source and 
 
 ## ALLOWLIST
 
-Exact31-path scope is in the validated declaration. Runtime scope:
+Exact34-path scope is in the validated declaration. Runtime scope:
 
 - src/core/atlas-language-range-tag-v2.mjs: one pure domain record/validation codec, with no private Core, bus, writer, registry or generic ledger framework.
 - src/core/runtime.mjs: explicit versioned range intent through the existing set/clear reducers; original v1 path remains.
@@ -50,6 +50,8 @@ Exact31-path scope is in the validated declaration. Runtime scope:
 - src/renderer/styles.css: only scoped new range-form target sizing if required; no existing rule or token replacement.
 
 Tests are restricted to the existing E07 C03 language-tag contract, WP307 integration/profile tests, authored-association current-profile expectation, Word Main finite host current-factory binding and release-cut current-profile expectation. Original assertions and historical profile denials remain. Current-profile literals may advance explicitly to V15; faithful historical constructor substitutions gain the new actual selector without changing their expected old factories or coverage claims.
+
+The same-outcome baseline correction additionally admits atlas-matrices-source-scope.test.js and environment-epochs-full-ui.test.js to complete their extracted renderer contexts with the actual V15 window, draft Map and existing production helpers. Every original assertion remains. scripts/ops/sector-m-scope-map.json appends only this exact task path, atlas-language-range-tag-v2.mjs and deriveAtlasMixedLanguageRouter.mjs to the existing DONE list; all historical entries, prefixes and guard algorithms remain unchanged.
 
 Existing exact metadata companions only: FIRST_MAC_RELEASE_CUT_V2.json; C1B inventory; C2A approval bindings; RCV01A lane manifest and claim bindings; interop DATA policy/implementation/certificate; both technical approval registries; this task and three factual journals. scripts/ops/release-candidate.mjs admits only the current factory selector, exact current V2 source-pin refresh and the new domain-codec pin. Its algorithms, V1 policy, original scope/graph, all17 UNKNOWN rows and readiness refusals remain intact. Existing finalization machinery is reused without modification.
 
@@ -177,3 +179,5 @@ Normal scoped revert with fresh current metadata/witnesses. Preserve old v1 data
 NATIVE_FIRST_USE_CORRECTION: Actual candidate78 atdd8daf2a refused the first valid range in a fresh project before writes; independent Main probe60ff1a21 and RED3d4a02e6 establish missing-languageTags scaffolding as the cause. Permit exactly empty project-null/scenes/blocks siblings when the whole tag container was absent; retain strict equality for every present or unknown sibling and every other no-loss check. Targeted31/31 d718da34 includes fresh first use, lawful existing scene-tag siblings, malformed source, Main/bootstrap/form paths and historical profile checks. Failed original native78 and its closed profile remain protected. Rebuilt owned native79 under candidate02 follows fresh admission; no qualification is inferred.
 
 ACTUAL_NATIVE79: Original buildba0fe0ee/0870c33d, ASAR122c4682, official1488-leaf64a4ebdc and independent raw oraclec694e161 confirm the actual fresh first Set/read, invalid no-write, separate scene tag, stale/Clear/source history and normal same-profile cold. Post-preservationba19ed3e and closed ownd7cb9b15 retain all prior60 profiles/31 bundles. Final scope error3b869393/515109a7 is one stale current-V2 verifier Main hash outside all1497 package inputs. Fix exactly that literal, retain historical V1/algorithms, and verify the original native package inputs under the final source without retagging execution. Required expensive gates and full delivery remain pending; all17 UNKNOWN.
+
+BASELINE_COMPATIBILITY_CORRECTION: Emergency default07 at clean8d986234 returns1 after1969.9s:4697 tests,4631pass,5fail,2cancelled,59skipped,0todo; terminal35c4c46f and complete raw artifact0ff5c881 preserve every original failure. Two extracted fixtures omit the real window/draft context, while the existing scope guard refuses exactly three already-authorized task paths. Read-only causal probe139c61b9 runs all58 original assertions successfully with only those bindings and exact virtual scope entries; no production source changes or native acceptance arise from that probe. Fresh clean34-path declaration33fe8e90/preflight9f47a543 precede the physical fixture/map amendment. Preserve original assertions, scope rejections, all1497 unchanged native inputs and original native79 identity; refresh existing companions and execute all required final gates and complete delivery.

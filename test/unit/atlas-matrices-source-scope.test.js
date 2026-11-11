@@ -241,6 +241,7 @@ async function rendererHost(f) {
   const doc = { activeElement: null, createElement: tag => new ElementHost(tag, doc) };
   const ctx = {
     console, document: doc, Element: ElementHost, HTMLElement: ElementHost,
+    window: { __PRODUCT_PROFILE: 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15' }, rangeLanguageAuthorDrafts: new Map(),
     currentProjectId: f.projectId, currentDocumentId: 'scene-a', currentDocumentTitle: 'First', currentRightTab: 'atlas', currentAtlasSurface: 'matrices',
     currentTreeContentPublicationId: 1, localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false,
     atlasPublicationEpoch: 0, manualMapDraftOwnership: null, atlasJourneyDraftRevision: 0, manualMapDraftRevision: 0, atlasCommandPublicationSequence: 0,
@@ -275,6 +276,7 @@ async function rendererHost(f) {
   };
   const context = vm.createContext(ctx);
   const names = ['captureAtlasPublication', 'beginAtlasQueryPublication', 'readAtlasQueryProjection',
+    'getRangeLanguageAuthorDraft', 'appendAtlasMatrixAuthoredAssociations', 'appendAtlasReportsRow',
     'isIdeaMeaningSceneSourceCurrent', 'getIdeaMeaningSceneOrigin', 'normalizeAtlasMatrixAxis', 'normalizeAtlasMatrixTable', 'normalizeAtlasMatrices',
     'setAtlasMatricesScopeUnavailable', 'selectAtlasMatricesSourceScope', 'appendAtlasMatricesSourceScopeControls',
     'handleAtlasMatrixGridClick', 'bindAtlasMatricesKeyboardNavigation', 'renderAtlasMatricesState', 'refreshAtlasMatrices', 'refreshAtlasCurrentScene'];
@@ -287,6 +289,8 @@ test('matrices scope: actual renderer captures saved scene and selected UTF16 fr
   await h.ctx.selectAtlasMatricesSourceScope('SCENE');
   assert.deepEqual(copy(h.ctx.atlasMatricesState.sourceScope), f.scene);
   assert.equal(h.ctx.atlasMatricesState.summary.entityCount, 3);
+  assert.deepEqual(h.calls.find(row => row.id === 'query.atlasCurrentScene').payload.rangeLanguage, { offset: 0 });
+  assert.equal(h.ctx.rangeLanguageAuthorDrafts.size, 1);
   await h.ctx.selectAtlasMatricesSourceScope('FRAGMENT');
   assert.deepEqual(h.calls.filter(row => row.id === 'query.atlasMatrices').at(-1).payload.sourceScope, f.fragment);
   assert.equal(h.ctx.atlasMatricesState.summary.entityCount, 2);
