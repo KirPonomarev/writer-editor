@@ -38,13 +38,14 @@ Hypothesis: a versioned range record carrying the immutable original source and 
 
 ## ALLOWLIST
 
-Exact30-path scope is in the validated declaration. Runtime scope:
+Exact31-path scope is in the validated declaration. Runtime scope:
 
 - src/core/atlas-language-range-tag-v2.mjs: one pure domain record/validation codec, with no private Core, bus, writer, registry or generic ledger framework.
 - src/core/runtime.mjs: explicit versioned range intent through the existing set/clear reducers; original v1 path remains.
 - src/core/writer-local-profile-v1.cjs: current V15 inherits the35 commands and13 queries; historical factories and scope denials remain.
 - src/derived/atlas/deriveAtlasMixedLanguageRouter.mjs and deriveAtlasCurrentSceneDossier.mjs: source-bound current/stale/retracted/legacy read projections.
 - src/main.js: raw payload validation, source/record/CAS/lifecycle/owner guards, preparation and post-Core no-loss checks, bounded query parameters and current factory inheritance.
+- src/renderer/flags.js: recognize exact V15 from the real Main URL in both existing bootstrap/presentation lists. All old IDs and cuts remain; no capability authority is added.
 - src/renderer/editor.js and its generated editor.bundle.js: existing Flow form and source-selection seam; revision-bound drafts, readback and truthful refusals.
 - src/renderer/styles.css: only scoped new range-form target sizing if required; no existing rule or token replacement.
 

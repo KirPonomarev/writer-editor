@@ -10,6 +10,8 @@
 
 - Same-chain semantic source checkpoint efede8a3; clean fresh preflightf0ed0b87. Actual input hot-path RED b8dc7df2 leads only to identity-based derived rendering cache, without authority or input-time source/history hashing. Current bindings, all final gates, new native and normal delivery are still pending.
 
+- Actual flags bootstrap gap2b2a57e1 closes in the same31-path amendment519ebcd7: real Main URL + full flags script genuinely RED14b33382 then30/30 617f6beb; all15 profiles and near-ID denials checked. Existing V15 schema/70-pin release expectations pass748/748 9746865b under standard policy env. Original wrong alias/wrapper errors retained. New exact final companions/gates/native78/full delivery remain pending.
+
 --- Earlier worklog bytes preserved below ---
 
 ## 2026-11-10

@@ -14,6 +14,26 @@ function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 }
 
+test('V15 complete renderer bootstrap preserves every real historical factory and refuses near identities', async t => {
+  const factories = Object.entries(profile).filter(([name, value]) => /^createWriter.*ProfileProjection$/u.test(name) && typeof value === 'function');
+  const ids = [...new Set(factories.map(([, factory]) => factory({ isPackaged: true, platform: 'darwin' }).profileId))];
+  assert.equal(ids.length, 15);
+  for (const id of [...ids, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15.extra', ' WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15',
+    'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14.extra', 'WRITER_LOCAL_UNKNOWN', '']) await t.test(id || 'empty', () => {
+    const nodes = ['[data-mode="plan"]', '[data-mode="review"]', '[data-right-tab="comments"]', '[data-right-tab="atlas"]'].map(selector => ({
+      selector, style: { setProperty() {} }, setAttribute(name, value) { this[name] = value; } }));
+    const window = { location: { search: '?USE_TIPTAP=1&PRODUCT_PROFILE=' + encodeURIComponent(id) } };
+    const document = { body: { dataset: {} }, addEventListener() {}, querySelectorAll: selectors => nodes.filter(node => selectors.includes(node.selector)) };
+    require('node:vm').runInNewContext(read('src/renderer/flags.js'), { window, document, URLSearchParams, console: { log() {} } });
+    assert.equal(window.__PRODUCT_PROFILE, ids.includes(id) ? id : ''); assert.equal(window.__USE_TIPTAP, true);
+    if (ids.includes(id)) {
+      assert.equal(document.body.dataset.productProfile, id);
+      for (const node of nodes.slice(0, 3)) { assert.equal(node.hidden, true); assert.equal(node.disabled, true); assert.equal(node.tabIndex, -1); assert.equal(node['aria-hidden'], 'true'); }
+      assert.equal(nodes[3].hidden === true, id === 'WRITER_LOCAL_V1', 'Atlas tab follows the original profile cut');
+    } else assert.equal(document.body.dataset.productProfile, undefined);
+  });
+});
+
 test('WP307 optional domain and query cut remains exhaustive against live registries', () => {
   const optionalDomains = new Set(profile.OPTIONAL_PRODUCT_DOMAINS);
   for (const record of productRegistry.PRODUCT_COMMAND_RECORDS) {
@@ -3621,7 +3641,14 @@ function rangeLanguageMainRenderer(x, projection) {
   for (const match of source.matchAll(/^async function (\w*[Rr]angeLanguage\w*)\(/gm)) {
     const run = c[match[1]]; c[match[1]] = (...args) => { const p = run(...args); c.tasks.push(p); return p; };
   }
-  c.window.__PRODUCT_PROFILE = 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'; c.renderAtlasJourneyState();
+  c.URLSearchParams = URLSearchParams; c.window.location = { search: new URL(x.h.shellUrl).search };
+  const oldQuery = c.document.querySelectorAll, oldAdd = c.document.addEventListener;
+  c.document.querySelectorAll = () => []; c.document.addEventListener = () => {};
+  try { vm.runInContext(read('src/renderer/flags.js'), c); }
+  finally { c.document.querySelectorAll = oldQuery; c.document.addEventListener = oldAdd; }
+  assert.equal(c.window.__PRODUCT_PROFILE, x.h.main.__profile().profileId, 'actual Main URL must survive the complete production renderer bootstrap');
+  assert.equal(c.document.body.dataset.productProfile, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  c.renderAtlasJourneyState();
   const field = () => h.walk(c.atlasJourneyHost).find(node => node.dataset.rangeLanguageField === 'languageCode');
   const button = action => h.walk(c.atlasJourneyHost).find(node => node.dataset.rangeLanguageAction === action);
   const input = async value => { const node = field(); assert.ok(node); node.value = value; await node.emit('input'); };

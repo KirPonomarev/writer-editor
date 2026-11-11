@@ -1002,7 +1002,7 @@ export const FIRST_MAC_RELEASE_V2_SOURCE_PINS = Object.freeze({
   "src/product/stage10MainPersistenceAdapter.mjs": "bffab1daf99425322d83169fad426e22bd1ed2c6584b96aadda63e7c3978ffc6",
   "src/renderer/commands/projectCommands.mjs": "79e46352aa3d338f19ece04cc7b5be44af18b0f113de58bee3a5de87079d31f5",
   "src/renderer/design-os/designOsFormConfiguration.mjs": "774771d53827f04f6262441eb234b451aad244238a8bdaf67ffe4f493b771273",
-  "src/renderer/flags.js": "a3776494de2fea7a5d026b2028783bae419c80f30c6e2d9840d15bd471e0a5e5",
+  "src/renderer/flags.js": "b1dbef08d64d02ba8d5790468cc751cd068b7c3a4ab7aaae83409ffe5e725c2f",
   "src/renderer/index.html": "942e56ce96011eb61623b46ad3727eca27f17105bc8c2a85db32afd72646672a",
   "src/runtime-governance/docs/OPS/CAPABILITIES_MATRIX.json": "4819f1354c2e7f6f4f04b6444341ceb632fe521ffde719fb56766c7644f1ee7f",
   "src/shared/productCommandRegistry.cjs": "816e64bc7111992e89c2402e07872136a17e2000a13e5925887429c33f3f2d8d",
