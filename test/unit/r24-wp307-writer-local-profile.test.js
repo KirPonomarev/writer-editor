@@ -1,6 +1,45 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
+test('V15 preserves the complete V14 denominator and refuses malformed successor authority', () => {
+  const m = require('../../src/core/writer-local-profile-v1.cjs');
+  const options = { isPackaged: true, platform: 'darwin' };
+  const old = m.createWriterAtlasGlobalCompositeProfileProjection(options), active = m.createWriterAtlasRangeLanguageProfileProjection(options);
+  assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'); assert.equal(active.schemaVersion, 'writer-local-profile.v15');
+  assert.deepEqual({ ...active, profileId: old.profileId, schemaVersion: old.schemaVersion }, old);
+  assert.equal(active.admittedCommandIds.length, 35); assert.equal(active.admittedQueryIds.length, 13);
+  assert.equal(m.isActiveWriterAtlasRangeLanguageProfile(active), true); assert.equal(Object.isFrozen(active), true);
+  for (const commandId of active.admittedCommandIds) assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId,
+    productCommandRecord: { id: commandId, domain: commandId.split('.')[0] } }).allowed, true, commandId);
+  for (const queryId of active.admittedQueryIds) assert.equal(m.evaluateWriterLocalQueryAccess({ profile: active, queryId }).allowed, true, queryId);
+  for (const options of [{}, { isPackaged: false, platform: 'darwin' }, { isPackaged: true, platform: 'linux' }, { isPackaged: true, platform: 'win32' }]) {
+    assert.deepEqual(m.createWriterAtlasRangeLanguageProfileProjection(options), m.createWriterAtlasGlobalCompositeProfileProjection(options));
+  }
+  const variants = [{ ...active, profileId: active.profileId + '.extra' }, { ...active, schemaVersion: active.schemaVersion + '.extra' },
+    { ...active, extra: true }, { ...active, active: false }, { ...active, platform: 'linux' },
+    { ...active, admittedCommandIds: [...active.admittedCommandIds].reverse() }, { ...active, admittedQueryIds: active.admittedQueryIds.slice(1) }];
+  for (const key of Reflect.ownKeys(active)) { const value = { ...active }; delete value[key]; variants.push(value); }
+  for (const field of ['admittedCommandIds', 'admittedQueryIds']) {
+    const values = [...active[field]], index = values.length - 1; delete values[index];
+    Object.setPrototypeOf(values, Object.assign(Object.create(Array.prototype), { [index]: active[field][index] }));
+    variants.push({ ...active, [field]: values }, { ...active, [field]: Object.assign([...active[field]], { extra: true }) });
+    const getter = [...active[field]]; Object.defineProperty(getter, '0', { get() { throw Error('POLICY_GETTER_MUST_NOT_RUN'); }, enumerable: true });
+    variants.push({ ...active, [field]: getter });
+  }
+  for (const invalid of variants) {
+    assert.equal(m.isActiveWriterAtlasRangeLanguageProfile(invalid), false);
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: invalid, commandId: 'atlas.languageTag.set',
+      productCommandRecord: { id: 'atlas.languageTag.set', domain: 'atlas' } }).allowed, false);
+    assert.equal(m.evaluateWriterLocalQueryAccess({ profile: invalid, queryId: 'query.atlasCurrentScene' }).allowed, false);
+  }
+  for (const commandId of ['atlas.languageTag.set.extra', 'atlas.languageTag.clear ', 'atlas.seriesPortability.apply']) {
+    assert.equal(m.evaluateWriterLocalCommandAccess({ profile: active, commandId,
+      productCommandRecord: { id: commandId, domain: 'atlas' } }).allowed, false);
+  }
+  assert.equal(m.isActiveWriterAtlasGlobalCompositeProfile(old), true);
+  assert.equal(m.isActiveWriterAtlasRangeLanguageProfile(old), false);
+});
+
 const {
   WRITER_LOCAL_PROFILE_ID,
   WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,

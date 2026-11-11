@@ -182,6 +182,7 @@ function manualMapProfileAccess(profile, selected, optional) {
 }
 
 function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord = null } = {}) {
+  if (isWriterAtlasRangeLanguageProfileCandidate(profile)) return evaluateRangeLanguageAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasGlobalCompositeProfileCandidate(profile)) return evaluateGlobalCompositeAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasAssociationsProfileCandidate(profile)) return evaluateAtlasAssociationsAccess(profile, commandId, productCommandRecord);
   if (isWriterSceneLanguageTagProfileCandidate(profile)) return evaluateSceneLanguageTagCommandAccess(profile, commandId, productCommandRecord);
@@ -219,6 +220,7 @@ function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRe
 }
 
 function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
+  if (isWriterAtlasRangeLanguageProfileCandidate(profile)) return evaluateRangeLanguageAccess(profile, queryId);
   if (isWriterAtlasGlobalCompositeProfileCandidate(profile)) return evaluateGlobalCompositeAccess(profile, queryId);
   if (isWriterAtlasAssociationsProfileCandidate(profile)) return evaluateAtlasAssociationsAccess(profile, queryId);
   if (isWriterSceneLanguageTagProfileCandidate(profile)) return evaluateSceneLanguageTagQueryAccess(profile, queryId);
@@ -755,7 +757,45 @@ function evaluateGlobalCompositeAccess(profile, identifier, productCommandRecord
     profileId: WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_ID });
 }
 
+// V15 changes only the current language intent version. The command/query
+// denominator and every historical profile remain exact V14 inheritance.
+const WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_ID = 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15';
+const WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v15';
+function createWriterAtlasRangeLanguageProfileProjection(options = {}) {
+  const inherited = createWriterAtlasGlobalCompositeProfileProjection(options);
+  return inherited.active ? Object.freeze({ ...inherited, profileId: WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_ID,
+    schemaVersion: WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_SCHEMA_VERSION }) : inherited;
+}
+function isWriterAtlasRangeLanguageProfileCandidate(profile) {
+  if (!profile || typeof profile !== 'object') return false;
+  return ['profileId', 'schemaVersion'].some(key => {
+    const value = Object.getOwnPropertyDescriptor(profile, key)?.value;
+    return typeof value === 'string' && value.startsWith(key === 'profileId'
+      ? WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_ID : WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_SCHEMA_VERSION);
+  });
+}
+function isActiveWriterAtlasRangeLanguageProfile(profile) {
+  if (!isPlainObject(profile)) return false;
+  const d = Object.getOwnPropertyDescriptors(profile);
+  if (d.profileId?.value !== WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_ID
+    || d.schemaVersion?.value !== WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_SCHEMA_VERSION) return false;
+  return isActiveWriterAtlasGlobalCompositeProfile(Object.defineProperties({}, { ...d,
+    profileId: { ...d.profileId, value: WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_ID },
+    schemaVersion: { ...d.schemaVersion, value: WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_SCHEMA_VERSION } }));
+}
+function evaluateRangeLanguageAccess(profile, identifier, productCommandRecord) {
+  if (!isActiveWriterAtlasRangeLanguageProfile(profile)) return Object.freeze({ allowed: false,
+    reason: WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED, profileId: WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_ID });
+  const inherited = evaluateGlobalCompositeAccess(createWriterAtlasGlobalCompositeProfileProjection({ isPackaged: true, platform: 'darwin' }),
+    identifier, productCommandRecord);
+  return Object.freeze({ ...inherited, profileId: WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_ID });
+}
+
 module.exports = Object.freeze({
+  WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_ID,
+  WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_SCHEMA_VERSION,
+  createWriterAtlasRangeLanguageProfileProjection,
+  isActiveWriterAtlasRangeLanguageProfile,
   WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_ID,
   WRITER_ATLAS_GLOBAL_COMPOSITE_PROFILE_SCHEMA_VERSION,
   WRITER_ATLAS_GLOBAL_COMPOSITE_QUERY_IDS,

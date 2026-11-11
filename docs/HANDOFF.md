@@ -1,3 +1,22 @@
+# CURRENT — Source-bound Atlas fragment language
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_RANGE_LANGUAGE_20261111
+BINDING_BASE_SHA: 59ea5d1dff5539069062cd5341985a25803b77fe
+STATUS: SOURCE_BEHAVIOR_CHECKED_CURRENT_BINDINGS_NATIVE_AND_DELIVERY_PENDING
+
+Preceding brain status CLI delivery is CLOSED: PR2220 merged59ea5d1dff5539069062cd5341985a25803b77fe, candidate and merged CI20 each, merged23 local process expectations, independently observed recorded status and unchanged original-native input carrier. Final schema report a459ab375cc74b09ccbe375a6deae6362e3eea4b65e5f99e25f8f1ddb7db43dd; closure9090c4cce864d8c2ebf3f43d91d7e417bd51f5c15433f635fd72b623719f6835. Original actual native2801 remains separately identified. Full Mac NOT_READY, UNFROZEN, all17 qualification UNKNOWN.
+
+Only the saved selected-fragment language journey is active. Original actual Core prefix edit silently assigns the v1 range to different text; literal current Main refuses ranges. Causal evidence be26922db134ece322f766c78739e6354d62bcfa34547de52bb4c94bb298932f, full normative/scoped factual startup cafc683fb286e3af1166603b52034193bf2ccce0e7250c01ea7c3f3bdcb3b26d, clean pre-edit declaration4b4d64bd4432a192a40d78ba664448e35116056058cec9fcb1faabe6779157a8 and actual preflight precede task/source edits; E0 initially refused draft headings, corrected task E0 passes256ed2d3. No cache/full-history claim.
+
+Source work adds explicit v2 range decisions retaining the original quote, raw scene revision, canonical text hash, UTF16 coordinates and append-only Set/Clear history. Changed scene sources become stale; retraction retains original source/history. Explicit COPY changes current ownership and preserves original decision owners; historical v1 and V1–V14 factories remain intact. The current V15 inherits exactly35 commands/13 queries and admits range intents only through trusted packaged Darwin Main, current capability/owner checks, Kernel and existing atomic CAS/readback. Existing Atlas Flow receives a protected input/capture form and bounded read/history pages. No automatic detection/reanchor, engine, dependency, network, storage adapter or private data is introduced.
+
+ACTUAL_SOURCE_PROOF: First negative controls RED17 d6bc731a. Expanded Core25/25 3b160f9f includes Unicode, source shift/truncation, retained history, malformed source, explicit old upgrade and mixed old/new COPY. Additional damaged legacy-checksum control genuinely RED bd6760cf; strict original checksum refusal and complete domain/pagination27/27 dd3967d3. Whole affected four files execute960 tests,959 pass,1 stale DATA editor pin, zero skipped/todo, stable inputs dd61188c935715223a93f8a85c3b4a1f08a7f64d0f12ef7cd9c1df7ed4062f9f. The new actual Main/Kernel and form journeys, source refusal and historical V14 opaque preservation pass in that run; this is finite IPC, not native acceptance. History keyboard-focus control genuinely RED8cbd2f4c; actual focus/draft controls2/2 0b5309aa. Existing renderer build and V2 cut validation0 67f8ec3f; cut remains NOT_READY with unchanged qualification and only the admitted current selector/pins advanced.
+
+NEXT: Finalize existing current bindings and delegated technical witnesses, run final mandatory software gates, rebuild and observe the actual owned native candidate before product push, then normal required CI/merge and exact merged software/native verification. No product/native/delivery or full-release acceptance is claimed yet. Existing errors, data, profiles, historical receipts and canonical owner checkout remain preserved.
+
+--- Earlier factual bytes and their original execution identities preserved below ---
+
 # CURRENT — Honest brain status
 
 DOCUMENT_CLASS: FACTUAL_STATUS

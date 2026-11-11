@@ -18,6 +18,8 @@ import {
   buildAtlasTextCoordinateIndex,
 } from './atlasTextAnchorNormalization.mjs';
 import { requireAtlasSceneOrder } from './atlasSceneOrder.mjs';
+import { normalizeAtlasLanguageCode, isGraphemeBoundaryAligned } from '../../core/runtime.mjs';
+import { ATLAS_LANGUAGE_RANGE_TAG_SCHEMA, readAtlasRangeLanguageRecord } from '../../core/atlas-language-range-tag-v2.mjs';
 
 const VIEW_ID = 'derived.atlas.mixedLanguageRouter.v1';
 const PROVIDER_ID = 'query.atlasMixedLanguageRouter';
@@ -123,14 +125,29 @@ function normalizeTag(input) {
   };
 }
 
-function collectTags(project, projectId) {
+function collectTags(project, projectId, boundRangeStates) {
   const languageTags = isPlainObject(project?.atlas?.languageTags) ? project.atlas.languageTags : {};
   const tags = [];
   const projectTag = normalizeTag(languageTags.project);
   if (projectTag) tags.push(projectTag);
   for (const bucketName of ['scenes', 'blocks', 'ranges']) {
     const bucket = isPlainObject(languageTags[bucketName]) ? languageTags[bucketName] : {};
-    for (const tag of Object.values(bucket)) {
+    for (const [key, tag] of Object.entries(bucket)) {
+      if (bucketName === 'ranges' && typeof tag?.schemaVersion === 'string' && tag.schemaVersion.startsWith('atlas.languageRangeTag.')) {
+        const read = readAtlasRangeLanguageRecord(tag, { normalizeLanguage: normalizeAtlasLanguageCode, isGraphemeBoundaryAligned,
+          scene: project.scenes?.[tag.sceneId] });
+        const valid = read.ok && key === read.id && read.projectId === projectId;
+        boundRangeStates.push({ tagId: key, sceneId: valid ? read.sceneId : '', state: valid ? read.state : 'invalid',
+          recordHash: valid ? read.recordHash : '',
+          reason: valid ? read.state === 'stale' ? 'RANGE_LANGUAGE_SOURCE_STALE' : read.state === 'invalid-source'
+            ? 'RANGE_LANGUAGE_SOURCE_INVALID' : '' : read.reason || 'RANGE_LANGUAGE_IDENTITY_INVALID' });
+        if (valid && read.state === 'current') tags.push({
+          schemaVersion: ATLAS_LANGUAGE_RANGE_TAG_SCHEMA, id: read.id, projectId, scopeKind: 'range', sceneId: read.sceneId,
+          languageCode: read.head.languageCode, startOffset: read.head.source.startOffset, endOffset: read.head.source.endOffset,
+          source: 'author', manuscriptMutation: false, sourceHash: tag.sourceHash,
+        });
+        continue;
+      }
       const normalized = normalizeTag(tag);
       if (normalized && (!normalized.projectId || normalized.projectId === projectId)) tags.push(normalized);
     }
@@ -267,7 +284,9 @@ function buildSceneRoutes({ projectId, scene, defaultLanguageCode, tags }) {
 }
 
 function buildRouter({ project, projectId, meta }) {
-  const tags = collectTags(project, projectId);
+  const boundRangeStates = [];
+  const tags = collectTags(project, projectId, boundRangeStates);
+  const boundRangeFailures = boundRangeStates.filter(row => !['current', 'cleared'].includes(row.state));
   const defaultLanguageCode = projectDefaultLanguage(project, tags);
   const scenes = requireAtlasSceneOrder(project, VIEW_ID, {
     includeText: true,
@@ -283,11 +302,13 @@ function buildRouter({ project, projectId, meta }) {
   const routerHash = hashCanonicalValue({
     tags,
     routes,
+    ...(boundRangeStates.length ? { rangeLanguageBindings: boundRangeStates } : {}),
     analyzerId: ATLAS_OBSERVATION_ANALYZER_ID,
   });
   return {
     schemaVersion: ATLAS_MIXED_LANGUAGE_ROUTER_SCHEMA_VERSION,
-    state: routes.length === 0 ? 'empty' : unsupportedRoutes.length > 0 ? 'degraded' : 'ready',
+    state: !routes.length && !boundRangeFailures.length ? 'empty'
+      : unsupportedRoutes.length > 0 || boundRangeFailures.length > 0 ? 'degraded' : 'ready',
     projectId,
     surfaceManifest: buildSurfaceManifest(),
     authority: buildAuthority(),
@@ -303,14 +324,16 @@ function buildRouter({ project, projectId, meta }) {
     },
     languageTags: tags,
     routes,
-    degradedStates: unsupportedRoutes.map((route) => ({
+    ...(boundRangeStates.length ? { rangeLanguageBindings: boundRangeStates } : {}),
+    degradedStates: [...unsupportedRoutes.map((route) => ({
       sceneId: route.sceneId,
       startOffset: route.startOffset,
       endOffset: route.endOffset,
       languageCode: route.languageCode,
       code: 'LANGUAGE_RANGE_UNSUPPORTED_EXACT_ONLY',
       reason: 'Language range has no certified BASIC or DEEP analyzer yet and is routed to GLOBAL exact-only.',
-    })),
+    })), ...boundRangeFailures.map(row => ({ ...row, code: row.reason || 'RANGE_LANGUAGE_SOURCE_UNAVAILABLE',
+      reason: 'The stored range has no current source-bound language claim. Its original author data remains retained.' }))],
     evidence: {
       schemaVersion: 'derived.atlas.mixedLanguageRouter.evidence.v1',
       routerHash,
