@@ -3292,6 +3292,53 @@ test('range language V15 actual source edit refuses old intent then permits expl
   assert.equal(final.history.at(-1).source.quoteText, first.quoteText);
 });
 
+test('range language V15 first range works in fresh projects and preserves lawful scene-tag siblings', async t => {
+  for (const existingSceneTag of [false, true]) await t.test(existingSceneTag ? 'existing scene language' : 'native fresh no Atlas', async t => {
+    const h = await fullMacMainFixture(t, { packaged: true, rendererLoaded: true }), ui = await fullMacRendererCommandPort(h);
+    const f = await exactAtlasScene(h, 'First range ' + existingSceneTag), { projectId, sceneId } = f;
+    assert.equal(Object.hasOwn(JSON.parse(fs.readFileSync(f.manifestPath)), 'atlas'), false);
+    assert.equal((await h.main.handleUiOpenDocumentCommand({ projectId, nodeId: sceneId })).ok, true);
+    const digest = value => crypto.createHash('sha256').update(value).digest('hex');
+    const revisions = () => ({ expectedManifestRevision: 'sha256:' + digest(fs.readFileSync(f.manifestPath)),
+      expectedSceneRevision: 'sha256:' + digest(fs.readFileSync(f.scenePath)) });
+    if (existingSceneTag) {
+      const control = await ui('atlas.languageTag.set', { projectId, sceneId, scopeKind: 'scene',
+        languageCode: 'ru-RU', ...revisions() });
+      assertTemporalMainReceipt(control.mainResult, 'atlas.languageTag.set');
+    }
+    const before = JSON.parse(fs.readFileSync(f.manifestPath)), sceneBytes = fs.readFileSync(f.scenePath);
+    const text = require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(sceneBytes.toString()).text;
+    const { hashCanonicalValue: hash } = await import('../../src/core/browser-safe-hash.mjs');
+    const payload = { projectId, sceneId, scopeKind: 'range', rangeIntentVersion: 2, ...revisions(), sceneTextHash: hash(text),
+      startOffset: 0, endOffset: 4, quoteText: text.slice(0, 4), languageCode: 'en-US' };
+    const response = await ui('atlas.languageTag.set', payload);
+    t.diagnostic(JSON.stringify({ causalReach: 'FIRST_RANGE_NATIVE_FRESH_PROJECT', existingSceneTag, result: response.mainResult }));
+    assertTemporalMainReceipt(response.mainResult, 'atlas.languageTag.set');
+    assert.equal(response.result.ok, true); assert.equal(response.result.value.performed, true);
+    const after = JSON.parse(fs.readFileSync(f.manifestPath)), { atlas: _beforeAtlas, ...otherBefore } = before,
+      { atlas: _afterAtlas, ...otherAfter } = after;
+    assert.deepEqual(otherAfter, { ...otherBefore, lastCommandId: (before.lastCommandId ?? 0) + 1 });
+    assert.deepEqual(fs.readFileSync(f.scenePath), sceneBytes);
+    const expectedAtlas = structuredClone(before.atlas || { schemaVersion: 'atlas.author.v1', entities: {}, decisions: {}, savedQueries: {} });
+    const expectedTags = expectedAtlas.languageTags || { project: null, scenes: {}, blocks: {}, ranges: {} };
+    const [tagId] = Object.keys(after.atlas.languageTags.ranges), tag = after.atlas.languageTags.ranges[tagId];
+    assert.equal(Object.keys(after.atlas.languageTags.ranges).length, 1);
+    assert.equal(tag.schemaVersion, 'atlas.languageRangeTag.v2'); assert.equal(tag.projectId, projectId); assert.equal(tag.sceneId, sceneId);
+    assert.equal(tag.history.length, 1); const decision = tag.history[0];
+    assert.equal(decision.operation, 'set'); assert.equal(decision.languageCode, 'en-US'); assert.equal(decision.legacyRecord, null);
+    assert.deepEqual(decision.source, { sceneRevision: payload.expectedSceneRevision, sceneTextHash: payload.sceneTextHash,
+      startOffset: 0, endOffset: 4, quoteText: payload.quoteText, adapterOffsetDomain: 'UTF16_JS_CODE_UNIT' });
+    expectedAtlas.languageTags = { ...expectedTags, ranges: { ...expectedTags.ranges, [tagId]: tag } };
+    assert.deepEqual(after.atlas, expectedAtlas, 'only the first range and exact empty sibling containers may be added');
+    const read = await h.query('query.atlasCurrentScene', { projectId, nodeId: sceneId });
+    assert.equal(read.ok, true); assert.equal(read.atlasCurrentScene.rangeLanguageTags.rows[0].state, 'current');
+    assert.equal((await h.main.handleProjectLifecycleOpenCommand({ projectId })).ok, true);
+    assert.equal((await h.main.handleUiOpenDocumentCommand({ projectId, nodeId: sceneId })).ok, true);
+    const cold = await h.query('query.atlasCurrentScene', { projectId, nodeId: sceneId });
+    assert.equal(cold.ok, true); assert.deepEqual(cold.atlasCurrentScene.rangeLanguageTags.rows, read.atlasCurrentScene.rangeLanguageTags.rows);
+  });
+});
+
 test('range language V15 rejects malformed source payloads and page authority without physical writes', async t => {
   const x = await sceneLanguageMainFixture(t, true), valid = await rangeLanguageMainPayload(x);
   await x.apply('atlas.languageTag.set', valid);

@@ -12,6 +12,8 @@
 
 - Actual flags bootstrap gap2b2a57e1 closes in the same31-path amendment519ebcd7: real Main URL + full flags script genuinely RED14b33382 then30/30 617f6beb; all15 profiles and near-ID denials checked. Existing V15 schema/70-pin release expectations pass748/748 9746865b under standard policy env. Original wrong alias/wrapper errors retained. New exact final companions/gates/native78/full delivery remain pending.
 
+- Actual native78 first-use refusal atdd8daf2a independently reproduces60ff1a21; regressionRED3d4a02e6 precedes exact empty-sibling initialization repair. Final focused31/31 d718da34. Closed own78a386583a and original59 profiles/30 bundles retained. Superseded RTK/default-15 are partial, never green. Only new native79, fresh final gates and full delivery may close this outcome.
+
 --- Earlier worklog bytes preserved below ---
 
 ## 2026-11-10

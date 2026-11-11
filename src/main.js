@@ -41136,11 +41136,12 @@ async function prepareRangeLanguageIntent(commandId, payload, binding, previousH
   if (!paths.ok || paths.payload?.target !== paths.payload?.current) refuse('E_ATLAS_RANGE_LANGUAGE_SOURCE_STALE');
   const atlas = project.atlas, tags = atlas?.languageTags, ranges = tags?.ranges || {};
   const without = (value, key) => { const next = { ...value }; delete next[key]; return next; };
+  const tagSiblings = tags === undefined ? { project: null, scenes: {}, blocks: {} } : without(tags, 'ranges');
   return { payload: authorPayload, assertNoLoss(nextProject) {
     const nextAtlas = nextProject.atlas, nextTags = nextAtlas?.languageTags, nextRanges = nextTags?.ranges;
     if (!isPlainObjectValue(nextRanges) || hash(without(project, 'atlas')) !== hash(without(nextProject, 'atlas'))
       || hash(without(atlas, 'languageTags')) !== hash(without(nextAtlas, 'languageTags'))
-      || hash(without(tags, 'ranges')) !== hash(without(nextTags, 'ranges'))) refuse('E_ATLAS_RANGE_LANGUAGE_NO_LOSS');
+      || hash(tagSiblings) !== hash(without(nextTags, 'ranges'))) refuse('E_ATLAS_RANGE_LANGUAGE_NO_LOSS');
     const changed = Object.keys(nextRanges).filter(id => !Object.hasOwn(ranges, id) || hash(ranges[id]) !== hash(nextRanges[id]));
     if (changed.length !== 1 || Object.keys(ranges).some(id => !Object.hasOwn(nextRanges, id))
       || payload.tagId && changed[0] !== payload.tagId) refuse('E_ATLAS_RANGE_LANGUAGE_NO_LOSS');

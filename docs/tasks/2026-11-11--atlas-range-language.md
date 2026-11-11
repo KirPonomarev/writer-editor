@@ -173,3 +173,5 @@ Preserve every actual error and its original identity before changing a hypothes
 ### Rollback
 
 Normal scoped revert with fresh current metadata/witnesses. Preserve old v1 data, new source/history records, every original failure and native artifact/profile. Historical shipping profiles must preserve unknown v2 rows opaquely and refuse range mutation. No destructive Git, project removal or hidden data conversion.
+
+NATIVE_FIRST_USE_CORRECTION: Actual candidate78 atdd8daf2a refused the first valid range in a fresh project before writes; independent Main probe60ff1a21 and RED3d4a02e6 establish missing-languageTags scaffolding as the cause. Permit exactly empty project-null/scenes/blocks siblings when the whole tag container was absent; retain strict equality for every present or unknown sibling and every other no-loss check. Targeted31/31 d718da34 includes fresh first use, lawful existing scene-tag siblings, malformed source, Main/bootstrap/form paths and historical profile checks. Failed original native78 and its closed profile remain protected. Rebuilt owned native79 under candidate02 follows fresh admission; no qualification is inferred.
