@@ -2920,15 +2920,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "deb8f8efc3e7b01ec90ad4a71dd7cef777e7d58453cc3751788831a01475e33d"
+        "sha256": "c007cb5232255721e59e2b4c54e1f84b992d61ad46f53f0fca0d13daa3f5a988"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "39799b1fff0f2fd560989bfa72da38c30a217e5f6ee8808c81f31287b40406cf"
+        "sha256": "d116394ae3f78cf68691b41afd41fc55fb69407da4846f67708b604cfa9c2a20"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "e5da0f3a76d7a570b4b001fab71d125dae9ac74f50ce122659f76fdefb17da38"
+        "sha256": "cb1625aa6877412812e434e4f01e9e5451af9fb584993c537ad3d89c4e6dad25"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3468,7 +3468,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "e3fd33d8dde99ff5ab51ccbb676bcf40814d4b6afe9c140236f964f77c854173"
+        "sha256": "2a960279f71b9600914df751108c2c4dc4053438923a52f742e93f9aabd55c81"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3600,7 +3600,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "44f160da86030675fac6de0937c6d9b8b912170c34d72ac089daf8cc7567f995"
+        "sha256": "4d6a3e1904bb84245f8eb8373ea4e63de05b63bbbbbc2bc7328c83f4bd698960"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4140,7 +4140,7 @@
       },
       {
         "path": "test/unit/environment-epochs-full-ui.test.js",
-        "sha256": "56865638cb46a2152b1435296dd0e112c80043db0bcc65bbbbe77831f3d372d5"
+        "sha256": "3635af60186f36a3343a0280c79b741c84665a55be3388190939724e71a1b9c8"
       },
       {
         "path": "test/unit/sector-m-command-kernel-shell-action-adoption.test.js",
@@ -4396,7 +4396,7 @@
       },
       {
         "path": "test/unit/atlas-matrices-source-scope.test.js",
-        "sha256": "805f394f94fb4077c1fc52d73963beac40f84587a1a11394232c623753180b87"
+        "sha256": "22b8ce1c0da8c3f86817e9718cdcacc1451c63869d07b28795633dcf12b26337"
       },
       {
         "path": "docs/tasks/2026-11-06--atlas-matrices-source-scope.md",
@@ -4584,7 +4584,7 @@
       },
       {
         "path": "docs/tasks/2026-11-11--atlas-range-language.md",
-        "sha256": "433a3694a640ef38d22df9576e3e6d97212d1801070cf3220d7d886a14c37944"
+        "sha256": "672963e301a9f5acca40e99451aa38c5fe657435b1a0d52d2f92c3bf20f07284"
       },
       {
         "path": "src/core/atlas-language-range-tag-v2.mjs",
