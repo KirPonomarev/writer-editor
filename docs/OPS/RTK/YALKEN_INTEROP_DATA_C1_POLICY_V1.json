@@ -1228,7 +1228,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "fa127d3a698cbe8cf98f46ddb71b47ae6b6d48c07cc84c568fa2470a8ad6ed61"
+        "sha256": "0c50f2c249328c44021152a403bd9911efeef25f8edcb2829196655595508a4d"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1252,7 +1252,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "9bf4a1c011fff20c946ff7b79dd961d8b1503ef9d97ef870bf36da7a1b15c598"
+        "sha256": "23e064aa31dd42085e0f28a162974a3190639c8d6d8df5d5b59e9dba4eafead9"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -2920,15 +2920,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "b5e766b8997f1e77ef01bf039f5ecb1e201b4c6ba31858b24bd44c877ad98f55"
+        "sha256": "db97d2ba05680e6b8df99731e03dcd467b71f136f0804ca5a77e8b37dd904c49"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "889b42b338c81601b05b60fc911f83d5346793aac6defe7e463fa15b2eb1619f"
+        "sha256": "d8ee18f49cfaa7a54dad6d95690a1ec1b6faabf1bc240d3fee7c08d9d0606558"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "8b9eb2683aa52bda2679ca6088f7ea28fb05f40e97fcfa5951c7b0aa3c0c36bd"
+        "sha256": "049c1a488d8f766197ac4e6cfa6fb4eb41aba9a8753da0d9cd3136ea6dabe0fd"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3468,7 +3468,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "a4cfeb81c2096f7cfbc805b95d9798dc0f8162964df719319469ee64aa0f2a4f"
+        "sha256": "e3fd33d8dde99ff5ab51ccbb676bcf40814d4b6afe9c140236f964f77c854173"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3584,7 +3584,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "24daf660283cfc6a15f5b19d4f658d090660c5ac9b7cf802646e6b8c8d5ce934"
+        "sha256": "7b97a86e96ac437b53a4f94bec7c615c18084dd25509dea6baf4e0ebbf4c1db4"
       },
       {
         "path": "src/renderer/flags.js",
@@ -4584,7 +4584,7 @@
       },
       {
         "path": "docs/tasks/2026-11-11--atlas-range-language.md",
-        "sha256": "9a3575bdf6d3e86dcc6332481a634c7f3a0c9c1ed7e9b7e32a883b0091156c54"
+        "sha256": "a298ba106ba9c482e35c47feb677494f2727f11c28b26d2f524f38f5b50b7ef3"
       },
       {
         "path": "src/core/atlas-language-range-tag-v2.mjs",

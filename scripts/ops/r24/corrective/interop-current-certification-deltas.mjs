@@ -7526,7 +7526,7 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "fa127d3a698cbe8cf98f46ddb71b47ae6b6d48c07cc84c568fa2470a8ad6ed61"
+      "sha256": "0c50f2c249328c44021152a403bd9911efeef25f8edcb2829196655595508a4d"
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
@@ -7570,15 +7570,15 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "b5e766b8997f1e77ef01bf039f5ecb1e201b4c6ba31858b24bd44c877ad98f55"
+      "sha256": "db97d2ba05680e6b8df99731e03dcd467b71f136f0804ca5a77e8b37dd904c49"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "889b42b338c81601b05b60fc911f83d5346793aac6defe7e463fa15b2eb1619f"
+      "sha256": "d8ee18f49cfaa7a54dad6d95690a1ec1b6faabf1bc240d3fee7c08d9d0606558"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "8b9eb2683aa52bda2679ca6088f7ea28fb05f40e97fcfa5951c7b0aa3c0c36bd"
+      "sha256": "049c1a488d8f766197ac4e6cfa6fb4eb41aba9a8753da0d9cd3136ea6dabe0fd"
     },
     {
       "path": "AGENTS.md",
@@ -7610,11 +7610,11 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "ff4b87bdec499c6b9256155b3807197be250768fa736aa3bd583d0f442602fa2"
+      "sha256": "b2d8241d9fd229ff73eb223920c5bb799e13fa0f59875d81b0663669fda073ec"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "a4cfeb81c2096f7cfbc805b95d9798dc0f8162964df719319469ee64aa0f2a4f"
+      "sha256": "e3fd33d8dde99ff5ab51ccbb676bcf40814d4b6afe9c140236f964f77c854173"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -7642,7 +7642,7 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-      "sha256": "24daf660283cfc6a15f5b19d4f658d090660c5ac9b7cf802646e6b8c8d5ce934"
+      "sha256": "7b97a86e96ac437b53a4f94bec7c615c18084dd25509dea6baf4e0ebbf4c1db4"
     },
     {
       "path": "src/renderer/flags.js",
@@ -7678,7 +7678,7 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-      "sha256": "9bf4a1c011fff20c946ff7b79dd961d8b1503ef9d97ef870bf36da7a1b15c598"
+      "sha256": "23e064aa31dd42085e0f28a162974a3190639c8d6d8df5d5b59e9dba4eafead9"
     },
     {
       "path": "src/core/runtime.mjs",
@@ -7774,7 +7774,7 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "e0e4a7d06ea6a78e3304253c47dce83e9ee7967a19e2ebee05a735c07a19f87a"
+      "sha256": "20b0c271d0cac078a0c69e0bcd641ec262cf7d38dc924913ceeb30f2b6cd668b"
     },
     {
       "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -7830,11 +7830,11 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "1c26a87ffd62d56185c9fab3c8987cbb6f276bcd37e5d97f5e58b9a97c3bdf61"
+      "sha256": "16ed18611b6ef16b55900672c3620354a830287736b1f302dfb6734681622e83"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "487abd53b2a9650b4e4426eb93d62bb398b2100a662f2a009b144f52cca82bf7"
+      "sha256": "5d3949a47bb3c25c0fd1eb9ab964e312ac559ed67ee4acf75b584ec2d8684b1c"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -8450,7 +8450,7 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-11--atlas-range-language.md",
-      "sha256": "9a3575bdf6d3e86dcc6332481a634c7f3a0c9c1ed7e9b7e32a883b0091156c54"
+      "sha256": "a298ba106ba9c482e35c47feb677494f2727f11c28b26d2f524f38f5b50b7ef3"
     },
     {
       "path": "src/core/atlas-language-range-tag-v2.mjs",
@@ -8476,7 +8476,7 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c07f4347f3799216ca640bfc94dfa6d413b7253bf7ccb3ee6acc1f4a757b2fa6"
+      "sha256": "e5b5e4d596ab087dd2e6dc1f13d03e482ab81118f880d418674129d99bb775ca"
     }
   ]
 });
