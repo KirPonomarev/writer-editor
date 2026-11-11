@@ -16323,8 +16323,13 @@ function getRangeLanguageDetail(entry) {
   const state = atlasCurrentSceneState;
   if (state.projectId !== entry.projectId || state.sceneId !== entry.sceneId || !['ready', 'empty'].includes(state.state)
     || localDirty || localEditGeneration !== lastAckedGeneration) return null;
-  const detail = normalizeRangeLanguageTags(state.rangeLanguageTags);
-  return detail.state === 'ready' ? detail : null;
+  // Validate each immutable read projection once. Input edits never hash,
+  // clone or rescan its retained source/history; this cache grants no authority.
+  if (entry.readProjection !== state.rangeLanguageTags) {
+    entry.readProjection = state.rangeLanguageTags; entry.readDetail = normalizeRangeLanguageTags(state.rangeLanguageTags);
+  }
+  const detail = entry.readDetail;
+  return detail?.state === 'ready' ? detail : null;
 }
 
 function rangeLanguageButton(entry, text, action, handler) {
@@ -16350,9 +16355,11 @@ function syncRangeLanguageAuthorForm(entry) {
     : 'Выделите фрагмент в сохранённой сцене и нажмите «Взять выделение».';
   entry.notice.textContent = pending ? 'Сохраняем метку фрагмента…' : entry.status || (!detail
     ? 'Данные сцены недоступны. Сохраните сцену и обновите данные.' : 'Язык задаёт автор. Снятие метки сохраняет исходный фрагмент и историю.');
-  const key = hashCanonicalValue({ detail, selected: entry.selected?.id || '', active, pending });
-  if (entry.rowsKey === key) return;
-  entry.rowsKey = key; entry.rows.replaceChildren();
+  const selectedId = entry.selected?.id || '';
+  if (entry.renderedDetail === detail && entry.renderedSelectedId === selectedId
+    && entry.renderedActive === active && entry.renderedPending === pending) return;
+  Object.assign(entry, { renderedDetail: detail, renderedSelectedId: selectedId, renderedActive: active, renderedPending: pending });
+  entry.rows.replaceChildren();
   const states = { current: 'Сохранена', stale: 'Источник изменён', cleared: 'Снята; история сохранена',
     'legacy-unbound': 'Старая метка без привязки к исходному тексту', 'source-unavailable': 'Источник недоступен' };
   for (const row of detail?.rows || []) {

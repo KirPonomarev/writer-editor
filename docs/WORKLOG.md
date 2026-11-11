@@ -8,6 +8,8 @@
 
 - Fixed the status-only selection. Original controls RED3, whole new and historic P03/handoff22/22 403dab819795270edaa99c83800ec859fd566021a65703becec3fae877a38154, actual package recorded status 4e194b301fff114f7be8f1a67dc6d79fc1b36342e5af06995d6f382365443ec6; no writes or live release claim.
 
+- Same-chain semantic source checkpoint efede8a3; clean fresh preflightf0ed0b87. Actual input hot-path RED b8dc7df2 leads only to identity-based derived rendering cache, without authority or input-time source/history hashing. Current bindings, all final gates, new native and normal delivery are still pending.
+
 --- Earlier worklog bytes preserved below ---
 
 ## 2026-11-10

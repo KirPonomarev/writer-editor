@@ -3637,7 +3637,10 @@ function rangeLanguageMainRenderer(x, projection) {
 test('range language V15 actual form Set cold Read history and Clear retain complete physical truth [FINITE_IPC_NOT_NATIVE]', async t => {
   const x = await sceneLanguageMainFixture(t, true); let h = rangeLanguageMainRenderer(x, await x.query());
   assert.equal(h.button('set').disabled, true); await h.click('capture'); assert.equal(h.unload().defaultPrevented, true);
-  await h.input('en-US'); const field = h.field(); field.focus();
+  const originalHash = h.c.hashCanonicalValue; let inputHashCalls = 0;
+  h.c.hashCanonicalValue = (...args) => { inputHashCalls++; return originalHash(...args); };
+  await h.input('en-US'); assert.equal(inputHashCalls, 0, 'typing language must not hash source or read/history projections');
+  h.c.hashCanonicalValue = originalHash; const field = h.field(); field.focus();
   h.c.renderAtlasJourneyState(); assert.equal(h.field(), field); assert.equal(h.c.document.activeElement, field);
   const before = authorIdentitySnapshot(x), response = await h.click('set'), after = authorIdentitySnapshot(x);
   assert.ok(response); assertTemporalMainReceipt(response.mainResult, 'atlas.languageTag.set');
