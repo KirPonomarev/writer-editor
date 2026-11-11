@@ -1,3 +1,20 @@
+# CURRENT — Explicit Atlas project language admitted
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_PROJECT_LANGUAGE_20261111
+BINDING_BASE_SHA: e04f8cbde42d6976a17adc1ff9aeade4d1107b77
+STATUS: ADMITTED_FOR_NEGATIVE_FIRST_SOURCE_WORK_NOT_RUNTIME_ACCEPTANCE
+
+PR2221 is CLOSED at exact e04f8cbd: candidate26/merged25 local expectations and20 CI jobs each, rebuilt merged native80/independent raw and guarded recovery oracles. Closure52c4502c and schema finalf3f35290 certify only the source-bound range journey; previous pending narrative remains historical. Full Mac NOT_READY, UNFROZEN, all17 qualification UNKNOWN.
+
+Fresh bootstrap2d8e6ca9 and provider5c5aa1ed, full normative/scoped factual reads and fresh storage/registry/clean remote/writer checks preserve canonical6decd915. Original language contract27/27 passes. Probe01 inert-host cancellation065746a8 is retained; probe02 only enables original rendererLoaded:true and genuinely RED1/1 ba355648: unpackaged project Set and packaged scene control succeed, packaged V15 project Set refuses SCENE_LANGUAGE_TAG_PAYLOAD_INVALID with full no-write. No source or native acceptance yet.
+
+Before first edit, exact30-path declaration5f055f40/preflight2046a4c6 passes. One new V16 outcome reuses existing project Core/commands/CAS/Flow, preserves all historical V1-V15, scene/range overrides and every manuscript byte. Black Box remains after full Mac. No engine/dependency/runtime network/new tracker/agents/chats or independent improvements. NEXT: maintained negative-first controls, bounded source and actual owned native proof, all mandatory gates/full normal delivery plus exact merged rebuild. Existing raw/errors/62 known profiles/33 bundles preserved; older missing bytes remain UNKNOWN.
+
+
+SOURCE_CHECKPOINT_01: Actual build0, input-stable expanded65/65 and original profile/language56/56 with0skips/todo/cancelled b8825a57. Displayed project inheritance/manual scene choice and protected source/authority/race paths are finite source proof. First-use, record-shape and inherited-read original failures are retained. Current companions, whole required gates, real native/independent reader and full delivery/merged rebuild remain pending; all17UNKNOWN.
+--- Earlier factual bytes and their original execution identities preserved below ---
+
 # CURRENT — Source-bound Atlas fragment language
 
 DOCUMENT_CLASS: FACTUAL_STATUS

@@ -240,6 +240,8 @@ const MANUAL_MAP_LAYOUT_MODES = Object.freeze({
 
 let sceneLanguageAuthorDrafts = new Map();
 window.addEventListener('beforeunload', guardSceneLanguageDraftUnload, { capture: true });
+let projectLanguageAuthorDrafts = new Map();
+window.addEventListener('beforeunload', guardProjectLanguageDraftUnload, { capture: true });
 let rangeLanguageAuthorDrafts = new Map();
 window.addEventListener('beforeunload', guardRangeLanguageDraftUnload, { capture: true });
 let ideaMeaningAuthorDrafts = new Map();
@@ -13675,7 +13677,7 @@ function normalizeRightTab(tab) {
 
 function normalizeAtlasSurface(surfaceId) {
   const normalized = typeof surfaceId === 'string' ? surfaceId.trim() : '';
-  if (normalized === 'globalComposite' && !['WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)) return 'currentScene';
+  if (normalized === 'globalComposite' && !['WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)) return 'currentScene';
   return ATLAS_SURFACE_IDS.includes(normalized) ? normalized : 'currentScene';
 }
 
@@ -13705,7 +13707,7 @@ function syncAtlasSurfaceCompositionState() {
   for (const button of atlasSurfaceButtons) {
     if (!(button instanceof HTMLElement)) continue;
     const active = button.dataset.atlasSurfaceButton === activeSurface;
-    if (button.dataset.atlasSurfaceButton === 'globalComposite') button.hidden = !['WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE);
+    if (button.dataset.atlasSurfaceButton === 'globalComposite') button.hidden = !['WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE);
     button.classList.toggle('is-active', active);
     button.setAttribute('aria-selected', active ? 'true' : 'false');
     button.tabIndex = active ? 0 : -1;
@@ -13725,7 +13727,7 @@ function refreshActiveAtlasSurface(options = {}) {
   const surface = normalizeAtlasSurface(currentAtlasSurface);
   if (surface === 'globalComposite') return refreshAtlasGlobalCompositeGraph(options);
   syncAtlasSurfaceCompositionState();
-  const authoredWorkspace = ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) && isAtlasWorkspaceAuthoredVisible();
+  const authoredWorkspace = ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) && isAtlasWorkspaceAuthoredVisible();
   if (authoredWorkspace && surface !== 'matrices' && surface !== 'relation') {
     void refreshAtlasWorkspaceAssociations(options);
   }
@@ -13795,7 +13797,7 @@ function setCurrentAtlasSurface(surfaceId, options = {}) {
   if (options.refresh !== false) {
     refreshActiveAtlasSurface();
   } else if (previous !== currentAtlasSurface && currentAtlasSurface !== 'relation'
-    && ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) && isAtlasWorkspaceAuthoredVisible()) {
+    && ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) && isAtlasWorkspaceAuthoredVisible()) {
     void refreshAtlasWorkspaceAssociations();
   }
 }
@@ -14360,7 +14362,7 @@ function syncAtlasWorkspaceLayout(presentation) {
 }
 
 function isAtlasWorkspaceAuthoredVisible() {
-  return currentRightTab === 'atlas' && ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
+  return currentRightTab === 'atlas' && ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
     && (atlasSurfacePosture === ATLAS_SURFACE_POSTURE.FULL
       || atlasSurfacePosture === ATLAS_SURFACE_POSTURE.SPLIT && window.innerWidth >= ATLAS_SURFACE_SPLIT_MIN_WIDTH);
 }
@@ -16315,7 +16317,7 @@ function normalizeRangeLanguageTags(value) {
 }
 
 function isRangeLanguagePresentationCurrent(entry) {
-  return window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15' && entry.projectId === currentProjectId
+  return ['WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) && entry.projectId === currentProjectId
     && entry.sceneId === currentDocumentId && currentRightTab === 'atlas' && currentAtlasSurface === 'journey' && entry.form?.isConnected;
 }
 
@@ -16493,6 +16495,157 @@ async function runRangeLanguageCommand(commandId) {
   }
 }
 
+function getProjectLanguageAuthorDraft(projectId = currentProjectId) {
+  let entry = projectLanguageAuthorDrafts.get(projectId);
+  if (!entry) {
+    entry = { projectId, fields: { languageCode: '' }, revision: 0, pending: null, form: null, status: '', actions: {} };
+    projectLanguageAuthorDrafts.set(projectId, entry);
+  }
+  return entry;
+}
+
+function guardProjectLanguageDraftUnload(event) {
+  if (![...projectLanguageAuthorDrafts.values()].some(entry => entry.fields.languageCode || entry.pending?.active)) return;
+  event.preventDefault(); event.returnValue = false; event.stopImmediatePropagation();
+  updateStatusText('Закрытие отменено: сохраните или сбросьте ввод языка проекта.', { visible: true });
+}
+
+function normalizeProjectLanguageTag(value) {
+  const unavailable = { state: 'unavailable', reason: 'PROJECT_LANGUAGE_DETAIL_UNAVAILABLE', manifestRevision: '', tag: null };
+  if (!value || typeof value !== 'object' || Array.isArray(value) || !['empty', 'ready', 'unavailable'].includes(value.state)) return unavailable;
+  if (!['empty', 'ready'].includes(value.state)) return unavailable;
+  if (typeof value.manifestRevision !== 'string' || !/^sha256:[a-f0-9]{64}$/u.test(value.manifestRevision)) return unavailable;
+  const tag = value.tag;
+  if (value.state === 'empty' ? tag !== null : !tag || typeof tag.id !== 'string' || !tag.id || tag.id !== tag.id.trim() || tag.id.length > 1000
+    || typeof tag.languageCode !== 'string' || !tag.languageCode.trim() || tag.languageCode.length > 1000
+    || typeof tag.recordHash !== 'string' || !/^[a-f0-9]{64}$/u.test(tag.recordHash)) return unavailable;
+  return { state: value.state, reason: '', manifestRevision: value.manifestRevision,
+    tag: value.state === 'ready' ? { id: tag.id, languageCode: tag.languageCode, recordHash: tag.recordHash } : null };
+}
+
+function isProjectLanguagePresentationCurrent(entry) {
+  return typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'
+    && entry.projectId === currentProjectId && currentRightTab === 'atlas' && currentAtlasSurface === 'journey' && entry.form?.isConnected;
+}
+
+function getProjectLanguageDetail(entry) {
+  if (!entry.projectId || atlasCurrentSceneState.projectId !== entry.projectId || atlasCurrentSceneState.sceneId !== currentDocumentId
+    || !['ready', 'empty'].includes(atlasCurrentSceneState.state)
+    || localDirty || localEditGeneration !== lastAckedGeneration) return null;
+  const detail = normalizeProjectLanguageTag(atlasCurrentSceneState.projectLanguageTag);
+  return ['empty', 'ready'].includes(detail.state) ? detail : null;
+}
+
+function normalizeProjectLanguageSceneDefault(value) {
+  const unavailable = { state: 'unavailable', sourceKind: 'unavailable', languageCode: '' };
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return unavailable;
+  if (value.state === 'empty' && value.sourceKind === 'unset' && value.languageCode === '') return { state: 'empty', sourceKind: 'unset', languageCode: '' };
+  if (value.state !== 'ready' || !['project', 'scene'].includes(value.sourceKind) || typeof value.languageCode !== 'string'
+    || !value.languageCode.trim() || value.languageCode.length > 1000) return unavailable;
+  return { state: 'ready', sourceKind: value.sourceKind, languageCode: value.languageCode };
+}
+
+function syncProjectLanguageAuthorForm(entry) {
+  if (!entry.form) return;
+  if (entry.input.value !== entry.fields.languageCode) entry.input.value = entry.fields.languageCode;
+  const active = isProjectLanguagePresentationCurrent(entry), detail = getProjectLanguageDetail(entry), pending = entry.pending?.active === true;
+  entry.actions.set.disabled = !active || pending || !detail || !entry.fields.languageCode.trim() || entry.fields.languageCode.length > 1000;
+  entry.actions.clear.disabled = !active || pending || detail?.state !== 'ready';
+  entry.actions.reload.disabled = !active || pending; entry.actions.discard.disabled = !active || pending;
+  entry.form.setAttribute('aria-busy', String(pending));
+  entry.saved.textContent = detail?.state === 'ready' ? 'Сохранённый язык проекта: ' + detail.tag.languageCode
+    : detail?.state === 'empty' ? 'Метка языка проекта не установлена.' : 'Данные недоступны. Сохраните сцену и обновите данные.';
+  const inherited = detail ? normalizeProjectLanguageSceneDefault(atlasCurrentSceneState.sceneLanguageDefault) : null;
+  entry.inheritance.textContent = inherited?.state === 'ready' ? (inherited.sourceKind === 'project'
+    ? 'Текущая сцена наследует язык проекта: ' : 'У текущей сцены свой язык: ') + inherited.languageCode
+    : inherited?.state === 'empty' ? 'Язык текущей сцены по умолчанию не задан.' : 'Язык текущей сцены недоступен.';
+  entry.notice.textContent = pending ? 'Сохраняем язык проекта…' : entry.status || 'Примеры: ru-RU, en-US. Сцены без своей метки наследуют язык проекта. Метки сцен и фрагментов сохраняются.';
+}
+
+function getProjectLanguageAuthorForm() {
+  const entry = getProjectLanguageAuthorDraft();
+  if (entry.form) { syncProjectLanguageAuthorForm(entry); return entry.form; }
+  const form = document.createElement('form'); form.className = 'right-rail-atlas-journey-fields'; entry.form = form;
+  form.addEventListener('submit', event => event.preventDefault());
+  const label = document.createElement('label'); label.className = 'right-rail-atlas-journey-field';
+  const caption = document.createElement('span'); caption.className = 'right-rail-atlas-journey-field__label'; caption.textContent = 'Язык проекта';
+  const input = document.createElement('input'); input.type = 'text'; input.maxLength = 1000; input.className = 'right-rail-atlas-journey-field__control';
+  input.id = 'project-language-code'; input.name = 'projectLanguage'; input.autocomplete = 'off'; label.htmlFor = input.id;
+  input.dataset.projectLanguageField = 'languageCode'; input.placeholder = 'ru-RU, en-US'; input.setAttribute('aria-describedby', 'project-language-notice');
+  input.value = entry.fields.languageCode; entry.input = input; label.append(caption, input); form.append(label);
+  input.addEventListener('input', () => {
+    if (!isProjectLanguagePresentationCurrent(entry)) return;
+    entry.fields.languageCode = input.value; entry.revision++; entry.status = ''; syncProjectLanguageAuthorForm(entry);
+  });
+  input.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' || event.isComposing || !isProjectLanguagePresentationCurrent(entry)) return;
+    event.preventDefault(); if (!entry.actions.set.disabled) void runProjectLanguageCommand('atlas.languageTag.set');
+  });
+  for (const [action, text] of [['set', 'Сохранить язык проекта'], ['clear', 'Удалить метку проекта'], ['reload', 'Обновить'], ['discard', 'Сбросить ввод']]) {
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'right-rail-atlas-action';
+    button.textContent = text; button.dataset.projectLanguageAction = action; entry.actions[action] = button;
+    if (action === 'set' || action === 'clear') button.dataset.productCommandId = 'atlas.languageTag.' + action;
+    button.addEventListener('click', () => {
+      if (button.disabled || !button.isConnected || !isProjectLanguagePresentationCurrent(entry) || entry.pending?.active) return;
+      if (action === 'discard') { entry.fields.languageCode = ''; entry.revision++; entry.status = 'Ввод языка проекта сброшен.'; syncProjectLanguageAuthorForm(entry); }
+      else if (action === 'reload') void reloadProjectLanguageAuthorForm();
+      else void runProjectLanguageCommand('atlas.languageTag.' + action);
+    });
+    form.append(button);
+  }
+  entry.saved = document.createElement('div'); entry.saved.className = 'right-rail-atlas-state'; form.append(entry.saved);
+  entry.inheritance = document.createElement('div'); entry.inheritance.className = 'right-rail-atlas-state'; form.append(entry.inheritance);
+  entry.notice = document.createElement('div'); entry.notice.className = 'right-rail-atlas-state'; entry.notice.id = 'project-language-notice'; entry.notice.setAttribute('role', 'status'); form.append(entry.notice);
+  syncProjectLanguageAuthorForm(entry); return form;
+}
+
+async function reloadProjectLanguageAuthorForm() {
+  const entry = getProjectLanguageAuthorDraft(), revision = entry.revision, context = captureAtlasPublication();
+  const current = () => context() && isProjectLanguagePresentationCurrent(entry) && entry.revision === revision;
+  if (!current()) return;
+  await refreshAtlasCurrentScene({ force: true, isCurrent: current });
+  if (current()) syncProjectLanguageAuthorForm(entry);
+}
+
+async function runProjectLanguageCommand(commandId) {
+  const entry = getProjectLanguageAuthorDraft(), detail = getProjectLanguageDetail(entry);
+  if (!isProjectLanguagePresentationCurrent(entry) || entry.pending?.active || !detail
+    || !['atlas.languageTag.set', 'atlas.languageTag.clear'].includes(commandId)
+    || commandId === 'atlas.languageTag.set' && (!entry.fields.languageCode.trim() || entry.fields.languageCode.length > 1000)
+    || commandId === 'atlas.languageTag.clear' && detail.state !== 'ready') return { ok: false, reason: 'PROJECT_LANGUAGE_INTENT_UNAVAILABLE' };
+  const payload = { projectId: entry.projectId, scopeKind: 'project', expectedManifestRevision: detail.manifestRevision,
+    ...(commandId === 'atlas.languageTag.set' ? { languageCode: entry.fields.languageCode } : {}),
+    ...(detail.state === 'ready' ? { tagId: detail.tag.id, expectedTagHash: detail.tag.recordHash } : {}) };
+  const context = captureAtlasPublication(), revision = entry.revision, token = { active: true }, sequence = ++atlasCommandPublicationSequence;
+  const current = () => context() && isProjectLanguagePresentationCurrent(entry) && entry.revision === revision
+    && entry.pending === token && sequence === atlasCommandPublicationSequence && !localDirty && localEditGeneration === lastAckedGeneration;
+  entry.pending = token; syncProjectLanguageAuthorForm(entry);
+  let result;
+  try {
+    result = await dispatchUiCommand(commandId, payload, { isCurrentPresentation: current });
+    if (!current()) return result;
+    const receipt = result?.value?.result?.receipt;
+    const accepted = result?.ok === true && result.value?.performed === true && result.value.commandAuthority === 'CommandKernel'
+      && result.value.commandId === commandId && result.value.result?.ok === true && receipt?.schemaVersion === 'command-kernel.receipt.v1'
+      && receipt.commandId === commandId && receipt.status === 'APPLIED' && receipt.capabilityRevalidated === true && receipt.storageWritten === true;
+    entry.status = accepted ? (commandId === 'atlas.languageTag.clear' ? 'Метка языка проекта удалена.' : 'Язык проекта сохранён.')
+      : 'Язык проекта не сохранён. Ввод сохранён; проверьте язык или обновите данные.';
+    updateStatusText(entry.status, { visible: true });
+    if (accepted) {
+      if (commandId === 'atlas.languageTag.set' && entry.fields.languageCode === payload.languageCode) entry.fields.languageCode = '';
+      await refreshAtlasCurrentScene({ force: true, isCurrent: current });
+    } else entry.input.focus();
+    return result;
+  } catch {
+    result = { ok: false, reason: 'PROJECT_LANGUAGE_DISPATCH_FAILED' };
+    if (current()) { entry.status = 'Не удалось сохранить язык проекта. Ввод сохранён.'; updateStatusText(entry.status, { visible: true }); }
+    return result;
+  } finally {
+    token.active = false; if (entry.pending === token) entry.pending = null;
+    if (isProjectLanguagePresentationCurrent(entry)) syncProjectLanguageAuthorForm(entry);
+  }
+}
+
 function getSceneLanguageAuthorDraft(projectId = currentProjectId, sceneId = currentDocumentId) {
   const key = JSON.stringify([projectId, sceneId]);
   let entry = sceneLanguageAuthorDrafts.get(key);
@@ -16535,7 +16688,7 @@ function getSceneLanguageDetail(entry) {
 }
 
 function isSceneLanguagePresentationCurrent(entry) {
-  return typeof window !== 'undefined' && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
+  return typeof window !== 'undefined' && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
     && entry.projectId === currentProjectId && entry.sceneId === currentDocumentId
     && currentRightTab === 'atlas' && currentAtlasSurface === 'journey' && entry.form?.isConnected;
 }
@@ -17091,7 +17244,7 @@ function makeAtlasCommandButton(label, commandId, payload, options = {}) {
     button.setAttribute('aria-label', `${label}. ${options.reason}`);
   }
   button.addEventListener('click', () => {
-    const correction = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
+    const correction = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
       && ['atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore'].includes(commandId);
     if ((correction || ['atlas.evidence.reattach', 'atlas.observation.suppress'].includes(commandId)) && (button.disabled || !button.isConnected)) return;
     if (correction && atlasJourneyState.correctionPending?.active) return;
@@ -17102,7 +17255,7 @@ function makeAtlasCommandButton(label, commandId, payload, options = {}) {
     } catch (error) {
       if (correction && ['E_ATLAS_AUTHOR_IDENTITY_UNAVAILABLE', 'E_ATLAS_CORRECTION_SELECTION_REQUIRED'].includes(error?.code)
         || typeof window !== 'undefined'
-        && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
+        && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
         && ['atlas.entity.create', 'atlas.alias.add'].includes(commandId) && error?.code === 'E_ATLAS_AUTHOR_IDENTITY_UNAVAILABLE') {
         updateStatusText(error.code, { visible: true });
         return;
@@ -17159,7 +17312,7 @@ function getAtlasJourneyEntities() {
   const entities = Array.isArray(atlasCurrentSceneState.entities) ? atlasCurrentSceneState.entities : [];
   const choices = entities.filter((entity) => entity && typeof entity.entityId === 'string' && entity.entityId);
   if (typeof window === 'undefined' || !['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10',
-    'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)) return choices;
+    'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)) return choices;
   const dossier = atlasEntityDossierState, entity = dossier?.entity;
   if (['ready', 'empty'].includes(dossier?.state)
     && typeof currentProjectId === 'string' && currentProjectId && dossier.projectId === currentProjectId
@@ -17187,8 +17340,8 @@ function findAtlasJourneyMention(mentionId = '') {
 }
 
 function makeStableUiId(prefix) {
-  if (typeof window !== 'undefined' && (['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
-    && ['atlas-entity', 'atlas-alias'].includes(prefix) || ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
+  if (typeof window !== 'undefined' && (['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
+    && ['atlas-entity', 'atlas-alias'].includes(prefix) || ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
       && ['atlas-reassign', 'atlas-merge', 'atlas-split-restore'].includes(prefix))) {
     try {
       if (typeof globalThis.crypto?.randomUUID !== 'function') throw new Error('ATLAS_AUTHOR_IDENTITY_UNAVAILABLE');
@@ -17236,7 +17389,7 @@ function reconcileAtlasJourneyDraft() {
   if (!targetEntityId || targetEntityId === sourceEntityId) {
     targetEntityId = entities.find((entity) => entity.entityId !== sourceEntityId)?.entityId || '';
   }
-  const preserveSource = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
+  const preserveSource = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
     && entityIds.has(atlasJourneyDraft.sourceEntityId);
   const mentions = getAtlasJourneyMentions();
   const mentionIds = new Set(mentions.map((mention) => mention.mentionId));
@@ -17541,7 +17694,7 @@ function getAtlasContinuityFactPayload() {
   const ledgerKind = atlasContinuityAuthorDraft.ledgerKind || 'promise';
   return {
     ledgerKind,
-    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) ? {} : {
+    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) ? {} : {
       factId: ensureAtlasSurfaceDraftId(
         atlasContinuityAuthorDraft,
         'factId',
@@ -17867,7 +18020,7 @@ function appendAtlasSavedQueryControls(parent) {
 
 async function refreshAtlasProductSurfaces(options = {}) {
   if (options.isCurrent && !options.isCurrent()) return;
-  if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)) return refreshActiveAtlasSurface(options);
+  if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)) return refreshActiveAtlasSurface(options);
   const refreshes = [
     refreshAtlasOverview(options),
     refreshAtlasEntityDossier(options),
@@ -17942,11 +18095,11 @@ async function runAtlasCorrectionCommand(commandId, payload) {
 }
 
 async function runProductJourneyCommand(commandId, payload = {}) {
-  if (typeof window !== 'undefined' && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
+  if (typeof window !== 'undefined' && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
     && ['atlas.languageTag.set', 'atlas.languageTag.clear'].includes(commandId)) return runSceneLanguageCommand(commandId);
-  if (typeof window !== 'undefined' && ['WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
+  if (typeof window !== 'undefined' && ['WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
     && ['idea.create', 'idea.originLink.add', 'meaning.promote'].includes(commandId)) return runIdeaMeaningAuthoringCommand(commandId, payload?.meaningSourceKind);
-  if (typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
+  if (typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
     && ['atlas.observation.reassign', 'atlas.entity.merge', 'atlas.entity.splitRestore'].includes(commandId)) return runAtlasCorrectionCommand(commandId, payload);
   if (commandId === 'atlas.observation.suppress') return runAtlasSuppressionCommand();
   if (commandId === 'atlas.evidence.reattach') return runAtlasReattachmentCommand();
@@ -17967,7 +18120,7 @@ async function runProductJourneyCommand(commandId, payload = {}) {
   }, { isCurrentPresentation: current });
   if (!current()) return result;
   if (commandId === 'atlas.mention.confirm' && result && result.ok
-    && (typeof window === 'undefined' || !['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE))) {
+    && (typeof window === 'undefined' || !['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE))) {
     atlasJourneyDraft = {
       ...atlasJourneyDraft,
       decisionId: payload?.decisionId || atlasJourneyDraft.decisionId,
@@ -17993,10 +18146,11 @@ async function runProductJourneyCommand(commandId, payload = {}) {
 function renderAtlasJourneyState() {
   if (!(atlasJourneyHost instanceof HTMLElement)) return;
   reconcileAtlasJourneyDraft();
-  const authorForm = typeof window !== 'undefined' && ['WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) ? getIdeaMeaningAuthorForm() : null;
-  const sceneLanguageForm = typeof window !== 'undefined' && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) ? getSceneLanguageAuthorForm() : null;
-  const rangeLanguageForm = typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15' ? getRangeLanguageAuthorForm() : null;
-  if (authorForm || sceneLanguageForm || rangeLanguageForm) { for (const child of [...atlasJourneyHost.children]) if (![authorForm, sceneLanguageForm, rangeLanguageForm].includes(child)) child.remove(); }
+  const authorForm = typeof window !== 'undefined' && ['WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) ? getIdeaMeaningAuthorForm() : null;
+  const sceneLanguageForm = typeof window !== 'undefined' && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) ? getSceneLanguageAuthorForm() : null;
+  const rangeLanguageForm = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) ? getRangeLanguageAuthorForm() : null;
+  const projectLanguageForm = typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16' ? getProjectLanguageAuthorForm() : null;
+  if (authorForm || sceneLanguageForm || rangeLanguageForm || projectLanguageForm) { for (const child of [...atlasJourneyHost.children]) if (![authorForm, projectLanguageForm, sceneLanguageForm, rangeLanguageForm].includes(child)) child.remove(); }
   else atlasJourneyHost.innerHTML = '';
   applyAtlasResolvedSurfaceBinding('journey', atlasJourneyHost, 'atlasJourneyProvider');
   atlasJourneyHost.dataset.atlasJourneyStatus = atlasJourneyState.status;
@@ -18018,10 +18172,12 @@ function renderAtlasJourneyState() {
   status.className = 'right-rail-atlas-overview-hash';
   status.textContent = atlasJourneyState.lastResult || atlasJourneyState.status;
   header.append(label, title, status);
-  const firstAuthorForm = [authorForm, sceneLanguageForm, rangeLanguageForm].find(form => form?.parentElement === atlasJourneyHost);
+  const firstAuthorForm = [authorForm, projectLanguageForm, sceneLanguageForm, rangeLanguageForm].find(form => form?.parentElement === atlasJourneyHost);
   if (firstAuthorForm) atlasJourneyHost.insertBefore(header, firstAuthorForm);
   else atlasJourneyHost.appendChild(header);
   if (authorForm && authorForm.parentElement !== atlasJourneyHost) atlasJourneyHost.appendChild(authorForm);
+  if (projectLanguageForm && projectLanguageForm.parentElement !== atlasJourneyHost) atlasJourneyHost.appendChild(projectLanguageForm);
+  if (projectLanguageForm) syncProjectLanguageAuthorForm(getProjectLanguageAuthorDraft());
   if (sceneLanguageForm && sceneLanguageForm.parentElement !== atlasJourneyHost) atlasJourneyHost.appendChild(sceneLanguageForm);
   if (sceneLanguageForm) syncSceneLanguageAuthorForm(getSceneLanguageAuthorDraft());
   if (rangeLanguageForm && rangeLanguageForm.parentElement !== atlasJourneyHost) atlasJourneyHost.appendChild(rangeLanguageForm);
@@ -18032,7 +18188,7 @@ function renderAtlasJourneyState() {
   const sourceEntity = findAtlasJourneyEntity(atlasJourneyDraft.sourceEntityId);
   const targetEntity = findAtlasJourneyEntity(atlasJourneyDraft.targetEntityId);
   const mention = findAtlasJourneyMention(atlasJourneyDraft.mentionId);
-  const corrections = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE);
+  const corrections = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE);
   const savedMerge = corrections && atlasJourneyDraft.savedMergeOperation ? getAtlasSavedMergeSelection() : null;
   const correctionPending = corrections && atlasJourneyState.correctionPending?.active === true;
   const suppressionSelected = isAtlasSuppressionCurrent(atlasJourneyDraft.suppressionContext) && Boolean(atlasJourneyDraft.suppressionTarget)
@@ -18105,7 +18261,7 @@ function renderAtlasJourneyState() {
     entityId: mention?.entityId || atlasJourneyDraft.sourceEntityId || '',
     mentionId: mention?.mentionId || '',
     evidenceAnchor: mention?.evidenceAnchor || null,
-    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) ? {} : {
+    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) ? {} : {
       decisionId: ensureAtlasJourneyDraftId('decisionId', 'atlas-decision'),
     }),
   }), { actionId: 'confirm-mention', disabled: !mention, reason: mention ? '' : 'Select an exact mention' }));
@@ -18426,7 +18582,7 @@ function renderPlotInspectorSources(parent, state) {
 }
 
 function canRefreshAtlasGlobalCompositeGraph() {
-  return ['WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) && currentRightTab === 'atlas'
+  return ['WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) && currentRightTab === 'atlas'
     && currentAtlasSurface === 'globalComposite' && Boolean(currentProjectId);
 }
 
@@ -18603,14 +18759,14 @@ function renderProjectionInspectorState() {
   appendAtlasReportsRow(boundary, 'Idea', 'Author truth: idea.create and idea.originLink.add', 'current');
   appendAtlasReportsRow(boundary, 'Meaning', 'Promotion only through meaning.promote via CommandKernel only', 'current');
   renderPlotInspectorSources(projectionInspectorHost, state);
-  if (typeof window !== 'undefined' && ['WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)) renderIdeaMeaningInspector(projectionInspectorHost, state);
+  if (typeof window !== 'undefined' && ['WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)) renderIdeaMeaningInspector(projectionInspectorHost, state);
 }
 
 async function refreshProjectionInspector(options = {}) {
   if (currentRightTab !== 'atlas') return;
   if (plotInspectorView.projectId !== currentProjectId) plotInspectorView = { projectId: currentProjectId, offset: 0 };
   const plotOffset = plotInspectorView.offset;
-  const authorEntry = typeof window !== 'undefined' && ['WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) ? getIdeaMeaningAuthorDraft() : null;
+  const authorEntry = typeof window !== 'undefined' && ['WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) ? getIdeaMeaningAuthorDraft() : null;
   const authorRevision = authorEntry?.revision;
   const current = beginAtlasQueryPublication('projectionInspector', options), requestProject = currentProjectId;
   if (!current) return;
@@ -19102,7 +19258,7 @@ function renderAtlasEntityDossierState() {
   appendAtlasOverviewMetric(metrics, 'evidence', state.summary.evidenceRowCount, state.summary.evidenceHealth);
   appendAtlasOverviewMetric(metrics, 'review', state.summary.reviewRequiredEvidenceCount, state.summary.reviewRequiredEvidenceCount > 0 ? 'reviewRequired' : 'current');
   atlasEntityDossierHost.appendChild(metrics);
-  if (typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
+  if (typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
     && state.savedMergeOperations) renderAtlasSavedMergeSelection(atlasEntityDossierHost, state);
 
   if (state.aliases.length > 0) {
@@ -19205,7 +19361,7 @@ function getAtlasAssociationSelectedRow(entry, state = getAtlasAssociationState(
 }
 
 function isAtlasAssociationPresentationCurrent(entry) {
-  return ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) && Boolean(entry.projectId)
+  return ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) && Boolean(entry.projectId)
     && entry.projectId === currentProjectId && currentRightTab === 'atlas' && currentAtlasSurface === 'relation' && entry.form?.isConnected === true;
 }
 
@@ -19473,7 +19629,7 @@ function normalizeAtlasRelationDossier(result = {}) {
       directDispatch: actions.directDispatch === true ? true : false,
       actions: Array.isArray(actions.actions) ? actions.actions.filter(reviewSurfaceIsPlainObject) : [],
     },
-    ...(['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
+    ...(['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
       ? { authoredAssociations: normalizeAtlasAuthoredAssociations(source.authoredAssociations) } : {}),
   };
 }
@@ -19510,7 +19666,7 @@ function appendAtlasRelationAction(parent, action) {
 function renderAtlasRelationDossierState() {
   if (!(atlasRelationDossierHost instanceof HTMLElement)) return;
   const state = normalizeAtlasRelationDossier(atlasRelationDossierState);
-  const authorEntry = ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) ? getAtlasAssociationDraft() : null;
+  const authorEntry = ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) ? getAtlasAssociationDraft() : null;
   const retainedForm = authorEntry?.form?.parentNode === atlasRelationDossierHost;
   if (retainedForm) { for (const child of [...atlasRelationDossierHost.children]) if (child !== authorEntry.form) child.remove(); }
   else atlasRelationDossierHost.innerHTML = '';
@@ -19600,7 +19756,7 @@ function renderAtlasRelationDossierState() {
 
 async function refreshAtlasRelationDossier(options = {}) {
   if (currentRightTab !== 'atlas') return;
-  if (['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) && isAtlasWorkspaceAuthoredVisible()) {
+  if (['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) && isAtlasWorkspaceAuthoredVisible()) {
     void refreshAtlasWorkspaceAssociations(options);
   }
   const current = beginAtlasQueryPublication('atlasRelationDossier', options), requestProject = currentProjectId;
@@ -19621,7 +19777,7 @@ async function refreshAtlasRelationDossier(options = {}) {
     leftEntityId: atlasSelectedRelation.leftEntityId || '',
     rightEntityId: atlasSelectedRelation.rightEntityId || '',
     limit: 8,
-    ...(['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) ? {
+    ...(['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) ? {
       authoredOffset: getAtlasAssociationDraft().offset,
       selectedAssociationId: getAtlasAssociationDraft().selectedId || getAtlasAssociationDraft().intentId || '',
     } : {}),
@@ -19941,7 +20097,7 @@ function handleAtlasMatrixGridKeydown(event) {
 function handleAtlasMatrixGridClick(event) {
   const sourceScope = event.target instanceof Element ? event.target.closest('[data-atlas-matrices-source-scope]') : null;
   if (sourceScope instanceof HTMLElement && atlasMatricesHost instanceof HTMLElement && atlasMatricesHost.contains(sourceScope)) {
-    const render = ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) && isAtlasWorkspaceAuthoredVisible()
+    const render = ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) && isAtlasWorkspaceAuthoredVisible()
       ? renderAtlasMatricesAndWorkspace : renderAtlasMatricesState;
     selectAtlasMatricesSourceScope(sourceScope.dataset.atlasMatricesSourceScope, { render });
     return;
@@ -20094,7 +20250,7 @@ function appendAtlasMatrixAuthoredAssociations(projection) {
       const context = captureAtlasPublication();
       const current = () => button.isConnected && !button.disabled && context() && !localDirty
         && localEditGeneration === lastAckedGeneration && currentRightTab === 'atlas' && currentAtlasSurface === 'matrices'
-        && ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) && projection.projectId === currentProjectId
+        && ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) && projection.projectId === currentProjectId
         && (projection.sourceScope.kind === 'BOOK' || projection.sourceScope.sceneId === currentDocumentId)
         && atlasMatricesState.authoredAssociationApplicability === projection;
       if (!current()) return;
@@ -20261,7 +20417,7 @@ async function refreshAtlasMatrices(options = {}) {
     projectId: currentProjectId || '',
   };
   render();
-  const authoredRequested = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE);
+  const authoredRequested = typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE);
   const result = await invokeWorkspaceQueryBridge(ATLAS_MATRICES_QUERY_ID, {
     projectId: currentProjectId,
     rowLimit: 8,
@@ -20272,7 +20428,7 @@ async function refreshAtlasMatrices(options = {}) {
   });
   const scopeKeys = ['kind', 'sceneId', 'sceneTextHash', 'startOffset', 'endOffset'];
   if (!current() || !scopeKeys.every(key => sourceScope[key] === atlasMatricesSourceScope[key])) return;
-  if (authoredRequested && !['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)) return;
+  if (authoredRequested && !['WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)) return;
   if (sourceScope.kind !== 'BOOK' && (localDirty || localEditGeneration !== lastAckedGeneration)) {
     return setAtlasMatricesScopeUnavailable('ATLAS_SOURCE_UNSAVED', render);
   }
@@ -22178,9 +22334,12 @@ function normalizeAtlasCurrentSceneDossier(result = {}) {
     },
     entities: Array.isArray(source.entities) ? source.entities.filter(reviewSurfaceIsPlainObject) : [],
     mentions: Array.isArray(source.mentions) ? source.mentions.filter(reviewSurfaceIsPlainObject) : [],
-    ...(typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'
+    ...(typeof window !== 'undefined' && window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'
+      ? { projectLanguageTag: normalizeProjectLanguageTag(source.projectLanguageTag),
+        sceneLanguageDefault: normalizeProjectLanguageSceneDefault(source.sceneLanguageDefault) } : {}),
+    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
       ? { rangeLanguageTags: normalizeRangeLanguageTags(source.rangeLanguageTags) } : {}),
-    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)
+    ...(typeof window !== 'undefined' && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)
       ? { sceneLanguageTag: normalizeSceneLanguageTag(source.sceneLanguageTag) } : {}),
   };
 }
@@ -22259,7 +22418,7 @@ function renderAtlasLanguageAnalysis() {
 }
 
 async function requestAtlasLanguageAnalysis() {
-  if (!['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE) || atlasLanguageAnalysisState.state === 'loading'
+  if (!['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) || atlasLanguageAnalysisState.state === 'loading'
     || localDirty || localEditGeneration !== lastAckedGeneration || currentRightTab !== 'atlas' || currentAtlasSurface !== 'currentScene'
     || !currentProjectId || !currentDocumentId || atlasCurrentSceneState.projectId !== currentProjectId
     || atlasCurrentSceneState.sceneId !== currentDocumentId || !['ready', 'empty'].includes(atlasCurrentSceneState.state)) return;
@@ -22285,7 +22444,7 @@ async function requestAtlasLanguageAnalysis() {
 
 function renderAtlasCurrentSceneState() {
   if (!(atlasCurrentSceneHost instanceof HTMLElement)) return;
-  if (window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15') syncRangeLanguageAuthorForm(getRangeLanguageAuthorDraft());
+  if (['WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)) syncRangeLanguageAuthorForm(getRangeLanguageAuthorDraft());
   const state = normalizeAtlasCurrentSceneDossier(atlasCurrentSceneState);
   atlasCurrentSceneHost.innerHTML = '';
   atlasCurrentSceneHost.dataset.atlasCurrentSceneStatus = state.state;
@@ -22305,7 +22464,7 @@ function renderAtlasCurrentSceneState() {
   appendAtlasText(metrics, 'right-rail-atlas-metric', `${state.summary.mentionCount} упом.`);
   header.append(label, title, metrics);
   atlasCurrentSceneHost.appendChild(header);
-  if (typeof window !== 'undefined' && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)) {
+  if (typeof window !== 'undefined' && ['WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)) {
     atlasCurrentSceneHost.appendChild(renderAtlasLanguageAnalysis());
   }
 
@@ -22398,7 +22557,7 @@ async function refreshAtlasCurrentScene(options = {}) {
   const result = await invokeWorkspaceQueryBridge(ATLAS_CURRENT_SCENE_QUERY_ID, {
     projectId: currentProjectId,
     nodeId: currentDocumentId || '',
-    ...(window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15' && currentDocumentId
+    ...(['WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE) && currentDocumentId
       ? { rangeLanguage: { ...getRangeLanguageAuthorDraft().page } } : {}),
   });
   if (!current() || localDirty || localEditGeneration !== lastAckedGeneration) return;
@@ -23965,6 +24124,7 @@ function hasFullEnvironmentAuthoringPending() {
     || pendingDocxImportAttempt?.phase === 'accepting' || pendingDocxImportAttempt?.phase === 'opening'
     || pendingMarkdownImportAttempt?.phase === 'creating' || pendingMarkdownImportAttempt?.phase === 'opening' || manualMapHasRetainedDraft()
     || [...sceneLanguageAuthorDrafts.values()].some(entry => entry.fields.languageCode || entry.pending?.active)
+    || [...projectLanguageAuthorDrafts.values()].some(entry => entry.fields.languageCode || entry.pending?.active)
     || [...rangeLanguageAuthorDrafts.values()].some(entry => entry.languageCode || entry.capture || entry.pending?.active)
     || [...ideaMeaningAuthorDrafts.values()].some(entry => entry.pending?.active
       || ['ideaTitle', 'ideaSummary', 'meaningTitle', 'meaningInterpretation'].some(key => Boolean(entry.fields[key]))));
@@ -28531,7 +28691,7 @@ if (window.electronAPI) {
       refreshSceneHistory('');
     }
     if (currentRightTab === 'atlas') {
-      if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'].includes(window.__PRODUCT_PROFILE)) {
+      if (['WRITER_LOCAL_ATLAS_READ_SURFACES_V8', 'WRITER_LOCAL_ATLAS_TEMPORAL_AUTHORING_V9', 'WRITER_LOCAL_ATLAS_ENTITY_CORRECTIONS_V10', 'WRITER_LOCAL_IDEA_MEANING_AUTHORING_V11', 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12', 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13', 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14', 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)) {
         void refreshActiveAtlasSurface();
       } else {
         renderAtlasJourneyState();

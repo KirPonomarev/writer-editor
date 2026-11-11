@@ -5920,3 +5920,8 @@ PROCESS_SEQUENCE_RECOVERY_20261106: Primary human39cd7a45 at2026-11-02T09:01:25.
 - Fresh39path declaration29e17d26/preflight163f2a2e/admissionef2dcb1a/source10091/31profiles/three apps precede task edits. Current authored-association route absent;task E0/actual causal RED precede implementation,one new own native/full delivery required. No new product PASS.
 
 - 2026-11-07 — YALKEN_ATLAS_ASSOCIATION_APPLICABILITY_MAC_20261107 сохраняет исходную дельту P17 на 93d696ed6c7e21af956bbd10a0ba12d69112e188. Семь новых тестов и штатная сборка рендера прошли на зафиксированных байтах. Предыдущий полный прогон дал 771 успешный тест до последней защиты перехода. Обязательные проверки кандидата, реальный Mac и поставка ещё предстоят.
+
+
+2026-11-11 YALKEN_ATLAS_PROJECT_LANGUAGE_20261111: Predecessor PR2221 closed e04f8cbd. Original27 language controls pass; actual current packaged project-language REDba355648 follows retained inert-host cancellation. Clean30-path declaration5f055f40/preflight2046a4c6 precede source work; task E0 and negative-first implementation next. Full Mac NOT_READY, all17 UNKNOWN; sole executor, old data/profiles/errors preserved.
+
+2026-11-11 YALKEN_ATLAS_PROJECT_LANGUAGE_20261111 source checkpoint: renderer0, expanded65/65 and complete old profile/language56/56, stable inputs, b8825a57. Existing controls/history and raw errors preserved. Current exact companions, mandatory whole/native/delivery remain pending.
