@@ -993,7 +993,9 @@
     "test/contracts/x16-ws02-export-markdown-mindmap-bridge.contract.test.js",
     "test/unit/book-profile-persistence.test.js",
     "test/fixtures/sector-m/m4/ui-path-markers.json",
-    "docs/tasks/2026-11-10--test-cli-dry-run.md"
+    "docs/tasks/2026-11-10--test-cli-dry-run.md",
+    "docs/tasks/2026-11-11--brain-status.md",
+    "scripts/brain.mjs"
   ],
   "protectedFiles": [
     {
@@ -2914,15 +2916,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "f9746838d3dde57ac9ca23a4bb2f79fde190aebf4c72a0d98410e007a3c42839"
+        "sha256": "a13262c7423819b270db077b229edc988613fd4b0ae58eb9a63999d47a8efd9c"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "ae68d2160ab57972cd434f951b31e5aaba000ef5a75d1f786e590f718aa4849c"
+        "sha256": "9b5064c13af80b44091feb8d253c8bcdf9a5aace8a4d83100d0c37bb89f4057c"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "dd74dca06434c97f2f47b3f7586c7995402cbed6328d3a9ff338c6c05fb9a1c2"
+        "sha256": "f774a9f6af3bd6423b129f85990adbec2a590257ec22f65551e4225f147eb387"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3462,7 +3464,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "a3d3a3f1552991fd55c426ad51e1d6185d3512ae3b0bb1eb1d9fec95d983f069"
+        "sha256": "a962309b65e5d140f9ab1f6c5195e7cc312ee7b89d8744b8ae7e593cfe79c576"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3546,7 +3548,7 @@
       },
       {
         "path": "test/contracts/agent-context-restoration.contract.test.mjs",
-        "sha256": "043be16d9452ab4573a016723f5c579196780b96e7cb4924b92087ab252c0066"
+        "sha256": "f1954c45b6c9f5e613e8e74b765a0892d06d6fb064938c69a441c94456779346"
       },
       {
         "path": "docs/tasks/2026-10-22--agent-scoped-context.md",
@@ -4567,6 +4569,14 @@
       {
         "path": "docs/tasks/2026-11-10--test-cli-dry-run.md",
         "sha256": "5f2b1a325dc0ee7b42f52551e6d5fb6bc24522e16c550f18ae3648011e85b5cb"
+      },
+      {
+        "path": "docs/tasks/2026-11-11--brain-status.md",
+        "sha256": "0aa3f7494af3f860a5194e5c6a433a4bdf5451ace2439dabce24ce912e855f5e"
+      },
+      {
+        "path": "scripts/brain.mjs",
+        "sha256": "f8ed7c5ef06741a2d2dd919f4765b210adc15a51d6cb9e2b940e57d7aaa03154"
       }
     ],
     "followupRepair": {
