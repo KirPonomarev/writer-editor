@@ -3,7 +3,7 @@
 TASK_ID: YALKEN_BRAIN_STATUS_20261111
 TYPE: CORE
 DOCUMENT_CLASS: PROCESS
-STATUS: SOURCE_WHOLE_22_AND_ACTUAL_STATUS_VERIFIED_METADATA_PENDING
+STATUS: SOURCE_22_ELECTRON_35_VERIFIED_ATOMIC_METADATA_CORRECTION_PENDING_GATES
 CLAIM_BOUNDARY: Existing developer CLI local advisory snapshot only; no product qualification.
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
@@ -30,6 +30,8 @@ Bootstrap/ordered normative and scoped factual reads, current branch and storage
 New materials and evidence go to the dated brain-status folders on the verified T777. Only declared owned APFS runtime and genuine OS temp child hold necessary disposable tests. Existing raw evidence, profiles, app artifacts and historical P03 Git objects remain in place. Manual budget 650 lines: caller160, append-only tests130, task160, each factual prefix25 and Worklog12. Deterministic existing binding and witness companions are reviewed separately.
 
 Observed source closure: three real status controls fail on original code 5b0d285852bd4863e211975d0f2db3ce513a1706fae14398af8f568078118c69. Corrected whole affected and original historical P03/handoff pass22/22, zero fail/skip/todo; actual two-block inverse and literal199-line prefix 403dab819795270edaa99c83800ec859fd566021a65703becec3fae877a38154. Actual npm status 4e194b301fff114f7be8f1a67dc6d79fc1b36342e5af06995d6f382365443ec6 selects the independently read current block and Worklog2026-11-11, 2988 output bytes, no historical spill or state write. Exact source f8ed7c5ef06741a2d2dd919f4765b210adc15a51d6cb9e2b940e57d7aaa03154. Full candidate and merged gates remain mandatory.
+
+Actual candidate faae83ea8f0905c870e57f3da574ab61a8b8c4f2 passes the whole22 and Electron35, without skips or todo. Its current certification predicate succeeds after the missing test binding was appended, but the complete POST_AUDIT gate reports E_POST_EVALUATION_PATH for that later certificate. Original raw f4f769289f95e201c22b778dc0b7ff6f440c4884cc9f5d9371cf792ba8bea816 is retained. Independent unchanged DATA verification ba368dd54751b44fc080bc9a00f46a7c5c79bd6e2baa85c3f893104fe271fc4b resolves the same policy's earliest delivery to f4da1c8: its original certificate is admitted there, while the later changed certificate is excluded as drift. This factual task update and exact regeneration of the existing seven companions must therefore be committed together; no gate, old binding, policy meaning or product byte is weakened. Required software, native carrier, normal CI and exact merged verification remain pending. Corrective preflight 3af69c4211597be9244f1482114bc518df05635f425244cdf5182094070cdcab precedes this update. Production audit has zero findings; full audit retains six moderate development findings, zero high or critical, and its permitted raw exit1.
 
 ## ALLOWLIST
 

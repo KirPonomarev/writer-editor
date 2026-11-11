@@ -6669,7 +6669,7 @@ const R24_INTEROP_BRAIN_STATUS_20261111_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "5b101a2b4117a2e91e5504dbdecef1916a5424c0fdf26ed15a2f0985ba6ee457"
+      "sha256": "7308f9fd66c58e053094e7a9d0813811c5ea0a2713841d47945d0f83205de6f4"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -7497,7 +7497,7 @@ const R24_INTEROP_BRAIN_STATUS_20261111_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-11--brain-status.md",
-      "sha256": "0aa3f7494af3f860a5194e5c6a433a4bdf5451ace2439dabce24ce912e855f5e"
+      "sha256": "bd18b7dbdfb52449658d23efbbb076292aabb55644b0f59726e2a1dfb3586188"
     },
     {
       "path": "scripts/brain.mjs",
@@ -7511,7 +7511,7 @@ const R24_INTEROP_BRAIN_STATUS_20261111_DELTA = Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "7e5bacb9f82d6ad00f9d3ca71d2b8166fafda16713463409a829b85af4958b08"
+      "sha256": "2a3835ca81f5f999785451b2b526783263c00e0c95cd8363c45ffc4b4905fb40"
     }
   ]
 });

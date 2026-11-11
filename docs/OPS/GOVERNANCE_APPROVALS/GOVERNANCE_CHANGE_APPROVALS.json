@@ -33892,6 +33892,34 @@
       "approvedBy": "owner-delegated-codex:YALKEN_BRAIN_STATUS_20261111",
       "approvedAtUtc": "2026-11-11T07:17:01.624Z",
       "rationale": "Standing owner delegation, same brain status delivery. Exact one-path omission demonstrated by785ec166 and prepared underf9d58a35. One current test binding appended; all old literal bytes and failed f4da preserved. Existing finalizer confirms seven unchanged generated outputsded61e65. Only the new certificate and resulting PK1 registry hashes receive technical witnesses. No source/test/cap/gate/policy weakening, no approval env bypass, no product or release authority."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "2a3835ca81f5f999785451b2b526783263c00e0c95cd8363c45ffc4b4905fb40",
+      "approvedBy": "owner-delegated-codex:YALKEN_BRAIN_STATUS_20261111",
+      "approvedAtUtc": "2026-11-11T07:36:11.512Z",
+      "rationale": "Owner standing delegation, sole brain-status delivery. Exact post-evaluation drift ba368dd5, prospective preflight3af69c42 and factual task update; unchanged finalizer three-output regeneration is delivered atomically. Preserve every historical record, failed candidate/raw error, old assertion and gate. Only unique current technical byte witnesses; no product, release, security or approval bypass authority."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "c34823df72f865457943c96c77c41bc8b15abe7835221d7a7e110530476fdd2f",
+      "approvedBy": "owner-delegated-codex:YALKEN_BRAIN_STATUS_20261111",
+      "approvedAtUtc": "2026-11-11T07:36:11.512Z",
+      "rationale": "Owner standing delegation, sole brain-status delivery. Exact post-evaluation drift ba368dd5, prospective preflight3af69c42 and factual task update; unchanged finalizer three-output regeneration is delivered atomically. Preserve every historical record, failed candidate/raw error, old assertion and gate. Only unique current technical byte witnesses; no product, release, security or approval bypass authority."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "7308f9fd66c58e053094e7a9d0813811c5ea0a2713841d47945d0f83205de6f4",
+      "approvedBy": "owner-delegated-codex:YALKEN_BRAIN_STATUS_20261111",
+      "approvedAtUtc": "2026-11-11T07:36:11.512Z",
+      "rationale": "Owner standing delegation, sole brain-status delivery. Exact post-evaluation drift ba368dd5, prospective preflight3af69c42 and factual task update; unchanged finalizer three-output regeneration is delivered atomically. Preserve every historical record, failed candidate/raw error, old assertion and gate. Only unique current technical byte witnesses; no product, release, security or approval bypass authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "a4ca3701803cf70be0ecdf90d9f05df1a69e66e8bea64033b546e48e7be41eef",
+      "approvedBy": "owner-delegated-codex:YALKEN_BRAIN_STATUS_20261111",
+      "approvedAtUtc": "2026-11-11T07:36:11.512Z",
+      "rationale": "Owner standing delegation, sole brain-status delivery. Exact post-evaluation drift ba368dd5, prospective preflight3af69c42 and factual task update; unchanged finalizer three-output regeneration is delivered atomically. Preserve every historical record, failed candidate/raw error, old assertion and gate. Only unique current technical byte witnesses; no product, release, security or approval bypass authority."
     }
 ],
   "evidenceStampIds": [
