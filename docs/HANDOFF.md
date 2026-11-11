@@ -1,3 +1,13 @@
+## CURRENT — Project-language native81 exposed one stale read label; same-chain correction active
+
+Clean source11adf7b8 was rebuilt as native81 ASAR86c277a9, all1488 official ASAR leaves and7252 bundle entries checked. Actual UI project Set/replace, manual ru-RU scene and en-US UTF16 fragment, normal warm0/cold0 and project Clear preserve exact manuscript and saved overrides. Cold manifest8adafe2b is byte-identical to pre-cold. This is partial diagnostic evidence, not native acceptance or release completion.
+
+Blocking native observation5eb1184c: scene Set persisted correctly but project form still displayed inherited de-DE; explicit project Refresh alone changed it to the correct own ru-RU. Actual dossier render synchronizes range form only. Hypothesis: synchronize the existing project form from the same current DTO, without a new query, writer, draft reset or journey rebuild. Original failed native/profile/raw/UI remain preserved; own81 final carrier5b92dbe6 holds162 entries/73 files plus native metadata. Native81 becomes part of the protected63 profiles/34 bundles. Original baseline Save backup completed asynchronously (two added backup files, all original files exact); do not claim the entire invalid-phase roster was unchanged.
+
+Maintained actual-renderer RED96bc7836 genuinely fails1/1 before the fix with inherited de-DE instead of explicit ru-RU. One V16-only synchronization in the existing dossier renderer closes it without a query, journey rebuild, writer or draft/focus reset. Actual bundle build0, expanded66/66 and whole original profile/language56/56 pass with0fail/cancel/skips/todo in2c085590. Independent standard-library native81 oracle85978870 executes10 persistence checks over nine pinned raw phases, including exact cold bytes, retained manual rows, independently hashed records/Kernel receipts and accounted asynchronous Save backups. Native81 still has the original UI defect; a rebuilt actual native after this correction remains required.
+
+Same parent outcome and30 paths; correction declarationf104a880 and clean11ad preflightb231e134 precede this edit. Next: commit the verified source correction, refresh exact bindings/gates, build and observe new actual native, then complete the original full delivery chain. No push/PR yet. Full Mac NOT_READY UNFROZEN all17 UNKNOWN; Word/native PAUSED, Black Box after full Mac. All older factual suffixes retained below.
+
 # CURRENT — Explicit Atlas project language admitted
 
 DOCUMENT_CLASS: FACTUAL_STATUS

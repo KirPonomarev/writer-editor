@@ -22445,6 +22445,7 @@ async function requestAtlasLanguageAnalysis() {
 function renderAtlasCurrentSceneState() {
   if (!(atlasCurrentSceneHost instanceof HTMLElement)) return;
   if (['WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15', 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'].includes(window.__PRODUCT_PROFILE)) syncRangeLanguageAuthorForm(getRangeLanguageAuthorDraft());
+  if (window.__PRODUCT_PROFILE === 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16') syncProjectLanguageAuthorForm(getProjectLanguageAuthorDraft());
   const state = normalizeAtlasCurrentSceneDossier(atlasCurrentSceneState);
   atlasCurrentSceneHost.innerHTML = '';
   atlasCurrentSceneHost.dataset.atlasCurrentSceneStatus = state.state;

@@ -3924,6 +3924,47 @@ function projectLanguageMainRenderer(x, projection) {
   return { ...h, field, button, input, click, unload };
 }
 
+test('project language V16 actual dossier render follows scene Set Clear without rebuilding the journey or losing project draft', async t => {
+  const x = await sceneLanguageMainFixture(t, true), h = projectLanguageMainRenderer(x, await x.query()), c = h.c;
+  await h.input('de-DE'); assertTemporalMainReceipt((await h.click('set')).mainResult, 'atlas.languageTag.set');
+  const source = read('src/renderer/editor.js'), vm = require('node:vm');
+  const actual = name => {
+    const start = source.indexOf('function ' + name + '('), end = source.indexOf('\n}\n', start);
+    assert.ok(start >= 0 && end > start, name); return source.slice(start, end + 2);
+  };
+  c.atlasCurrentSceneHost = c.document.createElement('section'); c.document.body.append(c.atlasCurrentSceneHost);
+  // This finite host receives the already validated actual Main DTO. Analysis is
+  // an unrelated surface; the dossier renderer and both language forms are real.
+  c.normalizeAtlasCurrentSceneDossier = value => value;
+  c.renderAtlasLanguageAnalysis = () => c.document.createElement('section');
+  vm.runInContext(actual('appendAtlasText') + '\n' + actual('renderAtlasCurrentSceneState'), c);
+  const readCurrent = c.refreshAtlasCurrentScene;
+  c.refreshAtlasCurrentScene = async options => {
+    await readCurrent(options);
+    if (!options.isCurrent || options.isCurrent()) c.renderAtlasCurrentSceneState();
+  };
+  await h.input('it-IT'); const field = h.field(); field.focus();
+  const projectDraft = c.getProjectLanguageAuthorDraft(), sceneDraft = c.getSceneLanguageAuthorDraft();
+  assert.match(projectDraft.inheritance.textContent, /наследует язык проекта: de-DE/u);
+  for (const action of ['set', 'clear']) {
+    if (action === 'set') { sceneDraft.input.value = 'ru-RU'; await sceneDraft.input.emit('input'); }
+    const before = authorIdentitySnapshot(x); let index = c.tasks.length;
+    assert.equal(sceneDraft.actions[action].disabled, false); await sceneDraft.actions[action].emit('click');
+    await new Promise(setImmediate);
+    while (index < c.tasks.length) { const pending = c.tasks.slice(index); index = c.tasks.length; await Promise.all(pending); }
+    const response = h.packets.at(-1), command = 'atlas.languageTag.' + action;
+    assertTemporalMainReceipt(response.mainResult, command);
+    assertSceneLanguagePersistence(x, before, authorIdentitySnapshot(x), command, response.request.payload, true);
+    assert.match(projectDraft.inheritance.textContent, action === 'set' ? /У текущей сцены свой язык: ru-RU/u : /наследует язык проекта: de-DE/u);
+    assert.equal(h.field(), field); assert.equal(field.value, 'it-IT'); assert.equal(c.document.activeElement, field);
+    assert.equal(h.unload().defaultPrevented, true, 'query publication preserves unsaved project language');
+  }
+  const packets = h.packets.length; c.currentDocumentId = 'different-current-scene'; c.renderAtlasCurrentSceneState();
+  assert.match(projectDraft.inheritance.textContent, /Язык текущей сцены недоступен/u);
+  assert.equal(h.button('set').disabled, true); assert.equal(h.packets.length, packets);
+  assert.equal(field.value, 'it-IT'); assert.equal(c.document.activeElement, field);
+});
+
 test('project language V16 actual form bootstrap Set replace invalid input cold Clear and focus preserve physical truth', async t => {
   const x = await sceneLanguageMainFixture(t, true); let h = projectLanguageMainRenderer(x, await x.query());
   const field = h.field(); assert.ok(field); field.focus(); assert.equal(h.button('clear').disabled, true);
