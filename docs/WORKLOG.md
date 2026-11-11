@@ -1,9 +1,22 @@
 ## 2026-11-11
 
+- Full baseline07 preserves actual5 failures/2 cancellations, raw0ff5c881/terminal35c4c46f. Causal58/58 139c61b9 isolates incomplete extracted Matrix/ENV contexts and exactly3 missing authorized scope paths. Clean34-path declaration33fe8e90/preflight9f47a543 and E029bcc0c3 precede fixture/map correction; every old assertion, historical path and all native79 product inputs stay protected. Required final gates/delivery pending.
+
+- Closed brain status CLI PR2220 at59ea5d1d; both CI20, merged23 local, independent recorded status and preserved original native carrier. Final reporta459ab37; closure9090c4cc. Only the saved selected-range language journey follows.
+- Active range-language task: original drift/Main denialbe26922d, pre-edit declaration4b4d64bd/preflight and E0256ed2d3. Core/pagination27/27 dd3967d3; real Main/form and historical V14 preservation in whole960,959 pass with only the expected stale DATA editor pin dd61188c. Original checksum and focus failures retained; focused recovery2/2 0b5309aa. Native/final gates/current companions/full normal delivery remain required; all17 UNKNOWN.
+
 - Closed CLI dry-run PR2219 at c6fc6f29; both required CI runs20/20, actual merged22 local and unchanged native-input carrier5c707973. Schema-valid terminal report d2ea3ab5879e5d0c0a27372888761d93e3405834a8f4a69fe50543072a13086e.
 - Started only the accepted brain status correction. Actual unchanged CLI omits the leading recorded Context and shows 2026-10-30 instead of latest Worklog2026-11-10; full original raw 4ff878702d5d23d1554d96cc2c12369697b5a0f1b9cbe9047bb857d5d49ace33. Required gates, historical handoff evidence, profiles and release limits stay protected.
 
 - Fixed the status-only selection. Original controls RED3, whole new and historic P03/handoff22/22 403dab819795270edaa99c83800ec859fd566021a65703becec3fae877a38154, actual package recorded status 4e194b301fff114f7be8f1a67dc6d79fc1b36342e5af06995d6f382365443ec6; no writes or live release claim.
+
+- Same-chain semantic source checkpoint efede8a3; clean fresh preflightf0ed0b87. Actual input hot-path RED b8dc7df2 leads only to identity-based derived rendering cache, without authority or input-time source/history hashing. Current bindings, all final gates, new native and normal delivery are still pending.
+
+- Actual flags bootstrap gap2b2a57e1 closes in the same31-path amendment519ebcd7: real Main URL + full flags script genuinely RED14b33382 then30/30 617f6beb; all15 profiles and near-ID denials checked. Existing V15 schema/70-pin release expectations pass748/748 9746865b under standard policy env. Original wrong alias/wrapper errors retained. New exact final companions/gates/native78/full delivery remain pending.
+
+- Actual native78 first-use refusal atdd8daf2a independently reproduces60ff1a21; regressionRED3d4a02e6 precedes exact empty-sibling initialization repair. Final focused31/31 d718da34. Closed own78a386583a and original59 profiles/30 bundles retained. Superseded RTK/default-15 are partial, never green. Only new native79, fresh final gates and full delivery may close this outcome.
+
+- Actual native79 atba0fe0ee verifies fresh Set/read, invalid no-write, independent scene tag, stale/Clear/history and normal cold, oraclec694e161, full preservationba19ed3e and closed own79d7cb9b15. Only a stale unpackaged current-V2 Main literal remains, cause3b869393/515109a7; preserve original build identity and prove all1497 native inputs unchanged before final gates/delivery.
 
 --- Earlier worklog bytes preserved below ---
 

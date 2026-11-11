@@ -534,8 +534,8 @@ test('full Mac V2 derives the complete original dependency cut while every quali
   assert.equal(cut.fullProductScope.environmentEpochs.id, 'ENV-EPOCH-01'); assert.equal(cut.fullProductScope.environmentEpochs.workItem, 'WP-303_DESIGN_OS_CUSTOMIZATION');
   assert.equal(cut.fullProductScope.workload.metricIds.length, 13); assert.equal(cut.fullProductScope.workload.proxyTimingAccepted, false);
   assert.deepEqual(cut.minimumInterchange.routes.map(row => row.direction), MAC_DIRECTIONS); assert.deepEqual(cut.profiles.reviewCommandExceptions, MAC_REVIEW);
-  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
-  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v14');
+  assert.equal(cut.profiles.runtime.profileId, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'); assert.equal(cut.profiles.runtime.optionalSystemsEnabled, false);
+  assert.equal(cut.profiles.runtime.schemaVersion, 'writer-local-profile.v15');
   assert.deepEqual(cut.profiles.runtime.admittedCommandIds, [
     'manualMap.create', 'manualMap.node.add', 'manualMap.node.update', 'manualMap.node.delete',
     'manualMap.edge.add', 'manualMap.edge.update', 'manualMap.edge.delete',
@@ -631,7 +631,10 @@ test('full Mac V2 protects all ordinary safety interchange review and unknown qu
 
 test('full Mac V2 uses independent current source pins and refuses each omission byte change and joint reseal', async t => {
   const input = await fullMacInputs(), paths = Object.keys(input.api.FIRST_MAC_RELEASE_V2_SOURCE_PINS);
-  assert.equal(paths.length, 69); assert.notDeepEqual(input.cut.sourceBindings, input.api.FIRST_MAC_RELEASE_SOURCE_PINS);
+  assert.equal(paths.length, 70); assert.notDeepEqual(input.cut.sourceBindings, input.api.FIRST_MAC_RELEASE_SOURCE_PINS);
+  const rangeCodec = 'src/core/atlas-language-range-tag-v2.mjs';
+  assert.ok(paths.includes(rangeCodec));
+  assert.equal(input.api.FIRST_MAC_RELEASE_V2_SOURCE_PINS[rangeCodec], macHash(input.sources[rangeCodec]));
   for (const source of paths) await t.test(source, child => {
     const sources = { ...input.sources, [source]: Buffer.concat([input.sources[source], Buffer.from('\n// untrusted source change\n')]) };
     fullMacRefused(child, input, 'byte changed:' + source, () => {}, /^E_FULL_MAC_SOURCE_DRIFT:/u, sources);

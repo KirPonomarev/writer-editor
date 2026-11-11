@@ -94,7 +94,7 @@ test('full ENV actual cancelled/applied map results do not invent authoring pend
     metadataUpdateInFlight: false, treeMutationPending: false, pendingRevisionBusy: false, pendingDocxImportAttempt: null,
     pendingMarkdownImportAttempt: null,
     manualMapCommandDraft: null, manualMapDraftOwnership: 4, renderManualMapWorkbenchState: () => {},
-    sceneLanguageAuthorDrafts: new Map(), ideaMeaningAuthorDrafts: new Map(),
+    sceneLanguageAuthorDrafts: new Map(), ideaMeaningAuthorDrafts: new Map(), rangeLanguageAuthorDrafts: new Map(),
   });
   for (const state of ['draft', 'pending', 'failed', 'unknown']) {
     h.manualMapCommandDraft = { state, payload: { title: 'Keep author draft' } };
@@ -116,6 +116,12 @@ test('full ENV actual cancelled/applied map results do not invent authoring pend
   assert.equal(h.hasFullEnvironmentAuthoringPending(), false, 'read-only preview is not retained authoring');
   h.pendingMarkdownImportAttempt = null;
   assert.equal(h.hasFullEnvironmentAuthoringPending(), false, 'completed Markdown action must release the veto');
+  for (const retained of [{ languageCode: 'en-US' }, { capture: { quoteText: 'Keep author source' } }, { pending: { active: true } }]) {
+    h.rangeLanguageAuthorDrafts.set('current-range', retained);
+    assert.equal(h.hasFullEnvironmentAuthoringPending(), true, 'retained range input must veto environment publication');
+    h.rangeLanguageAuthorDrafts.clear();
+    assert.equal(h.hasFullEnvironmentAuthoringPending(), false, 'explicit range discard releases only its own veto');
+  }
 });
 
 test('full ENV actual Settings refresh invalidates stale projection before await, disables loading and refuses superseded publication', async () => {

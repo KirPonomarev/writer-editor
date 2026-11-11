@@ -1,5 +1,7 @@
 import { createDerivedError, deriveView, hashCanonicalValue } from '../deriveView.mjs';
 import { deriveAtlasMentionIndex } from './deriveAtlasMentionIndex.mjs';
+import { normalizeAtlasLanguageCode, isGraphemeBoundaryAligned } from '../../core/runtime.mjs';
+import { readAtlasRangeLanguageRecord } from '../../core/atlas-language-range-tag-v2.mjs';
 import {
   ATLAS_CURRENT_SCENE_DOSSIER_SCHEMA_VERSION,
   ATLAS_CURRENT_SCENE_SURFACE_MANIFEST_VERSION,
@@ -300,6 +302,41 @@ function sceneLanguageTagDetail(project, projectId, sceneId, readIssue) {
   return { ...detail, state: 'ready', tag: { id: record.id, languageCode: record.languageCode, recordHash: hashCanonicalValue(record) } };
 }
 
+function rangeLanguageTagDetail(project, projectId, sceneId, readIssue, page = {}) {
+  const scene = project?.scenes?.[sceneId];
+  const detail = { state: 'ready', reason: '', manifestRevision: plainString(project?.manifestRevision),
+    sceneRevision: plainString(scene?.sceneRevision), sceneTextHash: typeof scene?.text === 'string' ? hashCanonicalValue(scene.text) : '',
+    offset: page.offset || 0, limit: 10, totalCount: 0, rows: [], history: null };
+  const blocked = reason => ({ ...detail, state: 'unavailable', reason });
+  if (readIssue || !/^sha256:[a-f0-9]{64}$/u.test(detail.manifestRevision) || !/^sha256:[a-f0-9]{64}$/u.test(detail.sceneRevision)) {
+    return blocked(readIssue || 'RANGE_LANGUAGE_REVISION_UNAVAILABLE');
+  }
+  if (!Object.hasOwn(project || {}, 'atlas')) return detail;
+  const atlas = project.atlas;
+  if (!isPlainObject(atlas) || atlas.schemaVersion !== 'atlas.author.v1'
+    || Object.hasOwn(atlas, 'languageTags') && !isPlainObject(atlas.languageTags)) return blocked('RANGE_LANGUAGE_BUCKET_UNAVAILABLE');
+  const ranges = atlas.languageTags?.ranges;
+  if (ranges === undefined) return detail;
+  if (!isPlainObject(ranges)) return blocked('RANGE_LANGUAGE_BUCKET_UNAVAILABLE');
+  const rows = [];
+  for (const [id, record] of Object.entries(ranges).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)) {
+    const read = readAtlasRangeLanguageRecord(record, { normalizeLanguage: normalizeAtlasLanguageCode, isGraphemeBoundaryAligned,
+      scene: record?.sceneId === sceneId ? scene : null });
+    if (!read.ok || read.id !== id || read.projectId !== projectId || read.state === 'invalid-source') return blocked(read.reason || 'RANGE_LANGUAGE_RECORD_UNAVAILABLE');
+    if (read.sceneId !== sceneId) continue;
+    rows.push({ id, state: read.state, recordHash: hashCanonicalValue(record), languageCode: read.head.languageCode,
+      source: read.version === 2 ? read.head.source : null, historyLength: read.historyLength || 0 });
+    if (page.historyTagId === id && read.version === 2) detail.history = { tagId: id, offset: page.historyOffset || 0,
+      limit: 10, totalCount: record.history.length,
+      entries: record.history.slice(page.historyOffset || 0, (page.historyOffset || 0) + 10).map(entry => ({
+        sequence: entry.sequence, operation: entry.operation, projectId: entry.projectId,
+        languageCode: entry.languageCode, source: { ...entry.source }, hash: entry.hash })) };
+  }
+  detail.totalCount = rows.length;
+  detail.rows = rows.slice(detail.offset, detail.offset + detail.limit);
+  return detail;
+}
+
 export function deriveAtlasCurrentSceneDossier(input = {}) {
   const projectId = normalizeString(input?.params?.projectId);
   const sceneId = normalizeString(input?.params?.sceneId);
@@ -338,13 +375,15 @@ export function deriveAtlasCurrentSceneDossier(input = {}) {
     derive: ({ coreState, params, capabilitySnapshot }) => {
       const sceneLanguageTag = sceneLanguageTagDetail(getProject(coreState, params.projectId), params.projectId, params.sceneId,
         plainString(params.atlasAuthorReadIssue));
+      const rangeLanguageTags = rangeLanguageTagDetail(getProject(coreState, params.projectId), params.projectId, params.sceneId,
+        plainString(params.atlasAuthorReadIssue), params.rangeLanguage);
       const indexResult = deriveAtlasMentionIndex({
         coreState,
         params: { projectId: params.projectId },
         capabilitySnapshot,
       });
       if (!indexResult.ok) {
-        return { ...unavailable(params.projectId, params.sceneId, params.sceneTitle, indexResult.error?.reason || 'ATLAS_INDEX_UNAVAILABLE', indexResult.error || null), sceneLanguageTag };
+        return { ...unavailable(params.projectId, params.sceneId, params.sceneTitle, indexResult.error?.reason || 'ATLAS_INDEX_UNAVAILABLE', indexResult.error || null), sceneLanguageTag, rangeLanguageTags };
       }
       return { ...buildDossierFromIndex({
         coreState,
@@ -352,7 +391,7 @@ export function deriveAtlasCurrentSceneDossier(input = {}) {
         sceneId: params.sceneId,
         sceneTitle: params.sceneTitle,
         indexResult,
-      }), sceneLanguageTag };
+      }), sceneLanguageTag, rangeLanguageTags };
     },
   });
 }

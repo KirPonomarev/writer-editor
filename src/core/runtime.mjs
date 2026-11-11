@@ -3,6 +3,7 @@ import { emitCoreDomainEventsForCommandResult } from './domainEvents.mjs';
 import anchorLineageLaw from './anchor-lineage-browser-safe-v1.mjs';
 import atlasAnchorLineage from './atlas-anchor-lineage-v1.mjs';
 import { validateAtlasAssociationPayload, recordAtlasAuthoredAssociation, rebindAtlasAuthoredAssociationsForProjectCopy } from './atlas-authored-associations-v1.mjs';
+import { validateAtlasRangeLanguageIntent, prepareAtlasRangeLanguageRecord, rebindAtlasRangeLanguageTagsForProjectCopy } from './atlas-language-range-tag-v2.mjs';
 export { validateAtlasAssociationPayload };
 export {
   buildSceneOrderChangedEvent,
@@ -1969,6 +1970,8 @@ function normalizeAtlasPromiseState(value) {
 export function rebindAtlasContinuityFactsForProjectCopy(atlas, sourceProjectId, projectId) {
   try { atlas = rebindAtlasAuthoredAssociationsForProjectCopy(atlas, sourceProjectId, projectId); }
   catch (error) { throw typedError('E_PROJECT_ARCHIVE_COPY_AUTHOR_SCOPE_INVALID', 'project.archive.copy', error.code || 'COPY_ASSOCIATION_INVALID'); }
+  try { atlas = rebindAtlasRangeLanguageTagsForProjectCopy(atlas, sourceProjectId, projectId, normalizeAtlasLanguageCode); }
+  catch (error) { throw typedError('E_PROJECT_ARCHIVE_COPY_AUTHOR_SCOPE_INVALID', 'project.archive.copy', error.code || 'COPY_RANGE_LANGUAGE_INVALID'); }
   if (!isPlainObject(atlas) || (!Object.hasOwn(atlas, 'continuityFactLedgers')
     && !Object.hasOwn(atlas, 'sceneTemporalAnchors'))) return atlas;
   const reject = reason => { throw typedError('E_PROJECT_ARCHIVE_COPY_AUTHOR_SCOPE_INVALID', 'project.archive.copy', reason); };
@@ -2264,7 +2267,7 @@ function validBcp47Structure(raw) {
     : { ok: false };
 }
 
-function normalizeAtlasLanguageCode(value) {
+export function normalizeAtlasLanguageCode(value) {
   const raw = trimString(value);
   if (!raw) {
     return {
@@ -2436,7 +2439,42 @@ function rangeLanguageTagOverlaps(left, right) {
     && Number(left.endOffset) > Number(right.startOffset);
 }
 
+function applyAtlasRangeLanguageIntent(state, payload, commandId) {
+  try {
+    validateAtlasRangeLanguageIntent(commandId, payload);
+    const project = Object.hasOwn(state.data.projects, payload.projectId) ? state.data.projects[payload.projectId] : null;
+    if (!project) return fail(state, 'E_CORE_PROJECT_NOT_FOUND', commandId, 'PROJECT_NOT_FOUND');
+    const language = commandId === 'atlas.languageTag.set' ? normalizeAtlasLanguageCode(payload.languageCode) : null;
+    if (language && !language.ok) return fail(state, 'E_ATLAS_LANGUAGE_TAG_BCP47_INVALID', commandId, language.reason);
+    const atlas = project.atlas;
+    if (atlas !== undefined && (!isPlainObject(atlas) || atlas.schemaVersion !== 'atlas.author.v1')) {
+      return fail(state, 'E_ATLAS_RANGE_LANGUAGE_RECORD_INVALID', commandId, 'ATLAS_AUTHOR_UNAVAILABLE');
+    }
+    const tags = atlas?.languageTags;
+    if (tags !== undefined && !isPlainObject(tags)) return fail(state, 'E_ATLAS_RANGE_LANGUAGE_RECORD_INVALID', commandId, 'LANGUAGE_TAGS_UNAVAILABLE');
+    const records = tags?.ranges === undefined ? {} : tags.ranges;
+    const record = prepareAtlasRangeLanguageRecord({ commandId, payload, scene: project.scenes?.[payload.sceneId],
+      records, sequence: state.data.lastCommandId + 1, languageCode: language?.languageCode,
+      normalizeLanguage: normalizeAtlasLanguageCode, isGraphemeBoundaryAligned });
+    const next = cloneJson(state), target = next.data.projects[payload.projectId];
+    // Preserve every unrelated/unknown author field. V2 does not normalize
+    // imported buckets into an apparently empty writable state.
+    if (!target.atlas) target.atlas = createEmptyAtlasAuthorData();
+    if (!target.atlas.languageTags) target.atlas.languageTags = createEmptyAtlasLanguageTags();
+    if (!target.atlas.languageTags.ranges) target.atlas.languageTags.ranges = {};
+    target.atlas.languageTags.ranges[record.id] = record;
+    next.data.lastCommandId += 1;
+    return ok(next);
+  } catch (error) {
+    if (typeof error?.code !== 'string' || !/^E_ATLAS_/u.test(error.code)) throw error;
+    return fail(state, error.code, commandId, error.code);
+  }
+}
+
 function applyAtlasLanguageTagSet(state, payloadInput) {
+  if (isPlainObject(payloadInput) && Object.hasOwn(payloadInput, 'rangeIntentVersion')) {
+    return applyAtlasRangeLanguageIntent(state, payloadInput, 'atlas.languageTag.set');
+  }
   const payload = normalizeAtlasLanguageTagPayload(payloadInput);
   const validation = validateAtlasLanguageTagTarget(state, payload, 'atlas.languageTag.set');
   if (!validation.ok) return validation;
@@ -2511,6 +2549,9 @@ function applyAtlasLanguageTagSet(state, payloadInput) {
 }
 
 function applyAtlasLanguageTagClear(state, payloadInput) {
+  if (isPlainObject(payloadInput) && Object.hasOwn(payloadInput, 'rangeIntentVersion')) {
+    return applyAtlasRangeLanguageIntent(state, payloadInput, 'atlas.languageTag.clear');
+  }
   const payload = normalizeAtlasLanguageTagPayload(payloadInput);
   const validation = validateAtlasLanguageTagTarget(state, payload, 'atlas.languageTag.clear');
   if (!validation.ok) return validation;
