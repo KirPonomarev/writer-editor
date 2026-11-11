@@ -997,7 +997,9 @@
     "docs/tasks/2026-11-11--brain-status.md",
     "scripts/brain.mjs",
     "docs/tasks/2026-11-11--atlas-range-language.md",
-    "src/core/atlas-language-range-tag-v2.mjs"
+    "src/core/atlas-language-range-tag-v2.mjs",
+    "src/derived/atlas/deriveAtlasMixedLanguageRouter.mjs",
+    "test/contracts/yalken-atlas-v5-e07-c03-language-tag-author-truth-mixed-range-router.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -4587,6 +4589,14 @@
       {
         "path": "src/core/atlas-language-range-tag-v2.mjs",
         "sha256": "6b9ce27d7e28fac16a82b137db042aa8b4ae0b4370da0cf71d05b05a06370393"
+      },
+      {
+        "path": "src/derived/atlas/deriveAtlasMixedLanguageRouter.mjs",
+        "sha256": "c285aabbce803eec9fdb01baa09242b85742a7ffb50564577de5d5458a6f9895"
+      },
+      {
+        "path": "test/contracts/yalken-atlas-v5-e07-c03-language-tag-author-truth-mixed-range-router.contract.test.js",
+        "sha256": "e1e10de0ac8ca6b2d5e6cb89b7e82fbb3c0f528ddbddc06fddada2818561f03a"
       }
     ],
     "followupRepair": {

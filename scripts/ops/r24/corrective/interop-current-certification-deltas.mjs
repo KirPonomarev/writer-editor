@@ -7610,7 +7610,7 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "a4429ba3c71c6ca8f82f92b8d0e32283c1f1c03ccb2c57a4ad29a192bd4f09e9"
+      "sha256": "096220177684296ecb5e4041eb3dc95ed854771051c149516d088aa919331833"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -8463,12 +8463,20 @@ const R24_INTEROP_ATLAS_RANGE_LANGUAGE_20261111_DELTA = Object.freeze({
     {
       "path": "src/renderer/styles.css",
       "sha256": "5f9375ae227a6b837a34b15c4c647c74ca6286e66d55ddecb502ba35a526ff5a"
+    },
+    {
+      "path": "src/derived/atlas/deriveAtlasMixedLanguageRouter.mjs",
+      "sha256": "c285aabbce803eec9fdb01baa09242b85742a7ffb50564577de5d5458a6f9895"
+    },
+    {
+      "path": "test/contracts/yalken-atlas-v5-e07-c03-language-tag-author-truth-mixed-range-router.contract.test.js",
+      "sha256": "e1e10de0ac8ca6b2d5e6cb89b7e82fbb3c0f528ddbddc06fddada2818561f03a"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "8b9d7dfe333614904f95310964ffb3a4980fc3b5bbeab10edfee00b81a77c4c9"
+      "sha256": "037bd8a7fffd071e37518122d18c7c33e270c64502b3d51509789fc163d794e3"
     }
   ]
 });
