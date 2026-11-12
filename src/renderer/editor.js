@@ -27093,6 +27093,10 @@ function handleUiAction(action) {
     case 'replace':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
       return true;
+    case 'create-project':
+      openProjectLibraryModal();
+      projectLibraryNameInput?.focus();
+      return true;
     case 'new':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_NEW);
       return true;

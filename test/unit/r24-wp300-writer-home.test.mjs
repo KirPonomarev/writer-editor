@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 import {
   buildWriterHomeProjection,
@@ -93,11 +94,11 @@ test('WP300 writer home actions remain bounded to existing UI command routes', (
 
   assert.deepEqual(
     projection.actions.map((action) => action.action),
-    ['open', 'new', 'search', 'open-current-scene'],
+    ['open', 'create-project', 'search', 'open-current-scene'],
   );
   assert.equal(projection.actions.every((action) => action.commandBoundary === 'EXISTING_UI_ACTION_REVALIDATED_BY_COMMAND_KERNEL'), true);
   assert.equal(projection.actions.find((action) => action.action === 'open').enabled, true);
-  assert.equal(projection.actions.find((action) => action.action === 'new').enabled, true);
+  assert.equal(projection.actions.find((action) => action.action === 'create-project').enabled, true);
   assert.equal(projection.actions.find((action) => action.action === 'search').enabled, false);
   assert.equal(projection.actions.find((action) => action.action === 'open-current-scene').enabled, false);
 });
@@ -170,4 +171,86 @@ test('WP300 browser-safe anchor diagnosis preserves T1 stale-witness semantics f
   );
   assert.equal(lost.status, browserSafeAnchorLineage.ANCHOR_STATUS.LOST);
   assert.equal(lost.reason, 'QUOTE_NOT_FOUND');
+});
+
+
+function homeCreationHandlerHost() {
+  const source = read('src/renderer/editor.js');
+  const calls = { queries: 0, commands: [], focus: 0, treeReads: 0, status: [] };
+  const authoring = Object.freeze({ projectId: 'old-project', documentId: 'old-scene', text: '😀 é unsaved manuscript', generation: 7 });
+  const host = {
+    EXTRA_COMMAND_IDS: { PROJECT_NEW: 'cmd.project.new', PROJECT_LIFECYCLE_CREATE: 'cmd.project.lifecycle.create' },
+    projectLibraryModal: { hidden: true },
+    projectLibraryNameInput: { value: '', focus() { calls.focus += 1; } },
+    projectLibraryCreateButton: { disabled: false },
+    refreshProjectLibraryModal: async () => { calls.queries += 1; },
+    dispatchUiCommand: async (id, payload) => { calls.commands.push({ id, payload }); return host.result; },
+    unwrapBridgeResult: result => result?.value || result,
+    setProjectLibraryStatus: text => { calls.status.push(text); },
+    updateStatusText: text => { calls.status.push(text); },
+    loadTree: async () => { calls.treeReads += 1; },
+    result: { ok: true },
+    authoring,
+  };
+  vm.createContext(host);
+  for (const [start, end] of [
+    ['function openSimpleModal(modal) {', 'function filterCommandPaletteEntries('],
+    ['function openProjectLibraryModal() {', 'async function openSelectedProjectFromLibraryModal() {'],
+    ['function handleUiAction(action) {', 'function triggerLeftToolbarAction(action) {'],
+  ]) {
+    const a = source.indexOf(start), b = source.indexOf(end, a + start.length);
+    assert.ok(a >= 0 && b > a); assert.equal(source.indexOf(start, a + 1), -1);
+    vm.runInContext(source.slice(a, b), host);
+  }
+  return { host, calls, authoring };
+}
+
+test('Home Create opens the existing named-project form without resetting or dispatching a product mutation', () => {
+  const { host, calls, authoring } = homeCreationHandlerHost();
+  const action = buildWriterHomeProjection({ projectId: 'old-project' }).actions.find(action => action.id === 'create-project');
+  assert.equal(host.handleUiAction(action.action), true);
+  assert.equal(host.projectLibraryModal.hidden, false, 'the promised project form must actually open');
+  assert.equal(calls.queries, 1);
+  assert.equal(calls.focus, 1, 'Home activation focuses the existing labelled name input');
+  assert.deepEqual(calls.commands, [], 'opening a form must not reset a document or create a project');
+  assert.equal(host.authoring, authoring);
+  assert.equal(host.authoring.text, '😀 é unsaved manuscript');
+  host.closeSimpleModal(host.projectLibraryModal);
+  assert.equal(host.projectLibraryModal.hidden, true);
+  assert.deepEqual(calls.commands, []);
+  assert.equal(host.handleUiAction('new'), true);
+  assert.deepEqual(calls.commands, [{ id: 'cmd.project.new', payload: undefined }], 'legacy New document keeps its current command meaning');
+  assert.equal(host.handleUiAction('unknown-home-action'), false);
+});
+
+test('Existing Home create form keeps empty/denied drafts and only explicit valid submit invokes the canonical lifecycle', async () => {
+  const { host, calls, authoring } = homeCreationHandlerHost();
+  host.openProjectLibraryModal();
+  host.projectLibraryNameInput.value = '   ';
+  await host.createProjectFromLibraryModal();
+  assert.deepEqual(calls.commands, []);
+  assert.equal(calls.focus, 1);
+  assert.equal(host.projectLibraryNameInput.value, '   ');
+  assert.equal(host.projectLibraryModal.hidden, false);
+  host.result = { ok: false, value: { reason: 'CAPABILITY_DENIED' } };
+  host.projectLibraryNameInput.value = '  Новый проект 😀  ';
+  await host.createProjectFromLibraryModal();
+  assert.equal(calls.commands.length, 1);
+  assert.equal(calls.commands[0].id, 'cmd.project.lifecycle.create');
+  assert.equal(calls.commands[0].payload.projectName, 'Новый проект 😀');
+  assert.equal(host.projectLibraryNameInput.value, '  Новый проект 😀  ');
+  assert.equal(host.projectLibraryModal.hidden, false);
+  assert.equal(host.projectLibraryCreateButton.disabled, false);
+  assert.equal(calls.treeReads, 0);
+  assert.ok(calls.status.includes('CAPABILITY_DENIED'));
+  host.result = { ok: true };
+  await host.createProjectFromLibraryModal();
+  assert.equal(calls.commands.length, 2);
+  assert.equal(calls.commands[1].id, 'cmd.project.lifecycle.create');
+  assert.equal(calls.commands[1].payload.projectName, 'Новый проект 😀');
+  assert.equal(host.projectLibraryNameInput.value, '');
+  assert.equal(host.projectLibraryModal.hidden, true);
+  assert.equal(host.projectLibraryCreateButton.disabled, false);
+  assert.equal(calls.treeReads, 1);
+  assert.equal(host.authoring, authoring);
 });

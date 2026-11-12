@@ -1,3 +1,19 @@
+## CURRENT — Home Create binding source observed; full delivery pending
+
+YALKEN_WRITER_HOME_CREATE_20261112 at binding09c: maintained original-source RED0b0cf7a0 fails only the promised form-open assertion (6/7pass). One Home presentation action literal and a four-line existing handler case route to the existing library/name focus; cmd.project.new remains exact. Generated bundle and full Home7/7,0skip/todo/cancel pass in f1ed54e1. Independent inverse3efa41b5 reconstructs every original production byte and original five test bodies except two current action expectations; two meaningful empty/denied/explicit-submit controls were added.
+
+Expanded six-file source run1f0974d8 is34/40pass,6fail,0skip/todo/cancel. All six unchanged historical C6B generated-evidence checks refuse before artifact construction on E_ELECTRON_ARCHIVE_AMBIGUOUS:0 for fixed old Electron40.9.2 archive; original helpers/tests/styles/HTML/Tiptap/Home surface remain exact. No complete40/C6B PASS, guard relaxation, substitute archive or current-product acceptance is claimed. Required software/official CI/current native remain pending. Initial task E0 formatting refusal is preserved; only its NO_MIGRATION prose marker changed before E0 success10caabb5.
+
+Same19-path chain, no push/PR/native candidate yet. Preserve68 known closed profiles38 bundles and all raw/errors. Full Mac NOT_READY UNFROZEN all17UNKNOWN; Word/native PAUSED, Black Box after full Mac. Next: exact metadata/witness completion and all current mandatory software/native/full normal delivery/merged proofs.
+
+## CURRENT — Home Create cause independently observed; bounded binding repair admitted
+
+Project-language PR2222 is CLOSED at merged09c4940b/tree18d955c5, candidatefa2a4847; final605824d8/closureb480a032,20 CI jobs each and actual rebuilt merged native85/independent raw9 oracle84bbe690. Previous pending checkpoints below remain historical.
+
+Fresh new-scope literal sourcea74af9a2 and own86 ordinary AX/focused Enter show Home Create invokes the empty-document reset and leaves all five original project files exact; existing library control alone creates distinct CONTROL86/scene. Independent standard-library8-check oracleb50c66b0 and ten AX/screenshot carriersd05e30a0, normal Quit0/4bbc5700 and closed124/56 profilec41baee6 preserve evidence. After49b2b081 physically preserves10122 sources/67 earlier profiles38 bundles; now68 known closed profiles. Coordinate activation delivery staysUNKNOWN. No source acceptance or full Mac qualification follows.
+
+Declaration46b98f5a/preflightf4dae38e/pre-editae7974d9 admit one19-path existing Home intent/library-name-focus binding repair; maintain original cmd.project.new semantics and all no-loss/capability guards. Task E0 then negative-first source proof, exact metadata/current native/software/full protected delivery and merged rebuild remain required. No source fix yet; sole executor, no agents/chats/timers/independent improvement. Full Mac NOT_READY UNFROZEN all17UNKNOWN, Word/native PAUSED, Black Box after full Mac.
+
 ## CURRENT — Remaining current-host expectations corrected after complete baseline
 
 Actual final-source native83 at clean1403f4d5 rebuilt successfully (ed4b6eef), all1497 inputs/1488 official ASAR leaves and7252 complete bundle entries equal verified82. Independent nine-check keyboard/cold oraclecb3bb3b9 covers invalid retained input/no-write, Enter Set, exact Unicode text and cold manifest, Clear and append-only canonical Kernel receipts. Warm0/cold0; own83 closed149entries/65files0f24c314 is preserved. All64 older profiles/35 bundles matched before/after build. Compact seven-commit Git recovery bundle8f714e28 on T777 requires exact prerequisitee04f8cbd; no original source/profile/history/error removed.

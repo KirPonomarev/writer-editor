@@ -11,7 +11,7 @@ export const WRITER_HOME_ACTIONS = Object.freeze([
   Object.freeze({
     id: 'create-project',
     label: 'Новый',
-    action: 'new',
+    action: 'create-project',
     description: 'Создать новый локальный проект через Command Kernel',
     enabledWhen: 'always',
   }),

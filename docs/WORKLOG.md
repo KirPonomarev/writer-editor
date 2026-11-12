@@ -1,3 +1,9 @@
+SOURCE_CHECKPOINT_01: Actual maintained RED6/7 -> Home GREEN7/7; exact production inverse preserved. Expanded34/40 retains6 historical fixed-archive C6B environment refusals; no complete PASS. Current metadata/full software/native/delivery pending.
+
+## 2026-11-12 — Home Create existing-form binding
+
+YALKEN_WRITER_HOME_CREATE_20261112: old actual native86/source/raw independently isolate reset-versus-project-create misbinding; all old state preserved,68 known closed profiles38 bundles. Declaration46b98f5a/preflightf4dae38e admit19 paths; task E0 and maintained RED precede semantic fix. Previous project-language PR2222 fully CLOSED at09c,605824d8/b480a032. Full Mac17UNKNOWN; no release claim.
+
 ## 2026-11-11
 
 - Full baseline07 preserves actual5 failures/2 cancellations, raw0ff5c881/terminal35c4c46f. Causal58/58 139c61b9 isolates incomplete extracted Matrix/ENV contexts and exactly3 missing authorized scope paths. Clean34-path declaration33fe8e90/preflight9f47a543 and E029bcc0c3 precede fixture/map correction; every old assertion, historical path and all native79 product inputs stay protected. Required final gates/delivery pending.
