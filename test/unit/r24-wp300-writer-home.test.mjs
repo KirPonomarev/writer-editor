@@ -363,3 +363,121 @@ test('Every existing project-library opener focuses the labelled name before loc
   assert.equal(host.authoring, authoring);
   assert.deepEqual(calls.commands, []);
 });
+
+
+function activeSceneReturnHost({ view = 'notes', tiptap = true, documentId = 'active-scene', title = 'Точная <сцена> é', editorAvailable = true, flow = false } = {}) {
+  const source = read('src/renderer/editor.js');
+  const calls = { focus: [], mode: [], status: [], flow: 0, proof: 0, productWrites: 0 };
+  const text = '😀 é unsaved manuscript\nВторая строка';
+  let selection = [3, 9];
+  const frames = [];
+  const state = { notes: view === 'notes', search: view === 'search', map: view === 'map', authoring: false };
+  const classes = (initial = []) => {
+    const values = new Set(initial);
+    return { add: (...names) => names.forEach(name => values.add(name)), remove: (...names) => names.forEach(name => values.delete(name)), contains: name => values.has(name) };
+  };
+  const mainContent = { classList: classes([`main-content--${view}`]), scrollTop: 74 };
+  const editorPanel = { classList: classes() }, home = { classList: classes() }, empty = { classList: classes() };
+  const editor = editorAvailable ? { scrollTop: 88, focus: () => calls.focus.push('current') } : null;
+  const undo = Object.freeze(['earlier authored edit', '😀 é edit']);
+  const noProductWrite = () => { calls.productWrites += 1; throw new Error('Plain Scene return must not mutate or reload authoring state'); };
+  const host = {
+    flowModeState: { active: flow }, currentProjectId: 'active-project', currentDocumentId: documentId,
+    currentDocumentTitle: title, currentMode: 'write', localDirty: true, sourceRevision: 31, sourceGeneration: 17, writerEpoch: 4,
+    isTiptapMode: tiptap, editor, editorPanel, mainContent, writerHomeSurface: home, emptyState: empty,
+    requestAnimationFrame: callback => frames.push(callback),
+    hideManualMapPlanWorkspace: () => { state.map = false; mainContent.classList.remove('main-content--map'); },
+    hideNotesWorkspace: () => { state.notes = false; mainContent.classList.remove('main-content--notes'); },
+    hideProjectSearchWorkspace: () => { state.search = false; mainContent.classList.remove('main-content--search'); },
+    hideWriterHomeSurface: () => home.classList.add('hidden'),
+    showAuthoringSurfacesSurface: () => { state.authoring = true; }, updateMetaVisibility: () => {},
+    getActiveDocumentTitleStorageKey: projectId => `activeDocumentTitle:${projectId}`,
+    localStorage: { setItem: () => {} }, scheduleCentralSheetStripProofRefresh: () => { calls.proof += 1; },
+    updateStatusText: status => calls.status.push(status), applyMode: mode => calls.mode.push(mode),
+    getPlainText: () => text, setSelectionRange: (start, end) => { selection = [start, end]; },
+    focusTiptapSurface: position => { calls.focus.push(position); return { performed: true, position }; },
+    jumpToFlowProjectionSourceAtCaret: async () => { calls.flow += 1; return true; },
+    setPlainText: noProductWrite, setTiptapDocumentSnapshot: noProductWrite, loadTree: noProductWrite,
+    dispatchUiCommand: noProductWrite, openDocumentNode: noProductWrite, markAsModified: noProductWrite,
+  };
+  vm.createContext(host);
+  for (const [start, end] of [
+    ['function positionCaretForCurrentText() {', 'function normalizeProjectId(value) {'],
+    ['function showEditorPanelFor(', 'function collapseSelection() {'],
+    ['function handleUiAction(action) {', 'function triggerLeftToolbarAction(action) {'],
+  ]) {
+    const a = source.indexOf(start), b = source.indexOf(end, a + start.length);
+    assert.ok(a >= 0 && b > a); assert.equal(source.indexOf(start, a + 1), -1);
+    vm.runInContext(source.slice(a, b), host);
+  }
+  const snapshot = () => ({ text, selection: [...selection], undo: [...undo], projectId: host.currentProjectId,
+    documentId: host.currentDocumentId, dirty: host.localDirty, revision: host.sourceRevision,
+    generation: host.sourceGeneration, writerEpoch: host.writerEpoch });
+  const flush = () => { while (frames.length) frames.shift()(); };
+  return { host, calls, state, mainContent, editorPanel, home, empty, snapshot, flush };
+}
+
+test('Existing Scene action returns the active manuscript and focus without losing unsaved context', () => {
+  for (const tiptap of [true, false]) {
+    for (const view of ['notes', 'search', 'map']) {
+      const h = activeSceneReturnHost({ view, tiptap }), before = h.snapshot();
+      const action = buildWriterHomeProjection({ projectId: before.projectId, activeDocumentId: before.documentId })
+        .actions.find(item => item.id === 'open-current-scene');
+      assert.equal(action.enabled, true);
+      assert.equal(h.host.handleUiAction(action.action), true); h.flush();
+      assert.equal(h.editorPanel.classList.contains('active'), true, `${view}: promised manuscript must be visible`);
+      assert.equal(h.mainContent.classList.contains('main-content--editor'), true);
+      assert.equal(h.home.classList.contains('hidden'), true); assert.equal(h.empty.classList.contains('hidden'), true);
+      assert.deepEqual(h.state, { notes: false, search: false, map: false, authoring: true });
+      assert.deepEqual(h.calls.focus, ['current'], 'return keyboard focus once without moving the selection');
+      assert.deepEqual(h.snapshot(), before, 'text selection undo dirty identity and revisions remain exact');
+      assert.equal(h.host.currentDocumentTitle, 'Точная <сцена> é');
+      assert.equal(h.mainContent.scrollTop, 74); assert.equal(h.host.editor.scrollTop, 88);
+      assert.equal(h.calls.productWrites, 0); assert.equal(h.calls.flow, 0); assert.deepEqual(h.calls.mode, []);
+    }
+  }
+});
+
+test('Scene return refuses missing active identity or editor without a false opened acknowledgement', () => {
+  for (const config of [{ documentId: '', title: '' }, { documentId: '', title: 'Stale title alone' }, { editorAvailable: false }]) {
+    const h = activeSceneReturnHost(config), before = h.snapshot();
+    assert.equal(h.host.handleUiAction('open-current-scene'), true); h.flush();
+    assert.equal(h.editorPanel.classList.contains('active'), false);
+    assert.deepEqual(h.calls.focus, []); assert.equal(h.calls.productWrites, 0); assert.equal(h.calls.flow, 0);
+    assert.deepEqual(h.snapshot(), before); assert.equal(h.state.notes, true);
+    assert.ok(h.calls.status.length > 0, 'missing context must have an honest explanation');
+    assert.equal(h.calls.status.includes('Открыта текущая сцена'), false, 'a refused navigation cannot claim that it opened');
+  }
+});
+
+test('Scene return keeps the existing Flow source navigation as the sole route', () => {
+  const h = activeSceneReturnHost({ flow: true }), before = h.snapshot();
+  assert.equal(h.host.handleUiAction('open-current-scene'), true); h.flush();
+  assert.equal(h.calls.flow, 1); assert.deepEqual(h.calls.focus, []);
+  assert.equal(h.editorPanel.classList.contains('active'), false);
+  assert.equal(h.calls.productWrites, 0); assert.deepEqual(h.snapshot(), before);
+});
+
+test('Existing Write caller retains its original editor helper defaults and legacy caret contract', () => {
+  for (const tiptap of [true, false]) {
+    const h = activeSceneReturnHost({ tiptap }), before = h.snapshot();
+    assert.equal(h.host.handleUiAction('open-authoring-write'), true); h.flush();
+    assert.equal(h.editorPanel.classList.contains('active'), true, 'positive control must execute the actual reveal helper');
+    assert.deepEqual(h.calls.mode, ['write']); assert.equal(h.calls.productWrites, 0);
+    assert.equal(h.mainContent.scrollTop, 0); assert.equal(h.host.editor.scrollTop, 0);
+    const expected = tiptap ? before : { ...before, selection: [before.text.length, before.text.length] };
+    assert.deepEqual(h.snapshot(), expected, 'ordinary callers keep exactly their prior caret behavior');
+    assert.deepEqual(h.calls.focus, tiptap ? [] : ['current']);
+  }
+});
+
+test('Repeated Scene return and absent title preserve active identity, selection and undo', () => {
+  const h = activeSceneReturnHost({ title: '' }), before = h.snapshot();
+  for (let i = 0; i < 3; i += 1) {
+    assert.equal(h.host.handleUiAction('open-current-scene'), true); h.flush();
+    assert.equal(h.editorPanel.classList.contains('active'), true);
+    assert.deepEqual(h.snapshot(), before); assert.equal(h.calls.productWrites, 0);
+  }
+  assert.deepEqual(h.calls.focus, ['current', 'current', 'current']);
+  assert.equal(h.host.currentDocumentId, before.documentId);
+});

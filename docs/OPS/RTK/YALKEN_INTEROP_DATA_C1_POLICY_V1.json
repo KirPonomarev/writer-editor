@@ -1004,7 +1004,8 @@
     "test/unit/atlas-project-language.test.js",
     "docs/tasks/2026-11-12--writer-home-create.md",
     "src/core/writer-home-projection-v1.mjs",
-    "test/unit/r24-wp300-writer-home.test.mjs"
+    "test/unit/r24-wp300-writer-home.test.mjs",
+    "docs/tasks/2026-11-12--writer-active-scene-return.md"
   ],
   "protectedFiles": [
     {
@@ -1245,7 +1246,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "aa2a7bb927febe58930f62ee5f27ad56f354d4701d59ef7b534f24fdda17b936"
+        "sha256": "ec46ef8c48fa2bff8c32a7e09d78f4b23a55f4b2ef7f74e793f0dfbd93b92c14"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1409,7 +1410,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "cc7c5f51044dd670777051b7d63807bebc44ec6dad5e0f9e9f50f8503602ec54"
+        "sha256": "70cc5fc979d6994873a2769157b8989c82b14094b9679737d08e030f717329c1"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2925,15 +2926,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "9151cf2cff2a7e70fefe35ee44f295f24cbcb54bf5a2723b32613f4fba9446c1"
+        "sha256": "bc21d755220b1c166e9d69f3d5fbbf03b05b9596092faa919e34e42f0f24712c"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "aa3387c424f3bba071db7fdc1b4859356a04c292f8981f8b14ab7d94fe4cfd43"
+        "sha256": "1ede54f22d6d8674aafb0e90e0044ceb451cd0cda868bbfd6c528fc4cd912e53"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "3d5212b72ef572fea47f3ce6cde6e68956645d04ec20dddd0bb1a3e364d6d91f"
+        "sha256": "331f754b192600028ff91aee383516926984b81c90d9afd1c4b52ccd1fce3881"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3473,7 +3474,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "12e7b8bae05809777add68085529de4575ccbff6d809516bb6a3c3d08d2f2260"
+        "sha256": "e12dbb5b12c8008510c50a86caec40a725cba035788cf79ffeda9c9934321aad"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3605,7 +3606,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "be4b4b03dd7a8e2a3d9c3ca0a5985cc60938a338e316870b169cfc3492eba8a5"
+        "sha256": "241b50c90e5abb6ddb103dc18c6999d803d2ae2471a1e3072e0c7ae6e3a4cd60"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4621,7 +4622,11 @@
       },
       {
         "path": "test/unit/r24-wp300-writer-home.test.mjs",
-        "sha256": "9e2b5686933dc0bb163462aba8eba63124150a9f204ab00d3ee587051d39a534"
+        "sha256": "3868f0c729981bc291f8fc1fd10eeb7881d942a58f5df8fad91c9270a7cf28fb"
+      },
+      {
+        "path": "docs/tasks/2026-11-12--writer-active-scene-return.md",
+        "sha256": "6c166ac58822dadae7a4f51473f07588d9cd1d776be491a8b0b938d6144b06ea"
       }
     ],
     "followupRepair": {

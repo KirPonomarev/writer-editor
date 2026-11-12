@@ -610,7 +610,8 @@
       "test/unit/atlas-project-language.test.js",
       "docs/tasks/2026-11-12--writer-home-create.md",
       "src/core/writer-home-projection-v1.mjs",
-      "test/unit/r24-wp300-writer-home.test.mjs"
+      "test/unit/r24-wp300-writer-home.test.mjs",
+      "docs/tasks/2026-11-12--writer-active-scene-return.md"
     ]
   },
   "allowPrefixByPhase": {
