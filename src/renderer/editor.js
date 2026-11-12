@@ -592,6 +592,7 @@ const projectLibraryRestoreButton = document.querySelector('[data-project-librar
 const projectLibraryBackupButton = document.querySelector('[data-project-library-backup]');
 const projectLibraryIntegrityButton = document.querySelector('[data-project-library-integrity]');
 const projectLibraryCloseButtons = Array.from(document.querySelectorAll('[data-project-library-close]'));
+let projectLibraryReturnFocusTarget = null;
 const docxImportPreviewModal = document.querySelector('[data-docx-import-preview-modal]');
 const docxImportPreviewMessage = document.querySelector('[data-docx-import-preview-message]');
 const docxImportPreviewLoss = document.querySelector('[data-docx-import-preview-loss]');
@@ -11505,8 +11506,47 @@ async function refreshProjectLibraryModal() {
 }
 
 function openProjectLibraryModal() {
+  projectLibraryReturnFocusTarget = document.activeElement;
   openSimpleModal(projectLibraryModal);
+  projectLibraryNameInput?.focus();
   void refreshProjectLibraryModal();
+}
+
+function closeProjectLibraryModal() {
+  closeSimpleModal(projectLibraryModal);
+  const previousFocus = projectLibraryReturnFocusTarget;
+  projectLibraryReturnFocusTarget = null;
+  if (previousFocus instanceof HTMLElement && previousFocus.isConnected && !previousFocus.hidden
+    && !previousFocus.disabled && previousFocus.getClientRects().length > 0) {
+    previousFocus.focus({ preventScroll: true });
+  }
+}
+
+function handleProjectLibraryKeydown(event) {
+  if (!projectLibraryModal || projectLibraryModal.hidden || event.isComposing
+    || event.ctrlKey || event.altKey || event.metaKey) return;
+  if (event.key === 'Escape') {
+    if (event.shiftKey) return;
+    event.preventDefault();
+    event.stopPropagation();
+    closeProjectLibraryModal();
+    return;
+  }
+  if (event.key !== 'Tab') return;
+  const focusable = Array.from(projectLibraryModal.querySelectorAll('button, input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+    .filter(element => !element.hidden && !element.disabled && element.getClientRects().length > 0);
+  if (!focusable.length) {
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+  const first = focusable[0], last = focusable[focusable.length - 1];
+  if (event.shiftKey ? document.activeElement === first || !projectLibraryModal.contains(document.activeElement)
+    : document.activeElement === last || !projectLibraryModal.contains(document.activeElement)) {
+    event.preventDefault();
+    (event.shiftKey ? last : first).focus({ preventScroll: true });
+  }
+  event.stopPropagation();
 }
 
 async function runProjectLifecycleAndRefresh(commandId, payload, statusText) {
@@ -11516,6 +11556,7 @@ async function runProjectLifecycleAndRefresh(commandId, payload, statusText) {
     setProjectLibraryStatus(value && typeof value.reason === 'string' ? value.reason : 'Команда не выполнена');
     return false;
   }
+  projectLibraryReturnFocusTarget = null;
   closeSimpleModal(projectLibraryModal);
   updateStatusText(statusText);
   await loadTree();
@@ -27093,6 +27134,10 @@ function handleUiAction(action) {
     case 'replace':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
       return true;
+    case 'create-project':
+      openProjectLibraryModal();
+      projectLibraryReturnFocusTarget = writerHomeSurface?.querySelector('[data-writer-home-action="create-project"]');
+      return true;
     case 'new':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_NEW);
       return true;
@@ -27628,8 +27673,9 @@ window.addEventListener('yalken:manuscript-note-open', event => {
 });
 
 projectLibraryCloseButtons.forEach((button) => {
-  button.addEventListener('click', () => closeSimpleModal(projectLibraryModal));
+  button.addEventListener('click', () => closeProjectLibraryModal());
 });
+projectLibraryModal?.addEventListener('keydown', handleProjectLibraryKeydown);
 
 projectLibraryRefreshButtons.forEach((button) => {
   button.addEventListener('click', () => {

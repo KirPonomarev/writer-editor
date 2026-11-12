@@ -607,7 +607,10 @@
       "src/core/atlas-language-range-tag-v2.mjs",
       "src/derived/atlas/deriveAtlasMixedLanguageRouter.mjs",
       "docs/tasks/2026-11-11--atlas-project-language.md",
-      "test/unit/atlas-project-language.test.js"
+      "test/unit/atlas-project-language.test.js",
+      "docs/tasks/2026-11-12--writer-home-create.md",
+      "src/core/writer-home-projection-v1.mjs",
+      "test/unit/r24-wp300-writer-home.test.mjs"
     ]
   },
   "allowPrefixByPhase": {

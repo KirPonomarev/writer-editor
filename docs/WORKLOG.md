@@ -1,3 +1,17 @@
+SHARED_FOCUS_SOURCE_CHECKPOINT_03: actual shared-opener RED338d05fa is8/10 with exactly2 missing-initial-focus failures; moving the single existing focus operation yields complete affected39/39 934989e8,0skip/todo/cancel and an exact inverse of every original editor9bb byte. All15 valid implementation mutants are killed by maintained assertions eaa25f3b, sources unchanged. Same19 paths,244 manual source/test lines; new exact metadata/current software/actual native/all-callers focus+cancel/normal delivery/merged rebuild pending.
+
+SHARED_FOCUS_AMENDMENT_02: native88 Home15-check1341210a and full source9 default4765/4706/59eaefefe4 observed; toolbar Open initially focuses outside, so local key handler cannot receive events. Same19-pathc528338b/84de20e3 precede moving the existing name focus to shared open, preserving every command/draft. No signal was sent; original completed baseline remains source9-only. New actual successor/software/full delivery pending.
+
+KEYBOARD_SOURCE_CHECKPOINT_02: Actual RED7/9 db6271de -> Home9/9 2e66f3af and affected38/38 6808598d;13 valid mutants killed941f45a5 and exact inverseb9c0b18f preserve source. Native87 is NOT_ACCEPTED; successor rebuild/full software/normal delivery remain pending.
+
+KEYBOARD_REPAIR_ADMISSION_01: actual native87 data/Unicode/cold diagnosticsbcae15e3 retain Escape/focus blocker, no native acceptance. Closed own87a2ba33b6 and preservation047b938c keep69 profiles39 bundles. Same19 paths declaration9d18bd01/preflight6c7c6f88 precede local existing-form key/focus repair; full software/native/delivery pending.
+
+SOURCE_CHECKPOINT_01: Actual maintained RED6/7 -> Home GREEN7/7; exact production inverse preserved. Expanded34/40 retains6 historical fixed-archive C6B environment refusals; no complete PASS. Current metadata/full software/native/delivery pending.
+
+## 2026-11-12 — Home Create existing-form binding
+
+YALKEN_WRITER_HOME_CREATE_20261112: old actual native86/source/raw independently isolate reset-versus-project-create misbinding; all old state preserved,68 known closed profiles38 bundles. Declaration46b98f5a/preflightf4dae38e admit19 paths; task E0 and maintained RED precede semantic fix. Previous project-language PR2222 fully CLOSED at09c,605824d8/b480a032. Full Mac17UNKNOWN; no release claim.
+
 ## 2026-11-11
 
 - Full baseline07 preserves actual5 failures/2 cancellations, raw0ff5c881/terminal35c4c46f. Causal58/58 139c61b9 isolates incomplete extracted Matrix/ENV contexts and exactly3 missing authorized scope paths. Clean34-path declaration33fe8e90/preflight9f47a543 and E029bcc0c3 precede fixture/map correction; every old assertion, historical path and all native79 product inputs stay protected. Required final gates/delivery pending.
