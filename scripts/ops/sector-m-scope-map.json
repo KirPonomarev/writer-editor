@@ -611,7 +611,9 @@
       "docs/tasks/2026-11-12--writer-home-create.md",
       "src/core/writer-home-projection-v1.mjs",
       "test/unit/r24-wp300-writer-home.test.mjs",
-      "docs/tasks/2026-11-12--writer-active-scene-return.md"
+      "docs/tasks/2026-11-12--writer-active-scene-return.md",
+      "docs/tasks/2026-11-12--sector-m-doctor-query.md",
+      "test/unit/sector-m-doctor-query.test.js"
     ]
   },
   "allowPrefixByPhase": {

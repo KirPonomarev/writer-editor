@@ -1005,7 +1005,18 @@
     "docs/tasks/2026-11-12--writer-home-create.md",
     "src/core/writer-home-projection-v1.mjs",
     "test/unit/r24-wp300-writer-home.test.mjs",
-    "docs/tasks/2026-11-12--writer-active-scene-return.md"
+    "docs/tasks/2026-11-12--writer-active-scene-return.md",
+    "docs/tasks/2026-11-12--sector-m-doctor-query.md",
+    "test/unit/sector-m-doctor-tokens.test.js",
+    "test/unit/sector-m-m1-doctor-tokens.test.js",
+    "test/unit/sector-m-m8-core.test.js",
+    "test/unit/sector-m-m8-next.test.js",
+    "test/unit/sector-m-m9-kickoff.test.js",
+    "test/unit/sector-m-m9-core.test.js",
+    "test/unit/sector-m-m9-next.test.js",
+    "test/unit/sector-m-close.test.js",
+    "test/unit/sector-m-close-mutation.test.js",
+    "test/unit/sector-m-doctor-query.test.js"
   ],
   "protectedFiles": [
     {
@@ -1710,7 +1721,7 @@
       },
       {
         "path": "scripts/doctor.mjs",
-        "sha256": "aaf5af4d5853141fc343276918e96150d12c6433155c0ce62b19c58e08e7e0b4"
+        "sha256": "022cfb2b3bc196758fdc1eb469b3fe7a264e8d172201e81aabd016f026ca16d9"
       },
       {
         "path": "test/unit/doctor-no-dup-sector-m-phase.test.js",
@@ -2926,15 +2937,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "bc21d755220b1c166e9d69f3d5fbbf03b05b9596092faa919e34e42f0f24712c"
+        "sha256": "85dd4ff3cd2c79c99555ef5f01f5a9e240bbc47e06270ba215d501eed44b0dcc"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "1ede54f22d6d8674aafb0e90e0044ceb451cd0cda868bbfd6c528fc4cd912e53"
+        "sha256": "f5a8f5d47e8c0e672abb5b45030b236fbe13e859bd173a48a4aed154f06be62d"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "331f754b192600028ff91aee383516926984b81c90d9afd1c4b52ccd1fce3881"
+        "sha256": "5f76d1a51f7bc6e2d5d8c15d2a0d3fc347795c7678a8d12067c1a3df0ae64d60"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3474,7 +3485,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "e12dbb5b12c8008510c50a86caec40a725cba035788cf79ffeda9c9934321aad"
+        "sha256": "24afbdfb5f678353cd2494351358fbdbe8e5ac3d7d1297f65ebff819c646c4e7"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3606,7 +3617,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "241b50c90e5abb6ddb103dc18c6999d803d2ae2471a1e3072e0c7ae6e3a4cd60"
+        "sha256": "68ee42b8e891ea19c8d9423c525adbca03f7eb4f7081dfa1ee2091503b4cb2cc"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4627,6 +4638,50 @@
       {
         "path": "docs/tasks/2026-11-12--writer-active-scene-return.md",
         "sha256": "6c166ac58822dadae7a4f51473f07588d9cd1d776be491a8b0b938d6144b06ea"
+      },
+      {
+        "path": "docs/tasks/2026-11-12--sector-m-doctor-query.md",
+        "sha256": "fb03a006d78197759f9a484e19250dc88014cabc73452c04cce2dd3f2b336f51"
+      },
+      {
+        "path": "test/unit/sector-m-doctor-tokens.test.js",
+        "sha256": "608af05d407e8eac719c4416a02d3a8d2ae320708341945f6a44dff19b4ecef2"
+      },
+      {
+        "path": "test/unit/sector-m-m1-doctor-tokens.test.js",
+        "sha256": "450d621bf9add15fc43f2f1c076f68f88a5e34ae11bb1739ca16178932efe23c"
+      },
+      {
+        "path": "test/unit/sector-m-m8-core.test.js",
+        "sha256": "9cebb72f8b1ee8949fa4316fb90e21f5a78ef9e96592143e6f197aab74d0f9ab"
+      },
+      {
+        "path": "test/unit/sector-m-m8-next.test.js",
+        "sha256": "b93cd2492d1c3aa0fe6c991c9f5e4b95579b09d5b8605736864442ca66acd842"
+      },
+      {
+        "path": "test/unit/sector-m-m9-kickoff.test.js",
+        "sha256": "bc29887b6b11fb2117de2a19836408ceb4d31a7b897141fb8c3afe6a189d5a92"
+      },
+      {
+        "path": "test/unit/sector-m-m9-core.test.js",
+        "sha256": "f32185b0698764a07244f3801677740bbd525356a6a42fb63f1eb4139414a190"
+      },
+      {
+        "path": "test/unit/sector-m-m9-next.test.js",
+        "sha256": "05f3d1c1ef4346fd1c3e4a54f85c1d42589e46aac9d2309164cd7dce14b61586"
+      },
+      {
+        "path": "test/unit/sector-m-close.test.js",
+        "sha256": "32f799db5431deb2a0c1cae406adea8d0e90f0a742741134178f4c95a6bc21ce"
+      },
+      {
+        "path": "test/unit/sector-m-close-mutation.test.js",
+        "sha256": "7cf0a5a9aee4a75bf944bb2a34488d4a960878733443a23de23adc04e114f7ed"
+      },
+      {
+        "path": "test/unit/sector-m-doctor-query.test.js",
+        "sha256": "b109399e002020f2f382b16875735d6280b9149a2aae6fd36864d039b19f7f94"
       }
     ],
     "followupRepair": {

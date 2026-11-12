@@ -1,3 +1,14 @@
+SOURCE_CHECKPOINT_01: maintained original CLI RED38f17c78 lacks explicit query scope; identical contract GREEN690dd92c passes1/1 in0.384s. Same two real callers667a2d8a pass2/2 in0.700s versus24.233s BEFOREc1cf2b51 (one sample97.1percent). Eleven inserted doctor lines and nine literal argv/completion bindings have exact original inverses; evaluators/domain assertions/full M7 path unchanged. New actual full-vector/hostile/strict-delivery and complete software/delivery proofs remain pending. Original preparation guard error (two close cases share one spawn) retained and corrected without changing either case. All original data/errors and full Mac17UNKNOWN limits remain.
+
+# CURRENT — PR2224 closed; one doctor query optimization admitted
+
+TASK_ID: YALKEN_SECTOR_M_DOCTOR_QUERY_COST_20261112
+BASE_SHA: 6146c7a336a69436d3807e4581d1159bbacd16d2
+
+PR2224 active-scene return is CLOSED at6146c7a3/tree3c0fa00f: schema-valid reportcad18b3b, closure324d7b0c, physical088b4deb; both CI20/18 actual checkout logs, actual rebuilt merged native92 and independent874871d8, merged Main1405/C1C335 allpass0skip. All74 known closed profiles44 bundles read at that receipt time;35 old missing-byte UNKNOWNs retained. Older pending entries below are history. FullMac NOT_READY UNFROZEN17UNKNOWN, Word/native PAUSED, Black Box after full Mac.
+
+One explicit owner-authorized doctor optimization follows healthy closure, then immediately coherent V6 user scenarios. Fresh26-path declaration9b8c295f/preflight97cf2dc8, all8 admission e8cf1808 and source12666907 precede this write. Actual unchanged two-callers c1cf2b51 pass2/2 in24.233s; negative8b6fa040 confirms full work and no scoped completion. All selected original evaluators/domain assertions and mandatory full/strict gates remain. Proposed opt-in read-only query has no product/runtime input: all26 paths excluded from1497 stage inputs. No app/profile mutation, no new native claim or infrastructure series. Canonical owner6de untouched; one executor. Task E0 and maintained real CLI RED precede semantic code.
+
 SOURCE_CHECKPOINT_01: original-source maintained RED41a90bbc is12/15 with exactly3 promised-return/refusal failures; current GREEN146308e4 isHome15/15 and affected44/44,0skip/todo/cancel. Actual14 valid implementation mutants are all killed by unchanged maintained assertions8bd18a27; all physical source bytes unchanged by mutation proof. Exact inverse restores every original editor cc7c5f51 byte; all original test bytes remain an exact prefix. Same18 paths, only Scene binding and caller-specific editor-context option. Current source70cc5fc9/bundleec46ef8c; current companions, full software, actual native and complete delivery/merged proofs still pending.
 
 # CURRENT — Home Create delivered; active-scene return admitted

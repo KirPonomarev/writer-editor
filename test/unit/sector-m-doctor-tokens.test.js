@@ -13,7 +13,7 @@ function parseTokens(stdout) {
 }
 
 test('doctor emits sector-m tokens with valid domains', () => {
-  const result = spawnSync(process.execPath, ['scripts/doctor.mjs'], {
+  const result = spawnSync(process.execPath, ['scripts/doctor.mjs', '--sector-m-tokens'], {
     encoding: 'utf8',
     env: {
       ...process.env,
@@ -23,7 +23,7 @@ test('doctor emits sector-m tokens with valid domains', () => {
 
   assert.match(
     result.stdout,
-    /CURRENT_WAVE_GUARD_RAN=1/,
+    /SECTOR_M_TOKEN_QUERY_COMPLETE=1/,
     `doctor did not complete token emission:\n${result.stdout}\n${result.stderr}`,
   );
   const tokens = parseTokens(result.stdout);
