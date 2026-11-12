@@ -34569,6 +34569,76 @@
       "approvedBy": "owner-delegated-codex:YALKEN_WRITER_ACTIVE_SCENE_RETURN_20261112",
       "approvedAtUtc": "2026-11-12T14:13:06.276Z",
       "rationale": "Standing owner authorization for current exact technical witnesses. Same18-path declaration40de3cda/preflight0a81dc37; source RED41a90bbc to Home15/affected44 green146308e4 and14 valid implementation mutants killed8bd18a27. Unchanged finalizer prepare548c5097/apply5f3f386c updates exact companion hashes without changing original guards or denominator. All72 old profiles42 bundles and every original failure remain protected. Actual current native, full software and protected delivery pending; FullMacNOT_READY17UNKNOWN. No release signing or public distribution authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "6d913ac0f099dff10ec76d5041ddff06b9bc36ed7fd542d0aa29395b549d7ae5",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECTOR_M_DOCTOR_QUERY_COST_20261112",
+      "approvedAtUtc": "2026-11-12T19:37:35.842Z",
+      "rationale": "Standing explicit owner delegation for development and future exact technical witnesses. Doctor query task26 paths declaration9b8c295f/preflight97cf2dc8; original CLI RED38f17c78 and identical GREEN690dd92c, same real callers2/2 measured24.233s to0.700s667a2d8a. Original evaluator/domain/full-gate bytes preserved. Unchanged finalizer proposal73cb1465/apply355ae3a2 refreshes current metadata only. Full required software, normal protected delivery and exact merged proof remain pending; no scoped full PASS or native acceptance. Full Mac NOT_READY17UNKNOWN; no signing/publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "24afbdfb5f678353cd2494351358fbdbe8e5ac3d7d1297f65ebff819c646c4e7",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECTOR_M_DOCTOR_QUERY_COST_20261112",
+      "approvedAtUtc": "2026-11-12T19:37:35.842Z",
+      "rationale": "Standing explicit owner delegation for development and future exact technical witnesses. Doctor query task26 paths declaration9b8c295f/preflight97cf2dc8; original CLI RED38f17c78 and identical GREEN690dd92c, same real callers2/2 measured24.233s to0.700s667a2d8a. Original evaluator/domain/full-gate bytes preserved. Unchanged finalizer proposal73cb1465/apply355ae3a2 refreshes current metadata only. Full required software, normal protected delivery and exact merged proof remain pending; no scoped full PASS or native acceptance. Full Mac NOT_READY17UNKNOWN; no signing/publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "71452a0a2f89d480de515ec46dfc45a2554281d21064049243e62dc9b88bf536",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECTOR_M_DOCTOR_QUERY_COST_20261112",
+      "approvedAtUtc": "2026-11-12T19:37:35.842Z",
+      "rationale": "Standing explicit owner delegation for development and future exact technical witnesses. Doctor query task26 paths declaration9b8c295f/preflight97cf2dc8; original CLI RED38f17c78 and identical GREEN690dd92c, same real callers2/2 measured24.233s to0.700s667a2d8a. Original evaluator/domain/full-gate bytes preserved. Unchanged finalizer proposal73cb1465/apply355ae3a2 refreshes current metadata only. Full required software, normal protected delivery and exact merged proof remain pending; no scoped full PASS or native acceptance. Full Mac NOT_READY17UNKNOWN; no signing/publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "97aa943c0efa4f1b43628200ba4d1c91a05cfa9c4abd6e89f9246f453eea8c55",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECTOR_M_DOCTOR_QUERY_COST_20261112",
+      "approvedAtUtc": "2026-11-12T19:37:35.842Z",
+      "rationale": "Standing explicit owner delegation for development and future exact technical witnesses. Doctor query task26 paths declaration9b8c295f/preflight97cf2dc8; original CLI RED38f17c78 and identical GREEN690dd92c, same real callers2/2 measured24.233s to0.700s667a2d8a. Original evaluator/domain/full-gate bytes preserved. Unchanged finalizer proposal73cb1465/apply355ae3a2 refreshes current metadata only. Full required software, normal protected delivery and exact merged proof remain pending; no scoped full PASS or native acceptance. Full Mac NOT_READY17UNKNOWN; no signing/publication authority."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "4047508fc69b187657d5881c541fda8bd31abc1fa6a4ed7c6a930e9c58575e51",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECTOR_M_DOCTOR_QUERY_COST_20261112",
+      "approvedAtUtc": "2026-11-12T19:37:35.842Z",
+      "rationale": "Standing explicit owner delegation for development and future exact technical witnesses. Doctor query task26 paths declaration9b8c295f/preflight97cf2dc8; original CLI RED38f17c78 and identical GREEN690dd92c, same real callers2/2 measured24.233s to0.700s667a2d8a. Original evaluator/domain/full-gate bytes preserved. Unchanged finalizer proposal73cb1465/apply355ae3a2 refreshes current metadata only. Full required software, normal protected delivery and exact merged proof remain pending; no scoped full PASS or native acceptance. Full Mac NOT_READY17UNKNOWN; no signing/publication authority."
+    },
+    {
+      "filePath": "scripts/doctor.mjs",
+      "sha256": "022cfb2b3bc196758fdc1eb469b3fe7a264e8d172201e81aabd016f026ca16d9",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECTOR_M_DOCTOR_QUERY_COST_20261112",
+      "approvedAtUtc": "2026-11-12T19:37:35.842Z",
+      "rationale": "Standing explicit owner delegation for development and future exact technical witnesses. Doctor query task26 paths declaration9b8c295f/preflight97cf2dc8; original CLI RED38f17c78 and identical GREEN690dd92c, same real callers2/2 measured24.233s to0.700s667a2d8a. Original evaluator/domain/full-gate bytes preserved. Unchanged finalizer proposal73cb1465/apply355ae3a2 refreshes current metadata only. Full required software, normal protected delivery and exact merged proof remain pending; no scoped full PASS or native acceptance. Full Mac NOT_READY17UNKNOWN; no signing/publication authority."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "9a9e09d0658df0cd644a74e70edc06d3eaf0f89a4fb51660b10b0df6a7da6639",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECTOR_M_DOCTOR_QUERY_COST_20261112",
+      "approvedAtUtc": "2026-11-12T19:37:35.842Z",
+      "rationale": "Standing explicit owner delegation for development and future exact technical witnesses. Doctor query task26 paths declaration9b8c295f/preflight97cf2dc8; original CLI RED38f17c78 and identical GREEN690dd92c, same real callers2/2 measured24.233s to0.700s667a2d8a. Original evaluator/domain/full-gate bytes preserved. Unchanged finalizer proposal73cb1465/apply355ae3a2 refreshes current metadata only. Full required software, normal protected delivery and exact merged proof remain pending; no scoped full PASS or native acceptance. Full Mac NOT_READY17UNKNOWN; no signing/publication authority."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "67c07559daee6629af962b300306b07ee1df65d33304b8309da871f586858d8a",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECTOR_M_DOCTOR_QUERY_COST_20261112",
+      "approvedAtUtc": "2026-11-12T19:37:35.842Z",
+      "rationale": "Standing explicit owner delegation for development and future exact technical witnesses. Doctor query task26 paths declaration9b8c295f/preflight97cf2dc8; original CLI RED38f17c78 and identical GREEN690dd92c, same real callers2/2 measured24.233s to0.700s667a2d8a. Original evaluator/domain/full-gate bytes preserved. Unchanged finalizer proposal73cb1465/apply355ae3a2 refreshes current metadata only. Full required software, normal protected delivery and exact merged proof remain pending; no scoped full PASS or native acceptance. Full Mac NOT_READY17UNKNOWN; no signing/publication authority."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "68ee42b8e891ea19c8d9423c525adbca03f7eb4f7081dfa1ee2091503b4cb2cc",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECTOR_M_DOCTOR_QUERY_COST_20261112",
+      "approvedAtUtc": "2026-11-12T19:37:35.842Z",
+      "rationale": "Standing explicit owner delegation for development and future exact technical witnesses. Doctor query task26 paths declaration9b8c295f/preflight97cf2dc8; original CLI RED38f17c78 and identical GREEN690dd92c, same real callers2/2 measured24.233s to0.700s667a2d8a. Original evaluator/domain/full-gate bytes preserved. Unchanged finalizer proposal73cb1465/apply355ae3a2 refreshes current metadata only. Full required software, normal protected delivery and exact merged proof remain pending; no scoped full PASS or native acceptance. Full Mac NOT_READY17UNKNOWN; no signing/publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "0a108461649e3e10e56ea74a2ff334a5db7ee7fb9ec99142100c798eac1a0219",
+      "approvedBy": "owner-delegated-codex:YALKEN_SECTOR_M_DOCTOR_QUERY_COST_20261112",
+      "approvedAtUtc": "2026-11-12T19:37:35.842Z",
+      "rationale": "Standing explicit owner delegation for development and future exact technical witnesses. Doctor query task26 paths declaration9b8c295f/preflight97cf2dc8; original CLI RED38f17c78 and identical GREEN690dd92c, same real callers2/2 measured24.233s to0.700s667a2d8a. Original evaluator/domain/full-gate bytes preserved. Unchanged finalizer proposal73cb1465/apply355ae3a2 refreshes current metadata only. Full required software, normal protected delivery and exact merged proof remain pending; no scoped full PASS or native acceptance. Full Mac NOT_READY17UNKNOWN; no signing/publication authority."
     }
 ],
   "evidenceStampIds": [

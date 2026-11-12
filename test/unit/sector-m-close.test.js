@@ -23,7 +23,7 @@ function sha256(filePath) {
 function assertDoctorEmittedTokens(result) {
   assert.match(
     result.stdout,
-    /CURRENT_WAVE_GUARD_RAN=1/,
+    /SECTOR_M_TOKEN_QUERY_COMPLETE=1/,
     `doctor did not complete token emission:\n${result.stdout}\n${result.stderr}`,
   );
 }
@@ -43,7 +43,7 @@ function makeDoneSectorMStatus() {
 }
 
 function runDoctorForClose({ statusPath, reportPath, lockPath }) {
-  return spawnSync(process.execPath, ['scripts/doctor.mjs'], {
+  return spawnSync(process.execPath, ['scripts/doctor.mjs', '--sector-m-tokens'], {
     encoding: 'utf8',
     env: {
       ...process.env,

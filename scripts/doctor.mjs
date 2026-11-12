@@ -6391,6 +6391,10 @@ function run() {
   const debtRegistry = parseDebtRegistry(debtPath);
 
   const cliArgs = new Set(process.argv.slice(2).map((arg) => String(arg || '').trim()));
+  const sectorMTokenQuery = cliArgs.has('--sector-m-tokens');
+  if (sectorMTokenQuery && (cliArgs.has('--strict') || isDeliveryExecutionMode())) {
+    die('ERR_DOCTOR_SCOPE_NOT_FULL', '--sector-m-tokens', 'strict_or_delivery_requires_full_doctor');
+  }
   const requestedMode = cliArgs.has('--strict') || process.env.EFFECTIVE_MODE === 'STRICT'
     ? 'STRICT'
     : 'TRANSITIONAL';
@@ -6418,6 +6422,13 @@ function run() {
   const m9Core = evaluateM9CoreTokens(sectorMStatus, m9Kickoff);
   const m9Next = evaluateM9NextTokens(sectorMStatus, m9Core);
   const m9Close = evaluateM9CloseTokens(sectorMStatus, m9Next);
+  if (sectorMTokenQuery) {
+    evaluateOpsP0SectorMPrepTokens();
+    console.log('DOCTOR_SCOPE=sector-m-tokens');
+    console.log('DOCTOR_FULL_RUN=0');
+    console.log('SECTOR_M_TOKEN_QUERY_COMPLETE=1');
+    return;
+  }
   const sectorUWaivers = evaluateSectorUWaiverPredicate(sectorUStatus);
   const sectorUFastDuration = evaluateSectorUFastDurationTokens(sectorUStatus);
   const u1CommandLayer = evaluateU1CommandLayerTokens(sectorUStatus);

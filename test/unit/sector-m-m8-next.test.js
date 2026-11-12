@@ -36,7 +36,7 @@ test('M8 next editor wiring blocks flow reopen when unsaved changes exist', () =
 });
 
 test('M8 next doctor token is green on M8 phase', () => {
-  const result = spawnSync(process.execPath, ['scripts/doctor.mjs'], {
+  const result = spawnSync(process.execPath, ['scripts/doctor.mjs', '--sector-m-tokens'], {
     encoding: 'utf8',
     env: {
       ...process.env,
@@ -45,7 +45,7 @@ test('M8 next doctor token is green on M8 phase', () => {
   });
   assert.match(
     result.stdout,
-    /CURRENT_WAVE_GUARD_RAN=1/,
+    /SECTOR_M_TOKEN_QUERY_COMPLETE=1/,
     `doctor did not complete token emission:\n${result.stdout}\n${result.stderr}`,
   );
 

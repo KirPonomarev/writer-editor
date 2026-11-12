@@ -30,7 +30,7 @@ test('M9 kickoff editor wiring uses M9 helper for open/save statuses', () => {
 });
 
 test('M9 kickoff doctor tokens are green on M9 phase', () => {
-  const result = spawnSync(process.execPath, ['scripts/doctor.mjs'], {
+  const result = spawnSync(process.execPath, ['scripts/doctor.mjs', '--sector-m-tokens'], {
     encoding: 'utf8',
     env: {
       ...process.env,
@@ -39,7 +39,7 @@ test('M9 kickoff doctor tokens are green on M9 phase', () => {
   });
   assert.match(
     result.stdout,
-    /CURRENT_WAVE_GUARD_RAN=1/,
+    /SECTOR_M_TOKEN_QUERY_COMPLETE=1/,
     `doctor did not complete token emission:\n${result.stdout}\n${result.stderr}`,
   );
 
