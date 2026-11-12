@@ -9472,11 +9472,11 @@ const R24_INTEROP_WRITER_HOME_CREATE_20261112_DELTA = Object.freeze({
     },
     {
       "path": "src/renderer/editor.bundle.js",
-      "sha256": "4e33d718cfe877efe1b2b4d8a6479516aa50580ebe890da823acf3e3e105694a"
+      "sha256": "98ff2ce03a8c4fa7370674daa117be57cc3d5ea81103793f35cc2abe2476120c"
     },
     {
       "path": "src/renderer/editor.js",
-      "sha256": "844663789389ae1aa94fb32d06d579df5c6e474feffff7692a7c2b2f936271dc"
+      "sha256": "0ad2fcd51822e8618ce94ff452dbe22024c0bc2c34468b578467107a3559f63b"
     },
     {
       "path": "test/unit/project-tree-pathless-contract.test.js",
@@ -9508,15 +9508,15 @@ const R24_INTEROP_WRITER_HOME_CREATE_20261112_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "215f5a99f4426034d3544622e639e1ca29868fc02123965a1af0448bae9e0484"
+      "sha256": "5e580a99d93d6980622f03e4182fe32b664db04d9fc220457b352a8370f4e9db"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "56b4b0361a3c94e5c7ae164186488f0bd8ee3c67d9ca31a1f5a91f711ae0a888"
+      "sha256": "fc30cea42cf2d38f833af3ea35e867f2dc204d9fe22d0113b1dd85d6dbaa8a9f"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "cf8a509960af6d2fe5d4d85a9968a71262727ab1a25d7705e8f9924e37722b64"
+      "sha256": "243bc862162fa04785396cbd384769f8df274dec2b957a49551305f1278f359a"
     },
     {
       "path": "AGENTS.md",
@@ -9548,11 +9548,11 @@ const R24_INTEROP_WRITER_HOME_CREATE_20261112_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "4234a97f182c95d4fd1fc2edbca36c195cb7b8c17ed851533b9c344c927e8217"
+      "sha256": "7db864a0abe6e19821a2203f9b85034342d63c68d3fc882df8688a41a5316ac9"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "ab0b91f88f0b17ce9e943b10475f38fb1225f0a9618c1fe9942ad3320989f192"
+      "sha256": "9f4400729bfce383c93016f741e5005451dedc3b8d119be758a4a07def713ca9"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -9712,7 +9712,7 @@ const R24_INTEROP_WRITER_HOME_CREATE_20261112_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "739abe1a3ca809c406499b32c7c1e987f37d2ff9ed8986c9590b158b0b50beb8"
+      "sha256": "6ed2088e561980f2621ec1c6f809dff7af560dd078eb768d69992500703ad644"
     },
     {
       "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -9768,11 +9768,11 @@ const R24_INTEROP_WRITER_HOME_CREATE_20261112_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "82da3a11be3d7d92b8400d0a5cdeadf7bc91c9aa92ba83d429005b7972dfcaf1"
+      "sha256": "4eaa4826888d049cf52c3d3086178ff4d517c7499795480a109348f331a47a17"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "160b4eda348a055b5e899363203b79730b4aec7aae87b5e1e71ee5900d636063"
+      "sha256": "4a0be20dae526c7f927cab9cefd663c3cdbfe8344b44bffceb0a528be4e2a78b"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -10420,7 +10420,7 @@ const R24_INTEROP_WRITER_HOME_CREATE_20261112_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-12--writer-home-create.md",
-      "sha256": "2a408dd6f6d09470b9b7a2eb2d1c3f53f462518ec37df98e10a4a53745650af4"
+      "sha256": "346089375f1688039ce3b16a3f3b21c2d2dce54bb28f189fc199fa0f62e26ed3"
     },
     {
       "path": "src/core/writer-home-projection-v1.mjs",
@@ -10428,13 +10428,13 @@ const R24_INTEROP_WRITER_HOME_CREATE_20261112_DELTA = Object.freeze({
     },
     {
       "path": "test/unit/r24-wp300-writer-home.test.mjs",
-      "sha256": "4cfa73be7ef6deaa5049b685aeec9c17bf951ca5ea0f9d068ba271ecd19ad38a"
+      "sha256": "31f63fb0b929a83d2e199cb0c232aca7e699ac299683160f9b8728042b8c5165"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "44c8dc2c3051d4442008f757c5fad10d3a9a580e08161ab34e721053ef86f500"
+      "sha256": "633599914557c4247f436aeb5da8003f20a3a7468b06a227727bf2d4e4eded18"
     }
   ]
 });
