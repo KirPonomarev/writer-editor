@@ -1245,7 +1245,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "98ff2ce03a8c4fa7370674daa117be57cc3d5ea81103793f35cc2abe2476120c"
+        "sha256": "aa2a7bb927febe58930f62ee5f27ad56f354d4701d59ef7b534f24fdda17b936"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1409,7 +1409,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "0ad2fcd51822e8618ce94ff452dbe22024c0bc2c34468b578467107a3559f63b"
+        "sha256": "cc7c5f51044dd670777051b7d63807bebc44ec6dad5e0f9e9f50f8503602ec54"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2925,15 +2925,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "5e580a99d93d6980622f03e4182fe32b664db04d9fc220457b352a8370f4e9db"
+        "sha256": "9151cf2cff2a7e70fefe35ee44f295f24cbcb54bf5a2723b32613f4fba9446c1"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "fc30cea42cf2d38f833af3ea35e867f2dc204d9fe22d0113b1dd85d6dbaa8a9f"
+        "sha256": "aa3387c424f3bba071db7fdc1b4859356a04c292f8981f8b14ab7d94fe4cfd43"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "243bc862162fa04785396cbd384769f8df274dec2b957a49551305f1278f359a"
+        "sha256": "3d5212b72ef572fea47f3ce6cde6e68956645d04ec20dddd0bb1a3e364d6d91f"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3473,7 +3473,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "9f4400729bfce383c93016f741e5005451dedc3b8d119be758a4a07def713ca9"
+        "sha256": "12e7b8bae05809777add68085529de4575ccbff6d809516bb6a3c3d08d2f2260"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4613,7 +4613,7 @@
       },
       {
         "path": "docs/tasks/2026-11-12--writer-home-create.md",
-        "sha256": "346089375f1688039ce3b16a3f3b21c2d2dce54bb28f189fc199fa0f62e26ed3"
+        "sha256": "214af8d642ef3445b5f227b60101e9bcc559f6ab7943373021273026d49933ec"
       },
       {
         "path": "src/core/writer-home-projection-v1.mjs",
@@ -4621,7 +4621,7 @@
       },
       {
         "path": "test/unit/r24-wp300-writer-home.test.mjs",
-        "sha256": "31f63fb0b929a83d2e199cb0c232aca7e699ac299683160f9b8728042b8c5165"
+        "sha256": "9e2b5686933dc0bb163462aba8eba63124150a9f204ab00d3ee587051d39a534"
       }
     ],
     "followupRepair": {
