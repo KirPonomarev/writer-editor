@@ -41,6 +41,10 @@ Prospective same19-path keyboard declaration9d18bd01/preflight6c7c6f88 precede t
 
 KEYBOARD_SOURCE_CHECKPOINT_02: Actual RED7/9 db6271de -> Home9/9 2e66f3af and affected38/38 6808598d;13 valid mutants killed941f45a5 and exact inverseb9c0b18f preserve source. Native87 is NOT_ACCEPTED; successor rebuild/full software/normal delivery remain pending.
 
+SHARED_FOCUS_AMENDMENT_02: native88 Home15-check1341210a and full source9 default4765/4706/59eaefefe4 observed; toolbar Open initially focuses outside, so local key handler cannot receive events. Same19-pathc528338b/84de20e3 precede moving the existing name focus to shared open, preserving every command/draft. No signal was sent; original completed baseline remains source9-only. New actual successor/software/full delivery pending.
+
+SHARED_FOCUS_SOURCE_CHECKPOINT_03: actual shared-opener RED338d05fa is8/10 with exactly2 missing-initial-focus failures; moving the single existing focus operation yields complete affected39/39 934989e8,0skip/todo/cancel and an exact inverse of every original editor9bb byte. All15 valid implementation mutants are killed by maintained assertions eaa25f3b, sources unchanged. Same19 paths,244 manual source/test lines; new exact metadata/current software/actual native/all-callers focus+cancel/normal delivery/merged rebuild pending.
+
 ## ALLOWLIST
 
 Exactly19 prospective paths; no other writes:
@@ -65,7 +69,7 @@ Exactly19 prospective paths; no other writes:
 - src/renderer/editor.bundle.js
 - test/unit/r24-wp300-writer-home.test.mjs
 
-Handwritten product change is only Home action binding and local existing-library keyboard/focus behavior; one existing Home test file may add the observed regression and update its single current action expectation. Existing JSON companions/source enrollment/witnesses are generated/refreshed without altering verifiers, historical bytes, tuples or requirement denominators. Manual source/test delta <=350 lines; all manually authored docs/task changes <=700 lines; total manual <=1100. The same-form keyboard amendment is required by actual native87, not a new surface or independent improvement. Generated bundle/JSON binding changes are counted separately with exact review.
+Handwritten product change is only Home action binding and local existing-library keyboard/focus behavior; initial labelled name focus must occur in the shared opener for all existing callers, while Home retains its exact return trigger; one existing Home test file may add the observed regression and update its single current action expectation. Existing JSON companions/source enrollment/witnesses are generated/refreshed without altering verifiers, historical bytes, tuples or requirement denominators. Manual source/test delta <=350 lines; all manually authored docs/task changes <=700 lines; total manual <=1100. The same-form keyboard amendment is required by actual native87, not a new surface or independent improvement. Generated bundle/JSON binding changes are counted separately with exact review.
 
 ## DENYLIST
 

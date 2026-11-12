@@ -256,10 +256,11 @@ test('Home Create opens the existing named-project form without resetting or dis
 test('Existing Home create form keeps empty/denied drafts and only explicit valid submit invokes the canonical lifecycle', async () => {
   const { host, calls, authoring } = homeCreationHandlerHost();
   host.openProjectLibraryModal();
+  assert.equal(calls.focus, 1, 'the shared form opener initially focuses the labelled name');
   host.projectLibraryNameInput.value = '   ';
   await host.createProjectFromLibraryModal();
   assert.deepEqual(calls.commands, []);
-  assert.equal(calls.focus, 1);
+  assert.equal(calls.focus, 2, 'empty-name refusal independently refocuses the existing input');
   assert.equal(host.projectLibraryNameInput.value, '   ');
   assert.equal(host.projectLibraryModal.hidden, false);
   host.result = { ok: false, value: { reason: 'CAPABILITY_DENIED' } };
@@ -343,5 +344,22 @@ test('Project-library Tab wraps only the current visible enabled form controls a
   const ordinary = dispatchKey('x');
   assert.equal(ordinary.prevented, false);
   assert.equal(host.projectLibraryNameInput.value, 'Retained name');
+  assert.deepEqual(calls.commands, []);
+});
+
+
+test('Every existing project-library opener focuses the labelled name before local keyboard handling', () => {
+  const { host, calls, authoring, opener, dispatchKey } = homeCreationHandlerHost();
+  assert.equal(host.handleUiAction('open'), true);
+  assert.equal(host.projectLibraryModal.hidden, false);
+  assert.equal(host.document.activeElement, host.projectLibraryNameInput, 'toolbar/library open must put keyboard events inside the form');
+  assert.equal(calls.focus, 1);
+  assert.deepEqual(calls.commands, []);
+  host.projectLibraryNameInput.value = 'Retained toolbar draft';
+  dispatchKey('Escape');
+  assert.equal(host.projectLibraryModal.hidden, true);
+  assert.equal(host.document.activeElement, opener);
+  assert.equal(host.projectLibraryNameInput.value, 'Retained toolbar draft');
+  assert.equal(host.authoring, authoring);
   assert.deepEqual(calls.commands, []);
 });

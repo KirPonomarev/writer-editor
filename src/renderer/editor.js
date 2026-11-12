@@ -11508,6 +11508,7 @@ async function refreshProjectLibraryModal() {
 function openProjectLibraryModal() {
   projectLibraryReturnFocusTarget = document.activeElement;
   openSimpleModal(projectLibraryModal);
+  projectLibraryNameInput?.focus();
   void refreshProjectLibraryModal();
 }
 
@@ -27136,7 +27137,6 @@ function handleUiAction(action) {
     case 'create-project':
       openProjectLibraryModal();
       projectLibraryReturnFocusTarget = writerHomeSurface?.querySelector('[data-writer-home-action="create-project"]');
-      projectLibraryNameInput?.focus();
       return true;
     case 'new':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_NEW);
