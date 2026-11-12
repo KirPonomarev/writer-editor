@@ -5920,3 +5920,15 @@ PROCESS_SEQUENCE_RECOVERY_20261106: Primary human39cd7a45 at2026-11-02T09:01:25.
 - Fresh39path declaration29e17d26/preflight163f2a2e/admissionef2dcb1a/source10091/31profiles/three apps precede task edits. Current authored-association route absent;task E0/actual causal RED precede implementation,one new own native/full delivery required. No new product PASS.
 
 - 2026-11-07 — YALKEN_ATLAS_ASSOCIATION_APPLICABILITY_MAC_20261107 сохраняет исходную дельту P17 на 93d696ed6c7e21af956bbd10a0ba12d69112e188. Семь новых тестов и штатная сборка рендера прошли на зафиксированных байтах. Предыдущий полный прогон дал 771 успешный тест до последней защиты перехода. Обязательные проверки кандидата, реальный Mac и поставка ещё предстоят.
+
+
+2026-11-11 YALKEN_ATLAS_PROJECT_LANGUAGE_20261111: Predecessor PR2221 closed e04f8cbd. Original27 language controls pass; actual current packaged project-language REDba355648 follows retained inert-host cancellation. Clean30-path declaration5f055f40/preflight2046a4c6 precede source work; task E0 and negative-first implementation next. Full Mac NOT_READY, all17 UNKNOWN; sole executor, old data/profiles/errors preserved.
+
+2026-11-11 YALKEN_ATLAS_PROJECT_LANGUAGE_20261111 source checkpoint: renderer0, expanded65/65 and complete old profile/language56/56, stable inputs, b8825a57. Existing controls/history and raw errors preserved. Current exact companions, mandatory whole/native/delivery remain pending.
+
+2026-11-12 YALKEN_ATLAS_PROJECT_LANGUAGE_20261111: native81 persistence oracle85978870 confirms10 checks; warm UI5eb1184c exposes stale inherited/default label after scene Set. Clean11ad correction declarationf104a880/preflightb231e134; maintained RED96bc7836 1fail before one V16 dossier-form sync. Regenerated bundle0; source2c085590 expanded66 and original56 pass. Old raw/profile/errors preserved; fresh native, exact bindings and original full delivery chain pending. Full Mac NOT_READY; all17 UNKNOWN.
+
+2026-11-12 YALKEN_ATLAS_PROJECT_LANGUAGE_20261111: native82 source6e072cec ASAR0005dca3, warm0/cold0, independent11-check83a6d9c7 and closed187addc4 observed. UI reviewad5a4878/static0. Full release suite471a4851 has747pass/1 stale current schema-v15 expectation; differential84e0cc31 and maintained0c651367 pass1/1, declarationa324311e/preflight7c54f174, all1497 physical input equality8bd1b2c7. Only one expected literal and factual/exact metadata change; whole final gates/delivery/merged native pending. Full Mac NOT_READY; all17UNKNOWN.
+
+- YALKEN_ATLAS_PROJECT_LANGUAGE_20261111: actual native83/current1403f4d5 build ed4b6eef and independent nine-check oracle cb3bb3b9; warm0/cold0/closed149entries65files0f24c314; all prior64 profiles35 bundles retained.
+- Same chain: whole default8090138b preserves26 stale current-host assertion failures and complete TAP4673792a. Six-value differential621d179f and exact-inverse maintained source9d5eda7e pass47/47 without removing assertions or changing any1497 package bytes; historical V15 denial remains exact. Fresh declaration6deb0dcb/preflight64c3cb3c. Final companions, all required gates/current native/delivery/merged verification pending; all17UNKNOWN.

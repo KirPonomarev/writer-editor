@@ -182,6 +182,7 @@ function manualMapProfileAccess(profile, selected, optional) {
 }
 
 function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRecord = null } = {}) {
+  if (isWriterAtlasProjectLanguageProfileCandidate(profile)) return evaluateProjectLanguageAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasRangeLanguageProfileCandidate(profile)) return evaluateRangeLanguageAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasGlobalCompositeProfileCandidate(profile)) return evaluateGlobalCompositeAccess(profile, commandId, productCommandRecord);
   if (isWriterAtlasAssociationsProfileCandidate(profile)) return evaluateAtlasAssociationsAccess(profile, commandId, productCommandRecord);
@@ -220,6 +221,7 @@ function evaluateWriterLocalCommandAccess({ profile, commandId, productCommandRe
 }
 
 function evaluateWriterLocalQueryAccess({ profile, queryId } = {}) {
+  if (isWriterAtlasProjectLanguageProfileCandidate(profile)) return evaluateProjectLanguageAccess(profile, queryId);
   if (isWriterAtlasRangeLanguageProfileCandidate(profile)) return evaluateRangeLanguageAccess(profile, queryId);
   if (isWriterAtlasGlobalCompositeProfileCandidate(profile)) return evaluateGlobalCompositeAccess(profile, queryId);
   if (isWriterAtlasAssociationsProfileCandidate(profile)) return evaluateAtlasAssociationsAccess(profile, queryId);
@@ -791,7 +793,44 @@ function evaluateRangeLanguageAccess(profile, identifier, productCommandRecord) 
   return Object.freeze({ ...inherited, profileId: WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_ID });
 }
 
+// V16 adds a project-bound intent path; its authority denominator is unchanged.
+const WRITER_ATLAS_PROJECT_LANGUAGE_PROFILE_ID = 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16';
+const WRITER_ATLAS_PROJECT_LANGUAGE_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v16';
+function createWriterAtlasProjectLanguageProfileProjection(options = {}) {
+  const inherited = createWriterAtlasRangeLanguageProfileProjection(options);
+  return inherited.active ? Object.freeze({ ...inherited, profileId: WRITER_ATLAS_PROJECT_LANGUAGE_PROFILE_ID,
+    schemaVersion: WRITER_ATLAS_PROJECT_LANGUAGE_PROFILE_SCHEMA_VERSION }) : inherited;
+}
+function isWriterAtlasProjectLanguageProfileCandidate(profile) {
+  if (!profile || typeof profile !== 'object') return false;
+  return ['profileId', 'schemaVersion'].some(key => {
+    const value = Object.getOwnPropertyDescriptor(profile, key)?.value;
+    return typeof value === 'string' && value.startsWith(key === 'profileId'
+      ? WRITER_ATLAS_PROJECT_LANGUAGE_PROFILE_ID : WRITER_ATLAS_PROJECT_LANGUAGE_PROFILE_SCHEMA_VERSION);
+  });
+}
+function isActiveWriterAtlasProjectLanguageProfile(profile) {
+  if (!isPlainObject(profile)) return false;
+  const d = Object.getOwnPropertyDescriptors(profile);
+  if (d.profileId?.value !== WRITER_ATLAS_PROJECT_LANGUAGE_PROFILE_ID
+    || d.schemaVersion?.value !== WRITER_ATLAS_PROJECT_LANGUAGE_PROFILE_SCHEMA_VERSION) return false;
+  return isActiveWriterAtlasRangeLanguageProfile(Object.defineProperties({}, { ...d,
+    profileId: { ...d.profileId, value: WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_ID },
+    schemaVersion: { ...d.schemaVersion, value: WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_SCHEMA_VERSION } }));
+}
+function evaluateProjectLanguageAccess(profile, identifier, productCommandRecord) {
+  if (!isActiveWriterAtlasProjectLanguageProfile(profile)) return Object.freeze({ allowed: false,
+    reason: WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED, profileId: WRITER_ATLAS_PROJECT_LANGUAGE_PROFILE_ID });
+  const inherited = evaluateRangeLanguageAccess(createWriterAtlasRangeLanguageProfileProjection({ isPackaged: true, platform: 'darwin' }),
+    identifier, productCommandRecord);
+  return Object.freeze({ ...inherited, profileId: WRITER_ATLAS_PROJECT_LANGUAGE_PROFILE_ID });
+}
+
 module.exports = Object.freeze({
+  WRITER_ATLAS_PROJECT_LANGUAGE_PROFILE_ID,
+  WRITER_ATLAS_PROJECT_LANGUAGE_PROFILE_SCHEMA_VERSION,
+  createWriterAtlasProjectLanguageProfileProjection,
+  isActiveWriterAtlasProjectLanguageProfile,
   WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_ID,
   WRITER_ATLAS_RANGE_LANGUAGE_PROFILE_SCHEMA_VERSION,
   createWriterAtlasRangeLanguageProfileProjection,

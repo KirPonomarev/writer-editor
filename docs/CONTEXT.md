@@ -1,3 +1,48 @@
+## CURRENT — Remaining current-host expectations corrected after complete baseline
+
+Actual final-source native83 at clean1403f4d5 rebuilt successfully (ed4b6eef), all1497 inputs/1488 official ASAR leaves and7252 complete bundle entries equal verified82. Independent nine-check keyboard/cold oraclecb3bb3b9 covers invalid retained input/no-write, Enter Set, exact Unicode text and cold manifest, Clear and append-only canonical Kernel receipts. Warm0/cold0; own83 closed149entries/65files0f24c314 is preserved. All64 older profiles/35 bundles matched before/after build. Compact seven-commit Git recovery bundle8f714e28 on T777 requires exact prerequisitee04f8cbd; no original source/profile/history/error removed.
+
+Full default8090138b executes4740 unit tests:4655pass/26fail/59skip/0cancel/0todo; complete original TAP4673792a is retained. All26 failures are six remaining current-host identity expectations: one15-versus16 factory count and five V15-versusV16 assertions in the existing Main integration host. Historical V15 constructor and its explicit denial assertion remain correct and unchanged. Read-only six-value differential621d179f passes47/47,0skip/todo/cancel, without physical source changes. Fresh same-task declaration6deb0dcb/preflight64c3cb3c precede the physical correction.
+
+Maintained plain-source9d5eda7e passes the same47/47, preserving every assertion, all historical profiles/near-identity controls and all other source bytes by exact inverse; only six current expectations and two current titles change. It independently physically rereads all1497 package inputs including node_modules equal native83. No application code, effect/writer, dependency, engine, resource, design contract or qualification denominator changes. Next: commit this test/factual checkpoint, refresh exact companions and witnesses, complete all required fresh software/current-source native and full protected delivery/merged proofs. No push/PR yet. Full Mac NOT_READY UNFROZEN all17 UNKNOWN; Word/native PAUSED, Black Box after full Mac.
+
+## CURRENT — Project-language native82 observed; final test binding/delivery pending
+
+Clean6e072cec/treeb091d37e actual native82 ASAR0005dca3 passes independent11-check oracle83a6d9c7: immediate scene Set/Clear labels without Refresh, retained it-IT draft, project Set/replace/invalid/Clear, exact emoji/NFD manuscript and cold manifest, whole manual scene/range records and persisted Kernel chain. Warm0/cold0 closed; own82 carrier187addc4 holds160 entries/71files plus native metadata. All earlier failed native81/raw/errors retained; protected set now64 known profiles/35 bundles, older missing bytes stay UNKNOWN.
+
+Exact current8 admission55231586 and CHEAP11 bd6ab6d7 execute: production audit0; full audit1 has the same six moderate DEV findings; strict doctor0, AtlasEvent123, PostAudit63 and finalizer31 pass. Static detector542bab32 scans the current editor1407539 bytes with complete coverage/zero findings/no overrides. Local Audit/Heuristic/Finalize bindingsad5a4878 preserve scope/deferred global observations; judged score70 is not CI/release evidence. Initial Home Create AX behavior and full dark/narrow-window/contrast/key-traversal qualification remain UNKNOWN outside this component.
+
+Whole release contract471a4851 fails747/748 because one current schema expectation still says v15 after profileId becameV16. In-memory differential84e0cc31 passes1/1 without physical writes. Declarationa324311e/preflight7c54f174 precede the one-literal correction; maintained source0c651367 passes1/1, with full1497 physical package-input equality independently verified in8bd1b2c7. All production code, package inputs, old assertions and historical profile expectations remain exact. This is test/metadata repair, not a new product contour.
+
+Next: commit the bounded schema/factual correction, refresh exact companions and source, finish all required software/native/normal delivery and merged proofs. No push/PR yet. Full Mac NOT_READY UNFROZEN all17 UNKNOWN; Word/native PAUSED, Black Box after full Mac. All older factual suffixes retained below.
+
+## CURRENT — Project-language native81 exposed one stale read label; same-chain correction active
+
+Clean source11adf7b8 was rebuilt as native81 ASAR86c277a9, all1488 official ASAR leaves and7252 bundle entries checked. Actual UI project Set/replace, manual ru-RU scene and en-US UTF16 fragment, normal warm0/cold0 and project Clear preserve exact manuscript and saved overrides. Cold manifest8adafe2b is byte-identical to pre-cold. This is partial diagnostic evidence, not native acceptance or release completion.
+
+Blocking native observation5eb1184c: scene Set persisted correctly but project form still displayed inherited de-DE; explicit project Refresh alone changed it to the correct own ru-RU. Actual dossier render synchronizes range form only. Hypothesis: synchronize the existing project form from the same current DTO, without a new query, writer, draft reset or journey rebuild. Original failed native/profile/raw/UI remain preserved; own81 final carrier5b92dbe6 holds162 entries/73 files plus native metadata. Native81 becomes part of the protected63 profiles/34 bundles. Original baseline Save backup completed asynchronously (two added backup files, all original files exact); do not claim the entire invalid-phase roster was unchanged.
+
+Maintained actual-renderer RED96bc7836 genuinely fails1/1 before the fix with inherited de-DE instead of explicit ru-RU. One V16-only synchronization in the existing dossier renderer closes it without a query, journey rebuild, writer or draft/focus reset. Actual bundle build0, expanded66/66 and whole original profile/language56/56 pass with0fail/cancel/skips/todo in2c085590. Independent standard-library native81 oracle85978870 executes10 persistence checks over nine pinned raw phases, including exact cold bytes, retained manual rows, independently hashed records/Kernel receipts and accounted asynchronous Save backups. Native81 still has the original UI defect; a rebuilt actual native after this correction remains required.
+
+Same parent outcome and30 paths; correction declarationf104a880 and clean11ad preflightb231e134 precede this edit. Next: commit the verified source correction, refresh exact bindings/gates, build and observe new actual native, then complete the original full delivery chain. No push/PR yet. Full Mac NOT_READY UNFROZEN all17 UNKNOWN; Word/native PAUSED, Black Box after full Mac. All older factual suffixes retained below.
+
+# CURRENT — Explicit Atlas project language admitted
+
+DOCUMENT_CLASS: FACTUAL_STATUS
+TASK: YALKEN_ATLAS_PROJECT_LANGUAGE_20261111
+BINDING_BASE_SHA: e04f8cbde42d6976a17adc1ff9aeade4d1107b77
+STATUS: ADMITTED_FOR_NEGATIVE_FIRST_SOURCE_WORK_NOT_RUNTIME_ACCEPTANCE
+
+PR2221 is CLOSED at exact e04f8cbd: candidate26/merged25 local expectations and20 CI jobs each, rebuilt merged native80/independent raw and guarded recovery oracles. Closure52c4502c and schema finalf3f35290 certify only the source-bound range journey; previous pending narrative remains historical. Full Mac NOT_READY, UNFROZEN, all17 qualification UNKNOWN.
+
+Fresh bootstrap2d8e6ca9 and provider5c5aa1ed, full normative/scoped factual reads and fresh storage/registry/clean remote/writer checks preserve canonical6decd915. Original language contract27/27 passes. Probe01 inert-host cancellation065746a8 is retained; probe02 only enables original rendererLoaded:true and genuinely RED1/1 ba355648: unpackaged project Set and packaged scene control succeed, packaged V15 project Set refuses SCENE_LANGUAGE_TAG_PAYLOAD_INVALID with full no-write. No source or native acceptance yet.
+
+Before first edit, exact30-path declaration5f055f40/preflight2046a4c6 passes. One new V16 outcome reuses existing project Core/commands/CAS/Flow, preserves all historical V1-V15, scene/range overrides and every manuscript byte. Black Box remains after full Mac. No engine/dependency/runtime network/new tracker/agents/chats or independent improvements. NEXT: maintained negative-first controls, bounded source and actual owned native proof, all mandatory gates/full normal delivery plus exact merged rebuild. Existing raw/errors/62 known profiles/33 bundles preserved; older missing bytes remain UNKNOWN.
+
+
+SOURCE_CHECKPOINT_01: Actual build0, input-stable expanded65/65 and original profile/language56/56 with0skips/todo/cancelled b8825a57. Displayed project inheritance/manual scene choice and protected source/authority/race paths are finite source proof. First-use, record-shape and inherited-read original failures are retained. Current companions, whole required gates, real native/independent reader and full delivery/merged rebuild remain pending; all17UNKNOWN.
+--- Earlier factual bytes and their original execution identities preserved below ---
+
 # CURRENT — Source-bound Atlas fragment language
 
 DOCUMENT_CLASS: FACTUAL_STATUS

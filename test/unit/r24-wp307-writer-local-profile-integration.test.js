@@ -14,10 +14,10 @@ function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 }
 
-test('V15 complete renderer bootstrap preserves every real historical factory and refuses near identities', async t => {
+test('V16 complete renderer bootstrap preserves every real historical factory and refuses near identities', async t => {
   const factories = Object.entries(profile).filter(([name, value]) => /^createWriter.*ProfileProjection$/u.test(name) && typeof value === 'function');
   const ids = [...new Set(factories.map(([, factory]) => factory({ isPackaged: true, platform: 'darwin' }).profileId))];
-  assert.equal(ids.length, 15);
+  assert.equal(ids.length, 16);
   for (const id of [...ids, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15.extra', ' WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15',
     'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14.extra', 'WRITER_LOCAL_UNKNOWN', '']) await t.test(id || 'empty', () => {
     const nodes = ['[data-mode="plan"]', '[data-mode="review"]', '[data-right-tab="comments"]', '[data-right-tab="atlas"]'].map(selector => ({
@@ -270,7 +270,7 @@ test('WP307 profile contract carries no persistence, network or external authori
 // Actual Main under an inert Electron host: no app/renderer/native launch.
 // Only the host platform is explicit so the packaged-Darwin policy is also
 // exercised on non-Mac CI; Kernel, project owner, lease and filesystem are real.
-async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false, historicalV7Constructor = false, historicalV8Constructor = false, historicalV9Constructor = false, historicalV10Constructor = false, historicalV11Constructor = false, historicalV13Constructor = false, historicalV14Constructor = false } = {}) {
+async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', rendererLoaded = false, historicalV7Constructor = false, historicalV8Constructor = false, historicalV9Constructor = false, historicalV10Constructor = false, historicalV11Constructor = false, historicalV13Constructor = false, historicalV14Constructor = false, historicalV15Constructor = false } = {}) {
   const os = require('node:os'), Module = require('node:module');
   const root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'yalken-full-mac-map-'));
   const marker = crypto.randomUUID(), markerPath = path.join(root, '.owner');
@@ -335,7 +335,7 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
           createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection,
           createWriterIdeaMeaningAuthoringProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection,
           createWriterSceneLanguageTagProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection,
-          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection };
+          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection, createWriterAtlasProjectLanguageProfileProjection: loaded.createWriterAtlasExplicitSuppressionProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV8Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin'); assert.equal(historicalV7Constructor, false);
@@ -344,7 +344,7 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
           createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection,
           createWriterIdeaMeaningAuthoringProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection,
           createWriterSceneLanguageTagProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection,
-          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection };
+          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection, createWriterAtlasProjectLanguageProfileProjection: loaded.createWriterAtlasReadSurfacesProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV9Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin'); assert.equal(historicalV7Constructor || historicalV8Constructor, false);
@@ -352,33 +352,40 @@ async function fullMacMainFixture(t, { packaged = true, platform = 'darwin', ren
         return { ...loaded, createWriterAtlasEntityCorrectionsProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection,
           createWriterIdeaMeaningAuthoringProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection,
           createWriterSceneLanguageTagProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection,
-          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection };
+          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection, createWriterAtlasProjectLanguageProfileProjection: loaded.createWriterAtlasTemporalAuthoringProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV10Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin'); assert.equal(historicalV7Constructor || historicalV8Constructor || historicalV9Constructor, false);
         t.diagnostic('HISTORICAL_V10_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
         return { ...loaded, createWriterIdeaMeaningAuthoringProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection,
           createWriterSceneLanguageTagProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection,
-          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection };
+          createWriterAtlasAssociationsProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection, createWriterAtlasProjectLanguageProfileProjection: loaded.createWriterAtlasEntityCorrectionsProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV11Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin');
         assert.equal(historicalV7Constructor || historicalV8Constructor || historicalV9Constructor || historicalV10Constructor, false);
         t.diagnostic('HISTORICAL_V11_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
         return { ...loaded, createWriterSceneLanguageTagProfileProjection: loaded.createWriterIdeaMeaningAuthoringProfileProjection,
-          createWriterAtlasAssociationsProfileProjection: loaded.createWriterIdeaMeaningAuthoringProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterIdeaMeaningAuthoringProfileProjection, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterIdeaMeaningAuthoringProfileProjection };
+          createWriterAtlasAssociationsProfileProjection: loaded.createWriterIdeaMeaningAuthoringProfileProjection, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterIdeaMeaningAuthoringProfileProjection, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterIdeaMeaningAuthoringProfileProjection, createWriterAtlasProjectLanguageProfileProjection: loaded.createWriterIdeaMeaningAuthoringProfileProjection };
+      }
+      if (request === './core/writer-local-profile-v1.cjs' && historicalV15Constructor) {
+        assert.equal(packaged, true); assert.equal(platform, 'darwin');
+        assert.equal(historicalV7Constructor || historicalV8Constructor || historicalV9Constructor || historicalV10Constructor
+          || historicalV11Constructor || historicalV13Constructor || historicalV14Constructor, false);
+        t.diagnostic('HISTORICAL_V15_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
+        return { ...loaded, createWriterAtlasProjectLanguageProfileProjection: loaded.createWriterAtlasRangeLanguageProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV14Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin');
         assert.equal(historicalV7Constructor || historicalV8Constructor || historicalV9Constructor || historicalV10Constructor || historicalV11Constructor || historicalV13Constructor, false);
         t.diagnostic('HISTORICAL_V14_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
-        return { ...loaded, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterAtlasGlobalCompositeProfileProjection };
+        return { ...loaded, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterAtlasGlobalCompositeProfileProjection, createWriterAtlasProjectLanguageProfileProjection: loaded.createWriterAtlasGlobalCompositeProfileProjection };
       }
       if (request === './core/writer-local-profile-v1.cjs' && historicalV13Constructor) {
         assert.equal(packaged, true); assert.equal(platform, 'darwin');
         assert.equal(historicalV7Constructor || historicalV8Constructor || historicalV9Constructor || historicalV10Constructor || historicalV11Constructor, false);
         t.diagnostic('HISTORICAL_V13_CONSTRUCTOR_SELECTION_NOT_CURRENT_MAIN_PROFILE_COVERAGE');
-        return { ...loaded, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasAssociationsProfileProjection, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterAtlasAssociationsProfileProjection };
+        return { ...loaded, createWriterAtlasGlobalCompositeProfileProjection: loaded.createWriterAtlasAssociationsProfileProjection, createWriterAtlasRangeLanguageProfileProjection: loaded.createWriterAtlasAssociationsProfileProjection, createWriterAtlasProjectLanguageProfileProjection: loaded.createWriterAtlasAssociationsProfileProjection };
       }
       if (request !== './main/projectArchiveDarwinPublication.cjs') return loaded;
       return { ...loaded, createDarwinExclusiveFilePublisher: options => {
@@ -2447,7 +2454,7 @@ test('actual V9 Source entity selection persists alias under the explicitly chos
 
 async function scopedAliasActualMainFixture(t) {
   const x = await reattachmentMainFixture(t, true), h = x.h;
-  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16');
   const key = (await import('../../src/product/stage10ProjectIdentityKey.mjs')).stage10ProjectPathIdentity(x.projectId);
   assert.equal(key.ok, true);
   const firstPayload = { projectId: x.projectId, entityId: x.entityId, aliasId: 'scoped-alias-original', value: 'Северная', scope: 'scene', sceneId: x.sceneId };
@@ -3236,6 +3243,149 @@ test('actual existing inspector query rejects malformed view options without wri
 const SCENE_LANGUAGE_V12 = 'WRITER_LOCAL_SCENE_LANGUAGE_TAG_V12';
 const SCENE_LANGUAGE_MAIN_IDS = Object.freeze(['atlas.languageTag.set', 'atlas.languageTag.clear']);
 
+test('project language V16 predecessor V15 preserves a saved project row and refuses both project mutations', async t => {
+  const h = await fullMacMainFixture(t, { rendererLoaded: true, historicalV15Constructor: true }), ui = await fullMacRendererCommandPort(h);
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  const f = await exactAtlasScene(h, 'Historical V15 project language'), raw = JSON.parse(fs.readFileSync(f.manifestPath));
+  const { hashCanonicalValue: hash } = await import('../../src/core/browser-safe-hash.mjs');
+  const record = { schemaVersion: 'atlas.languageTag.v1', id: 'historical-project-language', projectId: f.projectId, scopeKind: 'project',
+    sceneId: '', blockId: '', startOffset: 0, endOffset: 0, languageCode: 'ru-RU', note: '', source: 'author', manuscriptMutation: false,
+    createdByCommandSeq: 1, updatedByCommandSeq: 1 };
+  raw.atlas = { schemaVersion: 'atlas.author.v1', entities: {}, decisions: {}, savedQueries: {},
+    languageTags: { project: { ...record, sourceHash: hash(record) }, scenes: {}, blocks: {}, ranges: {} } };
+  fs.writeFileSync(f.manifestPath, JSON.stringify(raw));
+  const before = reattachmentWholeFixtureRoster(h), revision = 'sha256:' + crypto.createHash('sha256').update(fs.readFileSync(f.manifestPath)).digest('hex');
+  for (const commandId of SCENE_LANGUAGE_MAIN_IDS) {
+    const result = await ui(commandId, { projectId: f.projectId, scopeKind: 'project', expectedManifestRevision: revision,
+      tagId: record.id, expectedTagHash: hash(raw.atlas.languageTags.project), ...(commandId.endsWith('.set') ? { languageCode: 'en-US' } : {}) });
+    assert.equal(result.mainResult.ok, false); assert.deepEqual(reattachmentWholeFixtureRoster(h), before);
+  }
+});
+
+function projectLanguageMainPayload(x, commandId = 'atlas.languageTag.set', patch = {}) {
+  const record = JSON.parse(fs.readFileSync(x.f.manifestPath)).atlas?.languageTags?.project;
+  return { projectId: x.projectId, scopeKind: 'project', expectedManifestRevision: x.bound().expectedManifestRevision,
+    ...(commandId === 'atlas.languageTag.set' ? { languageCode: 'ru-RU' } : {}),
+    ...(record ? { tagId: record.id, expectedTagHash: x.hash(record) } : {}), ...patch };
+}
+
+test('project language V16 actual Main preserves whole scene and range footprint through replace clear and cold read', async t => {
+  const x = await sceneLanguageMainFixture(t, true);
+  await x.apply('atlas.languageTag.set', x.bound({ languageCode: 'de-DE' }));
+  await x.apply('atlas.languageTag.set', await rangeLanguageMainPayload(x));
+  const saved = authorIdentitySnapshot(x), siblings = structuredClone(saved.manifest.atlas.languageTags);
+  for (const languageCode of ['ru-RU', 'he']) {
+    await x.apply('atlas.languageTag.set', projectLanguageMainPayload(x, 'atlas.languageTag.set', { languageCode }));
+    const after = authorIdentitySnapshot(x), record = after.manifest.atlas.languageTags.project;
+    for (const key of ['scenes', 'blocks', 'ranges']) assertAuthorIdentityCanonical(after.manifest.atlas.languageTags[key], siblings[key]);
+    assert.deepEqual(after.scene, saved.scene);
+    assert.deepEqual((await x.query()).projectLanguageTag, { state: 'ready', reason: '',
+      manifestRevision: x.bound().expectedManifestRevision, tag: { id: record.id, languageCode, recordHash: x.hash(record) } });
+  }
+  const beforeCold = authorIdentitySnapshot(x);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.foreignProjectId })).ok, true);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  assert.equal((await x.h.main.handleUiOpenDocumentCommand({ projectId: x.projectId, nodeId: x.sceneId })).ok, true);
+  assertAuthorIdentityCanonical(authorIdentitySnapshot(x).manifest, beforeCold.manifest);
+  assert.equal((await x.query()).projectLanguageTag.tag.languageCode, 'he');
+  await x.apply('atlas.languageTag.clear', projectLanguageMainPayload(x, 'atlas.languageTag.clear'));
+  const afterClear = authorIdentitySnapshot(x);
+  assert.equal(afterClear.manifest.atlas.languageTags.project, null);
+  for (const key of ['scenes', 'blocks', 'ranges']) assertAuthorIdentityCanonical(afterClear.manifest.atlas.languageTags[key], siblings[key]);
+  assert.deepEqual(afterClear.scene, saved.scene);
+  assert.equal((await x.query()).projectLanguageTag.state, 'empty');
+});
+
+test('project language V16 actual Main initializes only empty scaffolding in a fresh native-shaped project', async t => {
+  const h = await fullMacMainFixture(t, { rendererLoaded: true }), ui = await fullMacRendererCommandPort(h);
+  const f = await exactAtlasScene(h, 'Fresh project language');
+  assert.equal(Object.hasOwn(JSON.parse(fs.readFileSync(f.manifestPath)), 'atlas'), false);
+  const before = JSON.parse(fs.readFileSync(f.manifestPath)), scene = fs.readFileSync(f.scenePath);
+  const revision = 'sha256:' + crypto.createHash('sha256').update(fs.readFileSync(f.manifestPath)).digest('hex');
+  const result = await ui('atlas.languageTag.set', { projectId: f.projectId, scopeKind: 'project', languageCode: 'ru-RU', expectedManifestRevision: revision });
+  assertTemporalMainReceipt(result.mainResult, 'atlas.languageTag.set');
+  const after = JSON.parse(fs.readFileSync(f.manifestPath)), protectedAfter = structuredClone(after);
+  delete protectedAfter.atlas;
+  if (Object.hasOwn(before, 'lastCommandId')) protectedAfter.lastCommandId = before.lastCommandId;
+  else delete protectedAfter.lastCommandId;
+  assert.equal(after.lastCommandId, (before.lastCommandId || 0) + 1);
+  assertAuthorIdentityCanonical(protectedAfter, before); assert.deepEqual(fs.readFileSync(f.scenePath), scene);
+  assert.equal(after.atlas.languageTags.project.languageCode, 'ru-RU');
+  assertAuthorIdentityCanonical(after.atlas.languageTags.scenes, {}); assertAuthorIdentityCanonical(after.atlas.languageTags.ranges, {});
+});
+
+test('project language V16 actual Main refuses raw malformed foreign stale and scene-shaped project intents without writes', async t => {
+  const patches = [
+    x => ({ projectId: x.foreignProjectId }), { projectId: 42 }, { scopeKind: 'project ' }, { scope: 'scene' },
+    x => ({ sceneId: x.sceneId }), x => ({ expectedSceneRevision: x.bound().expectedSceneRevision }), { blockId: 'block' },
+    { startOffset: 0 }, { rangeIntentVersion: 2 }, { unexpected: 'never authorized' },
+    { expectedManifestRevision: 'sha256:' + '0'.repeat(64) }, { expectedTagHash: '0'.repeat(64) },
+    (x, valid) => ({ tagId: valid.tagId + '-foreign' }), { languageCode: 'en_US' }, { languageCode: '' },
+  ];
+  for (let index = 0; index < patches.length; index++) await t.test('raw input ' + index, async t => {
+    const x = await sceneLanguageMainFixture(t, true); await x.apply('atlas.languageTag.set', projectLanguageMainPayload(x));
+    const valid = projectLanguageMainPayload(x), patch = typeof patches[index] === 'function' ? patches[index](x, valid) : patches[index];
+    const before = authorIdentitySnapshot(x), response = await x.ui('atlas.languageTag.set', { ...valid, ...patch });
+    assert.equal(response.mainResult.ok, false, JSON.stringify(patch));
+    assertSceneLanguagePersistence(x, before, authorIdentitySnapshot(x), 'atlas.languageTag.set', valid, false);
+  });
+});
+
+test('project language V16 actual Main refuses replacing unknown author fields without erasing them', async t => {
+  const x = await sceneLanguageMainFixture(t, true);
+  await x.apply('atlas.languageTag.set', projectLanguageMainPayload(x));
+  const raw = JSON.parse(fs.readFileSync(x.f.manifestPath));
+  raw.atlas.languageTags.project.futureAuthorData = { preserved: ['é', '🧭'] };
+  fs.writeFileSync(x.f.manifestPath, JSON.stringify(raw));
+  const before = authorIdentitySnapshot(x), response = await x.ui('atlas.languageTag.set', projectLanguageMainPayload(x));
+  assert.equal(response.mainResult.ok, false);
+  assertSceneLanguagePersistence(x, before, authorIdentitySnapshot(x), 'atlas.languageTag.set', {}, false);
+});
+
+for (const commandId of SCENE_LANGUAGE_MAIN_IDS) for (const phase of ['queued', 'prepared'])
+  for (const fault of ['capability', 'owner', 'manifest-cas', 'project-switch'])
+    test('project language V16 ' + commandId + ' refuses ' + phase + ' ' + fault + ' without replacing concurrent truth', async t => {
+      let armed = () => {}; const x = await sceneLanguageMainFixture(t, true, h => h.main.__host.afterTruth(() => armed()));
+      await x.apply('atlas.languageTag.set', projectLanguageMainPayload(x));
+      const payload = projectLanguageMainPayload(x, commandId); let reached = false, before;
+      const mutate = async () => {
+        reached = true;
+        if (fault === 'capability') x.h.main.__host.denyCapability('cap.atlas.languageTag.edit');
+        if (fault === 'owner') x.h.main.__host.revokeOwner();
+        if (fault === 'project-switch') assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.foreignProjectId })).ok, true);
+        if (fault === 'manifest-cas') {
+          const raw = JSON.parse(fs.readFileSync(x.f.manifestPath)); raw.concurrentProjectLanguageAuthor = { retained: 'é 🧭' };
+          fs.writeFileSync(x.f.manifestPath, JSON.stringify(raw));
+        }
+        before = authorIdentitySnapshot(x);
+      };
+      let result;
+      if (phase === 'prepared') { armed = mutate; result = await x.h.command(commandId, payload); }
+      else {
+        let enter, release; const ready = new Promise(r => { enter = r; }), gate = new Promise(r => { release = r; });
+        t.after(() => release()); const held = x.h.main.__host.holdProjectQueue(async () => { enter(); await gate; }); await ready;
+        let settled = false; const pending = x.h.command(commandId, payload).then(value => { settled = true; return value; });
+        await new Promise(setImmediate); assert.equal(settled, false); await mutate(); release(); await held; result = await pending;
+      }
+      assert.equal(reached, true); assert.equal(result.ok, false);
+      assertSceneLanguagePersistence(x, before, authorIdentitySnapshot(x), commandId, payload, false);
+    });
+
+test('project language V16 actual Main rejects malformed raw author buckets before normalization can invent emptiness', async t => {
+  for (const [name, damage] of [['false-project', p => { p.atlas.languageTags.project = false; }],
+    ['array-bucket', p => { p.atlas.languageTags = []; }],
+    ['invalid-creation-sequence', p => { p.atlas.languageTags.project.createdByCommandSeq = -1; }],
+    ['missing-record-checksum', p => { delete p.atlas.languageTags.project.sourceHash; }],
+    ['malformed-retained-note', p => { p.atlas.languageTags.project.note = { preserved: 'é 🧭' }; }],
+    ['unknown-sibling', p => { p.atlas.languageTags.futureAuthorTags = { preserved: 'é 🧭' }; }],
+    ['malformed-sibling', p => { p.atlas.languageTags.scenes = ['must remain exact']; }]]) await t.test(name, async t => {
+    const x = await sceneLanguageMainFixture(t, true); await x.apply('atlas.languageTag.set', projectLanguageMainPayload(x));
+    const raw = JSON.parse(fs.readFileSync(x.f.manifestPath)); damage(raw); fs.writeFileSync(x.f.manifestPath, JSON.stringify(raw));
+    const before = authorIdentitySnapshot(x), response = await x.ui('atlas.languageTag.set', projectLanguageMainPayload(x));
+    assert.equal(response.mainResult.ok, false); assertSceneLanguagePersistence(x, before, authorIdentitySnapshot(x), 'atlas.languageTag.set', {}, false);
+  });
+});
+
 async function rangeLanguageMainPayload(x, patch = {}) {
   const scene = require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(fs.readFileSync(x.f.scenePath, 'utf8')).text;
   const revision = x.bound();
@@ -3487,12 +3637,12 @@ async function sceneLanguageMainFixture(t, packaged = false, beforeProject, opti
   return x;
 }
 
-test('current literal Main selects exact V15 thirty-five commands and thirteen bounded queries', async t => {
+test('current literal Main selects exact V16 thirty-five commands and thirteen bounded queries', async t => {
   const h = await fullMacMainFixture(t), active = h.main.__profile();
-  assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15'); assert.equal(active.schemaVersion, 'writer-local-profile.v15');
+  assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16'); assert.equal(active.schemaVersion, 'writer-local-profile.v16');
   assert.deepEqual(active.admittedCommandIds, [...profile.createWriterIdeaMeaningAuthoringProfileProjection({ isPackaged: true, platform: 'darwin' }).admittedCommandIds, ...SCENE_LANGUAGE_MAIN_IDS, 'atlas.association.record']);
   assert.equal(active.admittedCommandIds.length, 35); assert.deepEqual(active.admittedQueryIds, [...READ_SURFACE_QUERY_IDS, 'query.atlasGlobalCompositeGraph']);
-  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  assert.equal(new URL(h.shellUrl).searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16');
   for (const key of ['optionalSystemsEnabled', 'signing', 'notarization', 'publicDistribution', 'dependencyAdoption', 'cloudAuthority', 'userDataMutation']) assert.equal(active[key], false);
 });
 
@@ -3694,7 +3844,7 @@ function rangeLanguageMainRenderer(x, projection) {
   try { vm.runInContext(read('src/renderer/flags.js'), c); }
   finally { c.document.querySelectorAll = oldQuery; c.document.addEventListener = oldAdd; }
   assert.equal(c.window.__PRODUCT_PROFILE, x.h.main.__profile().profileId, 'actual Main URL must survive the complete production renderer bootstrap');
-  assert.equal(c.document.body.dataset.productProfile, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  assert.equal(c.document.body.dataset.productProfile, 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16');
   c.renderAtlasJourneyState();
   const field = () => h.walk(c.atlasJourneyHost).find(node => node.dataset.rangeLanguageField === 'languageCode');
   const button = action => h.walk(c.atlasJourneyHost).find(node => node.dataset.rangeLanguageAction === action);
@@ -3758,17 +3908,110 @@ test('range language V15 form preserves failed draft and rejects stale capture a
   await h.click('discard'); assert.equal(h.unload().defaultPrevented, false);
 });
 
+function projectLanguageMainRenderer(x, projection) {
+  const h = rangeLanguageMainRenderer(x, projection), c = h.c;
+  const field = () => h.walk(c.atlasJourneyHost).find(node => node.dataset.projectLanguageField === 'languageCode');
+  const button = action => h.walk(c.atlasJourneyHost).find(node => node.dataset.projectLanguageAction === action);
+  const input = async value => { const node = field(); assert.ok(node, 'actual project language input'); node.value = value; await node.emit('input'); };
+  const click = async action => {
+    const node = button(action); assert.ok(node, 'actual project language action ' + action); assert.equal(node.disabled, false);
+    const count = h.packets.length; let index = c.tasks.length; await node.emit('click'); await new Promise(setImmediate);
+    while (index < c.tasks.length) { const pending = c.tasks.slice(index); index = c.tasks.length; await Promise.all(pending); }
+    return h.packets.length > count ? h.packets.at(-1) : null;
+  };
+  const unload = () => { const event = { defaultPrevented: false, preventDefault() { this.defaultPrevented = true; }, stopImmediatePropagation() {} };
+    c.guardProjectLanguageDraftUnload(event); return event; };
+  return { ...h, field, button, input, click, unload };
+}
+
+test('project language V16 actual dossier render follows scene Set Clear without rebuilding the journey or losing project draft', async t => {
+  const x = await sceneLanguageMainFixture(t, true), h = projectLanguageMainRenderer(x, await x.query()), c = h.c;
+  await h.input('de-DE'); assertTemporalMainReceipt((await h.click('set')).mainResult, 'atlas.languageTag.set');
+  const source = read('src/renderer/editor.js'), vm = require('node:vm');
+  const actual = name => {
+    const start = source.indexOf('function ' + name + '('), end = source.indexOf('\n}\n', start);
+    assert.ok(start >= 0 && end > start, name); return source.slice(start, end + 2);
+  };
+  c.atlasCurrentSceneHost = c.document.createElement('section'); c.document.body.append(c.atlasCurrentSceneHost);
+  // This finite host receives the already validated actual Main DTO. Analysis is
+  // an unrelated surface; the dossier renderer and both language forms are real.
+  c.normalizeAtlasCurrentSceneDossier = value => value;
+  c.renderAtlasLanguageAnalysis = () => c.document.createElement('section');
+  vm.runInContext(actual('appendAtlasText') + '\n' + actual('renderAtlasCurrentSceneState'), c);
+  const readCurrent = c.refreshAtlasCurrentScene;
+  c.refreshAtlasCurrentScene = async options => {
+    await readCurrent(options);
+    if (!options.isCurrent || options.isCurrent()) c.renderAtlasCurrentSceneState();
+  };
+  await h.input('it-IT'); const field = h.field(); field.focus();
+  const projectDraft = c.getProjectLanguageAuthorDraft(), sceneDraft = c.getSceneLanguageAuthorDraft();
+  assert.match(projectDraft.inheritance.textContent, /наследует язык проекта: de-DE/u);
+  for (const action of ['set', 'clear']) {
+    if (action === 'set') { sceneDraft.input.value = 'ru-RU'; await sceneDraft.input.emit('input'); }
+    const before = authorIdentitySnapshot(x); let index = c.tasks.length;
+    assert.equal(sceneDraft.actions[action].disabled, false); await sceneDraft.actions[action].emit('click');
+    await new Promise(setImmediate);
+    while (index < c.tasks.length) { const pending = c.tasks.slice(index); index = c.tasks.length; await Promise.all(pending); }
+    const response = h.packets.at(-1), command = 'atlas.languageTag.' + action;
+    assertTemporalMainReceipt(response.mainResult, command);
+    assertSceneLanguagePersistence(x, before, authorIdentitySnapshot(x), command, response.request.payload, true);
+    assert.match(projectDraft.inheritance.textContent, action === 'set' ? /У текущей сцены свой язык: ru-RU/u : /наследует язык проекта: de-DE/u);
+    assert.equal(h.field(), field); assert.equal(field.value, 'it-IT'); assert.equal(c.document.activeElement, field);
+    assert.equal(h.unload().defaultPrevented, true, 'query publication preserves unsaved project language');
+  }
+  const packets = h.packets.length; c.currentDocumentId = 'different-current-scene'; c.renderAtlasCurrentSceneState();
+  assert.match(projectDraft.inheritance.textContent, /Язык текущей сцены недоступен/u);
+  assert.equal(h.button('set').disabled, true); assert.equal(h.packets.length, packets);
+  assert.equal(field.value, 'it-IT'); assert.equal(c.document.activeElement, field);
+});
+
+test('project language V16 actual form bootstrap Set replace invalid input cold Clear and focus preserve physical truth', async t => {
+  const x = await sceneLanguageMainFixture(t, true); let h = projectLanguageMainRenderer(x, await x.query());
+  const field = h.field(); assert.ok(field); field.focus(); assert.equal(h.button('clear').disabled, true);
+  const originalHash = h.c.hashCanonicalValue; let calls = 0;
+  h.c.hashCanonicalValue = (...args) => { calls++; return originalHash(...args); };
+  await h.input('ru-RU'); assert.equal(calls, 0, 'project language typing does not hash project/read projections'); h.c.hashCanonicalValue = originalHash;
+  assert.equal(h.unload().defaultPrevented, true); h.c.renderAtlasJourneyState();
+  assert.equal(h.field(), field); assert.equal(h.c.document.activeElement, field);
+  for (const languageCode of ['ru-RU', 'de-DE']) {
+    await h.input(languageCode); const before = authorIdentitySnapshot(x), response = await h.click('set'), after = authorIdentitySnapshot(x);
+    assertTemporalMainReceipt(response.mainResult, 'atlas.languageTag.set');
+    assertSceneLanguagePersistence(x, before, after, 'atlas.languageTag.set', response.request.payload, true);
+    assert.equal(Object.hasOwn(response.request.payload, 'sceneId'), false);
+    assert.equal(Object.hasOwn(response.request.payload, 'expectedSceneRevision'), false);
+    assert.match(h.c.getProjectLanguageAuthorDraft().saved.textContent, new RegExp(languageCode));
+    assert.match(h.c.getProjectLanguageAuthorDraft().inheritance.textContent, new RegExp('наследует язык проекта: ' + languageCode));
+    assert.equal(h.unload().defaultPrevented, false);
+  }
+  await x.apply('atlas.languageTag.set', x.bound({ languageCode: 'he' }));
+  await h.c.refreshAtlasCurrentScene({}); h.c.renderAtlasJourneyState();
+  assert.match(h.c.getProjectLanguageAuthorDraft().inheritance.textContent, /У текущей сцены свой язык: he/u);
+  await h.input('en_US'); const beforeInvalid = authorIdentitySnapshot(x), rejected = await h.click('set');
+  assert.equal(rejected.mainResult.ok, false); assert.deepEqual(authorIdentitySnapshot(x).roster, beforeInvalid.roster);
+  assert.equal(h.field().value, 'en_US'); assert.equal(h.unload().defaultPrevented, true); await h.click('discard');
+  assert.equal(h.unload().defaultPrevented, false);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.foreignProjectId })).ok, true);
+  assert.equal((await x.h.main.handleProjectLifecycleOpenCommand({ projectId: x.projectId })).ok, true);
+  assert.equal((await x.h.main.handleUiOpenDocumentCommand({ projectId: x.projectId, nodeId: x.sceneId })).ok, true);
+  h = projectLanguageMainRenderer(x, await x.query()); assert.match(h.c.getProjectLanguageAuthorDraft().saved.textContent, /de-DE/u);
+  const before = authorIdentitySnapshot(x), response = await h.click('clear'), after = authorIdentitySnapshot(x);
+  assertTemporalMainReceipt(response.mainResult, 'atlas.languageTag.clear');
+  assertSceneLanguagePersistence(x, before, after, 'atlas.languageTag.clear', response.request.payload, true);
+  assert.match(h.c.getProjectLanguageAuthorDraft().inheritance.textContent, /У текущей сцены свой язык: he/u);
+  assert.equal(h.button('clear').disabled, true); assert.equal(h.unload().defaultPrevented, false);
+});
+
 function sceneLanguageMainRenderer(x, projection) {
   const h = ideaMeaningMainRenderer(x, projection), c = h.c, vm = require('node:vm'), source = read('src/renderer/editor.js');
   const actual = name => { const start = new RegExp('^(?:async )?function ' + name + '\\(', 'm').exec(source);
     assert.ok(start, 'actual language helper ' + name); const end = source.indexOf('\n}\n', start.index); assert.ok(end > start.index); return source.slice(start.index, end + 2); };
-  for (const match of source.matchAll(/^(?:let|const) (\w*(?:[Ss]ceneLanguage|SCENE_LANGUAGE)\w*) = /gm)) {
+  for (const match of source.matchAll(/^(?:let|const) (\w*(?:[Ss]ceneLanguage|SCENE_LANGUAGE|[Pp]rojectLanguage|PROJECT_LANGUAGE)\w*) = /gm)) {
     const end = source.indexOf(';\n', match.index); assert.ok(end > match.index && end - match.index < 12000); vm.runInContext(source.slice(match.index, end + 1), c);
   }
-  const names = [...source.matchAll(/^(?:async )?function (\w*[Ss]ceneLanguage\w*)\(/gm)].map(match => match[1]);
+  const names = [...source.matchAll(/^(?:async )?function (\w*(?:[Ss]ceneLanguage|[Pp]rojectLanguage)\w*)\(/gm)].map(match => match[1]);
   assert.ok(names.includes('getSceneLanguageAuthorForm'), 'missing production language form is an assertion gap, not a fixture exception');
   vm.runInContext(names.map(actual).join('\n'), c);
-  for (const match of source.matchAll(/^async function (\w*[Ss]ceneLanguage\w*)\(/gm)) {
+  for (const match of source.matchAll(/^async function (\w*(?:[Ss]ceneLanguage|[Pp]rojectLanguage)\w*)\(/gm)) {
     const run = c[match[1]]; c[match[1]] = (...args) => { const p = run(...args); c.tasks.push(p); return p; };
   }
   c.window.__PRODUCT_PROFILE = SCENE_LANGUAGE_V12; c.currentAtlasSurface = 'journey'; c.renderAtlasJourneyState();
@@ -4498,11 +4741,11 @@ test('ENV epoch actual unchanged guarded Main refuses capture and restore before
     actualEpochIds: restored.history.epochs.map(row => row.epochId), priorRecordsUnchanged: true, protectedRosterUnchanged: true, nativeAcceptance: false }));
 });
 
-test('ENV epoch query absence is genuine read-only empty0 and both commands remain FREE under current strict V15', async t => {
+test('ENV epoch query absence is genuine read-only empty0 and both commands remain FREE under current strict V16', async t => {
   const x = await environmentEpochFixture(t), before = environmentEpochWholeRoster(x.h), current = await x.epochRead();
   assert.equal(current.revision, 0); assert.deepEqual(current.epochs, []); assert.equal(fs.existsSync(x.epochPath), false);
   assert.deepEqual(environmentEpochWholeRoster(x.h), before);
-  const active = x.h.main.__profile(); assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  const active = x.h.main.__profile(); assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16');
   assert.equal(active.admittedCommandIds.length, 35); assert.equal(active.admittedQueryIds.length, 13);
   const entitlement = require('../../src/core/entitlement-law-v1.cjs');
   for (const id of [ENVIRONMENT_EPOCH_CAPTURE, ENVIRONMENT_EPOCH_RESTORE]) {
@@ -4741,7 +4984,7 @@ async function environmentEpochSettingsRenderer(x, { actualAggregation = false }
     emit(name) { return this.listeners[name]?.({ target: this }); }
   }
   document.createElement = tag => new Element(tag); document.body = new Element('body');
-  assert.equal(x.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  assert.equal(x.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16');
   const c = { document, HTMLElement: Element, window: { __PRODUCT_PROFILE: 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13' }, console,
     currentProjectId: x.projectId, currentDocumentId: x.sceneId, currentTreeContentPublicationId: 'actual-main-scene',
     localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false,
@@ -5177,7 +5420,7 @@ test('THEME summary valid historical V1 profile remains an actual allowed Theme 
   const active = f.x.h.main.__profile(); assert.equal(active.profileId, 'WRITER_LOCAL_V1');
   assert.equal(profile.evaluateWriterLocalCommandAccess({ profile: active, commandId: THEME_SUMMARY_COMMAND_ID }).allowed, true);
   // Match the existing valid V1 Main projection with its expected caller identity; a stale current caller is a different negative.
-  const frame = new URL(f.x.h.shellUrl); assert.equal(frame.searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  const frame = new URL(f.x.h.shellUrl); assert.equal(frame.searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16');
   frame.searchParams.set('PRODUCT_PROFILE', active.profileId); f.x.h.shellUrl = frame.href;
   f.c.window.__PRODUCT_PROFILE = active.profileId;
   await f.change('dark'); assertThemeSummaryApplied(f, t, 'ACTUAL_VALID_V1_POLICY_CONTROL'); assertThemeSummaryNoLoss(f, before);
@@ -6501,7 +6744,7 @@ test('Atlas Time partial input preserves existing fields through the actual Comm
 
 test('composite actual Main: saved source graph is explicitly queried with complete no-write footprint', async t => {
   const h = await fullMacMainFixture(t), f = await exactAtlasScene(h, 'Composite saved source');
-  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16');
   const before = h.roster();
   const hidden = await h.query('query.atlasGlobalCompositeGraph', { projectId: f.projectId });
   assert.equal(hidden.ok, false); assert.deepEqual(h.roster(), before);

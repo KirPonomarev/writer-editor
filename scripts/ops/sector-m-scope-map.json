@@ -605,7 +605,9 @@
       "test/unit/atlas-global-composite.test.js",
       "docs/tasks/2026-11-11--atlas-range-language.md",
       "src/core/atlas-language-range-tag-v2.mjs",
-      "src/derived/atlas/deriveAtlasMixedLanguageRouter.mjs"
+      "src/derived/atlas/deriveAtlasMixedLanguageRouter.mjs",
+      "docs/tasks/2026-11-11--atlas-project-language.md",
+      "test/unit/atlas-project-language.test.js"
     ]
   },
   "allowPrefixByPhase": {
