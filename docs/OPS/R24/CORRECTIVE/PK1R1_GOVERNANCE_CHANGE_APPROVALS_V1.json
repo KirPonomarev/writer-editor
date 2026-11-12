@@ -4656,5 +4656,75 @@
       "approvedBy": "owner-delegated-codex:YALKEN_SECTOR_M_DOCTOR_QUERY_COST_20261112",
       "approvedAtUtc": "2026-11-12T19:37:35.842Z",
       "rationale": "Standing explicit owner delegation for development and future exact technical witnesses. Doctor query task26 paths declaration9b8c295f/preflight97cf2dc8; original CLI RED38f17c78 and identical GREEN690dd92c, same real callers2/2 measured24.233s to0.700s667a2d8a. Original evaluator/domain/full-gate bytes preserved. Unchanged finalizer proposal73cb1465/apply355ae3a2 refreshes current metadata only. Full required software, normal protected delivery and exact merged proof remain pending; no scoped full PASS or native acceptance. Full Mac NOT_READY17UNKNOWN; no signing/publication authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "cb498b96511648d46f6bfee17feb9bf2595a34b491d6542d003a816def17ad1a",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_FLOW_OPEN_NO_LOSS_20261113",
+      "approvedAtUtc": "2026-11-12T23:04:19.053Z",
+      "rationale": "Standing explicit owner authorization for development and future exact technical SHA witnesses. One20-path whole-book no-loss chain, declaration0cb4b951/preflightf0ebd932; source RED4797cdb2 and selected-project RED07a332ed precede complete source22/22 and whole affected312/312 with independent9fd54446. Original Main/editor bytes have exact inverses and all11 old tests stay byte-exact. Unchanged finalizer proposal2d1b698a/apply8245a1c2 refreshes metadata only. Full required current software, rebuilt actual native and normal protected delivery/merged proof remain pending. Full Mac NOT_READY17UNKNOWN; no signing/publication or new authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "2113f881e9966da2cbfa0c6ad05817642c2bb2605b5e05f72d1a3d00bbfd533f",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_FLOW_OPEN_NO_LOSS_20261113",
+      "approvedAtUtc": "2026-11-12T23:04:19.053Z",
+      "rationale": "Standing explicit owner authorization for development and future exact technical SHA witnesses. One20-path whole-book no-loss chain, declaration0cb4b951/preflightf0ebd932; source RED4797cdb2 and selected-project RED07a332ed precede complete source22/22 and whole affected312/312 with independent9fd54446. Original Main/editor bytes have exact inverses and all11 old tests stay byte-exact. Unchanged finalizer proposal2d1b698a/apply8245a1c2 refreshes metadata only. Full required current software, rebuilt actual native and normal protected delivery/merged proof remain pending. Full Mac NOT_READY17UNKNOWN; no signing/publication or new authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "c2de92c295dd0a73c4c1b1ab97a6fb6ebd66f17c5d3b8e2f1813d6d918cb4e81",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_FLOW_OPEN_NO_LOSS_20261113",
+      "approvedAtUtc": "2026-11-12T23:04:19.053Z",
+      "rationale": "Standing explicit owner authorization for development and future exact technical SHA witnesses. One20-path whole-book no-loss chain, declaration0cb4b951/preflightf0ebd932; source RED4797cdb2 and selected-project RED07a332ed precede complete source22/22 and whole affected312/312 with independent9fd54446. Original Main/editor bytes have exact inverses and all11 old tests stay byte-exact. Unchanged finalizer proposal2d1b698a/apply8245a1c2 refreshes metadata only. Full required current software, rebuilt actual native and normal protected delivery/merged proof remain pending. Full Mac NOT_READY17UNKNOWN; no signing/publication or new authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
+      "sha256": "54567c5b3e3c38356d1e5637584a979d6d0fdb3bd89cf5e81324a28f8056da0f",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_FLOW_OPEN_NO_LOSS_20261113",
+      "approvedAtUtc": "2026-11-12T23:04:19.053Z",
+      "rationale": "Standing explicit owner authorization for development and future exact technical SHA witnesses. One20-path whole-book no-loss chain, declaration0cb4b951/preflightf0ebd932; source RED4797cdb2 and selected-project RED07a332ed precede complete source22/22 and whole affected312/312 with independent9fd54446. Original Main/editor bytes have exact inverses and all11 old tests stay byte-exact. Unchanged finalizer proposal2d1b698a/apply8245a1c2 refreshes metadata only. Full required current software, rebuilt actual native and normal protected delivery/merged proof remain pending. Full Mac NOT_READY17UNKNOWN; no signing/publication or new authority."
+    },
+    {
+      "filePath": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
+      "sha256": "7d2220dc67901ceae77c561ff83d44c38f4e87fbbc20d49407ab262866744222",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_FLOW_OPEN_NO_LOSS_20261113",
+      "approvedAtUtc": "2026-11-12T23:04:19.053Z",
+      "rationale": "Standing explicit owner authorization for development and future exact technical SHA witnesses. One20-path whole-book no-loss chain, declaration0cb4b951/preflightf0ebd932; source RED4797cdb2 and selected-project RED07a332ed precede complete source22/22 and whole affected312/312 with independent9fd54446. Original Main/editor bytes have exact inverses and all11 old tests stay byte-exact. Unchanged finalizer proposal2d1b698a/apply8245a1c2 refreshes metadata only. Full required current software, rebuilt actual native and normal protected delivery/merged proof remain pending. Full Mac NOT_READY17UNKNOWN; no signing/publication or new authority."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "09c476ad618b5a03e6075895995cab6047111ee19b85bc15adce2970a1f44a1e",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_FLOW_OPEN_NO_LOSS_20261113",
+      "approvedAtUtc": "2026-11-12T23:04:19.053Z",
+      "rationale": "Standing explicit owner authorization for development and future exact technical SHA witnesses. One20-path whole-book no-loss chain, declaration0cb4b951/preflightf0ebd932; source RED4797cdb2 and selected-project RED07a332ed precede complete source22/22 and whole affected312/312 with independent9fd54446. Original Main/editor bytes have exact inverses and all11 old tests stay byte-exact. Unchanged finalizer proposal2d1b698a/apply8245a1c2 refreshes metadata only. Full required current software, rebuilt actual native and normal protected delivery/merged proof remain pending. Full Mac NOT_READY17UNKNOWN; no signing/publication or new authority."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/interop-current-certification-deltas.mjs",
+      "sha256": "9e0dbb052aef66d86b2a4c85f75b4a49a26d48b79603e83dd34bb6749615af3f",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_FLOW_OPEN_NO_LOSS_20261113",
+      "approvedAtUtc": "2026-11-12T23:04:19.053Z",
+      "rationale": "Standing explicit owner authorization for development and future exact technical SHA witnesses. One20-path whole-book no-loss chain, declaration0cb4b951/preflightf0ebd932; source RED4797cdb2 and selected-project RED07a332ed precede complete source22/22 and whole affected312/312 with independent9fd54446. Original Main/editor bytes have exact inverses and all11 old tests stay byte-exact. Unchanged finalizer proposal2d1b698a/apply8245a1c2 refreshes metadata only. Full required current software, rebuilt actual native and normal protected delivery/merged proof remain pending. Full Mac NOT_READY17UNKNOWN; no signing/publication or new authority."
+    },
+    {
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "sha256": "28eaf4550c921837f7fce6b593d50f052e91a295a3d4221ae5617b505ad136fa",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_FLOW_OPEN_NO_LOSS_20261113",
+      "approvedAtUtc": "2026-11-12T23:04:19.053Z",
+      "rationale": "Standing explicit owner authorization for development and future exact technical SHA witnesses. One20-path whole-book no-loss chain, declaration0cb4b951/preflightf0ebd932; source RED4797cdb2 and selected-project RED07a332ed precede complete source22/22 and whole affected312/312 with independent9fd54446. Original Main/editor bytes have exact inverses and all11 old tests stay byte-exact. Unchanged finalizer proposal2d1b698a/apply8245a1c2 refreshes metadata only. Full required current software, rebuilt actual native and normal protected delivery/merged proof remain pending. Full Mac NOT_READY17UNKNOWN; no signing/publication or new authority."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "05ba29f285cd2e322f03245543dc3565f9e2ff557efb2c97c11375ec23e5711e",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_FLOW_OPEN_NO_LOSS_20261113",
+      "approvedAtUtc": "2026-11-12T23:04:19.053Z",
+      "rationale": "Standing explicit owner authorization for development and future exact technical SHA witnesses. One20-path whole-book no-loss chain, declaration0cb4b951/preflightf0ebd932; source RED4797cdb2 and selected-project RED07a332ed precede complete source22/22 and whole affected312/312 with independent9fd54446. Original Main/editor bytes have exact inverses and all11 old tests stay byte-exact. Unchanged finalizer proposal2d1b698a/apply8245a1c2 refreshes metadata only. Full required current software, rebuilt actual native and normal protected delivery/merged proof remain pending. Full Mac NOT_READY17UNKNOWN; no signing/publication or new authority."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "771a4a33a06e40a786813ff5e0c6a67cc439fd98f77cdd24bcaf06aa1de0b926",
+      "approvedBy": "owner-delegated-codex:YALKEN_WRITER_FLOW_OPEN_NO_LOSS_20261113",
+      "approvedAtUtc": "2026-11-12T23:04:19.053Z",
+      "rationale": "Standing explicit owner authorization for development and future exact technical SHA witnesses. One20-path whole-book no-loss chain, declaration0cb4b951/preflightf0ebd932; source RED4797cdb2 and selected-project RED07a332ed precede complete source22/22 and whole affected312/312 with independent9fd54446. Original Main/editor bytes have exact inverses and all11 old tests stay byte-exact. Unchanged finalizer proposal2d1b698a/apply8245a1c2 refreshes metadata only. Full required current software, rebuilt actual native and normal protected delivery/merged proof remain pending. Full Mac NOT_READY17UNKNOWN; no signing/publication or new authority."
     }
 ],"evidenceStampIds":["ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1","ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1","ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1","ES-R24-INTEROP-P03-MAIN40A688-RESYNC","ES-R24-O01-O08-SOURCE-RUNTIME-ORACLE-HARDENING-20260912","ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS","ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1","ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS","ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF","ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION","ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION","ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS","ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS","ES-R24-RCV00B-SUCCESSOR-ADMISSIONS","ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS","ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS","ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS","ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS","ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD","ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY","ES-R24-W0-CURRENT-STATE-CLOSURE","ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS","R24_MERGE_GATE_C1C_DEPENDENCY_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_CLAIM_LINT_REPAIR_20260914","R24_MERGE_GATE_INVENTORY_LF_REPAIR_20260914","C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915","C4_SOURCE_RUNTIME_CI_GOVERNANCE_REPAIR_20260915","C4_SOURCE_RUNTIME_POSTMERGE_REPAIR_20260915","OWN_SEQUENTIAL_C4_ADMISSION_REPAIR_20260915","OWN_SEQUENTIAL_C4_BEHAVIOR_CONTRACT_20260915"],"sourcePlanRoles":{"compiledProgramFileDigest":"da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a","externalSourcePlanDigest":"1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a","rolesDistinct":true},"version":"v1.0"}

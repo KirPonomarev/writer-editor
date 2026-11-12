@@ -1,3 +1,11 @@
+# Source checkpoint — whole-book open no-loss
+
+Maintained22 and whole affected312 pass0skip/todo; independent9fd54446 reconstructs all original Main/editor bytes and retains11 old tests. Real selected-project RED corrected; canonical Save/current read/publication guard and renderer rebuilt. No native/current-candidate/delivery acceptance yet; same20 paths and all old data/errors preserved.
+
+# 2026-11-13 — Whole-book open no-loss admission
+
+PR2225 fully closed at d0d8d728; final e78ea66a, closure f8f6e45e, physical98fe2eeb and both20/18 CI. New sole-executor20-path no-loss book-open task has fresh declaration/preflight, all8 actual admission and physical10126/74/44 preservation before write. Actual original publication function overwrites newer/context-replaced text; no product fix/native acceptance yet. Existing read remains read-only and all full-Mac17UNKNOWN limits stay.
+
 SOURCE_CHECKPOINT_01: maintained original CLI RED38f17c78 lacks explicit query scope; identical contract GREEN690dd92c passes1/1 in0.384s. Same two real callers667a2d8a pass2/2 in0.700s versus24.233s BEFOREc1cf2b51 (one sample97.1percent). Eleven inserted doctor lines and nine literal argv/completion bindings have exact original inverses; evaluators/domain assertions/full M7 path unchanged. New actual full-vector/hostile/strict-delivery and complete software/delivery proofs remain pending. Original preparation guard error (two close cases share one spawn) retained and corrected without changing either case. All original data/errors and full Mac17UNKNOWN limits remain.
 
 ## 2026-11-12 — PR2224 closure and one doctor query task

@@ -1236,6 +1236,7 @@ let leftRailOverlayReturnFocus = null;
 let rightRailAdaptiveMode = '';
 let rightRailOverlayOpen = false;
 let rightRailOverlayReturnFocus = null;
+let flowModeOpenRequest = null;
 let flowModeState = {
   active: false,
   scenes: [],
@@ -8473,43 +8474,59 @@ async function handleFlowModeOpenUiPath() {
     return;
   }
 
-  const openResult = await runFlowOpenCommand();
-  if (!openResult.ok) return;
+  const request = {}, projectId = currentProjectId, documentId = currentDocumentId;
+  const publication = currentTreeContentPublicationId, generation = localEditGeneration;
+  let expectedFlow = flowModeState;
+  flowModeOpenRequest = request;
+  const isCurrent = () => flowModeOpenRequest === request && projectId === currentProjectId
+    && documentId === currentDocumentId && publication === currentTreeContentPublicationId
+    && generation === localEditGeneration && expectedFlow === flowModeState;
+  try {
+    if (localDirty) {
+      const saved = await dispatchUiCommand(COMMAND_IDS.PROJECT_SAVE);
+      if (!isCurrent() || saved?.ok !== true || saved.value?.cancelled === true || saved.value?.saved === false) return;
+    }
+    const openResult = await runFlowOpenCommand();
+    if (!isCurrent() || !openResult.ok) return;
 
-  const scenes = normalizeFlowSceneRefs(openResult.value && openResult.value.scenes);
-  if (!scenes.length) {
-    updateStatusText(FLOW_OPEN_ERROR_MESSAGE);
-    return;
+    const scenes = normalizeFlowSceneRefs(openResult.value && openResult.value.scenes);
+    if (!scenes.length) {
+      updateStatusText(FLOW_OPEN_ERROR_MESSAGE);
+      return;
+    }
+    const projection = composeFlowReadProjection(scenes);
+
+    flowModeState = {
+      active: true,
+      scenes: scenes.map((scene) => ({
+        path: scene.path,
+        sceneId: scene.sceneId,
+        nodeId: scene.nodeId,
+        baselineHash: scene.baselineHash,
+        title: scene.title,
+        kind: scene.kind,
+        missing: scene.missing,
+        partial: scene.partial,
+        content: scene.content,
+      })),
+      projection,
+      dirty: false,
+    };
+    expectedFlow = flowModeState;
+    syncFlowViewModeButtons();
+
+    setPlainText(projection.text || composeFlowDocument(scenes));
+    updateWordCount();
+    localDirty = false;
+    lastAckedGeneration = generation;
+    await invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: false });
+    if (!isCurrent()) return;
+    showEditorPanelFor('Непрерывно');
+    const partialSuffix = projection.partial ? ' · есть недоступные сцены' : '';
+    updateStatusText(`${buildFlowModeM9KickoffStatus('open', scenes.length, { m8Kickoff: true, m9Kickoff: true })}${partialSuffix}`);
+  } finally {
+    if (flowModeOpenRequest === request) flowModeOpenRequest = null;
   }
-
-  const projection = composeFlowReadProjection(scenes);
-
-  flowModeState = {
-    active: true,
-    scenes: scenes.map((scene) => ({
-      path: scene.path,
-      sceneId: scene.sceneId,
-      nodeId: scene.nodeId,
-      baselineHash: scene.baselineHash,
-      title: scene.title,
-      kind: scene.kind,
-      missing: scene.missing,
-      partial: scene.partial,
-      content: scene.content,
-    })),
-    projection,
-    dirty: false,
-  };
-  syncFlowViewModeButtons();
-
-  setPlainText(projection.text || composeFlowDocument(scenes));
-  updateWordCount();
-  localDirty = false;
-  lastAckedGeneration = localEditGeneration;
-  await invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: false });
-  showEditorPanelFor('Непрерывно');
-  const partialSuffix = projection.partial ? ' · есть недоступные сцены' : '';
-  updateStatusText(`${buildFlowModeM9KickoffStatus('open', scenes.length, { m8Kickoff: true, m9Kickoff: true })}${partialSuffix}`);
 }
 
 async function handleFlowModeSaveUiPath() {

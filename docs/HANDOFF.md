@@ -1,3 +1,20 @@
+SOURCE_CHECKPOINT_01: actual complete maintained source22/22 and whole12-file affected312/312 pass with0fail/cancel/skip/todo in5a696433/66c79790; independent std reader9fd54446 verifies every case and exact original Main/editor inverses plus all11 old test files. Actual original Main named-project control07a332ed returns default Alpha/Beta instead of selected content before the fix. Canonical Save now precedes the existing read when needed, read itself remains write-free, current owner/session/project/document/generation/request guards reject stale publication; normal missing legacy rows stay explicit. Renderer build7ec8a86f yields bundle1654c6b8; all7 original bridge cases pass1d2ff1b9. Initial authored-regex/dataset faults and original RED7d5244f8/4797cdb2 are retained. Same20 paths; current companions, immutable candidate/full software, actual rebuilt native and normal delivery/merged proof still pending. FullMac NOT_READY UNFROZEN17UNKNOWN.
+
+# CURRENT — PR2225 closed; whole-book open no-loss transition admitted
+
+TASK_ID: YALKEN_WRITER_FLOW_OPEN_NO_LOSS_20261113
+BINDING_BASE_SHA: d0d8d728839821c678af27e2fe32f1049b00ed60
+DOCUMENT_CLASS: FACTUAL_STATUS
+STATUS: ADMITTED_FOR_NEGATIVE_FIRST_SOURCE_WORK_NOT_RUNTIME_ACCEPTANCE
+
+PR2225 is CLOSED at d0d8d728/treeb1c9b2e9, candidate2514e008: schema finale78ea66a, closuref8f6e45e, physical98fe2eeb; candidate and merged CI20/18 actual checkouts. Full candidate default4776/4717/59 old uncovered skips, C1C335/officialRTK4427; actual merged affected31/C1C335. Whole two callers24.233s to0.700s is one97.11percent observation; complete default1923.985s to1794.019s is one6.755percent host observation, no universal/delivery-speed claim. Earlier doctor pending blocks are historical. Original source/errors and74 known closed profiles44 whole bundles remain.
+
+Fresh new-scope bootstrapdad0de18, full ordered normative/scoped factual2B reads and20-path declaration0cb4b951/preflightf0ebd932 precede this write. All8 current unchanged admission processes returned0 inca07d645 (namespace64/early45/public13,0skip/todo/cancel); physicalbb838aae re-read10126 sources74 profiles44 bundles,35 historical missing-byte UNKNOWNs preserved. UUID-verified encrypted T7/writable T777, fresh remote main d0d8 and no competing writer; canonical owner6de untouched. Sole executor, no agents/chats/timers.
+
+Original actual publication functionc5417208 at editor70cc5fc9 replaces late/new-project/new-document buffers and falsely advances their saved coordinate; clean/refused controls pass. This is finite source diagnosis, not actual native/full-route acceptance. One existing whole-book no-loss outcome now admits maintained negative-first route tests and minimal canonical Save/current-context guarded read/publication. Book read remains read-only; no new writer, command, dependency, visual language or qualification claim. Current source/native/full software and ordinary protected delivery/merged rebuild remain required. FullMac NOT_READY UNFROZEN all17UNKNOWN; Word/nativeOffice PAUSED, Black Box after full Mac.
+
+NEXT: task E0, maintained actual-source/Main/registry no-loss RED before any product edit. Preserve every previous body and its original identity below.
+
 SOURCE_CHECKPOINT_01: maintained original CLI RED38f17c78 lacks explicit query scope; identical contract GREEN690dd92c passes1/1 in0.384s. Same two real callers667a2d8a pass2/2 in0.700s versus24.233s BEFOREc1cf2b51 (one sample97.1percent). Eleven inserted doctor lines and nine literal argv/completion bindings have exact original inverses; evaluators/domain assertions/full M7 path unchanged. New actual full-vector/hostile/strict-delivery and complete software/delivery proofs remain pending. Original preparation guard error (two close cases share one spawn) retained and corrected without changing either case. All original data/errors and full Mac17UNKNOWN limits remain.
 
 # CURRENT — PR2224 closed; one doctor query optimization admitted
