@@ -1,3 +1,7 @@
+KEYBOARD_SOURCE_CHECKPOINT_02: Actual RED7/9 db6271de -> Home9/9 2e66f3af and affected38/38 6808598d;13 valid mutants killed941f45a5 and exact inverseb9c0b18f preserve source. Native87 is NOT_ACCEPTED; successor rebuild/full software/normal delivery remain pending.
+
+KEYBOARD_REPAIR_ADMISSION_01: actual native87 data/Unicode/cold diagnosticsbcae15e3 retain Escape/focus blocker, no native acceptance. Closed own87a2ba33b6 and preservation047b938c keep69 profiles39 bundles. Same19 paths declaration9d18bd01/preflight6c7c6f88 precede local existing-form key/focus repair; full software/native/delivery pending.
+
 SOURCE_CHECKPOINT_01: Actual maintained RED6/7 -> Home GREEN7/7; exact production inverse preserved. Expanded34/40 retains6 historical fixed-archive C6B environment refusals; no complete PASS. Current metadata/full software/native/delivery pending.
 
 ## 2026-11-12 — Home Create existing-form binding

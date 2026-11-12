@@ -1,4 +1,4 @@
-# Home New opens the existing named-project create form
+# Home Create opens the existing form with keyboard cancellation
 
 TASK_ID: YALKEN_WRITER_HOME_CREATE_20261112
 TYPE: CORE
@@ -35,6 +35,12 @@ Exact19-path declaration46b98f5a, clean source preflightf4dae38e and pre-edit bi
 
 SOURCE_CHECKPOINT_01: Maintained RED0b0cf7a0 is6/7pass and fails only promised form opening. Corrected Home action/handler/generated bundle whole7/7 f1ed54e1 and exact inverse3efa41b5 preserve all other production bytes. Extra historical C6B probes are34/40 with6 E_ELECTRON_ARCHIVE_AMBIGUOUS:0 failures for fixed40.9.2 archive; original raw and unchanged helpers retained, no PASS claimed. Current mandatory software/native/delivery remain pending.
 
+KEYBOARD_REPAIR_ADMISSION_01: Current clean50fb actual native87/f4b16713, ASAR e6a69a91 and official1488 reader25a9c7c5 prove Home form/name focus, empty refusal, keyboard named-project creation, exact Unicode/NFD Save/cold and two normal exits0. Independent std diagnosticbcae15e3 explicitly refuses native acceptance: Escape leaves the existing role=dialog form open; explicit Close returns focus to HTML root. Original UI46d13e54/9181cf53/1d654635 and raw failures remain unchanged. Closed own87a2ba33b6 has143 entries/62 files; physical preservation047b938c verifies10123 sources69 known profiles39 complete bundles. No DEFAULT/MAIN/LONG, push or PR yet.
+
+Prospective same19-path keyboard declaration9d18bd01/preflight6c7c6f88 precede this amendment and all keyboard source edits. The original form is a div/role=dialog, with no library keydown listener; document handlers cover only other overlays. Hypothesis: one form-local Escape/Tab handler and transient connected-visible opener focus correct cancellation/containment without a new dialog framework, global shortcut override or product mutation. Preserve drafts and original canonical Create/no-loss/capability flow. Native87 is diagnostic, not accepted; actual rebuilt successor and every original mandatory gate/delivery remain required.
+
+KEYBOARD_SOURCE_CHECKPOINT_02: Actual RED7/9 db6271de -> Home9/9 2e66f3af and affected38/38 6808598d;13 valid mutants killed941f45a5 and exact inverseb9c0b18f preserve source. Native87 is NOT_ACCEPTED; successor rebuild/full software/normal delivery remain pending.
+
 ## ALLOWLIST
 
 Exactly19 prospective paths; no other writes:
@@ -59,7 +65,7 @@ Exactly19 prospective paths; no other writes:
 - src/renderer/editor.bundle.js
 - test/unit/r24-wp300-writer-home.test.mjs
 
-Handwritten product change is only Home action spelling and one existing handler case; one existing Home test file may add the observed regression and update its single current action expectation. Existing JSON companions/source enrollment/witnesses are generated/refreshed without altering verifiers, historical bytes, tuples or requirement denominators. Manual source/test delta <=200 lines; all manually authored docs/task changes <=700 lines; total manual <=900. Generated bundle/JSON binding changes are counted separately with exact review.
+Handwritten product change is only Home action binding and local existing-library keyboard/focus behavior; one existing Home test file may add the observed regression and update its single current action expectation. Existing JSON companions/source enrollment/witnesses are generated/refreshed without altering verifiers, historical bytes, tuples or requirement denominators. Manual source/test delta <=350 lines; all manually authored docs/task changes <=700 lines; total manual <=1100. The same-form keyboard amendment is required by actual native87, not a new surface or independent improvement. Generated bundle/JSON binding changes are counted separately with exact review.
 
 ## DENYLIST
 
@@ -137,7 +143,7 @@ FEATURE_INTEGRATION_MANIFEST_V1:
     "WRITE"
   ],
   "platformAvailability": "Existing desktop paths unchanged, actual qualification only owned packaged Darwin; mandatory cross-platform CI",
-  "accessibilityRequirements": "Existing button accessible name; Home activation focuses existing labelled input; Tab/Enter/Escape and ordinary close/cancel must retain text. No new per-keystroke work, layout or visual tokens. Scoped local UI Craft/Audit/Heuristic/Finalize and actual native evidence; full global qualification remains UNKNOWN.",
+  "accessibilityRequirements": "Existing name focus plus one local form keydown listener: Escape closes without product dispatch, forward/backward Tab remain in existing visible enabled controls, explicit Close restores connected-visible opener. Retain drafts; ignore composition/modified/hidden/stale cases. No new surface or global dialog framework.",
   "fallbacks": [
     "Existing library error/loading/empty and name validation, no direct writer fallback",
     "Cancelled form leaves current document and unsaved text intact",
@@ -148,7 +154,7 @@ FEATURE_INTEGRATION_MANIFEST_V1:
     "AUTHORING_WORKING_STATE": "Existing no-loss manuscript buffer, opening form never replaces it",
     "DERIVED_STATE": "Existing immutable Home/tree/library projections",
     "SHELL_STATE": "Existing library modal visibility only",
-    "TRANSIENT_STATE": "Existing project-name draft and focus only"
+    "TRANSIENT_STATE": "Name draft/focus and connected-visible opener reference only; never product write authority"
   },
   "persistenceClass": "Unchanged project writer; no author truth in shell",
   "migrations": "NO_MIGRATION: no stored format change",
@@ -168,7 +174,8 @@ FEATURE_INTEGRATION_MANIFEST_V1:
     "Actual creation submission uses unchanged named lifecycle command; empty/cancel, stale/capability-denied/unsaved paths retain their original tests and behavior",
     "Legacy new-document/menu/hotkey behavior and every historical profile remain intact",
     "Actual new candidate build ordinary Home keyboard/create/Unicode/save/normal Quit/cold readback plus independent raw oracle before push; separate actual merged rebuild after normal protected delivery",
-    "Required full default incl honest59 skips, C1C, RTK and all affected software/native/gates/CI; preserved errors never retagged green"
+    "Required full default incl honest59 skips, C1C, RTK and all affected software/native/gates/CI; preserved errors never retagged green",
+    "Actual listener RED before repair; Escape, explicit close, forward/backward Tab, composition/modified key/hidden/stale focus controls retain name/manuscript and dispatch no product command"
   ],
   "evidenceBindings": [
     "Source probe a74af9a2",
@@ -179,7 +186,8 @@ FEATURE_INTEGRATION_MANIFEST_V1:
   "currentReality": [
     "PR2222 project-language chain fully CLOSED at09c with actual rebuilt merged native85 and20mergedCI jobs;605824d8/b480a032 terminal receipts",
     "Native86 reuses unchanged85 artifact under explicit admissionf30274d3, normal exit0 and all67older profiles38bundles source10122 exact after; independent oracle confirms Home misbinding and working named create control",
-    "No source change yet; coordinate attempt delivery UNKNOWN and not counted; fullMacNOT_READY/17UNKNOWN"
+    "No source change yet; coordinate attempt delivery UNKNOWN and not counted; fullMacNOT_READY/17UNKNOWN",
+    "Native87 partial creation/save/cold data succeeds, Escape/focus is a blocking observed same-form gap; native acceptance false, successor rebuild required."
   ]
 }
 ```
@@ -213,7 +221,7 @@ SURFACE_MANIFEST_V1:
     "AUTHORING_WORKING_STATE": "Existing no-loss manuscript buffer, opening form never replaces it",
     "DERIVED_STATE": "Existing immutable Home/tree/library projections",
     "SHELL_STATE": "Existing library modal visibility only",
-    "TRANSIENT_STATE": "Existing project-name draft and focus only"
+    "TRANSIENT_STATE": "Name draft, current focus and connected-visible opener reference only"
   },
   "interactionStates": [
     "Home idle",
@@ -221,9 +229,11 @@ SURFACE_MANIFEST_V1:
     "Empty invalid name retained",
     "Submitting original guarded request",
     "Cancel/no product write",
-    "Success or original error"
+    "Success or original error",
+    "Local Escape/Tab/Close with retained draft and opener focus",
+    "Hidden/disconnected/modified/composing controls without unintended focus or mutation"
   ],
-  "accessibilityContract": "Existing native button/labelled input. Focus name on Home activation; keyboard/close preserve data. Full global A11y remains unqualified.",
+  "accessibilityContract": "Native button and existing labelled name field; local Escape/Tab and explicit close retain draft/manuscript and restore only connected-visible opener; creation success keeps original editor publication/focus. No global a11y qualification.",
   "responsiveContract": "No geometry/style changes; observe current supported window without claiming global qualification",
   "performanceClass": "Existing one explicit library refresh; no typing work",
   "evidenceBindings": [

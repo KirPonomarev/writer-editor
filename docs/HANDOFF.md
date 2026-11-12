@@ -1,3 +1,17 @@
+## CURRENT — Home form keyboard source verified; rebuilt acceptance pending
+
+Maintained real-listener REDdb6271de is7/9 with the two observed keyboard failures before production edit. Local Escape/Tab/Close and connected-visible opener repair now passes whole Home9/9 (2e66f3af), five-file affected38/38 (6808598d), all0skip/todo/cancel. Independent exact inverseb9c0b18f reconstructs original editor50fb bytes; core Home projection remains unchanged. Maintained assertions kill13/13 valid implementation mutants941f45a5 with all physical source bytes unchanged. External mutant adapter syntax/unique-anchor refusals remain preserved; no product guard/test was weakened.
+
+Same19-path chain and budgets, no Main/preload/HTML/CSS/dependency/command/schema change. Native87 remains NOT_ACCEPTED for its original Escape/focus failure. New exact companions, all current software gates, rebuilt successor/native keyboard/raw oracle, normal protected delivery and separate merged rebuild are pending. No push/PR yet;69 known closed profiles39 bundles protected. Full Mac NOT_READY UNFROZEN17UNKNOWN, Word/native PAUSED, Black Box after full Mac; one executor.
+
+## CURRENT — Home native87 data verified; local Escape/focus correction admitted
+
+Actual clean50fb native87/f4b16713 ASAR e6a69a91, official1488 reader25a9c7c5 and independent std diagnosticbcae15e3 observe Home form/name focus, empty refusal, keyboard named-project creation, retained draft/text, exact Unicode/NFD Save and cold manifest/scene bytes; warm0/cold0. Scene94808497 and manifestb198719f are independently pinned. Legacy Cmd+N clears the working buffer; no Home visibility claim. Autosave may persist while a library is open; no blanket DIRTY_CANCEL no-write claim.
+
+Blocking actual UI46d13e54/9181cf53/1d654635: Escape leaves the form open; explicit Close works and returns focus to HTML root. Raw phase CANCEL is the failed Escape attempt. Native87 is NOT_ACCEPTED. Closed143/62 own87a2ba33b6 and physical047b938c preserve10123 sources69 known closed profiles39 bundles, old errors and missing-byte UNKNOWN. Original metadata-capture adapter refused duplicate argv before carrier write; exact inverse external02 retained all original fields and errors.
+
+Same19-path keyboard declaration9d18bd01/preflight6c7c6f88 admit only existing-form Escape/Tab/Close and transient connected-visible opener focus, with no product/Main/HTML/CSS/IPC/schema/dependency or legacy-command change. Task E0 then actual-listener RED precede semantic edit. Full DEFAULT/MAIN/LONG/new actual successor native and normal protected delivery/merged rebuild remain pending; no push/PR. Full Mac NOT_READY UNFROZEN17UNKNOWN, Word/native PAUSED, Black Box last; one executor.
+
 ## CURRENT — Home Create binding source observed; full delivery pending
 
 YALKEN_WRITER_HOME_CREATE_20261112 at binding09c: maintained original-source RED0b0cf7a0 fails only the promised form-open assertion (6/7pass). One Home presentation action literal and a four-line existing handler case route to the existing library/name focus; cmd.project.new remains exact. Generated bundle and full Home7/7,0skip/todo/cancel pass in f1ed54e1. Independent inverse3efa41b5 reconstructs every original production byte and original five test bodies except two current action expectations; two meaningful empty/denied/explicit-submit controls were added.

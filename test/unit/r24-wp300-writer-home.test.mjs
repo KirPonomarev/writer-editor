@@ -176,13 +176,32 @@ test('WP300 browser-safe anchor diagnosis preserves T1 stale-witness semantics f
 
 function homeCreationHandlerHost() {
   const source = read('src/renderer/editor.js');
-  const calls = { queries: 0, commands: [], focus: 0, treeReads: 0, status: [] };
+  const calls = { queries: 0, commands: [], focus: 0, returnFocus: 0, treeReads: 0, status: [] };
   const authoring = Object.freeze({ projectId: 'old-project', documentId: 'old-scene', text: '😀 é unsaved manuscript', generation: 7 });
+  const document = { activeElement: null };
+  class Control {
+    constructor() { this.isConnected = true; this.hidden = false; this.disabled = false; this.listeners = new Map(); }
+    focus() { document.activeElement = this; }
+    getClientRects() { return this.isConnected && !this.hidden ? [{}] : []; }
+    addEventListener(kind, listener) { this.listeners.set(kind, [...(this.listeners.get(kind) || []), listener]); }
+  }
+  const opener = new Control(), nameInput = new Control(), createButton = new Control(), closeButton = new Control();
+  const disabledControl = new Control(), hiddenControl = new Control();
+  disabledControl.disabled = true; hiddenControl.hidden = true;
+  opener.focus = () => { document.activeElement = opener; calls.returnFocus += 1; };
+  nameInput.value = '';
+  nameInput.focus = () => { document.activeElement = nameInput; calls.focus += 1; };
+  const controls = [nameInput, createButton, disabledControl, hiddenControl, closeButton];
+  const modal = { hidden: true, listeners: new Map(), addEventListener: Control.prototype.addEventListener,
+    querySelectorAll: () => controls, contains: control => controls.includes(control) };
+  document.activeElement = opener;
   const host = {
+    document, HTMLElement: Control, projectLibraryReturnFocusTarget: null,
+    writerHomeSurface: { querySelector: () => opener }, projectLibraryCloseButtons: [closeButton],
     EXTRA_COMMAND_IDS: { PROJECT_NEW: 'cmd.project.new', PROJECT_LIFECYCLE_CREATE: 'cmd.project.lifecycle.create' },
-    projectLibraryModal: { hidden: true },
-    projectLibraryNameInput: { value: '', focus() { calls.focus += 1; } },
-    projectLibraryCreateButton: { disabled: false },
+    projectLibraryModal: modal,
+    projectLibraryNameInput: nameInput,
+    projectLibraryCreateButton: createButton,
     refreshProjectLibraryModal: async () => { calls.queries += 1; },
     dispatchUiCommand: async (id, payload) => { calls.commands.push({ id, payload }); return host.result; },
     unwrapBridgeResult: result => result?.value || result,
@@ -202,7 +221,18 @@ function homeCreationHandlerHost() {
     assert.ok(a >= 0 && b > a); assert.equal(source.indexOf(start, a + 1), -1);
     vm.runInContext(source.slice(a, b), host);
   }
-  return { host, calls, authoring };
+  const bindingStart = source.indexOf('projectLibraryCloseButtons.forEach((button) => {');
+  const bindingEnd = source.indexOf('projectLibraryRefreshButtons.forEach((button) => {', bindingStart);
+  assert.ok(bindingStart >= 0 && bindingEnd > bindingStart);
+  vm.runInContext(source.slice(bindingStart, bindingEnd), host);
+  const dispatchKey = (key, fields = {}) => {
+    const event = { key, ...fields, prevented: false, stopped: false,
+      preventDefault() { this.prevented = true; }, stopPropagation() { this.stopped = true; } };
+    for (const listener of modal.listeners.get('keydown') || []) listener(event);
+    return event;
+  };
+  const clickClose = () => { for (const listener of closeButton.listeners.get('click') || []) listener(); };
+  return { host, calls, authoring, opener, closeButton, dispatchKey, clickClose };
 }
 
 test('Home Create opens the existing named-project form without resetting or dispatching a product mutation', () => {
@@ -253,4 +283,65 @@ test('Existing Home create form keeps empty/denied drafts and only explicit vali
   assert.equal(host.projectLibraryCreateButton.disabled, false);
   assert.equal(calls.treeReads, 1);
   assert.equal(host.authoring, authoring);
+});
+
+
+test('Project-library Escape and explicit Close retain the name and restore only a live visible opener', () => {
+  const { host, calls, authoring, opener, dispatchKey, clickClose } = homeCreationHandlerHost();
+  host.handleUiAction(buildWriterHomeProjection({}).actions.find(action => action.id === 'create-project').action);
+  host.projectLibraryNameInput.value = 'Черновик 😀 é';
+  for (const fields of [{ isComposing: true }, { ctrlKey: true }, { altKey: true }, { metaKey: true }, { shiftKey: true }]) {
+    const event = dispatchKey('Escape', fields);
+    assert.equal(host.projectLibraryModal.hidden, false);
+    assert.equal(event.prevented, false);
+  }
+  const event = dispatchKey('Escape');
+  assert.equal(host.projectLibraryModal.hidden, true, 'the actual local form listener must close on plain Escape');
+  assert.equal(event.prevented, true); assert.equal(event.stopped, true);
+  assert.equal(host.document.activeElement, opener);
+  assert.equal(host.projectLibraryNameInput.value, 'Черновик 😀 é');
+  assert.equal(calls.returnFocus, 1); assert.deepEqual(calls.commands, []);
+  host.handleUiAction('create-project');
+  clickClose();
+  assert.equal(host.projectLibraryModal.hidden, true);
+  assert.equal(host.document.activeElement, opener);
+  assert.equal(calls.returnFocus, 2);
+  for (const state of ['disconnected', 'hidden', 'disabled']) {
+    opener.isConnected = true; opener.hidden = false; opener.disabled = false;
+    host.handleUiAction('create-project');
+    if (state === 'disconnected') opener.isConnected = false;
+    if (state === 'hidden') opener.hidden = true;
+    if (state === 'disabled') opener.disabled = true;
+    dispatchKey('Escape');
+    assert.equal(host.projectLibraryModal.hidden, true);
+    assert.equal(calls.returnFocus, 2, 'stale/hidden/disabled opener must not receive focus');
+    assert.equal(host.projectLibraryNameInput.value, 'Черновик 😀 é');
+  }
+  assert.equal(dispatchKey('Escape').prevented, false, 'hidden form owns no keyboard action');
+  assert.equal(host.authoring, authoring); assert.deepEqual(calls.commands, []);
+});
+
+test('Project-library Tab wraps only the current visible enabled form controls and preserves ordinary input', () => {
+  const { host, calls, closeButton, dispatchKey } = homeCreationHandlerHost();
+  host.handleUiAction('create-project');
+  closeButton.focus();
+  const forward = dispatchKey('Tab');
+  assert.equal(host.document.activeElement, host.projectLibraryNameInput, 'last visible control wraps to the existing name field');
+  assert.equal(forward.prevented, true); assert.equal(forward.stopped, true);
+  const backward = dispatchKey('Tab', { shiftKey: true });
+  assert.equal(host.document.activeElement, closeButton);
+  assert.equal(backward.prevented, true);
+  host.projectLibraryCreateButton.focus();
+  assert.equal(dispatchKey('Tab').prevented, false, 'ordinary movement within the form keeps browser default behavior');
+  assert.equal(host.document.activeElement, host.projectLibraryCreateButton);
+  for (const fields of [{ isComposing: true }, { ctrlKey: true }, { altKey: true }, { metaKey: true }]) {
+    closeButton.focus();
+    assert.equal(dispatchKey('Tab', fields).prevented, false);
+    assert.equal(host.document.activeElement, closeButton);
+  }
+  host.projectLibraryNameInput.value = 'Retained name';
+  const ordinary = dispatchKey('x');
+  assert.equal(ordinary.prevented, false);
+  assert.equal(host.projectLibraryNameInput.value, 'Retained name');
+  assert.deepEqual(calls.commands, []);
 });
