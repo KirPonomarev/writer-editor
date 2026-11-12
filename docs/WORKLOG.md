@@ -5946,3 +5946,7 @@ PROCESS_SEQUENCE_RECOVERY_20261106: Primary human39cd7a45 at2026-11-02T09:01:25.
 
 - YALKEN_ATLAS_PROJECT_LANGUAGE_20261111: actual native83/current1403f4d5 build ed4b6eef and independent nine-check oracle cb3bb3b9; warm0/cold0/closed149entries65files0f24c314; all prior64 profiles35 bundles retained.
 - Same chain: whole default8090138b preserves26 stale current-host assertion failures and complete TAP4673792a. Six-value differential621d179f and exact-inverse maintained source9d5eda7e pass47/47 without removing assertions or changing any1497 package bytes; historical V15 denial remains exact. Fresh declaration6deb0dcb/preflight64c3cb3c. Final companions, all required gates/current native/delivery/merged verification pending; all17UNKNOWN.
+
+- 2026-11-12 YALKEN_WRITER_ACTIVE_SCENE_RETURN_20261112: Home Create PR2223 closed e91e7c25/a2ee9965;72 profiles42 bundles exact04c0cae1. Fresh existing Scene causal c59ef267, declaration40de3cda/preflight0a81dc37 and8 admission b60df731; bounded actual-handler RED then no-loss return, native and protected delivery pending. All historical failures and fullMac17UNKNOWN retained.
+
+- 2026-11-12 active-scene return source: actual RED12of15 41a90bbc -> Home15of15/affected44of44 146308e4;14 valid implementation mutants killed8bd18a27. Exact inverse and original tests preserved. Current companions/full software/actual native/normal delivery and merged proofs pending.

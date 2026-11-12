@@ -9987,7 +9987,7 @@ function showWriterHomeSurface() {
   });
 }
 
-function showEditorPanelFor(title) {
+function showEditorPanelFor(title, { preserveEditorContext = false } = {}) {
   hideManualMapPlanWorkspace();
   hideNotesWorkspace();
   hideProjectSearchWorkspace();
@@ -10005,14 +10005,16 @@ function showEditorPanelFor(title) {
   } catch {}
 
   requestAnimationFrame(() => {
-    if (mainContent) {
+    if (mainContent && !preserveEditorContext) {
       mainContent.scrollTop = 0;
     }
     if (editor) {
-      editor.scrollTop = 0;
-      if (!isTiptapMode) {
-        focusEditorSurface('current');
-        positionCaretForCurrentText();
+      if (!preserveEditorContext) {
+        editor.scrollTop = 0;
+        if (!isTiptapMode) {
+          focusEditorSurface('current');
+          positionCaretForCurrentText();
+        }
       }
       scheduleCentralSheetStripProofRefresh();
     }
@@ -27154,8 +27156,12 @@ function handleUiAction(action) {
     case 'open-current-scene':
       if (flowModeState.active) {
         void jumpToFlowProjectionSourceAtCaret();
-      } else {
+      } else if (currentDocumentId && editor) {
+        showEditorPanelFor(currentDocumentTitle || 'Текущая сцена', { preserveEditorContext: true });
+        focusEditorSurface('current');
         updateStatusText('Открыта текущая сцена');
+      } else {
+        updateStatusText('Текущая сцена недоступна');
       }
       return true;
     case 'open-authoring-write':

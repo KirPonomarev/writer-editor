@@ -1,3 +1,16 @@
+SOURCE_CHECKPOINT_01: original-source maintained RED41a90bbc is12/15 with exactly3 promised-return/refusal failures; current GREEN146308e4 isHome15/15 and affected44/44,0skip/todo/cancel. Actual14 valid implementation mutants are all killed by unchanged maintained assertions8bd18a27; all physical source bytes unchanged by mutation proof. Exact inverse restores every original editor cc7c5f51 byte; all original test bytes remain an exact prefix. Same18 paths, only Scene binding and caller-specific editor-context option. Current source70cc5fc9/bundleec46ef8c; current companions, full software, actual native and complete delivery/merged proofs still pending.
+
+# CURRENT — Home Create delivered; active-scene return admitted
+
+TASK_ID: YALKEN_WRITER_ACTIVE_SCENE_RETURN_20261112
+BASE_SHA: f3d8bec6e4bb1dea2089023beed4d20911508f5b
+
+PR2223 Home Create is CLOSED at merged f3d8bec6/tree0f084ac7: schema-valid19-field report e91e7c25, closure a2ee9965, physical04c0cae1. Candidate and merged CI20 each with18 actual checkout logs; separately rebuilt native90 and independent20 checks; full merged Main1405 and C1C335 pass with0skips. All72 known closed profiles42 whole bundles and10123 sources physically exact after verified reboot UUID binding. Original interrupted Main815475f7 has no pass credit; every old error/profile/frozen record remains preserved. Pending Home checkpoints below are historical.
+
+New original-source c59ef267 at exact f3d8 observes Scene outside Flow only reporting status,0 editor reveal/focus; existing Write control reveals the exact active title, Flow jump remains1. Existing helper defaults move legacy caret to end, so preserve old callers while testing context-preserving return. No new product/native acceptance yet. Prospective18-path declaration40de3cda/preflight0a81dc37 and all8 current admission processes b60df731 precede this factual/task write. Canonical owner6de untouched; one executor, one new codex branch, no agents/chats/timers.
+
+Next: task E0, maintained actual-handler/helper RED before bounded representation/focus correction; preserve text/selection/undo/dirty/identity, current Flow, every earlier profile/bundle and original error. Current candidate/software/native/full delivery/merged proofs remain required. FullMac NOT_READY UNFROZEN all17UNKNOWN; Word/native PAUSED; Black Box after full Mac.
+
 SHARED_FOCUS_SOURCE_CHECKPOINT_03: actual shared-opener RED338d05fa is8/10 with exactly2 missing-initial-focus failures; moving the single existing focus operation yields complete affected39/39 934989e8,0skip/todo/cancel and an exact inverse of every original editor9bb byte. All15 valid implementation mutants are killed by maintained assertions eaa25f3b, sources unchanged. Same19 paths,244 manual source/test lines; new exact metadata/current software/actual native/all-callers focus+cancel/normal delivery/merged rebuild pending.
 
 ## CURRENT — Home native88 and baseline observed; shared form initial focus correction admitted
