@@ -14,10 +14,10 @@ function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 }
 
-test('V15 complete renderer bootstrap preserves every real historical factory and refuses near identities', async t => {
+test('V16 complete renderer bootstrap preserves every real historical factory and refuses near identities', async t => {
   const factories = Object.entries(profile).filter(([name, value]) => /^createWriter.*ProfileProjection$/u.test(name) && typeof value === 'function');
   const ids = [...new Set(factories.map(([, factory]) => factory({ isPackaged: true, platform: 'darwin' }).profileId))];
-  assert.equal(ids.length, 15);
+  assert.equal(ids.length, 16);
   for (const id of [...ids, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15.extra', ' WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15',
     'WRITER_LOCAL_ATLAS_GLOBAL_COMPOSITE_V14.extra', 'WRITER_LOCAL_UNKNOWN', '']) await t.test(id || 'empty', () => {
     const nodes = ['[data-mode="plan"]', '[data-mode="review"]', '[data-right-tab="comments"]', '[data-right-tab="atlas"]'].map(selector => ({
@@ -2454,7 +2454,7 @@ test('actual V9 Source entity selection persists alias under the explicitly chos
 
 async function scopedAliasActualMainFixture(t) {
   const x = await reattachmentMainFixture(t, true), h = x.h;
-  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16');
   const key = (await import('../../src/product/stage10ProjectIdentityKey.mjs')).stage10ProjectPathIdentity(x.projectId);
   assert.equal(key.ok, true);
   const firstPayload = { projectId: x.projectId, entityId: x.entityId, aliasId: 'scoped-alias-original', value: 'Северная', scope: 'scene', sceneId: x.sceneId };
@@ -4741,11 +4741,11 @@ test('ENV epoch actual unchanged guarded Main refuses capture and restore before
     actualEpochIds: restored.history.epochs.map(row => row.epochId), priorRecordsUnchanged: true, protectedRosterUnchanged: true, nativeAcceptance: false }));
 });
 
-test('ENV epoch query absence is genuine read-only empty0 and both commands remain FREE under current strict V15', async t => {
+test('ENV epoch query absence is genuine read-only empty0 and both commands remain FREE under current strict V16', async t => {
   const x = await environmentEpochFixture(t), before = environmentEpochWholeRoster(x.h), current = await x.epochRead();
   assert.equal(current.revision, 0); assert.deepEqual(current.epochs, []); assert.equal(fs.existsSync(x.epochPath), false);
   assert.deepEqual(environmentEpochWholeRoster(x.h), before);
-  const active = x.h.main.__profile(); assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  const active = x.h.main.__profile(); assert.equal(active.profileId, 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16');
   assert.equal(active.admittedCommandIds.length, 35); assert.equal(active.admittedQueryIds.length, 13);
   const entitlement = require('../../src/core/entitlement-law-v1.cjs');
   for (const id of [ENVIRONMENT_EPOCH_CAPTURE, ENVIRONMENT_EPOCH_RESTORE]) {
@@ -4984,7 +4984,7 @@ async function environmentEpochSettingsRenderer(x, { actualAggregation = false }
     emit(name) { return this.listeners[name]?.({ target: this }); }
   }
   document.createElement = tag => new Element(tag); document.body = new Element('body');
-  assert.equal(x.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  assert.equal(x.h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16');
   const c = { document, HTMLElement: Element, window: { __PRODUCT_PROFILE: 'WRITER_LOCAL_ATLAS_ASSOCIATIONS_V13' }, console,
     currentProjectId: x.projectId, currentDocumentId: x.sceneId, currentTreeContentPublicationId: 'actual-main-scene',
     localEditGeneration: 0, lastAckedGeneration: 0, localDirty: false,
@@ -5420,7 +5420,7 @@ test('THEME summary valid historical V1 profile remains an actual allowed Theme 
   const active = f.x.h.main.__profile(); assert.equal(active.profileId, 'WRITER_LOCAL_V1');
   assert.equal(profile.evaluateWriterLocalCommandAccess({ profile: active, commandId: THEME_SUMMARY_COMMAND_ID }).allowed, true);
   // Match the existing valid V1 Main projection with its expected caller identity; a stale current caller is a different negative.
-  const frame = new URL(f.x.h.shellUrl); assert.equal(frame.searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  const frame = new URL(f.x.h.shellUrl); assert.equal(frame.searchParams.get('PRODUCT_PROFILE'), 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16');
   frame.searchParams.set('PRODUCT_PROFILE', active.profileId); f.x.h.shellUrl = frame.href;
   f.c.window.__PRODUCT_PROFILE = active.profileId;
   await f.change('dark'); assertThemeSummaryApplied(f, t, 'ACTUAL_VALID_V1_POLICY_CONTROL'); assertThemeSummaryNoLoss(f, before);
@@ -6744,7 +6744,7 @@ test('Atlas Time partial input preserves existing fields through the actual Comm
 
 test('composite actual Main: saved source graph is explicitly queried with complete no-write footprint', async t => {
   const h = await fullMacMainFixture(t), f = await exactAtlasScene(h, 'Composite saved source');
-  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_RANGE_LANGUAGE_V15');
+  assert.equal(h.main.__profile().profileId, 'WRITER_LOCAL_ATLAS_PROJECT_LANGUAGE_V16');
   const before = h.roster();
   const hidden = await h.query('query.atlasGlobalCompositeGraph', { projectId: f.projectId });
   assert.equal(hidden.ok, false); assert.deepEqual(h.roster(), before);
