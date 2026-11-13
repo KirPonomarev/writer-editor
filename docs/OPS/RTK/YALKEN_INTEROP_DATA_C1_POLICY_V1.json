@@ -1250,7 +1250,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "3c11f1e7fb90ab9d67725434b48d5904bd538cac9e32f57f67c338f0df237297"
+        "sha256": "7285199ac61723c32afabd82f9ee06f0b7b877f57d3ba2d91e556f2c7c60ab19"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2546,7 +2546,7 @@
       },
       {
         "path": "test/unit/metadata-inspector-read-model-main.test.js",
-        "sha256": "3d54c6c050a2f07a90df976354837d9f4a39838936e12a66e6e8c4540aa1b039"
+        "sha256": "412b20e03447fa9ec40cb2c8364c7fe5bf352758410200207a6ce63b6bb95c73"
       },
       {
         "path": "src/core/word-concurrent-return-v1.cjs",
@@ -2942,15 +2942,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "8bf869c57a7cc169fcdc0d99aa0e19f43d32caba9c411d9c276ed94391aecf9a"
+        "sha256": "cb95b4c92a38e93fde03889f6e40b0f0969fe61e6839414b90fe5f845dff534d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "1b6b2144245a59a3d71989e2484a2df2ae7a0550503b3a64cdffa9458ff31b86"
+        "sha256": "02f4e2571595ce9978ae42b65d059f6471fb2f2f552d9df441c258df46cc8609"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "cade76a3e4a7108148d28f856b3827dd09681f66d52eced9964ff9a40f0ef5cf"
+        "sha256": "c4bf1bee90bf68625ced337721e724e40bda53ffecd513527d3b7254866302ae"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3490,7 +3490,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "104a394773dc9d25aeb2622b4e4f3ac9fbdd7dd411a37cb8a0794dad30add7d2"
+        "sha256": "3607fe2692422db2f584bbc7a40df290c50ffcbe4d861d02efe6bcff1652867d"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3514,7 +3514,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "28a5d6ce53dc3c5b71051a35e3667b6fd0b662db4078d417a3c9c9ad6e609ef3"
+        "sha256": "4cfb703334f7474e1939d7e522b30e1c8728356a4710f8190f528196a77d65d1"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3606,7 +3606,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "e94119ff568288e8456b700e567ee224373cced4510404c32be3d92c2e9b8dfa"
+        "sha256": "fa27e73024df1158df9f8a182487ef6f8343ef154beda91cd697a6356e6208a0"
       },
       {
         "path": "src/renderer/flags.js",
@@ -4702,11 +4702,11 @@
       },
       {
         "path": "docs/tasks/2026-11-13--writer-flow-save-no-loss.md",
-        "sha256": "d585517f7746367ae2d899defd924a04a0fdcb560565b22258c7dd0864f57471"
+        "sha256": "405d85db7ce4f29d5901936f4f0a8aef8bf353ec0efa559c7d25d74977e547db"
       },
       {
         "path": "src/core/save-receipt-ack-v1.cjs",
-        "sha256": "a03ce8a3900fc206f8de0a2c44a09fa1b440588d2853ddbe23b9d715529b181f"
+        "sha256": "0d8c64ddd9479e364515e85dd3a008e8ac46d7597d6ba7cb5b2f196145104bcb"
       },
       {
         "path": "test/unit/sector-m-m7-flow-batch-atomicity.test.js",

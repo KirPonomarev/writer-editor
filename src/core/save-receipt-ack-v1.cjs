@@ -110,7 +110,13 @@ function validateSaveReceipt({ receipt, capturedContent, capturedGeneration, exp
   const expectedBytes = Buffer.isBuffer(capturedContent)
     ? capturedContent.length
     : Buffer.byteLength(capturedContent, 'utf8');
-  if (['DURABLE_SAVE_V1', 'FLOW_BATCH_DURABLE_V2'].includes(receiptKind) && receipt.bytes !== expectedBytes) {
+  if (receiptKind === 'DURABLE_SAVE_V1' && receipt.bytes !== expectedBytes) {
+    throw new SaveReceiptAckError(
+      'E_SAVE_RECEIPT_BYTES_MISMATCH',
+      'receipt=' + String(receipt.bytes) + ' captured=' + expectedBytes,
+    );
+  }
+  if (receiptKind === 'FLOW_BATCH_DURABLE_V2' && receipt.bytes !== expectedBytes) {
     throw new SaveReceiptAckError(
       'E_SAVE_RECEIPT_BYTES_MISMATCH',
       'receipt=' + String(receipt.bytes) + ' captured=' + expectedBytes,

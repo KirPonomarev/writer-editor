@@ -39725,7 +39725,7 @@ async function confirmDiscardChanges() {
   const result = await autoSave();
   if (!result || result.ok !== true || !result.ack || result.subjectId !== subjectId) return false;
   if (currentLifecycleSubjectId() !== subjectId) return false;
-  const canReadSavedBook = !isDirty && result.ack.kind === SAVE_ACK_KINDS.SAVED
+  const canReadSavedBook = typeof isDirty === 'boolean' && !isDirty && result.ack.kind === SAVE_ACK_KINDS.SAVED
     && result.ack.savedGeneration === lastAcknowledgedEditGeneration && result.ack.latestEditGeneration === lastSignaledEditGeneration
     && lastAcknowledgedEditGeneration === lastSignaledEditGeneration;
   const authoringSnapshot = await requestEditorSnapshot(2500, null, null, canReadSavedBook);

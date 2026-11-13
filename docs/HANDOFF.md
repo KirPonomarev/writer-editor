@@ -1,3 +1,10 @@
+# CURRENT — Original Core, metadata and lifecycle contracts repaired
+
+TASK_ID: YALKEN_WRITER_FLOW_SAVE_NO_LOSS_20261113
+BINDING_HEAD: a9f1d74f0fd0b9721ed1c391d5210d6e75e5140a
+SOURCE_CHECKPOINT_05: Original CI compatibility now has actual whole6-file GREEN2bf9e724:190/190,0fail/cancel/skip/todo, including every original metadata/comment assertion and all6 real WP200 mutants killed. Independent inverse3572beda proves one Core byte-guard split, one typed Main lifecycle guard and one metadata fixture initial input are the only changes; strict decoder/shared plain helper and every original assertion remain literal. Declarationa38769f7/preflightf58b44c8/E012ba4039 admit26 paths with unchanged1200 source/tests450 docs1650 total budgets. Foreign-realm hypothesis and its source/test were not retained; raw attempts and reversible rollback0b5c7fa3 remain. No new native98, current full baseline, push/ready/merge or fullMac acceptance yet.
+Old4b8 CI43380403021 remains FAIL: complete logs17280e7e retain original missing WP200 anchor, uninitialized metadata fixture and isolated lifecycle missing dirty-state failures. Current original REDc21e9e90/5a46b5f6 and attempted71a6e297 remain. A valid initial empty renderer fixture replaces undefined setup input; real Main/Core/FS assertions all execute unchanged. Strict missing-authoring refusal stays exact; no foreign-realm acceptance was added. Native97 remains original64 proof; corrected next native98 must actually rebuild/launch with updated Main/Core inputs before remaining costly current wave. All79 known closed profiles49 bundles and35 missing UNKNOWNs stay protected;17 fullMac rows remain UNKNOWN/NOT_READY/UNFROZEN, Word/nativeOffice PAUSED, Black Box after full Mac.
+
 # CURRENT — Native97 observed; checked-push compatibility source verified
 
 TASK_ID: YALKEN_WRITER_FLOW_SAVE_NO_LOSS_20261113

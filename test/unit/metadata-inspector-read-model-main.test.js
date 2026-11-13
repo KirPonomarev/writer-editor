@@ -622,7 +622,7 @@ async function metadataTransactionHarness(t, { cohorts = false } = {}) {
   await fsPromises.mkdir(userData, { recursive: true });
   const mainPath = path.join(ROOT, 'src/main.js'), managerPath = path.join(ROOT, 'src/utils/fileManager.js');
   const ports = { sent: [], listeners: new Map(), handlers: new Map(), transactions: [], queued: null, fsHook: null, capability: true };
-  let window, shellUrl, snapshot;
+  let window, shellUrl, snapshot = { content: '', plainText: '', doc: null, bookProfile: null, generation: 0, flowModeActive: false };
   const event = () => ({ sender: window.webContents, senderFrame: { url: shellUrl, parent: null, top: null } });
   function Window() {
     window = this;
