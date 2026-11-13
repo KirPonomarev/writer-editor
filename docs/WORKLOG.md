@@ -1,3 +1,15 @@
+## 2026-11-13
+
+- Same M34: actual native94 warm/cold and independent914ab86a retain exact dirty Unicode/book/source/Undo/Save; original AX setup and Chromium warnings retained. Complete DEFAULT bd3b750f is4799/4739/1fail/59oldskips; only S14 helper-signature expectation is stale. Actual no-write S14 prospective4/4 6da81700 and fresh21-path declaration237fc028/preflightf1494bcf precede the same-chain one-literal amendment. Runtime/package bytes stay protected; all required current software/native-applicability/normal delivery remain pending.
+
+# Source checkpoint — whole-book open no-loss
+
+Maintained22 and whole affected312 pass0skip/todo; independent9fd54446 reconstructs all original Main/editor bytes and retains11 old tests. Real selected-project RED corrected; canonical Save/current read/publication guard and renderer rebuilt. No native/current-candidate/delivery acceptance yet; same20 paths and all old data/errors preserved.
+
+# 2026-11-13 — Whole-book open no-loss admission
+
+PR2225 fully closed at d0d8d728; final e78ea66a, closure f8f6e45e, physical98fe2eeb and both20/18 CI. New sole-executor20-path no-loss book-open task has fresh declaration/preflight, all8 actual admission and physical10126/74/44 preservation before write. Actual original publication function overwrites newer/context-replaced text; no product fix/native acceptance yet. Existing read remains read-only and all full-Mac17UNKNOWN limits stay.
+
 SOURCE_CHECKPOINT_01: maintained original CLI RED38f17c78 lacks explicit query scope; identical contract GREEN690dd92c passes1/1 in0.384s. Same two real callers667a2d8a pass2/2 in0.700s versus24.233s BEFOREc1cf2b51 (one sample97.1percent). Eleven inserted doctor lines and nine literal argv/completion bindings have exact original inverses; evaluators/domain assertions/full M7 path unchanged. New actual full-vector/hostile/strict-delivery and complete software/delivery proofs remain pending. Original preparation guard error (two close cases share one spawn) retained and corrected without changing either case. All original data/errors and full Mac17UNKNOWN limits remain.
 
 ## 2026-11-12 — PR2224 closure and one doctor query task
@@ -5958,3 +5970,7 @@ PROCESS_SEQUENCE_RECOVERY_20261106: Primary human39cd7a45 at2026-11-02T09:01:25.
 - 2026-11-12 YALKEN_WRITER_ACTIVE_SCENE_RETURN_20261112: Home Create PR2223 closed e91e7c25/a2ee9965;72 profiles42 bundles exact04c0cae1. Fresh existing Scene causal c59ef267, declaration40de3cda/preflight0a81dc37 and8 admission b60df731; bounded actual-handler RED then no-loss return, native and protected delivery pending. All historical failures and fullMac17UNKNOWN retained.
 
 - 2026-11-12 active-scene return source: actual RED12of15 41a90bbc -> Home15of15/affected44of44 146308e4;14 valid implementation mutants killed8bd18a27. Exact inverse and original tests preserved. Current companions/full software/actual native/normal delivery and merged proofs pending.
+
+## 2026-11-13 — Same-chain native source identity correction
+
+Native93 source return failed89826e5b; clean5dc3033d remains unpushed. Exact-source RED26b83d4b proves default manifest identity leak; correction preflight16421847 admits same20 paths. Native93 closed0/profileb3cb9e51 preserved. Mandatory strict tests and new actual candidate94/merged95 remain pending; fullMac17UNKNOWN.

@@ -34052,9 +34052,9 @@ async function getFlowBatchGuard(projectRoot) {
   };
 }
 
-async function buildFlowStableNodeIdMap() {
-  const manifestPath = getProjectManifestPath(DEFAULT_PROJECT_NAME);
-  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
+async function buildFlowStableNodeIdMap(projectName = DEFAULT_PROJECT_NAME) {
+  const manifestPath = getProjectManifestPath(projectName);
+  const manifestRecord = await readProjectManifest(projectName);
   const manifest = manifestRecord ? manifestRecord.manifest : null;
   const nodes = manifest && manifest.treeIdentity && manifest.treeIdentity.nodes
     && typeof manifest.treeIdentity.nodes === 'object'
@@ -34093,19 +34093,45 @@ function buildFlowSceneReadDescriptor(node, identity) {
 }
 
 async function handleFlowOpenV1() {
+  const projectName = currentProjectName || DEFAULT_PROJECT_NAME;
+  const projectRoot = getProjectRootPath(projectName), context = captureDocxImportPreviewContext();
+  const window = mainWindow, contents = window?.webContents;
+  const owner = activeStage10ApplicationBootstrap, session = commentAuthoringSessionId;
+  const subject = currentLifecycleSubjectId(), generation = lastSignaledEditGeneration;
+  const assertCurrent = () => {
+    userBookmarkCapability('cmd.project.flowOpenV1');
+    if (isDirty || pendingReviewDocxExports.size > 0 || projectRoot !== getProjectRootPath()
+      || context !== captureDocxImportPreviewContext() || window !== mainWindow
+      || window && (window.isDestroyed() || contents !== window.webContents || contents.isDestroyed())
+      || owner !== activeStage10ApplicationBootstrap || session !== commentAuthoringSessionId
+      || subject !== currentLifecycleSubjectId() || generation !== lastSignaledEditGeneration) {
+      throw Object.assign(Error('M7_FLOW_CONTEXT_STALE'), { code: 'M7_FLOW_CONTEXT_STALE' });
+    }
+  };
   try {
-    await ensureProjectStructure();
+    assertCurrent();
+    const snapshot = window ? await requestEditorSnapshot() : null;
+    assertCurrent();
+    if (snapshot && (snapshot.generation !== generation
+      || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending)) {
+      return makeFlowModeError(FLOW_OPEN_V1_CHANNEL, 'M7_FLOW_AUTHORING_PENDING', 'flow_open_authoring_pending');
+    }
+    await ensureProjectStructure(projectName);
+    assertCurrent();
     await recoverPendingWriterProjectTransaction();
-    const projectRoot = getProjectRootPath();
+    assertCurrent();
     const batchGuard = await getFlowBatchGuard(projectRoot);
+    assertCurrent();
     if (batchGuard.hasBlockingBatchState) {
       return makeFlowModeError(FLOW_OPEN_V1_CHANNEL, 'M7_FLOW_BATCH_STALE', 'flow_open_batch_recovery_required', {
         staleMarkers: batchGuard.staleMarkers,
       });
     }
-    const romanRoot = await buildRomanTree();
+    const romanRoot = await buildRomanTree(projectName);
+    assertCurrent();
     const flowNodes = collectFlowEditableNodes(romanRoot, []);
-    const flowIdentity = await buildFlowStableNodeIdMap();
+    const flowIdentity = await buildFlowStableNodeIdMap(projectName);
+    assertCurrent();
 
     const scenes = [];
     for (const node of flowNodes) {
@@ -34126,6 +34152,7 @@ async function handleFlowOpenV1() {
         }
       }
 
+      assertCurrent();
       scenes.push({
         path: descriptor.path,
         sceneId: descriptor.sceneId,
@@ -34139,11 +34166,15 @@ async function handleFlowOpenV1() {
       });
     }
 
+    assertCurrent();
     return {
       ok: 1,
       scenes,
     };
   } catch (error) {
+    if (error?.code === 'M7_FLOW_CONTEXT_STALE') {
+      return makeFlowModeError(FLOW_OPEN_V1_CHANNEL, error.code, 'flow_open_context_changed');
+    }
     return makeFlowModeError(FLOW_OPEN_V1_CHANNEL, 'M7_FLOW_INTERNAL_ERROR', 'flow_open_failed', {
       message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
     });

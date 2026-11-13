@@ -1016,7 +1016,10 @@
     "test/unit/sector-m-m9-next.test.js",
     "test/unit/sector-m-close.test.js",
     "test/unit/sector-m-close-mutation.test.js",
-    "test/unit/sector-m-doctor-query.test.js"
+    "test/unit/sector-m-doctor-query.test.js",
+    "docs/tasks/2026-11-13--writer-flow-open-no-loss.md",
+    "test/unit/writer-flow-open-no-loss.test.js",
+    "test/unit/sector-m-s14-flow-read-projection.test.js"
   ],
   "protectedFiles": [
     {
@@ -1245,7 +1248,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f72d67f40b3448043077d7690ab786d8b155f4bcc68c7ce29a951e28d5d6f698"
+        "sha256": "70a7d67de5208c24fdf1a87b3a7ac0b3eae23bc805ab650ccf6e7b810ab394fa"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1257,7 +1260,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "ec46ef8c48fa2bff8c32a7e09d78f4b23a55f4b2ef7f74e793f0dfbd93b92c14"
+        "sha256": "1654c6b8c414a121c1cb36d1edb823dd9ff04ac733a7868db8df65d88615576a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1421,7 +1424,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "70cc5fc979d6994873a2769157b8989c82b14094b9679737d08e030f717329c1"
+        "sha256": "05c7b26e2209749db247fadac423b6039bd6ec2f8c2aefad5241725b67c1b70b"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -2937,15 +2940,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "85dd4ff3cd2c79c99555ef5f01f5a9e240bbc47e06270ba215d501eed44b0dcc"
+        "sha256": "d0dc2b58d33aae3625866bf810eed007c80e054abd95561a0f4da01d9dd55c77"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "f5a8f5d47e8c0e672abb5b45030b236fbe13e859bd173a48a4aed154f06be62d"
+        "sha256": "c91cf2159e5402b5661713699a1e2c74552e93959199ca332535519656416ef6"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "5f76d1a51f7bc6e2d5d8c15d2a0d3fc347795c7678a8d12067c1a3df0ae64d60"
+        "sha256": "5b3eaa49db9ce45f662a4a0baa1288612567eb92916147b3faab236944282448"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3485,7 +3488,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "24afbdfb5f678353cd2494351358fbdbe8e5ac3d7d1297f65ebff819c646c4e7"
+        "sha256": "4ad28890f62307db291a2c9f21c7c974d4ba3e9c79722805f4122f8f97608b3b"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3509,7 +3512,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "3cc46d9c3792f95157fa90aa80f4fbd86417538c4999c049d8cc2a4d9e4f22f7"
+        "sha256": "6e3dbb924a68dfee32a02ca6c68d22cfd915f30bf1b91c4a2190f7567f41b67e"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3601,7 +3604,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "372c7d0ec288a0efc5191e2ae5298fcec2f8ddec7bd64f7a05f4642bbe8d8cea"
+        "sha256": "ea3543a687cb13bda54f60e486c7550757dd92d4fac1f5b240fb908d5803f4a8"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3617,7 +3620,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "68ee42b8e891ea19c8d9423c525adbca03f7eb4f7081dfa1ee2091503b4cb2cc"
+        "sha256": "12df3819de2bbd3849710bf81bb6d9985522662637501c2c549fbac9650c174e"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4682,6 +4685,18 @@
       {
         "path": "test/unit/sector-m-doctor-query.test.js",
         "sha256": "b109399e002020f2f382b16875735d6280b9149a2aae6fd36864d039b19f7f94"
+      },
+      {
+        "path": "docs/tasks/2026-11-13--writer-flow-open-no-loss.md",
+        "sha256": "2cf7fc4e5a39dcc7ceec14d6acd4c2ad364307cdd1e225e785180667d64d9844"
+      },
+      {
+        "path": "test/unit/writer-flow-open-no-loss.test.js",
+        "sha256": "1f50ce9cb0fae981e0342d094173016b3b1ff8f66575087824d5e3b765bc9797"
+      },
+      {
+        "path": "test/unit/sector-m-s14-flow-read-projection.test.js",
+        "sha256": "b3250fbd19154e9bfe9a68728dc30a22d4d83d08d8a7fe8043400c30c0c01537"
       }
     ],
     "followupRepair": {
