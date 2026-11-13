@@ -236,3 +236,35 @@ test('an acquired real handle closes before only-owned cleanup after a partial w
     if (handle && handle.fd >= 0) await handle.close();
   }
 });
+
+
+test('actual Flow batch receipt binds the exact captured book and complete canonical entry roster', async t => {
+  const { writeFlowSceneBatchAtomic } = require('../../src/utils/flowSceneBatchAtomic');
+  const root = sandbox(), entries = ['one', 'two'].map((name, index) => {
+    const filePath = path.join(root, name + '.txt'), before = 'OLD_' + name;
+    fs.writeFileSync(filePath, before);
+    return { path: filePath, sceneId: 'roman/' + name + '.txt', nodeId: 'tree-node-' + String(index + 1).repeat(32),
+      baselineHash: sha256hex(before), content: 'NEW_' + name + ' 😀 e\u0301' };
+  });
+  const content = 'Book\n' + entries.map(entry => entry.content).join('\n');
+  const actual = await writeFlowSceneBatchAtomic({ projectRoot: root, entries }, { durableReceipt: { revision: 12, authoringContent: content } });
+  assert.equal(actual.ok, true, JSON.stringify(actual)); const receipt = actual.value.receipt;
+  const expectedBatchEntries = entries.map(entry => ({ sceneId: entry.sceneId, nodeId: entry.nodeId,
+    baselineHashBefore: entry.baselineHash, contentHashAfter: sha256hex(entry.content), bytesWritten: Buffer.byteLength(entry.content) }));
+  const input = { receipt, capturedContent: content, capturedGeneration: 12, latestEditGeneration: 12, expectedBatchEntries };
+  const binding = bindSaveReceiptToAck(input);
+  assert.equal(binding.receipt.receiptKind, 'FLOW_BATCH_DURABLE_V2'); assert.equal(binding.ack.kind, SAVE_ACK_KINDS.SAVED);
+  assert.equal(binding.ack.savedGeneration, 12);
+  assert.equal(bindSaveReceiptToAck({ ...input, latestEditGeneration: 13 }).ack.kind, SAVE_ACK_KINDS.PROTECTED);
+  for (const entry of entries) assert.equal(fs.readFileSync(entry.path, 'utf8'), entry.content);
+  const changedRoster = receipt.entries.map((entry, index) => index ? entry : { ...entry, contentHashAfter: '0'.repeat(64) });
+  for (const [name, patch] of [
+    ['incomplete phases', { receipt: { ...receipt, phases: receipt.phases.slice(0, -1) } }],
+    ['wrong generation', { capturedGeneration: 13 }], ['wrong authoring bytes', { capturedContent: content + ' NEWER' }],
+    ['missing expected source roster', { expectedBatchEntries: undefined }],
+    ['changed source hash despite resealed metadata', { receipt: { ...receipt, entries: changedRoster } }],
+    ['duplicate source identity', { receipt: { ...receipt, entries: [receipt.entries[0], receipt.entries[0]] } }],
+    ['wrong entry byte count', { receipt: { ...receipt, entries: receipt.entries.map(entry => ({ ...entry, bytesWritten: entry.bytesWritten + 1 })) } }],
+    ['unknown receipt version', { receipt: { ...receipt, schemaVersion: 'yalken.flow-batch.save-receipt.v999' } }],
+  ]) await t.test(name, () => assert.throws(() => bindSaveReceiptToAck({ ...input, ...patch }), error => error instanceof SaveReceiptAckError));
+});

@@ -274,3 +274,268 @@ test('actual registered book identities cannot alias the default project with id
   assert.deepEqual(scenes.map(({ sceneId, nodeId, content }) => ({ sceneId, nodeId, content })), expected);
   assert.deepEqual(projectFiles(f.root), defaultBefore); assert.deepEqual(projectFiles(selected), selectedBefore);
 });
+
+// Save uses the same real renderer functions and complete Main/Kernel fixture.
+async function saveRenderer(scenes, overrides = {}) {
+  const flow = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/flowMode.mjs')).href);
+  const projection = flow.composeFlowReadProjection(scenes);
+  const h = await rendererHarness({ flowModeSaveRequest: null, localDirty: true,
+    localEditGeneration: 8, lastAckedGeneration: 7, text: projection.text.replace(/Beta\n$/u, 'Beta EDITED 😀 e\u0301\n'),
+    flowModeState: { active: true, dirty: true, scenes, projection },
+    FLOW_SAVE_ERROR_MESSAGE: 'Save unavailable', updateSaveStateText() {}, updateInspectorSnapshot() {}, ...overrides });
+  h.context.COMMAND_IDS.PROJECT_FLOW_SAVE_V1 = 'cmd.project.flowSaveV1';
+  vm.runInContext(['runFlowSaveCommand', 'handleFlowModeSaveUiPath'].map(n => productionFunction(source(), n)).join('\n'), h.context);
+  h.save = () => h.context.handleFlowModeSaveUiPath();
+  h.respondSave = (index, mutate = x => x) => {
+    const payload = h.calls.filter(x => x.id === 'cmd.project.flowSaveV1')[index].payload;
+    const rows = payload.scenes.map((s, i) => ({ ...s, title: scenes[i].title, kind: scenes[i].kind,
+      baselineHash: sha(s.content), missing: false, partial: false }));
+    rows.forEach(s => { delete s.path; });
+    const entries = payload.scenes.map(s => ({ sceneId: s.sceneId, nodeId: s.nodeId,
+      baselineHashBefore: s.baselineHash, contentHashAfter: sha(s.content), bytesWritten: Buffer.byteLength(s.content) }));
+    h.replies[index](mutate({ ok: true, value: { saved: true, savedCount: rows.length, scenes: rows,
+      receipt: { operation: 'flow.batch.save.v1', committed: true, markerCleared: true, savedCount: rows.length,
+        scenes: entries, ack: { kind: 'SAVED', savedGeneration: 8, latestEditGeneration: 8, receiptKind: 'FLOW_BATCH_DURABLE_V2' },
+        durable: { schemaVersion: 'yalken.flow-batch.save-receipt.v2', success: true, committed: true, markerCleared: true,
+          revision: 8, entries, sceneCount: rows.length } } } }));
+  };
+  return h;
+}
+const saveRefs = () => ['Alpha', 'Beta'].map((title, i) => ({ path: '/owned/' + title + '.txt', title,
+  sceneId: 'roman/' + title + '.txt', nodeId: 'tree-node-' + String(i + 1).repeat(32),
+  baselineHash: sha(title), content: title, kind: 'scene' }));
+test('only the matching clean book reply publishes saved state and current inspector', async () => {
+  for (const drift of ['none', 'typing', 'project']) {
+    const states = []; let inspected = 0;
+    const h = await saveRenderer(saveRefs(), { updateSaveStateText: s => states.push(s), updateInspectorSnapshot: () => inspected++ });
+    const pending = h.save();
+    if (drift === 'typing') { h.context.text += ' LATE'; h.context.localEditGeneration++; }
+    if (drift === 'project') h.context.currentProjectId = 'other-project';
+    h.respondSave(0); await pending;
+    assert.equal(states.includes('saved'), drift === 'none');
+    assert.equal(inspected > 0, drift !== 'project');
+  }
+});
+test('whole-book pathless Save response retains canonical paths for the second actual Save intent', async () => {
+  const h = await saveRenderer(saveRefs()), pending = h.save(); h.respondSave(0); await pending;
+  assert.equal(h.context.localDirty, false); assert.equal(h.context.lastAckedGeneration, 8);
+  assert.deepEqual(h.context.flowModeState.scenes.map(s => s.path), saveRefs().map(s => s.path));
+  h.context.text += 'NEXT'; h.context.localEditGeneration++; h.context.localDirty = true;
+  h.context.flowModeState = { ...h.context.flowModeState, dirty: true };
+  const second = h.save(); assert.equal(h.replies.length, 2, 'Refreshed pathless rows must not strand the next edit');
+  h.replies[1]({ ok: false }); await second;
+});
+for (const drift of ['typing', 'project', 'document', 'publication', 'flow-instance']) {
+  test('whole-book Save response cannot acknowledge newer ' + drift + ' authoring', async () => {
+    const h = await saveRenderer(saveRefs()), pending = h.save(); assert.equal(h.replies.length, 1);
+    if (drift === 'typing') { h.context.text += ' NEW'; h.context.localEditGeneration++;
+      h.context.flowModeState = { ...h.context.flowModeState, dirty: true }; }
+    if (drift === 'project') h.context.currentProjectId = 'project-b';
+    if (drift === 'document') h.context.currentDocumentId = 'scene-b';
+    if (drift === 'publication') h.context.currentTreeContentPublicationId = 'publication-b';
+    if (drift === 'flow-instance') h.context.flowModeState = { active: false, dirty: true, scenes: [], projection: null };
+    const current = h.snapshot(); h.respondSave(0); await pending;
+    const after = h.snapshot();
+    for (const key of ['text', 'selection', 'undo', 'dirty', 'generation', 'ack', 'project', 'document', 'publication'])
+      assert.deepEqual(after[key], current[key], key);
+    if (drift !== 'typing') assert.deepEqual(after.flow, current.flow);
+    else { assert.equal(after.flow.dirty, true); assert.equal(after.flow.scenes[1].baselineHash,
+      sha(h.calls.find(x => x.id === 'cmd.project.flowSaveV1').payload.scenes[1].content)); }
+    assert.equal(h.calls.some(x => x.kind === 'signal'), false);
+  });
+}
+test('whole-book Save serializes duplicate intent and refuses malformed or uncommitted acknowledgements', async () => {
+  for (const mutate of [x => ({ ok: false }), x => ({ ...x, value: { ...x.value, cancelled: true } }),
+    x => { x.value.receipt.committed = false; return x; }, x => { x.value.scenes.pop(); return x; },
+    x => { x.value.receipt.ack.savedGeneration = 9; return x; }, x => { x.value.receipt = null; return x; }]) {
+    const h = await saveRenderer(saveRefs()), before = h.snapshot(), pending = h.save();
+    const duplicate = h.save(); assert.equal(h.replies.length, 1, 'Only one Save may own the response');
+    h.respondSave(0, mutate); await Promise.all([pending, duplicate]); assert.deepEqual(h.snapshot(), before);
+  }
+});
+async function bookFixture(t, name = 'Роман', makeFixture = fixture) {
+  const f = await makeFixture(t), selected = path.join(path.dirname(f.root), name);
+  if (name !== 'Роман') { fs.mkdirSync(path.join(selected, 'roman', 'Imported'), { recursive: true });
+    for (const file of [f.alpha, f.beta]) fs.writeFileSync(path.join(selected, 'roman', 'Imported', path.basename(file)), path.basename(file).includes('Alpha') ? 'Alpha' : 'Beta'); }
+  await f.main.buildProjectTreeRootsWithIdentities(name); mountRenderer(f, 'Beta');
+  f.probe.state({ projectName: name, filePath: path.join(selected, 'roman', 'Imported', path.basename(f.beta)) });
+  const port = await registeredBookPort(f); let read = await port.dispatch('cmd.project.flowOpenV1'); assert.equal(read.ok, true);
+  for (const s of read.value.scenes.filter(s => s.missing)) fs.writeFileSync(s.path, 'Owned section ' + s.title);
+  await f.main.buildProjectTreeRootsWithIdentities(name); read = await port.dispatch('cmd.project.flowOpenV1'); assert.equal(read.ok, true);
+  assert.equal(read.value.scenes.length, 9); assert.equal(read.value.scenes.some(s => s.partial), false);
+  const manifest = JSON.parse(fs.readFileSync(path.join(selected, 'project.craftsman.json'), 'utf8'));
+  const h = await saveRenderer(read.value.scenes, { currentProjectId: manifest.projectId,
+    currentDocumentId: read.value.scenes.at(-1).nodeId });
+  const envelope = await import(pathToFileURL(path.join(ROOT, 'src/renderer/documentContentEnvelope.mjs')).href);
+  Object.assign(h.context, { isTiptapMode: true, centralSheetStripLargePayloadFastPathActive: false,
+    composeObservablePayload: envelope.composeObservablePayload, getPlainText: () => h.context.text,
+    getTiptapDocumentSnapshot: () => ({ text: h.context.text, doc: { type: 'doc', content: h.context.text.trimEnd().split('\n')
+      .map(text => ({ type: 'paragraph', ...(text ? { content: [{ type: 'text', text }] } : {}) })) } }),
+    metaEnabled: false, currentMeta: {}, currentCards: [], getActiveBookProfile: () => null,
+    getSelectionOffsets: () => ({ start: 2, end: 5 }), getTiptapImageInsertionPosition: () => null,
+    getTiptapRootSplitBoundary: () => null, getTiptapCommentEditIntentsJson: () => null });
+  vm.runInContext(['composeDocumentContent', 'composeEditorSnapshot'].map(n => productionFunction(source(), n)).join('\n'), h.context);
+  const snapshot = () => plain(h.context.composeEditorSnapshot());
+  const mounted = mountRenderer(f, () => snapshot().content, () => h.context.localEditGeneration, null, snapshot);
+  f.probe.state({ projectName: name, filePath: read.value.scenes.at(-1).path, dirty: true });
+  h.context.dispatchUiCommand = (id, payload) => { h.calls.push({ kind: 'command', id, payload }); return port.dispatch(id, payload); };
+  return { f, h, port, selected, mounted, snapshot };
+}
+for (const name of ['Роман', 'SELECTED_SAVE_😀']) {
+  test('complete registered ' + name + ' book Save and repeated Save bind real durable bytes and Main ACK', async t => {
+    const { f, h, selected } = await bookFixture(t, name), beforeDefault = projectFiles(f.root);
+    await h.save(); assert.equal(h.context.localDirty, false); assert.equal(f.probe.state().dirty, false);
+    assert.equal(h.context.lastAckedGeneration, 8);
+    const target = path.join(selected, 'roman', 'Imported', path.basename(f.beta));
+    assert.equal(fs.readFileSync(target, 'utf8'), h.calls.filter(x => x.id === 'cmd.project.flowSaveV1').at(-1).payload.scenes.at(-1).content);
+    assert.equal(require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(fs.readFileSync(target, 'utf8')).text, 'Beta EDITED 😀 e\u0301');
+    h.context.text = h.context.text.replace('EDITED', 'TWICE'); h.context.localEditGeneration++;
+    h.context.flowModeState = { ...h.context.flowModeState, dirty: true }; h.context.localDirty = true;
+    f.probe.state({ generation: 9, dirty: true }); await h.save();
+    assert.equal(h.context.localDirty, false); assert.equal(f.probe.state().dirty, false); assert.equal(h.context.lastAckedGeneration, 9);
+    assert.equal(fs.readFileSync(target, 'utf8'), h.calls.filter(x => x.id === 'cmd.project.flowSaveV1').at(-1).payload.scenes.at(-1).content);
+    assert.equal(require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(fs.readFileSync(target, 'utf8')).text, 'Beta TWICE 😀 e\u0301');
+    if (name !== 'Роман') assert.deepEqual(projectFiles(f.root), beforeDefault);
+  });
+}
+for (const action of ['autosave', 'save', 'backup']) {
+  test('actual composed book snapshot cannot enter ordinary scene ' + action, async t => {
+    const { f, snapshot } = await bookFixture(t), before = projectFiles(f.root);
+    assert.ok(snapshot().plainText.includes('Alpha')); await f.probe[action]();
+    await f.probe.queue(() => Promise.resolve(), 'book refusal barrier');
+    assert.deepEqual(projectFiles(f.root), before, 'Derived book text must never replace a single source scene');
+    assert.equal(f.probe.state().dirty, true);
+  });
+}
+for (const drift of ['typing', 'project', 'document', 'session', 'owner', 'window', 'baseline']) {
+  test('actual queued book write refuses changed ' + drift + ' before effect', async t => {
+    const { f, h } = await bookFixture(t), before = projectFiles(f.root);
+    const resume = f.probe.captureQueued('save flow scene batch'); await h.save();
+    if (drift === 'typing') f.probe.state({ generation: 9, dirty: true });
+    if (drift === 'project') f.probe.state({ projectName: 'Other' });
+    if (drift === 'document') f.probe.replaceDocument(f.alpha);
+    if (drift === 'session') f.probe.changeSession();
+    if (drift === 'owner') f.probe.replaceTreeQueryOwner();
+    if (drift === 'window') f.probe.state({ window: null });
+    if (drift === 'baseline') fs.writeFileSync(f.alpha, 'EXTERNAL NEW SOURCE');
+    const expected = projectFiles(f.root);
+    await assert.rejects(resume(), drift === 'baseline' ? /FLOW_BATCH_SOURCE_BASELINE_CHANGED/u : /M7_FLOW_CONTEXT_STALE/u);
+    assert.deepEqual(projectFiles(f.root), expected, 'Captured callback has no authority after its source changes');
+    if (drift !== 'baseline') assert.deepEqual(expected, before);
+  });
+}
+test('unchanged captured book callback still performs the real complete durable batch', async t => {
+  const { f, h } = await bookFixture(t), resume = f.probe.captureQueued('save flow scene batch');
+  await h.save(); const result = await resume(); assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.value.receipt.success, true); assert.equal(result.value.receipt.sceneCount, 9);
+  for (const s of h.calls.at(-1).payload.scenes) assert.equal(fs.readFileSync(s.path, 'utf8'), s.content);
+});
+test('generic delayed book ACK cannot clear another renderer view with the same generation', async () => {
+  const h = await saveRenderer(saveRefs()), text = source(), start = text.indexOf('window.electronAPI.onSetDirty((message) => {');
+  const end = text.indexOf('\n  });', start); assert.ok(start > 0 && end > start);
+  const callback = text.slice(start + 'window.electronAPI.onSetDirty('.length, end) + '\n  }';
+  h.context.incoming = { state: false, ack: { kind: 'SAVED', savedGeneration: 8, receiptKind: 'FLOW_BATCH_DURABLE_V2' } };
+  h.context.currentProjectId = 'new-project'; const before = h.snapshot();
+  vm.runInContext('(' + callback + ')(incoming)', h.context); assert.deepEqual(h.snapshot(), before);
+});
+test('actual Main snapshot decoder refuses missing authoring bytes and invalid book-mode shapes', async t => {
+  const f = await fixture(t); assert.equal(f.probe.normalizeSnapshot('').content, '');
+  for (const value of [null, [], {}, { content: 'Keep', generation: 0, flowModeActive: 'true' }])
+    assert.throws(() => f.probe.normalizeSnapshot(value), /SNAPSHOT_.*INVALID/u);
+});
+function lifecycleBookFixtureFactory() {
+  const m = new Module(fixturePath, module); m.filename = fixturePath;
+  m.paths = Module._nodeModulePaths(path.dirname(fixturePath));
+  m._compile(initializer.replace(anchor, anchor + '\n    confirmClose: confirmDiscardChanges,') + '\nmodule.exports = fixture;', fixturePath);
+  return m.exports;
+}
+for (const mode of ['clean', 'dirty', 'newer-unreported', 'comment', 'note']) {
+  test('actual saved-book lifecycle observation protects ' + mode + ' authoring without writing a scene', async t => {
+    const { f, h } = await bookFixture(t, 'Роман', lifecycleBookFixtureFactory()); await h.save();
+    assert.equal(h.context.localDirty, false); assert.equal(f.probe.state().dirty, false);
+    if (['dirty', 'newer-unreported'].includes(mode)) { h.context.text += ' NEW 🧭'; h.context.localEditGeneration++;
+      h.context.localDirty = true; h.context.flowModeState = { ...h.context.flowModeState, dirty: true };
+      if (mode === 'dirty') f.probe.state({ generation: 9, dirty: true }); }
+    if (mode === 'comment') h.context.wordCommentDraft = { text: 'Keep pending comment' };
+    if (mode === 'note') h.context.manuscriptDrafts.set('pending', { body: 'Keep pending note' });
+    const before = projectFiles(f.root), working = h.snapshot(), comment = h.context.wordCommentDraft, notes = [...h.context.manuscriptDrafts];
+    let allowed;
+    try { allowed = await f.probe.confirmClose(); }
+    catch (error) { if (mode === 'clean') throw error; assert.match(error.message, /FLOW_SCENE_SNAPSHOT_FORBIDDEN/u); allowed = false; }
+    assert.equal(allowed, mode === 'clean'); assert.deepEqual(projectFiles(f.root), before); assert.deepEqual(h.snapshot(), working);
+    assert.equal(h.context.wordCommentDraft, comment); assert.deepEqual([...h.context.manuscriptDrafts], notes);
+  });
+}
+for (const shape of ['native-empty-defaults', 'bold', 'unknown-null-attribute', 'changed-metadata', 'changed-cards']) {
+  test('actual book snapshot ' + shape + ' is admitted only when it preserves the canonical plain book meaning', async t => {
+    const { f, h } = await bookFixture(t), get = h.context.getTiptapDocumentSnapshot, before = projectFiles(f.root);
+    h.context.getTiptapDocumentSnapshot = () => {
+      const value = get(); value.doc.attrs = { wordPendingRevisions: null, wordUserBookmarks: null };
+      value.doc.content.forEach(p => { p.attrs = { textAlign: null }; });
+      if (shape === 'bold') value.doc.content[0].content[0].marks = [{ type: 'bold' }];
+      if (shape === 'unknown-null-attribute') value.doc.attrs.unknown = null;
+      return value;
+    };
+    if (shape === 'changed-metadata') { h.context.metaEnabled = true; h.context.currentMeta = { status: 'changed', tags: {}, synopsis: '' }; }
+    if (shape === 'changed-cards') h.context.currentCards = [{ id: 'owned', title: 'New authoring', text: 'Keep' }];
+    await h.save();
+    if (shape === 'native-empty-defaults') {
+      assert.equal(h.context.localDirty, false); assert.equal(f.probe.state().dirty, false);
+      for (const s of h.calls.at(-1).payload.scenes) assert.equal(fs.readFileSync(s.path, 'utf8'), s.content);
+    } else { assert.equal(h.context.localDirty, true); assert.equal(h.context.lastAckedGeneration, 7);
+      assert.equal(f.probe.state().dirty, true); assert.deepEqual(projectFiles(f.root), before); }
+  });
+}
+for (const fault of ['activation-context', 'batch-readback', 'main-readback', 'late-typing']) {
+  test('actual book batch ' + fault + ' preserves source truth and never acknowledges unsaved text', async t => {
+    const { f, h } = await bookFixture(t), before = projectFiles(f.root);
+    const io = require('node:fs/promises'), read = io.readFile, rename = io.rename; let reached = false, observed = 0, response;
+    const dispatch = h.context.dispatchUiCommand;
+    h.context.dispatchUiCommand = async (...args) => { response = await dispatch(...args); return response; };
+    io.rename = async function (from, to) {
+      const result = await rename.call(this, from, to);
+      if (fault === 'activation-context' && !reached && String(from).endsWith('.tmp') && String(to).includes('/roman/')) {
+        reached = true; f.probe.state({ generation: 9, dirty: true });
+      } return result;
+    };
+    io.readFile = async function (file, ...args) {
+      const bytes = await read.call(this, file, ...args);
+      if (String(file) === f.alpha && String(bytes) !== 'Alpha') {
+        observed++;
+        if (fault === 'batch-readback' && observed === 1) { reached = true; return Buffer.from('CORRUPT_READBACK'); }
+        if (fault === 'main-readback' && observed === 2) { reached = true; throw Object.assign(Error('OWNED_MAIN_READBACK_EIO'), { code: 'EIO' }); }
+        if (fault === 'late-typing' && observed === 1) { reached = true; h.context.text += ' NEWER';
+          h.context.localEditGeneration++; h.context.flowModeState = { ...h.context.flowModeState, dirty: true };
+          f.probe.state({ generation: 9, dirty: true }); }
+      } return bytes;
+    };
+    t.after(() => { io.readFile = read; io.rename = rename; });
+    const selection = plain(h.context.selection), undo = [...h.context.undo]; await h.save();
+    assert.equal(reached, true); assert.equal(h.context.localDirty, true); assert.equal(h.context.lastAckedGeneration, 7);
+    assert.equal(f.probe.state().dirty, true); assert.deepEqual(plain(h.context.selection), selection); assert.deepEqual(h.context.undo, undo);
+    if (['activation-context', 'batch-readback'].includes(fault)) {
+      assert.equal(response.ok, false); const after = projectFiles(f.root);
+      for (const [name, bytes] of Object.entries(before)) assert.deepEqual(after[name], bytes, name);
+      assert.equal(response.error.details.rollbackConfirmed, true); assert.equal(response.error.details.recoveryEvidenceConfirmed, true);
+    } else {
+      for (const s of h.calls.at(-1).payload.scenes) assert.equal(fs.readFileSync(s.path, 'utf8'), s.content);
+      if (fault === 'main-readback') { assert.equal(response.ok, false); assert.equal(response.error.details.committed, true); }
+      else { assert.equal(response.value.receipt.ack.kind, 'PROTECTED'); assert.ok(h.context.text.endsWith('NEWER'));
+        assert.equal(h.context.flowModeState.scenes.at(-1).baselineHash, sha(h.calls.at(-1).payload.scenes.at(-1).content)); }
+    }
+  });
+}
+for (const changedSynopsis of [false, true]) {
+  test('native scene metadata defaults preserve plain book meaning; changed synopsis=' + changedSynopsis, async t => {
+    const { f, h } = await bookFixture(t), before = projectFiles(f.root), get = h.context.getTiptapDocumentSnapshot;
+    h.context.metaEnabled = true; h.context.currentMeta = require('../../src/core/document-content-envelope-v1.cjs').createDefaultDocumentMeta();
+    h.context.getTiptapDocumentSnapshot = () => { const value = get();
+      value.doc.attrs = { wordPendingRevisions: null, wordUserBookmarks: null };
+      value.doc.content.forEach(p => { p.attrs = { textAlign: null }; }); return value; };
+    if (changedSynopsis) h.context.currentMeta.synopsis = 'Unsaved metadata must remain protected';
+    await h.save(); assert.equal(h.context.localDirty, changedSynopsis); assert.equal(f.probe.state().dirty, changedSynopsis);
+    if (changedSynopsis) { assert.deepEqual(projectFiles(f.root), before); assert.equal(h.context.lastAckedGeneration, 7); }
+    else { assert.equal(h.context.lastAckedGeneration, 8);
+      for (const s of h.calls.at(-1).payload.scenes) assert.equal(fs.readFileSync(s.path, 'utf8'), s.content); }
+  });
+}

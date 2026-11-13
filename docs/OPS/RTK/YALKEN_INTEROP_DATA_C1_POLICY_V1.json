@@ -1019,7 +1019,9 @@
     "test/unit/sector-m-doctor-query.test.js",
     "docs/tasks/2026-11-13--writer-flow-open-no-loss.md",
     "test/unit/writer-flow-open-no-loss.test.js",
-    "test/unit/sector-m-s14-flow-read-projection.test.js"
+    "test/unit/sector-m-s14-flow-read-projection.test.js",
+    "docs/tasks/2026-11-13--writer-flow-save-no-loss.md",
+    "src/core/save-receipt-ack-v1.cjs"
   ],
   "protectedFiles": [
     {
@@ -1248,7 +1250,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "70a7d67de5208c24fdf1a87b3a7ac0b3eae23bc805ab650ccf6e7b810ab394fa"
+        "sha256": "7285199ac61723c32afabd82f9ee06f0b7b877f57d3ba2d91e556f2c7c60ab19"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1260,7 +1262,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "1654c6b8c414a121c1cb36d1edb823dd9ff04ac733a7868db8df65d88615576a"
+        "sha256": "93be5e7e112ba97894fc4b9c58e71363d6ad61f259ad65dcb7e6ab0ca35cf467"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1424,7 +1426,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "05c7b26e2209749db247fadac423b6039bd6ec2f8c2aefad5241725b67c1b70b"
+        "sha256": "ad6691cc5dc47173375a333b71b6a407ba18f5474d218c3289a07e6a0103468e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1668,7 +1670,7 @@
       },
       {
         "path": "src/utils/flowSceneBatchAtomic.js",
-        "sha256": "bd2465f76bf09a90ae550f668a8a8cb87169c19a2a4d6d6d17a62c4bfb40ce4d"
+        "sha256": "c31e3192d005a417eb426e0d9e47d80b5b88f9a8bdda950df5dcfcabe2243bd5"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
@@ -2544,7 +2546,7 @@
       },
       {
         "path": "test/unit/metadata-inspector-read-model-main.test.js",
-        "sha256": "3d54c6c050a2f07a90df976354837d9f4a39838936e12a66e6e8c4540aa1b039"
+        "sha256": "412b20e03447fa9ec40cb2c8364c7fe5bf352758410200207a6ce63b6bb95c73"
       },
       {
         "path": "src/core/word-concurrent-return-v1.cjs",
@@ -2940,15 +2942,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "d0dc2b58d33aae3625866bf810eed007c80e054abd95561a0f4da01d9dd55c77"
+        "sha256": "cb95b4c92a38e93fde03889f6e40b0f0969fe61e6839414b90fe5f845dff534d"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "c91cf2159e5402b5661713699a1e2c74552e93959199ca332535519656416ef6"
+        "sha256": "02f4e2571595ce9978ae42b65d059f6471fb2f2f552d9df441c258df46cc8609"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "5b3eaa49db9ce45f662a4a0baa1288612567eb92916147b3faab236944282448"
+        "sha256": "c4bf1bee90bf68625ced337721e724e40bda53ffecd513527d3b7254866302ae"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3488,7 +3490,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "4ad28890f62307db291a2c9f21c7c974d4ba3e9c79722805f4122f8f97608b3b"
+        "sha256": "3607fe2692422db2f584bbc7a40df290c50ffcbe4d861d02efe6bcff1652867d"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3512,11 +3514,11 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "6e3dbb924a68dfee32a02ca6c68d22cfd915f30bf1b91c4a2190f7567f41b67e"
+        "sha256": "4cfb703334f7474e1939d7e522b30e1c8728356a4710f8190f528196a77d65d1"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
-        "sha256": "3ff4858cb0de364d09093f41a93fd91d202ea56624d707cebdbe07099721edc0"
+        "sha256": "ee6ba30db5380db3a5aa6a2e8fb5e5c44811b2aabca543ee98050b8cab624457"
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
@@ -3604,7 +3606,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "ea3543a687cb13bda54f60e486c7550757dd92d4fac1f5b240fb908d5803f4a8"
+        "sha256": "fa27e73024df1158df9f8a182487ef6f8343ef154beda91cd697a6356e6208a0"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3620,7 +3622,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "12df3819de2bbd3849710bf81bb6d9985522662637501c2c549fbac9650c174e"
+        "sha256": "f5bfaa9241e97e616225b930ba38c89048e9341dc0fa82783e7534409c30d362"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -3932,7 +3934,7 @@
       },
       {
         "path": "test/unit/r24-wp200-durable-save.test.js",
-        "sha256": "76a0fa805b060f750daa4004e0a6582f0946162ae60a0be06450f55bf47e1886"
+        "sha256": "8ccb3f54ccd9b201700ea70d908d63ed06d5b53bb9aa3eee8268c499845fb800"
       },
       {
         "path": "docs/tasks/2026-10-27--wse-evidence-jump-feedback.md",
@@ -4692,11 +4694,23 @@
       },
       {
         "path": "test/unit/writer-flow-open-no-loss.test.js",
-        "sha256": "1f50ce9cb0fae981e0342d094173016b3b1ff8f66575087824d5e3b765bc9797"
+        "sha256": "c90cf6e3600592e75216756d4205b87d12d094fa8ff1d06c69826e139c4d4c9f"
       },
       {
         "path": "test/unit/sector-m-s14-flow-read-projection.test.js",
         "sha256": "b3250fbd19154e9bfe9a68728dc30a22d4d83d08d8a7fe8043400c30c0c01537"
+      },
+      {
+        "path": "docs/tasks/2026-11-13--writer-flow-save-no-loss.md",
+        "sha256": "405d85db7ce4f29d5901936f4f0a8aef8bf353ec0efa559c7d25d74977e547db"
+      },
+      {
+        "path": "src/core/save-receipt-ack-v1.cjs",
+        "sha256": "0d8c64ddd9479e364515e85dd3a008e8ac46d7597d6ba7cb5b2f196145104bcb"
+      },
+      {
+        "path": "test/unit/sector-m-m7-flow-batch-atomicity.test.js",
+        "sha256": "c0093c8b8828f818d9c781fe82d163fb777e463b8f92741b19926fbcfed41c65"
       }
     ],
     "followupRepair": {

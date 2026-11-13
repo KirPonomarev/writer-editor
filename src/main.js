@@ -25129,7 +25129,12 @@ function normalizeEditorSnapshotPayload(payload) {
     };
   }
 
-  const source = isPlainObjectValue(payload) ? payload : {};
+  if (!isPlainObjectValue(payload)) throw Object.assign(Error('SNAPSHOT_SHAPE_INVALID'), { code: 'E_SNAPSHOT_SHAPE_INVALID' });
+  const source = payload;
+  if (Object.hasOwn(source, 'flowModeActive') && typeof source.flowModeActive !== 'boolean') {
+    throw Object.assign(Error('SNAPSHOT_AUTHORING_MODE_INVALID'), { code: 'E_SNAPSHOT_AUTHORING_MODE_INVALID' });
+  }
+  if (typeof source.content !== 'string' && typeof source.text !== 'string' && !Object.hasOwn(source, 'environmentConfiguration')) throw Object.assign(Error('SNAPSHOT_CONTENT_INVALID'), { code: 'E_SNAPSHOT_CONTENT_INVALID' });
   const content = typeof source.content === 'string'
     ? source.content
     : typeof source.text === 'string'
@@ -25161,6 +25166,7 @@ function normalizeEditorSnapshotPayload(payload) {
   }
   return {
     ...identity,
+    ...(Object.hasOwn(source, 'flowModeActive') ? { flowModeActive: source.flowModeActive } : {}),
     rootSplitBoundary,
     commentEditIntentsJson,
     content,
@@ -25239,7 +25245,7 @@ function assertTreeRecoverySnapshot(snapshot, admission) {
   if (fence.sourceNodeId) admission.sourceImage = image;
 }
 
-function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null, environmentRequest = null) {
+function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null, environmentRequest = null, allowFlowAuthoring = false) {
   if (!mainWindow || mainWindow.isDestroyed()) {
     return Promise.reject(new Error('No active window'));
   }
@@ -25268,9 +25274,13 @@ function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null, envir
           // Form queries never derive revisions or mint manuscript-save admission.
           resolve(snapshot); return;
         }
+        if (snapshot?.flowModeActive === true && (allowFlowAuthoring !== true || recordingSession || recoveryAdmission)) {
+          throw Object.assign(Error('FLOW_SCENE_SNAPSHOT_FORBIDDEN'), { code: 'E_FLOW_SCENE_SNAPSHOT_FORBIDDEN' });
+        }
         if (recoveryAdmission) assertTreeRecoverySnapshot(snapshot, recoveryAdmission);
         else if (fence) await assertTreeEditorSnapshotIdentity(snapshot, false, fence);
         checkSession();
+        if (snapshot?.flowModeActive === true) { resolve(snapshot); return; }
         const prepared = await preparePendingRecordingSnapshot(snapshot, recordingSession);
         checkSession();
         const publicationFence = fence || (typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null);
@@ -34110,7 +34120,7 @@ async function handleFlowOpenV1() {
   };
   try {
     assertCurrent();
-    const snapshot = window ? await requestEditorSnapshot() : null;
+    const snapshot = window ? await requestEditorSnapshot(2500, null, null, true) : null;
     assertCurrent();
     if (snapshot && (snapshot.generation !== generation
       || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending)) {
@@ -34188,19 +34198,52 @@ async function handleFlowSaveV1(payloadRaw) {
     return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M7_FLOW_INVALID_PAYLOAD', 'flow_save_payload_invalid');
   }
 
+  const projectName = currentProjectName || DEFAULT_PROJECT_NAME, projectRoot = getProjectRootPath(projectName);
+  const context = captureDocxImportPreviewContext(), filePath = currentFilePath, window = mainWindow, contents = window?.webContents;
+  const owner = activeStage10ApplicationBootstrap, session = commentAuthoringSessionId;
+  const subject = currentLifecycleSubjectId(), generation = lastSignaledEditGeneration;
+  const assertCurrent = (exactGeneration = true) => {
+    userBookmarkCapability('cmd.project.flowSaveV1');
+    if (projectRoot !== getProjectRootPath() || context !== captureDocxImportPreviewContext() || filePath !== currentFilePath
+      || window !== mainWindow || window && (window.isDestroyed() || contents !== window.webContents || contents.isDestroyed())
+      || owner !== activeStage10ApplicationBootstrap || session !== commentAuthoringSessionId || subject !== currentLifecycleSubjectId()
+      || pendingReviewDocxExports.size > 0 || (exactGeneration && generation !== lastSignaledEditGeneration)) {
+      throw Object.assign(Error('M7_FLOW_CONTEXT_STALE'), { code: 'M7_FLOW_CONTEXT_STALE' });
+    }
+  };
+  let committed = false;
   try {
-    await ensureProjectStructure();
-    const projectRoot = getProjectRootPath();
+    assertCurrent();
+    const snapshot = window ? await requestEditorSnapshot(2500, null, null, true) : null;
+    assertCurrent();
+    const bookAuthoring = snapshot?.flowModeActive === true;
+    if (snapshot && (snapshot.generation !== generation || snapshot.commentAuthoringPending || snapshot.manuscriptNoteAuthoringPending)) {
+      return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M7_FLOW_AUTHORING_PENDING', 'flow_save_authoring_pending');
+    }
+    await ensureProjectStructure(projectName);
+    assertCurrent();
     const batchGuard = await getFlowBatchGuard(projectRoot);
+    assertCurrent();
     if (batchGuard.hasBlockingBatchState) {
       return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M7_FLOW_BATCH_STALE', 'flow_save_batch_recovery_required', {
         staleMarkers: batchGuard.staleMarkers,
       });
     }
-    const romanRoot = await buildRomanTree();
+    let source;
+    if (projectName === DEFAULT_PROJECT_NAME) {
+      const romanRoot = await buildRomanTree();
+      assertCurrent();
+      const flowIdentity = await buildFlowStableNodeIdMap();
+      source = { romanRoot, flowIdentity };
+    } else {
+      const romanRoot = await buildRomanTree(projectName);
+      assertCurrent();
+      source = { romanRoot, flowIdentity: await buildFlowStableNodeIdMap(projectName) };
+    }
+    assertCurrent();
+    const { romanRoot, flowIdentity } = source;
     const allowedNodes = collectFlowEditableNodes(romanRoot, []);
     const allowed = new Map(allowedNodes.map((item) => [item.path, item]));
-    const flowIdentity = await buildFlowStableNodeIdMap();
 
     const normalizedScenes = [];
     for (const item of incomingScenes) {
@@ -34257,6 +34300,7 @@ async function handleFlowSaveV1(payloadRaw) {
           message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
         });
       }
+      assertCurrent();
       const currentHash = computeHash(normalizeFlowTextInput(currentContent));
       if (currentHash !== baselineHash) {
         return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M15_FLOW_STALE_SOURCE', 'flow_stale_source', {
@@ -34273,14 +34317,49 @@ async function handleFlowSaveV1(payloadRaw) {
         baselineHash,
         contentHashAfter: computeHash(nextContent),
         content: nextContent,
+        sourceContent: currentContent,
       });
     }
 
+    if (bookAuthoring) {
+      const manifest = await readProjectManifest(projectName);
+      const flow = await import(pathToFileURL(path.join(__dirname, 'renderer', 'commands', 'flowMode.mjs')).href);
+      const envelope = await loadDocumentContentEnvelopeModule(), parsed = envelope.parseObservablePayload(snapshot.content);
+      const sources = allowedNodes.map(node => {
+        const descriptor = buildFlowSceneReadDescriptor(node, flowIdentity), entry = normalizedScenes.find(s => s.path === descriptor.path);
+        return { ...descriptor, content: entry?.sourceContent || '', baselineHash: entry?.baselineHash || '', missing: !entry };
+      });
+      const mapped = flow.buildFlowProjectionSavePayload(snapshot.plainText, sources);
+      const active = sources.find(s => s.path === filePath);
+      const activePayload = envelope.parseObservablePayload(active?.content || '');
+      // Scene views expose default metadata; the comparison still requires every canonical value.
+      const expectedSnapshot = envelope.composeObservablePayload({
+        ...(parsed.doc ? { doc: envelope.buildParagraphDocumentFromText(parsed.text) } : { text: parsed.text }),
+        metaEnabled: activePayload.hasMetaBlock || parsed.hasMetaBlock, meta: activePayload.meta, cards: activePayload.cards,
+      });
+      if (snapshot.projectId !== manifest?.manifest?.projectId || snapshot.documentId !== active?.nodeId
+        || parsed.issue || !await treeSceneSnapshotsEqual(expectedSnapshot, snapshot.content)
+        || normalizeFlowTextInput(parsed.text).trimEnd() !== normalizeFlowTextInput(snapshot.plainText).trimEnd()
+        || !mapped.ok || mapped.scenes.length !== normalizedScenes.length || mapped.scenes.some((s, i) => {
+          const target = normalizedScenes[i]; return s.path !== target.path || s.sceneId !== target.sceneId
+            || s.nodeId !== target.nodeId || s.content !== target.content;
+        })) return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M7_FLOW_SNAPSHOT_MISMATCH', 'flow_save_snapshot_mismatch');
+      assertCurrent();
+    }
+    const writeBatch = () => writeFlowSceneBatchAtomic({ projectRoot, entries: normalizedScenes }, bookAuthoring ? {
+      durableReceipt: { revision: generation, authoringContent: snapshot.content }, beforeActivate: () => assertCurrent(),
+    } : { beforeActivate: () => assertCurrent() });
     const writeResult = await queueDiskOperation(
-      () => writeFlowSceneBatchAtomic({
-        projectRoot,
-        entries: normalizedScenes,
-      }),
+      async () => {
+        assertCurrent();
+        for (const scene of normalizedScenes) {
+          const raw = await fs.readFile(scene.path, 'utf8'); assertCurrent();
+          if (computeHash(normalizeFlowTextInput(raw)) !== scene.baselineHash) throw Error('FLOW_BATCH_SOURCE_BASELINE_CHANGED');
+        }
+        const guard = await getFlowBatchGuard(projectRoot); assertCurrent();
+        if (guard.hasBlockingBatchState) throw Error('M7_FLOW_BATCH_STALE');
+        return writeBatch();
+      },
       'save flow scene batch',
     );
     if (!writeResult || writeResult.ok !== true) {
@@ -34299,14 +34378,13 @@ async function handleFlowSaveV1(payloadRaw) {
     const batchValue = writeResult && writeResult.value && typeof writeResult.value === 'object'
       ? writeResult.value
       : {};
+    committed = batchValue.receipt?.committed === true;
+    assertCurrent(false);
     const reopenedScenes = [];
     for (const scene of normalizedScenes) {
-      let reopenedContent = '';
-      try {
-        reopenedContent = await fs.readFile(scene.path, 'utf8');
-      } catch {
-        reopenedContent = scene.content;
-      }
+      const reopenedContent = await fs.readFile(scene.path, 'utf8');
+      assertCurrent(false);
+      if (reopenedContent !== scene.content) throw Error('FLOW_BATCH_READBACK_MISMATCH');
       reopenedScenes.push({
         sceneId: scene.sceneId,
         nodeId: scene.nodeId,
@@ -34332,6 +34410,16 @@ async function handleFlowSaveV1(payloadRaw) {
       markerCleared: batchValue.receipt && batchValue.receipt.markerCleared === true,
       scenes: receiptEntries,
     };
+    if (bookAuthoring) {
+      const expectedBatchEntries = normalizedScenes.map(scene => ({ sceneId: scene.sceneId, nodeId: scene.nodeId,
+        baselineHashBefore: scene.baselineHash, contentHashAfter: scene.contentHashAfter, bytesWritten: Buffer.byteLength(scene.content) }));
+      const binding = bindSaveReceiptToAck({ receipt: batchValue.receipt, capturedContent: snapshot.content,
+        capturedGeneration: generation, latestEditGeneration: lastSignaledEditGeneration, expectedBatchEntries });
+      assertCurrent(false);
+      receipt.durable = batchValue.receipt;
+      receipt.ack = { ...binding.ack, receiptKind: binding.receipt.receiptKind };
+      setDirtyState(binding.ack.kind !== SAVE_ACK_KINDS.SAVED, receipt.ack);
+    }
 
     updateStatus('Flow mode сохранен');
     return {
@@ -34342,6 +34430,7 @@ async function handleFlowSaveV1(payloadRaw) {
     };
   } catch (error) {
     return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M7_FLOW_INTERNAL_ERROR', 'flow_save_failed', {
+      committed,
       message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
     });
   }
@@ -39636,7 +39725,13 @@ async function confirmDiscardChanges() {
   const result = await autoSave();
   if (!result || result.ok !== true || !result.ack || result.subjectId !== subjectId) return false;
   if (currentLifecycleSubjectId() !== subjectId) return false;
-  const authoringSnapshot = await requestEditorSnapshot();
+  const canReadSavedBook = typeof isDirty === 'boolean' && !isDirty && result.ack.kind === SAVE_ACK_KINDS.SAVED
+    && result.ack.savedGeneration === lastAcknowledgedEditGeneration && result.ack.latestEditGeneration === lastSignaledEditGeneration
+    && lastAcknowledgedEditGeneration === lastSignaledEditGeneration;
+  const authoringSnapshot = await requestEditorSnapshot(2500, null, null, canReadSavedBook);
+  if (authoringSnapshot.flowModeActive === true && (!canReadSavedBook || isDirty
+    || authoringSnapshot.generation !== lastSignaledEditGeneration || authoringSnapshot.generation !== lastAcknowledgedEditGeneration
+    || authoringSnapshot.manuscriptNoteAuthoringPending === true)) return false;
   if (currentLifecycleSubjectId() !== subjectId || authoringSnapshot.commentAuthoringPending === true) {
     updateStatus('Сохраните комментарий или явно отмените черновик перед выходом или сменой документа.');
     return false;
