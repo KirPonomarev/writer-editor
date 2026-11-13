@@ -1,3 +1,12 @@
+# CURRENT — Whole-book Save source checkpoint; M34 delivery closed
+
+TASK_ID: YALKEN_WRITER_FLOW_SAVE_NO_LOSS_20261113
+BINDING_BASE_SHA: 641c33fb62bb753f322880e61882e8ba05b4aaef
+ORIGINAL_DELIVERY_BASE_SHA: 4195d83e98b16f0949a37532ce65421717704a65
+M34 PR2226 is CLOSED at4195d83e/treef456: schema report09ac9615, closure0e41c516, merged software75b260de, CI20/20 and separately rebuilt native95/f18922b9. Physical34ad50ca retains77profiles47bundles and35 historical missing UNKNOWNs; old pending entries below are historical. Canonical owner6de untouched.
+SOURCE_CHECKPOINT_01: Actual complete source seams 426/426 with0skip/todo/cancel, report38bde11d. Independent scoped byte prooffa093f8d preserves all original assertions and S14/S15/S16 entire files. Actual original19 RED8a9b9911, Core5 REDd0203f18, later shape04ceb4e4 and bridge9e50d375 failures remain retained. Main uses selected source/current capability at real effect, real opt-in batch durability and Core ACK; renderer preserves newer authoring and canonical paths. Known saved-book Quit inspection is still blocked by the generic scene snapshot guard. Preflight05 requires a clean checkpoint before admitting that same-contour read-only lifecycle correction. No lifecycle code is changed here. Current software/native/full delivery remain pending; fullMac17UNKNOWN, no qualification promotion.
+One24-path Save contour, source/tests budget800; existing unsupported-rich/partial refusal and pathless receipt remain. No dependency, runtime network, visual contract, new service or agent. All17 fullMac rows remain UNKNOWN/NOT_READY/UNFROZEN; Word/nativeOffice PAUSED and Black Box follows full Mac.
+
 ## 2026-11-13
 
 - Same M34: actual native94 warm/cold and independent914ab86a retain exact dirty Unicode/book/source/Undo/Save; original AX setup and Chromium warnings retained. Complete DEFAULT bd3b750f is4799/4739/1fail/59oldskips; only S14 helper-signature expectation is stale. Actual no-write S14 prospective4/4 6da81700 and fresh21-path declaration237fc028/preflightf1494bcf precede the same-chain one-literal amendment. Runtime/package bytes stay protected; all required current software/native-applicability/normal delivery remain pending.

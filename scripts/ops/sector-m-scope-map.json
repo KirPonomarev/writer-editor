@@ -616,7 +616,12 @@
       "test/unit/sector-m-doctor-query.test.js",
       "docs/tasks/2026-11-13--writer-flow-open-no-loss.md",
       "test/unit/writer-flow-open-no-loss.test.js",
-      "test/unit/sector-m-s14-flow-read-projection.test.js"
+      "test/unit/sector-m-s14-flow-read-projection.test.js",
+      "docs/tasks/2026-11-13--writer-flow-save-no-loss.md",
+      "src/utils/flowSceneBatchAtomic.js",
+      "src/core/save-receipt-ack-v1.cjs",
+      "test/unit/sector-m-m7-flow-batch-atomicity.test.js",
+      "test/unit/r24-wp200-durable-save.test.js"
     ]
   },
   "allowPrefixByPhase": {

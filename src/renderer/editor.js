@@ -1237,6 +1237,7 @@ let rightRailAdaptiveMode = '';
 let rightRailOverlayOpen = false;
 let rightRailOverlayReturnFocus = null;
 let flowModeOpenRequest = null;
+let flowModeSaveRequest = null;
 let flowModeState = {
   active: false,
   scenes: [],
@@ -8530,6 +8531,7 @@ async function handleFlowModeOpenUiPath() {
 }
 
 async function handleFlowModeSaveUiPath() {
+  if (flowModeSaveRequest) return;
   if (!flowModeState.active) {
     updateStatusText(FLOW_SAVE_ERROR_MESSAGE);
     return;
@@ -8548,27 +8550,57 @@ async function handleFlowModeSaveUiPath() {
     return;
   }
 
-  const saveResult = await runFlowSaveCommand(payload.scenes);
-  if (!saveResult.ok) return;
-  const refreshedScenes = normalizeFlowSceneRefs(saveResult.value && saveResult.value.scenes);
-  const nextScenes = refreshedScenes.length === flowModeState.scenes.length
-    ? refreshedScenes
-    : flowModeState.scenes;
-  const nextProjection = refreshedScenes.length === flowModeState.scenes.length
-    ? composeFlowReadProjection(refreshedScenes)
-    : flowModeState.projection;
+  const request = {}, scenes = flowModeState.scenes, projection = flowModeState.projection;
+  const project = currentProjectId, document = currentDocumentId, publication = currentTreeContentPublicationId;
+  const generation = localEditGeneration;
+  flowModeSaveRequest = request;
+  const isCurrent = () => flowModeSaveRequest === request && project === currentProjectId && document === currentDocumentId
+    && publication === currentTreeContentPublicationId && flowModeState.active
+    && scenes === flowModeState.scenes && projection === flowModeState.projection;
+  try {
+    const saveResult = await runFlowSaveCommand(payload.scenes);
+    if (!isCurrent() || saveResult?.ok !== true || saveResult.value?.cancelled === true || saveResult.value?.saved === false) return;
+    const refreshedScenes = normalizeFlowSceneRefs(saveResult.value && saveResult.value.scenes);
+    const receipt = saveResult.value?.receipt, ack = receipt?.ack, durable = receipt?.durable;
+    if (receipt?.operation !== 'flow.batch.save.v1' || receipt.committed !== true || receipt.markerCleared !== true
+      || receipt.savedCount !== scenes.length || saveResult.value.savedCount !== scenes.length || refreshedScenes.length !== scenes.length
+      || !['SAVED', 'PROTECTED'].includes(ack?.kind) || ack.savedGeneration !== generation
+      || !Number.isSafeInteger(ack.latestEditGeneration) || ack.latestEditGeneration < generation
+      || ack.receiptKind !== 'FLOW_BATCH_DURABLE_V2' || durable?.schemaVersion !== 'yalken.flow-batch.save-receipt.v2'
+      || durable.success !== true || durable.committed !== true || durable.markerCleared !== true || durable.revision !== generation
+      || durable.sceneCount !== scenes.length || !Array.isArray(durable.entries) || durable.entries.length !== scenes.length
+      || !Array.isArray(receipt.scenes) || receipt.scenes.length !== scenes.length) return;
+    for (let i = 0; i < scenes.length; i++) {
+      const source = scenes[i], next = refreshedScenes[i], entry = durable.entries[i], outer = receipt.scenes[i];
+      if (!entry || !outer || next.sceneId !== source.sceneId || next.nodeId !== source.nodeId || next.partial || next.missing
+        || next.content !== payload.scenes[i].content || !/^[a-f0-9]{64}$/u.test(next.baselineHash)
+        || entry.sceneId !== source.sceneId || entry.nodeId !== source.nodeId || entry.baselineHashBefore !== source.baselineHash
+        || entry.contentHashAfter !== next.baselineHash || outer.sceneId !== entry.sceneId || outer.nodeId !== entry.nodeId
+        || outer.baselineHashBefore !== entry.baselineHashBefore || outer.contentHashAfter !== entry.contentHashAfter) return;
+      Object.assign(next, { path: source.path, title: source.title, kind: source.kind });
+    }
+    const nextScenes = refreshedScenes.length === flowModeState.scenes.length
+      ? refreshedScenes
+      : flowModeState.scenes;
+    const nextProjection = refreshedScenes.length === flowModeState.scenes.length
+      ? composeFlowReadProjection(refreshedScenes)
+      : flowModeState.projection;
 
-  flowModeState = {
-    ...flowModeState,
-    scenes: nextScenes,
-    projection: nextProjection,
-    dirty: false,
-  };
-  syncFlowViewModeButtons();
-  localDirty = false;
-  lastAckedGeneration = localEditGeneration;
-  await invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: false });
-  updateStatusText(buildFlowModeM9KickoffStatus('save', payload.scenes.length, { m8Kickoff: true, m9Kickoff: true }));
+    const clean = generation === localEditGeneration && ack.kind === 'SAVED' && ack.latestEditGeneration === generation;
+    flowModeState = {
+      ...flowModeState,
+      scenes: nextScenes,
+      projection: nextProjection,
+      dirty: !clean,
+    };
+    syncFlowViewModeButtons();
+    if (clean) { localDirty = false; lastAckedGeneration = generation; }
+    updateSaveStateText(clean ? 'saved' : 'unsaved');
+    updateInspectorSnapshot();
+    if (clean) updateStatusText(buildFlowModeM9KickoffStatus('save', payload.scenes.length, { m8Kickoff: true, m9Kickoff: true }));
+  } finally {
+    if (flowModeSaveRequest === request) flowModeSaveRequest = null;
+  }
 }
 
 function resolveMarkdownLocalFileBridgeValue(result) {
@@ -8896,6 +8928,7 @@ function composeEditorSnapshot(environmentRequest = null) {
     projectId: typeof currentProjectId === 'string' ? currentProjectId : '',
     documentId: typeof currentDocumentId === 'string' ? currentDocumentId : '',
     treeContentPublicationId: currentTreeContentPublicationId,
+    flowModeActive: typeof flowModeState !== 'undefined' && flowModeState.active === true,
     content: composeDocumentContent(),
     plainText: getPlainText(),
     bookProfile: getActiveBookProfile(),
@@ -29265,6 +29298,9 @@ if (window.electronAPI) {
   });
 
   window.electronAPI.onSetDirty((message) => {
+    // A book ACK is consumed only by the original Save request with its
+    // project/document/publication and source references still attached.
+    if (message?.ack?.receiptKind === 'FLOW_BATCH_DURABLE_V2') return;
     // R2.4 P1: the push carries { state, ack }. A SAVED ack clears the dirty
     // mark only when its generation is the exact current one; anything else
     // keeps newer work marked. Legacy boolean payloads keep prior behavior.

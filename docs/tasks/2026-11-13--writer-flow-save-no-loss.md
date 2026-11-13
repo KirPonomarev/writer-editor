@@ -4,14 +4,15 @@ TASK_ID: YALKEN_WRITER_FLOW_SAVE_NO_LOSS_20261113
 TYPE: CORE
 CANON_VERSION: v1.0
 CHECKS_BASELINE_VERSION: v1.0
-BINDING_BASE_SHA: 4195d83e98b16f0949a37532ce65421717704a65
+BINDING_BASE_SHA: 641c33fb62bb753f322880e61882e8ba05b4aaef
+ORIGINAL_DELIVERY_BASE_SHA: 4195d83e98b16f0949a37532ce65421717704a65
 HEAD_SHA_AT_START: 4195d83e98b16f0949a37532ce65421717704a65
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/writer-flow-save-no-loss-20261113
 DOCUMENT_CLASS: PRODUCT_TASK_CONTRACT
 STATUS: ADMITTED_FOR_NEGATIVE_FIRST_SOURCE_WORK_NOT_RUNTIME_ACCEPTANCE
 GROUP_ID: GROUP_04_STORAGE_AND_WRITE
-DESIGN_TOOL_ROUTER: pinned declaration704eef79; product code with unchanged design contract
+DESIGN_TOOL_ROUTER: pinned declaration1b9b9850; product code with unchanged design contract
 CLAIM_BOUNDARY: Existing supported whole-book Save only; no new visual contract, second manuscript truth, arbitrary rich-content editor or full Mac qualification.
 DELIVERY_POLICY: COMMIT_REQUIRED=true; PUSH_REQUIRED=true; PR_REQUIRED=true; MERGE_REQUIRED=true; POST_MERGE_EXACT_HEAD_REQUIRED=true
 OWNER_AUTHORITY: Standing direct-owner full macOS V6/DNA5 goal and sole-executor continuation, user turn01a1a0cb-2603-7991-b662-f9c201c7d51c. Ordinary bounded technical implementation and append-only exact-SHA witnesses are delegated; human-only, signing/notary/publication/private/secrets/admin/OS-policy gates remain. No agent, new chat, model, timer, service or old-chat message.
@@ -26,11 +27,11 @@ At unchanged4195, finite actual renderer6ad8dbab has successful clean/refused co
 
 ## ARTIFACT
 
-One storage-dominant existing Save slice: maintained negative-first actual-source/full-Main tests, selected-project/current effect guards, generation-correct response handling and source-ref continuity, normal renderer build, exact mechanical current bindings and full delivery. Existing supported-content and pathless receipt laws remain. No atomic writer implementation or schema change.
+One storage-dominant existing Save slice: maintained negative-first actual-source/full-Main tests, selected-project/current effect guards, generation-correct response handling and source-ref continuity, normal renderer build, exact mechanical current bindings and full delivery. Existing supported-content and pathless receipt laws remain. Explicit opt-in durable batch receipt and existing Core ACK binding only; legacy/default writer behaviour, old receipt kinds and project schemas stay unchanged.
 
 Before first repository edit: bootstrap187aff9b, full ordered normative reads and scoped factual history with complete698 heading locators, UUID-verified volumes, fresh origin4195, declaration704eef79/preflightd5f9707f and actual eight admission processesb5ae9ed4/independent698b5caf. Source6b2b997d physically rechecks all10128 Git blobs/modes against the reused complete chain; no new full duplicate snapshot or P03 cache claim. Initial wrong design-router declaration/preflight14e123c7 and lexical E0 failure7b21df0d remain retained; no required CHECK is omitted or exempted; PRODUCT_CODE requires the non-design route in that pinned declaration and only metadata was corrected before edits. Canonical owner6de remains untouched.
 
-Manual source/tests budget600 changed lines; task/factual docs400,total1000. Generated bundle and exact mechanical JSON independently reviewed. One rollback and one normal protected delivery chain.
+Manual source/tests budget800 changed lines; task/factual docs400,total1200 after the explicit four-path Core/adapter amendment. Generated bundle and exact mechanical JSON independently reviewed. One rollback and one normal protected delivery chain.
 
 ## ALLOWLIST
 
@@ -54,10 +55,14 @@ Manual source/tests budget600 changed lines; task/factual docs400,total1000. Gen
 - src/renderer/editor.js
 - test/unit/writer-flow-open-no-loss.test.js
 - docs/tasks/2026-11-13--writer-flow-save-no-loss.md
+- src/utils/flowSceneBatchAtomic.js
+- src/core/save-receipt-ack-v1.cjs
+- test/unit/sector-m-m7-flow-batch-atomicity.test.js
+- test/unit/r24-wp200-durable-save.test.js
 
 ## DENYLIST
 
-Everything outside the exact20-path allowlist. Preserve all original assertions/functions outside bounded Save guards and appended tests; S14/S15/S16 contracts, pathless receipts and unsupported-rich/partial refusal remain. Protect Core reducers/schema, atomic batch helper, all command IDs/catalog, capability/entitlement policy, preload, HTML/CSS/tokens/fonts/layout, dependencies/engines/resources, runtime network, old profiles/apps/DB/raw/history/frozen/authority and owner checkout. No reset/stash/clean/rebase/amend/force push/deletion, direct renderer writer/private bus, fake success, timeout increase, disabled test, blanket skip, new infrastructure or qualification promotion.
+Everything outside the exact24-path allowlist. Preserve all original assertions/functions outside bounded Save guards and appended tests; S14/S15/S16 contracts, pathless receipts and unsupported-rich/partial refusal remain. Protect Core project reducers/schema and atomic batch behaviour outside the explicit opt-in durable receipt path, all command IDs/catalog, capability/entitlement policy, preload, HTML/CSS/tokens/fonts/layout, dependencies/engines/resources, runtime network, old profiles/apps/DB/raw/history/frozen/authority and owner checkout. No reset/stash/clean/rebase/amend/force push/deletion, direct renderer writer/private bus, fake success, timeout increase, disabled test, blanket skip, new infrastructure or qualification promotion.
 
 ## CONTRACT / SHAPES
 
@@ -69,7 +74,7 @@ FEATURE_INTEGRATION_MANIFEST_V1:
 {
   "featureId": "YALKEN_WRITER_FLOW_SAVE_NO_LOSS_20261113",
   "featureVersion": "EXISTING_SEAM_BOUNDED_SAVE",
-  "domainOwner": "Existing canonical project scenes and Main save authority",
+  "domainOwner": "Existing canonical project scenes, Core durable receipt validation and Main save authority",
   "authoritativeData": "Selected project manuscript, stable identities, source hashes and canonical authoring coordinates",
   "derivedData": "Existing immutable whole-book Flow projection only",
   "commandIds": ["cmd.project.flowSaveV1"],
@@ -84,7 +89,7 @@ FEATURE_INTEGRATION_MANIFEST_V1:
   "readPath": "Canonical current source identities and hashes -> existing immutable Flow refs -> renderer presentation",
   "requiredProductPorts": ["Existing selected-project/scene identity and filesystem read adapters", "queueDiskOperation and writeFlowSceneBatchAtomic existing callbacks", "Existing Save lifecycle signals"],
   "requiredDesignOsPorts": ["Existing command intent bridge and projection consumer"],
-  "adapterRequirements": "Existing adapters only; native build/profile needs fresh separate StageAdmission",
+  "adapterRequirements": "Existing batch adapter with opt-in versioned actual durable receipt and existing Core ACK binding; native build/profile needs fresh separate StageAdmission",
   "surfaceManifests": "EXISTING_SURFACE_ONLY; existing Flow controls and Save states",
   "slotRequirements": "Existing whole-book editor representation only",
   "supportedWorkspaces": "Existing WRITE",
@@ -93,7 +98,7 @@ FEATURE_INTEGRATION_MANIFEST_V1:
   "fallbacks": ["Typed missing/partial/rich/boundary/source/identity refusal", "Keep newer authoring on stale/refused completion", "Readable existing rollback/recovery markers"],
   "stateClasses": {"PROJECT_STATE": "Canonical scenes", "AUTHORING_WORKING_STATE": "Unsaved book edits and saved-generation coordinate", "DERIVED_STATE": "Existing Flow projection", "SHELL_STATE": "Existing representation only", "TRANSIENT_STATE": "Existing focus/selection paint; authoring is never disposable"},
   "persistenceClass": "Existing canonical atomic batch, no private writer",
-  "migrations": "NONE; format and pathless receipt policy protected",
+  "migrations": "NONE; project/marker formats and legacy receipt kinds protected. New explicit batch receipt version is opt-in and pathless.",
   "recovery": "Existing batch rollback/readable marker and ordinary same-profile cold reopen",
   "rollback": "One normal scoped revert with current companion regeneration; preserve all data/failures",
   "performanceBudget": "No typing hot-path work, scan, new worker or dependency",
@@ -117,13 +122,25 @@ Actual unchanged snapshot-to-complete-Main autosave controldcfd2ee3, method29da4
 
 The same20 paths admit bounded Main/renderer snapshot admission: a validated boolean authoring-mode marker in the existing open snapshot object can only restrict generic scene mutation. Existing envelope/schema versions, channel IDs, policy/allowlists, preload and Core schemas remain unchanged. Generic scene snapshot consumers fail closed on a derived book; only the existing Main Flow read/Save handlers may explicitly read it through a private, typed read option. That option grants no write authority. Flow Save still needs the actual current snapshot/generation, canonical selected source identities/baselines, supported payload, current capability and actual atomic commit/readback before a Main-owned ACK. Retain default/legacy supported contracts without granting a book ACK from an ordinary scene snapshot.
 
-Maintain source return, ordinary clean scene save/autosave/backup, null/malformed refusal, read-only environment queries and current Flow open behavior. Whole-book Save must never hide a source readback failure behind submitted bytes. A committed older batch and newer authoring remain separate; false/PROTECTED acknowledgements cannot clear newer work. Renderer must rejoin paths only from captured canonical refs matched by stable IDs. No atomic helper implementation, direct renderer writer, new service or positive authority from the boolean is admitted. These are implementation boundaries inside the existing Save source/effect paths; no path, owner, dependency, network or security authority expands.
+Maintain source return, ordinary clean scene save/autosave/backup, null/malformed refusal, read-only environment queries and current Flow open behavior. Whole-book Save must never hide a source readback failure behind submitted bytes. A committed older batch and newer authoring remain separate; false/PROTECTED acknowledgements cannot clear newer work. Renderer must rejoin paths only from captured canonical refs matched by stable IDs. Only the explicit opt-in actual durability/receipt path below may extend the existing atomic helper. No direct renderer writer, new service or positive authority from the boolean is admitted. These are implementation boundaries inside the existing Save source/effect paths; no path, owner, dependency, network or security authority expands.
+
+### Same-contour actual batch receipt and Core ACK amendment
+
+Clean Task-only checkpoint641c33fb (326e0877) is a normal intermediate commit, not product acceptance. Current24-path declaration1b9b9850/preflight9cfba1cc precedes any production or maintained-test edit. Fresh source65d32a3d physically reads all10129 Git blobs/modes; every product/old test byte is literal4195. All eight unchanged processes479a4d9d/independentddedaf71 pass on641, including64 namespace,45 early admission and13 public preflight cases with0skip/todo/cancel. Earlier declarations, duplicate-readPath failure287e193d and original20-path checks keep their own identities.
+
+Core Tier B: the actual new batch receipt must record successful intent durability, temp file sync, guarded activation, parent directory sync, complete byte/hash readback, durable commit and cleanup before its ACK phase. Never paste the single-scene phase chain onto a legacy batch. The existing Core save-receipt-ack validator accepts the new explicit receipt kind only with exact captured authoring bytes/generation and the complete source-ID/hash/byte roster; malformed/old/forged/incomplete inputs refuse. The existing Main capability and canonical source/snapshot mapping remain the mutation authority, not this evidence or a renderer mode flag. One Core phase definition, no registry or speculative abstraction.
+
+The existing atomic helper's default receipt/behaviour and historical markers remain protected. Its explicit opt-in path must fsync/read back real files/directories, acquire generated temporaries exclusively, preserve unacquired foreign files, guard the exact source baseline before activation and keep readable failure/rollback evidence. No success on unverified rollback, readback or cleanup; old default callers and binary-safe import paths retain their original contracts. No project schema, format migration, new dependency or writer.
+
+Main's public receipt stays pathless. The private actual batch receipt may be consumed by the existing Core binding only after matching the captured current book snapshot to canonical source identities and submitted supported contents. Generic scene snapshot requests reject derived book authoring; the existing read-only Flow query and Flow Save can explicitly request it with no write authority from that option. Only a Main-owned exact-generation validated ACK can clear Main dirty, and only the original matching renderer Save request consumes its Flow ACK; a generic delayed push cannot clear another view. Preserve newer authoring and usable refreshed baseline refs without fabricating a newer saved coordinate.
+
+Append genuine default/named/repeated/late/queued/activation/capability/baseline/readback/rollback and generic-autosave refusal tests before changes. Extend existing actual batch and Core receipt files with real filesystem positive controls and failed-phase/foreign-temporary/entry/digest/generation/counterfeit negatives; do not alter old assertions. Run their complete files and all original whole affected files. Crash/power-loss or all-platform acceptance is not inferred from a successful ordinary Save, fsync observation or phase count; claim only the actually executed oracle and retain the full17-row qualification obligations.
 
 ## IMPLEMENTATION_STEPS
 
 1. Complete current read/authority/map and baseline capture; keep all original failures and same exact base.
 2. Run task E0, then append maintained actual-source/full-Main negative tests before any production edit. Execute the complete file RED with positive/refused controls, independent persisted bytes and exact source identities. Diagnose any harness issue before product changes.
-3. Correct only the demonstrated existing Save seams. Keep all original default behavior, rich/partial guards and pathless contract. Revalidate current context and baseline inside the actual queued effect; use the existing atomic admission/rollback port. No writer implementation change.
+3. Correct only the demonstrated existing Save seams. Keep all original default behavior, rich/partial guards and pathless contract. Revalidate current context and baseline inside the actual queued effect; use the existing atomic admission/rollback port. Preserve every legacy/default writer path; admit only the opt-in actual phase/readback/directory-durability receipt.
 4. Bind response ownership and saved generation; retain newer authoring, source refs and repeated Save. Exercise overlap, refusal, stale result, capability, recovery/readback and rollback counterexamples; preserve all old assertions and functions outside the bounded delta.
 5. Rebuild renderer normally. Refresh exact current mechanical bindings with unchanged seven-target finalizer prepare/review/CAS/apply, append-only standing-authorized technical SHA witnesses and complete historical deltas. No verifier/policy/skip/17-row semantic change.
 6. Freeze a clean candidate. Run complete affected/mandatory governance/inventory/strict doctor/OSS/audits/Electron/default/C1C/officialRTK with independent source/TAP denominators. Original59 skips and six moderate dev findings remain explicit limitations unless independently changed under separate authority.
@@ -150,3 +167,5 @@ Use AGENT_FINAL_REPORT_V1.schema.json exactly: task, before/after/commit/merged 
 ## FAIL_PROTOCOL
 
 Preserve original method/process/raw/native/profile/metadata failures, including initial preflight14e123c7 and diagnoses. Evidence never creates authority. Expected assertions and independent byte oracles decide the claim, not producer exit0 or self-authored report. After three identical failure signatures stop with exact expected/actual/seed/HEAD/hashes and one next hypothesis. FullMac NOT_READY UNFROZEN17UNKNOWN; Word/nativeOffice PAUSED; Black Box after full Mac.
+
+SOURCE_CHECKPOINT_01: Actual complete source seams 426/426 with0skip/todo/cancel, report38bde11d. Independent scoped byte prooffa093f8d preserves all original assertions and S14/S15/S16 entire files. Actual original19 RED8a9b9911, Core5 REDd0203f18, later shape04ceb4e4 and bridge9e50d375 failures remain retained. Main uses selected source/current capability at real effect, real opt-in batch durability and Core ACK; renderer preserves newer authoring and canonical paths. Known saved-book Quit inspection is still blocked by the generic scene snapshot guard. Preflight05 requires a clean checkpoint before admitting that same-contour read-only lifecycle correction. No lifecycle code is changed here. Current software/native/full delivery remain pending; fullMac17UNKNOWN, no qualification promotion.
