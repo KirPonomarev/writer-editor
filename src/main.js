@@ -34332,9 +34332,10 @@ async function handleFlowSaveV1(payloadRaw) {
       const mapped = flow.buildFlowProjectionSavePayload(snapshot.plainText, sources);
       const active = sources.find(s => s.path === filePath);
       const activePayload = envelope.parseObservablePayload(active?.content || '');
+      // Scene views expose default metadata; the comparison still requires every canonical value.
       const expectedSnapshot = envelope.composeObservablePayload({
         ...(parsed.doc ? { doc: envelope.buildParagraphDocumentFromText(parsed.text) } : { text: parsed.text }),
-        metaEnabled: activePayload.hasMetaBlock, meta: activePayload.meta, cards: activePayload.cards,
+        metaEnabled: activePayload.hasMetaBlock || parsed.hasMetaBlock, meta: activePayload.meta, cards: activePayload.cards,
       });
       if (snapshot.projectId !== manifest?.manifest?.projectId || snapshot.documentId !== active?.nodeId
         || parsed.issue || !await treeSceneSnapshotsEqual(expectedSnapshot, snapshot.content)

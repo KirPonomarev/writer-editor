@@ -1,3 +1,10 @@
+# CURRENT — Native96 refused Save; narrow metadata source correction
+
+TASK_ID: YALKEN_WRITER_FLOW_SAVE_NO_LOSS_20261113
+SOURCE_CHECKPOINT_HEAD: 4b8cdc3209a3ed2e976e13d8021beb71b4f4056c
+SOURCE_CHECKPOINT_03: Actual native96 remains FAIL: frozen4b8 rebuildf9db9afc and completeASAR97d0c6b7; registered Flow Save refused M7_FLOW_SNAPSHOT_MISMATCH, all12 files literal5600ff30. Ordinary Quit and SIGTERM refused; only failed owned pid11992 was forcibly terminated after full disk-profile and675-byte observed-text recovery capture. Actual exit-9 c11b201d, closed131-entry56-file profile87bcc1b3, UI observations0f95bcde and all original logs remain retained. No Save, ACK, Undo, normal Quit or cold credit. Same-contour native metadata RED e43797d1 is61/62; GREEN e702bc21 is62/62, and all26 affected files15428f8f are461/461 with0skip/todo/cancel. The exact canonical meta/cards comparison still rejects changed synopsis and the old rich/unknown/card negatives. Independent inversecdede1a8 preserves all original assertions/functions and uses798 of800 source/test lines. Fresh corrected native and remaining complete local/checked-push/delivery are mandatory; fullMac17UNKNOWN.
+Early pushed draftPR2227 is retained as an owner-ordering violation, not release credit. No new push/ready/merge before corrected actual native and all applicable local obligations plus checked-push verifier. Existing candidate CI continues on its own frozen4b8 inputs; no cancellation or substitution. Source scope24, budgets800/400/1200, owner checkout and historical profiles/failures preserved; Word/nativeOffice PAUSED; Black Box follows full Mac.
+
 # CURRENT — Supported whole-book Save and saved-book lifecycle source
 
 TASK_ID: YALKEN_WRITER_FLOW_SAVE_NO_LOSS_20261113

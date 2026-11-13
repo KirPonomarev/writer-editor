@@ -525,3 +525,17 @@ for (const fault of ['activation-context', 'batch-readback', 'main-readback', 'l
     }
   });
 }
+for (const changedSynopsis of [false, true]) {
+  test('native scene metadata defaults preserve plain book meaning; changed synopsis=' + changedSynopsis, async t => {
+    const { f, h } = await bookFixture(t), before = projectFiles(f.root), get = h.context.getTiptapDocumentSnapshot;
+    h.context.metaEnabled = true; h.context.currentMeta = require('../../src/core/document-content-envelope-v1.cjs').createDefaultDocumentMeta();
+    h.context.getTiptapDocumentSnapshot = () => { const value = get();
+      value.doc.attrs = { wordPendingRevisions: null, wordUserBookmarks: null };
+      value.doc.content.forEach(p => { p.attrs = { textAlign: null }; }); return value; };
+    if (changedSynopsis) h.context.currentMeta.synopsis = 'Unsaved metadata must remain protected';
+    await h.save(); assert.equal(h.context.localDirty, changedSynopsis); assert.equal(f.probe.state().dirty, changedSynopsis);
+    if (changedSynopsis) { assert.deepEqual(projectFiles(f.root), before); assert.equal(h.context.lastAckedGeneration, 7); }
+    else { assert.equal(h.context.lastAckedGeneration, 8);
+      for (const s of h.calls.at(-1).payload.scenes) assert.equal(fs.readFileSync(s.path, 'utf8'), s.content); }
+  });
+}
