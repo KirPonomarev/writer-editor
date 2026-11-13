@@ -1,3 +1,15 @@
+# CURRENT — Restored archive live-owner handover: source observed
+
+TASK_ID: YALKEN_ARCHIVE_RESTORE_STAGE10_HANDOVER_20261113
+BINDING_BASE_SHA: 73ef6fbcac87531d48db386b7331f7875c02c117
+WORKING_SOURCE_BINDINGS: Main02008900; S33cc938f36. Source checkpoint only, not native or delivery acceptance.
+
+M35 PR2227 is CLOSED at merged73ef/treebb1d, candidatee685: actual final93b1ba11/closure54ea9e6a, current software/CI and rebuilt native100 remain at their original identities. New native101 diagnosisf82d01af/7d924bcc reuses that binary with a fresh profile: warm RESTORE/open leaves prior Stage10 owner and blocks WSE/Pulse; same-profile cold binds restored project. Original12archive/nine-source/five-default bytes literal, warm/cold waits0, and physicalb487f92c preserves83profiles52packages35historicalmissingUNKNOWNs. Original Save/Pulse differential was not executed; incidental post-quit default-profile startup uncertainty remains explicit.
+
+SOURCE_CHECKPOINT_01: genuine full S33 RED11ffea00 is87/90 with three new causal failures; corrected whole S337b1fbb00 is90/90,0fail/cancel/skip/todo. Independent7e16252a binds actual owner/Core project IDs, public WSE, rejected foreign scope, and real window/generation stale effects; one literal inverse restores all other Main bytes, every original S33 byte is intact. The only product delta reuses existing guarded preparation for confirmed RESTORE/open when a Stage10 runtime is already live. COPY body, no-runtime path, all guards, Core/renderer/policy/dependencies remain unchanged. V16 deliberately denies the optional Core diagnostic query; tests read the genuine Main bootstrap through a read-only compile-time seam and keep the public WSE boundary.
+
+Complete other16-file proof79dc50e4 covers original15 successful whole files plus unchanged full S28 control7954dfa5,4/4 under separately declared canonical temporary runtime. Original aggregate41d88691 stays332/333FAIL: inherited /var fixture path differed from physical /private/var; no test assertion or production guard was changed for that correction. Initial snapshot fixture failuree842c7e1, optional-query diagnostic0da5cb36 and first foreign-oracle TypeError1e51d0d7 stay retained. Fresh current mechanical witnesses, actual new native build/profile, full configured candidate proofs and normal checked push/PR/CI/merge/exact-merged rebuild remain mandatory. All17fullMac UNKNOWN/NOT_READY/UNFROZEN; Word/nativeOffice PAUSED; Black Box follows full Mac.
+
 # CURRENT — Original Core, metadata and lifecycle contracts repaired
 
 TASK_ID: YALKEN_WRITER_FLOW_SAVE_NO_LOSS_20261113

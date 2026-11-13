@@ -1,3 +1,8 @@
+# 2026-11-13 — Archive RESTORE live Stage10 handover source checkpoint
+
+- Source-only repair on base73ef: actual native101 warm owner mismatch/cold control retained; genuine full S33 RED then90/90; other16 whole-file obligations covered with original failed aggregate plus unchanged S28 canonical-temp control. Independent7e16252a/79dc50e4 and one Main inverse preserve all original assertions and source bytes.
+- Main02008900 reuses existing guarded bootstrap for confirmed RESTORE/open from an already live runtime. All COPY/persistence/integrity/Kernel/privacy/UI boundaries remain. Fresh native/current witnesses/full software/delivery are still pending; full Mac17UNKNOWN, Word/nativeOffice PAUSED, Black Box after full Mac.
+
 # CURRENT — Original Core, metadata and lifecycle contracts repaired
 
 TASK_ID: YALKEN_WRITER_FLOW_SAVE_NO_LOSS_20261113
