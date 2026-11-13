@@ -1,3 +1,10 @@
+# CURRENT — Supported whole-book Save and saved-book lifecycle source
+
+TASK_ID: YALKEN_WRITER_FLOW_SAVE_NO_LOSS_20261113
+SOURCE_CHECKPOINT_HEAD: 4a9b433850fc2c6d6a8dba76685269a33a3d78a6
+SOURCE_CHECKPOINT_02: Same-chain declared saved-book lifecycle correction is now executed: maintained RED5cd681f8 is59/60 with only clean book blocked; actual Main/Core lifecycle GREEN488eada3 is88/88, and complete26-file affected sourceb3688e0a is459/459 with0skip/todo/cancel. Actual current SAVED plus exact post-await snapshot/signaled/acknowledged generation gates the read-only book inspection; dirty/newer-unreported/comment/note cases retain all bytes/authoring. The unchanged Core barrier still decides closure. Independent source inversefe918686 keeps every original assertion, S14/S15/S16 and Core lifecycle/envelope files literal; total manual source/tests783 of800. This is source evidence only, not a real OS Quit, current full baseline, native/cold or delivery acceptance. All mandatory candidate and merged proofs remain required.
+M35 remains one24-path open delivery chain from4195 through normal checkpoints641 and4a9; current declaratione0e655ba/preflightce06030f and independent13-process9af4bf41 precede the lifecycle edit. Existing unsupported-rich/partial refusal, pathless receipt, default batch kinds and project schemas stay unchanged. All older raw failures/profiles/bundles and owner6de are protected. FullMac remains NOT_READY/UNFROZEN17UNKNOWN; Word/nativeOffice PAUSED; Black Box follows full Mac.
+
 # CURRENT — Whole-book Save source checkpoint; M34 delivery closed
 
 TASK_ID: YALKEN_WRITER_FLOW_SAVE_NO_LOSS_20261113

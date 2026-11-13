@@ -353,8 +353,8 @@ test('whole-book Save serializes duplicate intent and refuses malformed or uncom
     h.respondSave(0, mutate); await Promise.all([pending, duplicate]); assert.deepEqual(h.snapshot(), before);
   }
 });
-async function bookFixture(t, name = 'Роман') {
-  const f = await fixture(t), selected = path.join(path.dirname(f.root), name);
+async function bookFixture(t, name = 'Роман', makeFixture = fixture) {
+  const f = await makeFixture(t), selected = path.join(path.dirname(f.root), name);
   if (name !== 'Роман') { fs.mkdirSync(path.join(selected, 'roman', 'Imported'), { recursive: true });
     for (const file of [f.alpha, f.beta]) fs.writeFileSync(path.join(selected, 'roman', 'Imported', path.basename(file)), path.basename(file).includes('Alpha') ? 'Alpha' : 'Beta'); }
   await f.main.buildProjectTreeRootsWithIdentities(name); mountRenderer(f, 'Beta');
@@ -443,6 +443,29 @@ test('actual Main snapshot decoder refuses missing authoring bytes and invalid b
   for (const value of [null, [], {}, { content: 'Keep', generation: 0, flowModeActive: 'true' }])
     assert.throws(() => f.probe.normalizeSnapshot(value), /SNAPSHOT_.*INVALID/u);
 });
+function lifecycleBookFixtureFactory() {
+  const m = new Module(fixturePath, module); m.filename = fixturePath;
+  m.paths = Module._nodeModulePaths(path.dirname(fixturePath));
+  m._compile(initializer.replace(anchor, anchor + '\n    confirmClose: confirmDiscardChanges,') + '\nmodule.exports = fixture;', fixturePath);
+  return m.exports;
+}
+for (const mode of ['clean', 'dirty', 'newer-unreported', 'comment', 'note']) {
+  test('actual saved-book lifecycle observation protects ' + mode + ' authoring without writing a scene', async t => {
+    const { f, h } = await bookFixture(t, 'Роман', lifecycleBookFixtureFactory()); await h.save();
+    assert.equal(h.context.localDirty, false); assert.equal(f.probe.state().dirty, false);
+    if (['dirty', 'newer-unreported'].includes(mode)) { h.context.text += ' NEW 🧭'; h.context.localEditGeneration++;
+      h.context.localDirty = true; h.context.flowModeState = { ...h.context.flowModeState, dirty: true };
+      if (mode === 'dirty') f.probe.state({ generation: 9, dirty: true }); }
+    if (mode === 'comment') h.context.wordCommentDraft = { text: 'Keep pending comment' };
+    if (mode === 'note') h.context.manuscriptDrafts.set('pending', { body: 'Keep pending note' });
+    const before = projectFiles(f.root), working = h.snapshot(), comment = h.context.wordCommentDraft, notes = [...h.context.manuscriptDrafts];
+    let allowed;
+    try { allowed = await f.probe.confirmClose(); }
+    catch (error) { if (mode === 'clean') throw error; assert.match(error.message, /FLOW_SCENE_SNAPSHOT_FORBIDDEN/u); allowed = false; }
+    assert.equal(allowed, mode === 'clean'); assert.deepEqual(projectFiles(f.root), before); assert.deepEqual(h.snapshot(), working);
+    assert.equal(h.context.wordCommentDraft, comment); assert.deepEqual([...h.context.manuscriptDrafts], notes);
+  });
+}
 for (const shape of ['native-empty-defaults', 'bold', 'unknown-null-attribute', 'changed-metadata', 'changed-cards']) {
   test('actual book snapshot ' + shape + ' is admitted only when it preserves the canonical plain book meaning', async t => {
     const { f, h } = await bookFixture(t), get = h.context.getTiptapDocumentSnapshot, before = projectFiles(f.root);

@@ -39724,7 +39724,13 @@ async function confirmDiscardChanges() {
   const result = await autoSave();
   if (!result || result.ok !== true || !result.ack || result.subjectId !== subjectId) return false;
   if (currentLifecycleSubjectId() !== subjectId) return false;
-  const authoringSnapshot = await requestEditorSnapshot();
+  const canReadSavedBook = !isDirty && result.ack.kind === SAVE_ACK_KINDS.SAVED
+    && result.ack.savedGeneration === lastAcknowledgedEditGeneration && result.ack.latestEditGeneration === lastSignaledEditGeneration
+    && lastAcknowledgedEditGeneration === lastSignaledEditGeneration;
+  const authoringSnapshot = await requestEditorSnapshot(2500, null, null, canReadSavedBook);
+  if (authoringSnapshot.flowModeActive === true && (!canReadSavedBook || isDirty
+    || authoringSnapshot.generation !== lastSignaledEditGeneration || authoringSnapshot.generation !== lastAcknowledgedEditGeneration
+    || authoringSnapshot.manuscriptNoteAuthoringPending === true)) return false;
   if (currentLifecycleSubjectId() !== subjectId || authoringSnapshot.commentAuthoringPending === true) {
     updateStatus('Сохраните комментарий или явно отмените черновик перед выходом или сменой документа.');
     return false;
