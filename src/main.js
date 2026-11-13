@@ -32968,7 +32968,9 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       };
     });
     let preparedStage10 = null;
-    if (mode === 'copy' && copyForkIntent) {
+    const restoreNeedsRuntimeHandover = mode === 'restore' && payload.openAfterImport === true
+      && !!openContext.owner?.getRuntime?.();
+    if ((mode === 'copy' && copyForkIntent) || restoreNeedsRuntimeHandover) {
       const assertCopyCurrent = async () => {
         await ownership.assertParent();
         const stat = await fs.lstat(targetRoot, { bigint: true }), source = await fs.lstat(loaded.filePath, { bigint: true });

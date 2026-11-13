@@ -1821,3 +1821,116 @@ for (const mode of ['restore', 'copy', 'foreign']) test('S33 temporal actual Mai
     assertTemporalCopy(manifest.atlas, copied.atlas, f.projectId, copied.projectId);
   }
 });
+
+
+// Existing live-runtime RESTORE handover: real Main/Kernel/Core and files.
+// Electron remains inert and the ordinary command/query bridges execute.
+async function restoreFromLiveProjectFixture(t, requestId) {
+  // Read-only compile-time fixture seam, like the existing COPY guard probe.
+  // It reads the real Main-owned bootstrap; no product source or policy changes.
+  const compile = Module.prototype._compile;
+  Module.prototype._compile = function(source, filename) {
+    if (filename === path.join(ROOT, 'src', 'main.js')) source +=
+      '\nmodule.exports.__restoreLiveOwnerRead = () => activeStage10ApplicationBootstrap;';
+    return compile.call(this, source, filename);
+  };
+  let input;
+  try { input = await archiveBridgeFixture(t); }
+  finally { Module.prototype._compile = compile; }
+  const readOwner = input.main.__restoreLiveOwnerRead;
+  let editor = { content: '', generation: 0 };
+  input.bridge.sendEffect = (channel, payload) => {
+    if (channel === 'editor:set-text') editor = { ...payload, generation: 0 };
+    if (channel === 'editor:snapshot-request') queueMicrotask(() => input.bridge.listeners.get('editor:snapshot-response')(
+      input.event(), { requestId: payload.requestId, snapshot: editor }));
+  };
+  const created = await input.invoke({ projectName: 'Prior' }, 'cmd.project.lifecycle.create');
+  assert.equal(created.ok, true, JSON.stringify(created));
+  const priorId = created.value.projectId;
+  assert.ok(priorId && priorId !== 'project-directory-readonly-20261022');
+  const query = (queryId, payload) => input.bridge.handlers.get('ui:workspace-query-bridge')(input.event(),
+    require('../../src/core/ipc-envelope-v1.cjs').createEnvelope('ui:workspace-query-bridge', queryId, payload));
+  assert.equal(readOwner().getProjectId(), priorId);
+  assert.equal(readOwner().getRuntime().getSession().projectId, priorId);
+  const priorRoot = path.join(input.documentsRoot, 'Prior');
+  const priorFiles = (await physicalProjectRoster(priorRoot)).files;
+  const sourceBefore = await completeBridgeFilesystemSnapshot(input.source);
+  const zipBefore = await fsPromises.readFile(input.archivePath);
+  assert.equal((await input.invoke({ requestId })).value.preview, true);
+  const preserve = async () => {
+    const current = new Map((await physicalProjectRoster(priorRoot)).files);
+    for (const [name, bytes] of priorFiles) assert.deepEqual(current.get(name), bytes, 'Prior file: ' + name);
+    assert.deepEqual(await completeBridgeFilesystemSnapshot(input.source), sourceBefore);
+    assert.deepEqual(await fsPromises.readFile(input.archivePath), zipBefore);
+  };
+  return { ...input, requestId, priorId, priorRoot, query, readOwner, preserve };
+}
+
+test('S33 actual guarded RESTORE from a live project binds Core and WSE before restart', async t => {
+  const input = await restoreFromLiveProjectFixture(t, 'restore-live-owner');
+  const result = await input.invoke({ requestId: input.requestId, confirmed: true, mode: 'restore', openAfterImport: true });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.value.opened, true);
+  const projectId = result.value.projectId;
+  const owner = input.readOwner();
+  const ledger = await input.query('query.atlasContinuityLedgerSurface', { projectId, explicitOpen: true });
+  t.diagnostic('RESTORE_LIVE_OWNER ' + JSON.stringify({ projectId, priorId: input.priorId,
+    ownerProjectId: owner.getProjectId(), coreProjectId: owner.getRuntime().getSession().projectId, ledgerState: ledger.atlasContinuityLedgerSurface?.state,
+    ledgerReason: ledger.atlasContinuityLedgerSurface?.unavailableReason }));
+  await input.preserve();
+  const manifestPath = path.join(input.documentsRoot, 'Project Alpha', PROJECT_MANIFEST_FILENAME);
+  const manifest = JSON.parse(await fsPromises.readFile(manifestPath));
+  assert.equal(manifest.projectId, projectId);
+  assert.equal(projectId, 'project-directory-readonly-20261022');
+  for (const [name, bytes] of input.files) if (name !== PROJECT_MANIFEST_FILENAME) {
+    assert.deepEqual(await fsPromises.readFile(path.join(path.dirname(manifestPath), name)), bytes, name);
+  }
+  assert.equal(owner.getProjectId(), projectId, 'RESTORE_CORE_MUST_BIND_IMPORTED_OWNER_WITHOUT_RESTART');
+  assert.equal(owner.getRuntime().getSession().projectId, projectId);
+  assert.notEqual(ledger.atlasContinuityLedgerSurface.state, 'unavailable', 'RESTORE_WSE_MUST_USE_IMPORTED_OWNER');
+  assert.equal(ledger.atlasContinuityLedgerSurface.projectId, projectId);
+  const foreign = await input.query('query.atlasContinuityLedgerSurface', { projectId: input.priorId, explicitOpen: true });
+  t.diagnostic('RESTORE_FOREIGN_QUERY ' + JSON.stringify(foreign));
+  assert.equal(foreign.ok, false);
+  assert.equal(foreign.error.code, 'E_ATLAS_ANALYTICS_PROJECT_MISMATCH');
+  assert.equal(Object.hasOwn(foreign, 'atlasContinuityLedgerSurface'), false);
+});
+
+for (const fault of ['window', 'generation']) test('S33 live RESTORE refuses stale ' + fault + ' during actual runtime preparation', async t => {
+  const input = await restoreFromLiveProjectFixture(t, 'restore-live-stale-' + fault);
+  const targetRoot = path.join(input.documentsRoot, 'Project Alpha');
+  const targetSession = path.join(targetRoot, '.stage10-local/product-session.v2.json');
+  const originalWrite = input.fileManager.writeFileAtomic;
+  const originalIsDestroyed = input.bridge.window.isDestroyed;
+  const editorPublications = input.bridge.sent.filter(([name]) => name === 'editor:set-text').length;
+  let exercised = 0;
+  input.fileManager.writeFileAtomic = async function(file, ...args) {
+    const written = await originalWrite.call(this, file, ...args);
+    if (file === targetSession && exercised === 0) {
+      exercised++;
+      if (fault === 'window') input.bridge.window.isDestroyed = () => true;
+      else {
+        const channel = 'ui:save-lifecycle-signal-bridge';
+        const signal = require('../../src/core/ipc-envelope-v1.cjs')
+          .createEnvelope(channel, 'signal.localDirty.set', { state: true, generation: 1 });
+        const accepted = await input.bridge.handlers.get(channel)(input.event(), signal);
+        assert.equal(accepted.ok, true, JSON.stringify(accepted));
+      }
+    }
+    return written;
+  };
+  let result;
+  try { result = await input.invoke({ requestId: input.requestId, confirmed: true, mode: 'restore', openAfterImport: true }); }
+  finally { input.fileManager.writeFileAtomic = originalWrite; input.bridge.window.isDestroyed = originalIsDestroyed; }
+  t.diagnostic('RESTORE_STALE_PREPARATION ' + JSON.stringify({ fault, exercised, resultOk: result.ok }));
+  await input.preserve();
+  assert.equal(exercised, 1, 'RESTORE_MUST_REACH_ACTUAL_PREPARED_RUNTIME_EFFECT');
+  assert.equal(result.ok, false, 'STALE_RESTORE_CANNOT_PUBLISH_OWNER_OR_EDITOR');
+  assert.equal(result.value.error.details.publication.namePublished, true);
+  assert.equal(input.bridge.sent.filter(([name]) => name === 'editor:set-text').length, editorPublications);
+  assert.equal(input.readOwner().getProjectId(), input.priorId);
+  assert.equal(input.readOwner().getRuntime().getSession().projectId, input.priorId);
+  for (const [name, bytes] of input.files) {
+    assert.deepEqual(await fsPromises.readFile(path.join(targetRoot, name)), bytes, name);
+  }
+});
