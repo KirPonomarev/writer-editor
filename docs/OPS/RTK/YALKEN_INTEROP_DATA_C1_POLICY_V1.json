@@ -1021,7 +1021,8 @@
     "test/unit/writer-flow-open-no-loss.test.js",
     "test/unit/sector-m-s14-flow-read-projection.test.js",
     "docs/tasks/2026-11-13--writer-flow-save-no-loss.md",
-    "src/core/save-receipt-ack-v1.cjs"
+    "src/core/save-receipt-ack-v1.cjs",
+    "docs/tasks/2026-11-13--archive-restore-stage10-handover.md"
   ],
   "protectedFiles": [
     {
@@ -1250,7 +1251,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "7285199ac61723c32afabd82f9ee06f0b7b877f57d3ba2d91e556f2c7c60ab19"
+        "sha256": "02008900d9ce5c898031897751249d9f2a38a314dc0cc4fbea528b88b9ef201e"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2942,15 +2943,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "cb95b4c92a38e93fde03889f6e40b0f0969fe61e6839414b90fe5f845dff534d"
+        "sha256": "03dc340e6d45ad21bb0ad73ec624f2ccd4726597742211a2d62fb3e553ff9e3f"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "02f4e2571595ce9978ae42b65d059f6471fb2f2f552d9df441c258df46cc8609"
+        "sha256": "db5b74a705cd6b260c91fa1b859a6be7bd65ae442cd4dbce4b00ee605d7ce372"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "c4bf1bee90bf68625ced337721e724e40bda53ffecd513527d3b7254866302ae"
+        "sha256": "174f9fed43d7b830583bd4c94d7b3bf7b1c919d90a294a5f78fdbd0fa6c383f3"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3482,7 +3483,7 @@
       },
       {
         "path": "test/unit/sector-m-s33-full-archive-import.test.js",
-        "sha256": "5e6096d94fc4b19a2819b586179b72f5db0f6981d56083327c140c7435c9d61d"
+        "sha256": "cc938f36728b8ddc1703d770e598f7c99ad73b38db7f25e435d8a0efc4d86e6f"
       },
       {
         "path": "test/unit/sector-m-s38-pro-free-pro-roundtrip.test.js",
@@ -3490,7 +3491,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "3607fe2692422db2f584bbc7a40df290c50ffcbe4d861d02efe6bcff1652867d"
+        "sha256": "04c2068c7df96a507a7fc055f2c941dafb7095a3c9b30184719e3f1c751d2b74"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3514,7 +3515,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "4cfb703334f7474e1939d7e522b30e1c8728356a4710f8190f528196a77d65d1"
+        "sha256": "995c4b25e79c1866aa14d031bf8da89c55ec47c5dc4a16ce85484a3790a3df47"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3606,7 +3607,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "fa27e73024df1158df9f8a182487ef6f8343ef154beda91cd697a6356e6208a0"
+        "sha256": "7b0d9c05decf87ec5b979d3f65340ee834a7f7c9b357404bc4a46a9d7f75a058"
       },
       {
         "path": "src/renderer/flags.js",
@@ -3622,7 +3623,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "f5bfaa9241e97e616225b930ba38c89048e9341dc0fa82783e7534409c30d362"
+        "sha256": "17f7fb415ac01e4ac35e86303eed53ee750ba66e316ffcd2eb8128085a668f00"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4711,6 +4712,10 @@
       {
         "path": "test/unit/sector-m-m7-flow-batch-atomicity.test.js",
         "sha256": "c0093c8b8828f818d9c781fe82d163fb777e463b8f92741b19926fbcfed41c65"
+      },
+      {
+        "path": "docs/tasks/2026-11-13--archive-restore-stage10-handover.md",
+        "sha256": "7b61a733f34bed9d7bca3eb6445853620311c71b04600def353ca648e5b87aca"
       }
     ],
     "followupRepair": {
