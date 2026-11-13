@@ -1217,7 +1217,10 @@ export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proo
     const file = path.join(evidenceRoot, descriptor.basename); return decode(stableRead(file, descriptor.sha256), file);
   };
   const git = argv => { const result = spawnSync('git', argv, { cwd: root, encoding: 'utf8' }); if (result.status !== 0) fail('GIT_READ'); return result.stdout.trim(); };
-  const proof = legacyPacket(JSON.parse(stableRead(path.resolve(proofPath), proofSha256)));
+  const proof = JSON.parse(stableRead(path.resolve(proofPath), proofSha256));
+  const splitWait = proof?.format === 'TERMINAL_WAIT_SPLIT_STREAMS_V1';
+  if (splitWait) { if (Object.hasOwn(proof, 'schemaVersion') || Object.hasOwn(proof, 'formatVersion')) fail('UNSUPPORTED_FORMAT'); }
+  else legacyPacket(proof);
   if (!isObjectRecord(proof) || !/^[a-f0-9]{40}$/u.test(proof.head) || !/^[a-f0-9]{40}$/u.test(proof.tree)
     || !/^[a-f0-9]{40}$/u.test(proof.baseHead) || !(proof.expectedRemoteHead === 'ABSENT' || /^[a-f0-9]{40}$/u.test(proof.expectedRemoteHead))
     || !/^codex\/[a-zA-Z0-9][a-zA-Z0-9._/-]*$/u.test(proof.branch) || proof.branch.includes('..')) fail('REQUEST');
@@ -1231,6 +1234,64 @@ export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proo
   if (!isObjectRecord(proof.receipts) || Object.keys(proof.receipts).length !== plan.rows.length) fail('RECEIPT_DENOMINATOR');
   if (!/^[A-Za-z0-9_.-]+$/u.test(proof.captureMethod.basename)) fail('CAPTURE_METHOD');
   stableRead(path.join(evidenceRoot, proof.captureMethod.basename), proof.captureMethod.sha256);
+  // A wait-return capture has no inferred PID, wall-clock times or interleaved log.
+  // Its original plan, original row and both lossless streams remain independently pinned.
+  const capturePlan = splitWait ? artifact(proof.capturePlan) : null;
+  const captureIdentityMatches = value => isObjectRecord(value) && value.head === proof.head && value.tree === proof.tree
+    && value.branch === proof.branch && value.status === '';
+  if (splitWait) {
+    const roster = capturePlan?.groups?.REQUIRED;
+    if (!captureIdentityMatches(capturePlan?.identity) || !isObjectRecord(capturePlan.rows) || Array.isArray(capturePlan.rows)
+      || !Array.isArray(roster) || roster.length === 0 || roster.some(name => typeof name !== 'string') || new Set(roster).size !== roster.length
+      || JSON.stringify([...roster].sort()) !== JSON.stringify(plan.rows.map(row => row.name).sort())
+      || JSON.stringify([...roster].sort()) !== JSON.stringify(Object.keys(capturePlan.rows).sort())
+      || capturePlan.methodSha256 !== proof.captureMethod.sha256 || plan.capturePlanSha256 !== proof.capturePlan.sha256
+      || capturePlan.environment?.STRICT !== '1' || capturePlan.environment?.EFFECTIVE_MODE !== 'STRICT') fail('FROZEN_CAPTURE_PLAN');
+  }
+  const readSplitGate = (row, npmArgv) => {
+    const binding = proof.receipts[row.name], spec = capturePlan.rows[row.name];
+    const overrides = capturePlan.rowEnvironmentOverrides, rowOverrides = overrides?.[row.name];
+    if (overrides !== undefined && (!isObjectRecord(overrides) || Array.isArray(overrides))
+      || rowOverrides !== undefined && (!isObjectRecord(rowOverrides) || Array.isArray(rowOverrides))) fail('CAPTURE_GATE_ROW');
+    const effectiveEnvironment = { ...capturePlan.environment, ...rowOverrides };
+    if (effectiveEnvironment.STRICT !== '1' || effectiveEnvironment.EFFECTIVE_MODE !== 'STRICT') fail('CAPTURE_GATE_ROW');
+    if (!isObjectRecord(spec) || JSON.stringify(spec.argv) !== JSON.stringify(row.argv) || spec.cwd !== root
+      || spec.requiredBlocking !== row.requiredBlocking
+      || JSON.stringify(spec.allowedExitCodes) !== JSON.stringify(row.requiredBlocking ? [0] : [0, 1])) fail('CAPTURE_GATE_ROW');
+    if (!isObjectRecord(binding) || !isObjectRecord(binding.streams)) fail('SPLIT_STREAM_DESCRIPTOR');
+    const capture = artifact(binding.capture), matches = Array.isArray(capture.rows) ? capture.rows.filter(value => value?.name === row.name) : [];
+    const receipt = matches.length === 1 ? matches[0] : null;
+    if (capture.role !== 'TERMINAL_ACTUAL_PROCESS_EVIDENCE_NOT_ACCEPTANCE_OR_AUTHORITY' || capture.head !== proof.head
+      || capture.planSha256 !== proof.capturePlan.sha256 || capture.sourceManifestSha256 !== capturePlan.sourceManifestSha256
+      || capture.releaseAcceptance !== false || !isObjectRecord(receipt) || receipt.actualWaitReturned !== true
+      || !Number.isFinite(receipt.elapsedSeconds) || receipt.elapsedSeconds <= 0 || !Number.isInteger(receipt.exitCode)
+      || !spec.allowedExitCodes.includes(receipt.exitCode) || receipt.requiredBlocking !== row.requiredBlocking
+      || JSON.stringify(receipt.allowedExitCodes) !== JSON.stringify(spec.allowedExitCodes)
+      || JSON.stringify(receipt.argv) !== JSON.stringify(row.argv)
+      || !captureIdentityMatches(receipt.identityBefore) || !captureIdentityMatches(receipt.identityAfter)) fail('NONTERMINAL_OR_FAILED_GATE');
+    const groups = [], streamNames = new Set();
+    for (const label of ['stdout', 'stderr']) {
+      const descriptor = binding.streams[label];
+      if (!isObjectRecord(descriptor) || typeof descriptor.basename !== 'string' || !/^[A-Za-z0-9_.-]+\.gz$/u.test(descriptor.basename)
+        || streamNames.has(descriptor.basename) || !Number.isSafeInteger(descriptor.rawBytes) || descriptor.rawBytes < 0
+        || descriptor.rawBytes > 512 * 1024 * 1024 || !isSha256Hex(receipt[label + 'Sha256'])) fail('SPLIT_STREAM_DESCRIPTOR');
+      streamNames.add(descriptor.basename); let raw;
+      try { raw = gunzipSync(stableRead(path.join(evidenceRoot, descriptor.basename), descriptor.sha256), { maxOutputLength: Math.max(1, descriptor.rawBytes) }); }
+      catch { fail('LOG_DRIFT_OR_TRUNCATED'); }
+      if (raw.length !== descriptor.rawBytes || hash(raw) !== receipt[label + 'Sha256']) fail('LOG_DRIFT_OR_TRUNCATED');
+      let group = null;
+      for (const line of raw.toString('utf8').split('\n')) {
+        const match = /^# (tests|pass|fail|cancelled|skipped|todo) (\d+)\r?$/u.exec(line);
+        if (match) { if (match[1] === 'tests') { group = {}; groups.push(group); } if (group) group[match[1]] = Number(match[2]); }
+      }
+    }
+    for (const observed of groups) if (!Number.isSafeInteger(observed.tests) || observed.tests < 1 || observed.fail !== 0
+      || observed.cancelled !== 0 || observed.todo !== 0 || !Number.isSafeInteger(observed.pass) || observed.pass < 1
+      || !Number.isSafeInteger(observed.skipped) || observed.pass + observed.skipped !== observed.tests
+      || observed.skipped !== 0 && !(JSON.stringify(npmArgv) === JSON.stringify(['npm', 'test']) && observed.skipped === 59)) fail('TAP_NOT_COMPLETE');
+    if ((row.argv.includes('--test') || npmArgv[1] === 'test' || row.argv.some(value => value.startsWith('test:')
+      || value.endsWith('/run-c1c-contract-shard.mjs'))) && groups.length === 0) fail('MISSING_TEST_ORACLE');
+  };
   const checkSource = () => {
     if (git(['rev-parse', 'HEAD']) !== proof.head || git(['rev-parse', 'HEAD^{tree}']) !== proof.tree
       || git(['branch', '--show-current']) !== proof.branch || git(['status', '--porcelain=v1', '--untracked-files=all'])) fail('CANDIDATE_DRIFT');
@@ -1256,8 +1317,10 @@ export async function verifyLocalCandidateBeforePush({ repoRoot, proofPath, proo
       const relative = path.relative(root, path.resolve(root, selector)).replaceAll(path.sep, '/');
       if (relative.startsWith('../') || !Object.hasOwn(source.sourceBindings, relative) || !fs.lstatSync(path.join(root, relative)).isFile()) fail('MISSING_TEST_SELECTOR');
     }
+    const npmArgv = splitWait && row.argv[0] === path.join(path.dirname(process.execPath), 'npm') ? ['npm', ...row.argv.slice(1)] : row.argv;
     names.add(row.name); if (row.requiredBlocking) requiredCount++;
-    else if (JSON.stringify(row.argv) !== JSON.stringify(['npm', 'audit', '--json'])) fail('UNRECOGNIZED_NONBLOCKING');
+    else if (JSON.stringify(npmArgv) !== JSON.stringify(['npm', 'audit', '--json'])) fail('UNRECOGNIZED_NONBLOCKING');
+    if (splitWait) { readSplitGate(row, npmArgv); continue; }
     const receipt = legacyPacket(JSON.parse(stableRead(path.join(evidenceRoot, row.name + '.json'), proof.receipts[row.name])));
     if (receipt.role !== 'ACTUAL_FOREGROUND_PROCESS_EVIDENCE_NOT_ACCEPTANCE_OR_AUTHORITY' || receipt.name !== row.name
       || receipt.headBefore !== proof.head || receipt.headAfter !== proof.head || JSON.stringify(receipt.argv) !== JSON.stringify(row.argv)

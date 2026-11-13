@@ -2942,15 +2942,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "23016e544ad217791d7ab61ed5e045f52a031246966e6f81e919f63b91527322"
+        "sha256": "8bf869c57a7cc169fcdc0d99aa0e19f43d32caba9c411d9c276ed94391aecf9a"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "95a96a52f1403f0eaa5739fc942934b3d7229f0e0d20e242cd43e5ee83d5de04"
+        "sha256": "1b6b2144245a59a3d71989e2484a2df2ae7a0550503b3a64cdffa9458ff31b86"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "858a4d5e3e695649f49c77ea36b275e6748adcd5bf725f43a9a5eabeb9453205"
+        "sha256": "cade76a3e4a7108148d28f856b3827dd09681f66d52eced9964ff9a40f0ef5cf"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3490,7 +3490,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "d54b5d3ca42eb83beb44ce7052506fa5ed0470d281dacf5b0f8959d82f9d2624"
+        "sha256": "104a394773dc9d25aeb2622b4e4f3ac9fbdd7dd411a37cb8a0794dad30add7d2"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3514,11 +3514,11 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "a59e59c2b88c9da5df8e19e5d9563eb6f3ddac11dc82002e078376be63f8cbd1"
+        "sha256": "28a5d6ce53dc3c5b71051a35e3667b6fd0b662db4078d417a3c9c9ad6e609ef3"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
-        "sha256": "3ff4858cb0de364d09093f41a93fd91d202ea56624d707cebdbe07099721edc0"
+        "sha256": "ee6ba30db5380db3a5aa6a2e8fb5e5c44811b2aabca543ee98050b8cab624457"
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V1.json",
@@ -4702,7 +4702,7 @@
       },
       {
         "path": "docs/tasks/2026-11-13--writer-flow-save-no-loss.md",
-        "sha256": "71d28bdf29751835430d2c342b7db717272c1a9b719d8c16a8c33428f33a380b"
+        "sha256": "d585517f7746367ae2d899defd924a04a0fdcb560565b22258c7dd0864f57471"
       },
       {
         "path": "src/core/save-receipt-ack-v1.cjs",

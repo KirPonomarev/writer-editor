@@ -866,3 +866,97 @@ for (const container of ['proof', 'plan', 'sourceManifest', 'receipt']) for (con
     assert.equal(f.remoteHead(), f.base); assert.doesNotMatch(result.stdout, /"normalPushStarting":true/u);
   });
 }
+
+
+// The existing delivery CLI reads the actual terminal-wait capture without inventing PID or wall-clock fields.
+function terminalWaitSplitFixture(t) {
+  const f = verifiedLocalPushFixture(t), plan = readJson(path.join(f.evidence, f.proof.plan.basename));
+  const identity = { head: f.head, tree: f.proof.tree, branch: f.proof.branch, status: '' };
+  const env = { ...process.env }; delete env.NODE_TEST_CONTEXT;
+  const start = process.hrtime.bigint(), actual = spawnSync(f.row.argv[0], f.row.argv.slice(1), { cwd: f.root, env });
+  assert.equal(actual.status, 0, String(actual.stderr));
+  const capturePlan = { identity, methodSha256: f.proof.captureMethod.sha256, sourceManifestSha256: f.proof.sourceManifest.sha256,
+    environment: { STRICT: env.STRICT, EFFECTIVE_MODE: env.EFFECTIVE_MODE },
+    rows: { [f.name]: { argv: f.row.argv, cwd: f.root, requiredBlocking: true, allowedExitCodes: [0] } }, groups: { REQUIRED: [f.name] } };
+  const captured = { name: f.name, argv: f.row.argv, actualWaitReturned: true, exitCode: actual.status,
+    elapsedSeconds: Number(process.hrtime.bigint() - start) / 1e9, identityBefore: { ...identity }, identityAfter: { ...identity },
+    requiredBlocking: true, allowedExitCodes: [0], stdout: actual.stdout.toString('utf8'), stderr: actual.stderr.toString('utf8'),
+    stdoutSha256: f.hash(actual.stdout), stderrSha256: f.hash(actual.stderr) };
+  const capture = { role: 'TERMINAL_ACTUAL_PROCESS_EVIDENCE_NOT_ACCEPTANCE_OR_AUTHORITY', head: f.head,
+    sourceManifestSha256: capturePlan.sourceManifestSha256, rows: [captured], allPlannedProcessesReturned: true, failure: false, releaseAcceptance: false };
+  const streams = {};
+  const stream = (label, raw) => {
+    const bytes = f.zlib.gzipSync(raw), basename = f.name + '.' + label + '.raw.gz';
+    fs.writeFileSync(path.join(f.evidence, basename), bytes); streams[label] = { basename, sha256: f.hash(bytes), rawBytes: raw.length };
+  };
+  stream('stdout', actual.stdout); stream('stderr', actual.stderr);
+  Object.assign(f.proof, { format: 'TERMINAL_WAIT_SPLIT_STREAMS_V1' });
+  const rebind = () => {
+    f.proof.capturePlan = f.write('capture-plan.json', capturePlan);
+    capture.planSha256 = f.proof.capturePlan.sha256;
+    plan.capturePlanSha256 = f.proof.capturePlan.sha256; f.proof.plan = f.write('plan.json', plan);
+    f.proof.receipts = { [f.name]: { capture: f.write('terminal-capture.json', capture), streams } };
+  };
+  plan.rows = [f.row]; rebind(); return { ...f, plan, capturePlan, captured, capture, streams, stream, rebind };
+}
+
+test('actual existing CLI terminal wait split streams normal-pushes with original capture provenance and no fabricated process fields', t => {
+  const f = terminalWaitSplitFixture(t);
+  for (const key of ['pid', 'startedAtUtc', 'endedAtUtc', 'logBasename']) assert.equal(Object.hasOwn(f.captured, key), false);
+  const result = f.run(); assert.equal(result.status, 0, result.stderr);
+  assert.equal(f.remoteHead(), f.head); assert.match(result.stdout, /"normalPushStarting":true/u);
+});
+
+test('actual existing CLI terminal wait split streams also retains honest first-branch absence', t => {
+  const f = terminalWaitSplitFixture(t); ownedFirstBranchAbsent(f);
+  const result = f.run(); assert.equal(result.status, 0, result.stderr);
+  assert.equal(f.remoteHead(), f.head); assert.match(result.stdout, /"normalPushStarting":true/u);
+});
+
+for (const fault of ['missing-wait', 'false-wait', 'elapsed-zero', 'failed', 'stale-head', 'stale-tree', 'dirty', 'wrong-branch',
+  'strict-override', 'mode-override', 'method-binding', 'source-binding', 'roster-missing', 'roster-extra', 'definition-drift', 'stdout-drift', 'stderr-drift',
+  'truncated-stdout', 'missing-stream', 'capture-duplicate', 'missing-selector', 'zero-tests', 'cancelled', 'todo', 'new-skip', 'missing-tap']) {
+  test('actual existing CLI terminal wait split streams refuses ' + fault + ' before its own remote push', t => {
+    const f = terminalWaitSplitFixture(t);
+    if (fault === 'missing-wait') delete f.captured.actualWaitReturned;
+    if (fault === 'false-wait') f.captured.actualWaitReturned = false;
+    if (fault === 'elapsed-zero') f.captured.elapsedSeconds = 0;
+    if (fault === 'failed') f.captured.exitCode = 1;
+    if (fault === 'stale-head') f.captured.identityAfter.head = f.base;
+    if (fault === 'stale-tree') f.captured.identityAfter.tree = '0'.repeat(40);
+    if (fault === 'dirty') f.captured.identityAfter.status = ' M leaf.txt';
+    if (fault === 'wrong-branch') f.captured.identityBefore.branch = 'codex/other';
+    if (fault === 'strict-override') f.capturePlan.rowEnvironmentOverrides = { [f.name]: { STRICT: '0' } };
+    if (fault === 'mode-override') f.capturePlan.rowEnvironmentOverrides = { [f.name]: { EFFECTIVE_MODE: 'QUIET' } };
+    if (fault === 'method-binding') f.capturePlan.methodSha256 = '0'.repeat(64);
+    if (fault === 'source-binding') f.capture.sourceManifestSha256 = '0'.repeat(64);
+    if (fault === 'roster-missing') f.capturePlan.groups.REQUIRED = [];
+    if (fault === 'roster-extra') f.capturePlan.groups.REQUIRED.push('MISSING_REQUIRED');
+    if (fault === 'definition-drift') f.capturePlan.rows[f.name].requiredBlocking = false;
+    if (fault === 'capture-duplicate') f.capture.rows.push({ ...f.captured });
+    if (fault === 'missing-selector') { f.row.argv.push('absent-test.cjs'); f.captured.argv = f.row.argv; f.capturePlan.rows[f.name].argv = f.row.argv; }
+    if (fault === 'stdout-drift' || fault === 'stderr-drift') f.captured[fault.startsWith('stdout') ? 'stdoutSha256' : 'stderrSha256'] = '0'.repeat(64);
+    if (fault === 'truncated-stdout') {
+      const p = path.join(f.evidence, f.streams.stdout.basename), bytes = fs.readFileSync(p); fs.writeFileSync(p, bytes.subarray(0, bytes.length - 8));
+    }
+    if (fault === 'missing-stream') delete f.streams.stderr;
+    if (['zero-tests', 'cancelled', 'todo', 'new-skip', 'missing-tap'].includes(fault)) {
+      const counts = { tests: 1, pass: 1, fail: 0, cancelled: 0, skipped: 0, todo: 0 };
+      if (fault === 'zero-tests') Object.assign(counts, { tests: 0, pass: 0 });
+      if (fault === 'cancelled' || fault === 'todo') counts[fault] = 1;
+      if (fault === 'new-skip') Object.assign(counts, { tests: 2, skipped: 1 });
+      const raw = Buffer.from(fault === 'missing-tap' ? 'incomplete output\n' : Object.entries(counts).map(([k, v]) => '# ' + k + ' ' + v + '\n').join(''));
+      f.stream('stdout', raw); f.captured.stdout = raw.toString('utf8'); f.captured.stdoutSha256 = f.hash(raw);
+    }
+    f.rebind(); const result = f.run(); assert.notEqual(result.status, 0, fault);
+    assert.equal(f.remoteHead(), f.base); assert.doesNotMatch(result.stdout, /"normalPushStarting":true/u);
+    const reason = ['roster-missing', 'roster-extra', 'method-binding'].includes(fault) ? 'FROZEN_CAPTURE_PLAN'
+      : ['definition-drift', 'strict-override', 'mode-override'].includes(fault) ? 'CAPTURE_GATE_ROW'
+      : fault === 'missing-selector' ? 'MISSING_TEST_SELECTOR'
+      : ['stdout-drift', 'stderr-drift', 'truncated-stdout'].includes(fault) ? 'LOG_DRIFT_OR_TRUNCATED'
+      : fault === 'missing-stream' ? 'SPLIT_STREAM_DESCRIPTOR'
+      : ['zero-tests', 'cancelled', 'todo', 'new-skip'].includes(fault) ? 'TAP_NOT_COMPLETE'
+      : fault === 'missing-tap' ? 'MISSING_TEST_ORACLE' : 'NONTERMINAL_OR_FAILED_GATE';
+    assert.match(result.stderr, new RegExp('E_LOCAL_DELIVERY_PROOF:' + reason), result.stderr);
+  });
+}
