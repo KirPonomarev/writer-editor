@@ -241,5 +241,36 @@ test('actual registered book read uses the selected named project and never the 
   const scenes = result.value.scenes.filter(x => x.kind === 'scene');
   assert.deepEqual(scenes.map(x => x.content), ['SELECTED_ONLY 😀 e\u0301', 'SELECTED_SECOND']);
   assert.deepEqual(scenes.map(x => x.path), [one, two]);
+  const identities = JSON.parse(fs.readFileSync(path.join(selected, 'project.craftsman.json'), 'utf8')).treeIdentity.nodes;
+  const expected = [one, two].map(file => {
+    const sceneId = path.relative(selected, file).split(path.sep).join('/');
+    const nodeId = Object.keys(identities).find(id => identities[id].present !== false && identities[id].bindingKey === `file:${sceneId}`);
+    assert.match(nodeId, /^tree-node-[a-f0-9]{32}$/u);
+    return { sceneId, nodeId };
+  });
+  assert.deepEqual(scenes.map(({ sceneId, nodeId }) => ({ sceneId, nodeId })), expected,
+    'Every source return must carry selected-project canonical identities, not only the correct visible text');
+  assert.deepEqual(projectFiles(f.root), defaultBefore); assert.deepEqual(projectFiles(selected), selectedBefore);
+});
+
+test('actual registered book identities cannot alias the default project with identical relative source names', async t => {
+  const f = await fixture(t), name = 'Другая книга с теми же именами';
+  const selected = path.join(path.dirname(f.root), name), imported = path.join(selected, 'roman', 'Imported');
+  fs.mkdirSync(imported, { recursive: true });
+  const files = [f.alpha, f.beta].map(file => path.join(imported, path.basename(file)));
+  files.forEach((file, index) => fs.writeFileSync(file, `OTHER_PROJECT_${index} 😀 e\u0301`));
+  await f.main.buildProjectTreeRootsWithIdentities(name);
+  const identities = JSON.parse(fs.readFileSync(path.join(selected, 'project.craftsman.json'), 'utf8')).treeIdentity.nodes;
+  mountRenderer(f, fs.readFileSync(files[1], 'utf8'), 0); f.probe.state({ projectName: name, filePath: files[1] });
+  const defaultBefore = projectFiles(f.root), selectedBefore = projectFiles(selected), port = await registeredBookPort(f);
+  const result = await port.dispatch('cmd.project.flowOpenV1'); assert.equal(result.ok, true, JSON.stringify(result));
+  const scenes = result.value.scenes.filter(x => x.kind === 'scene');
+  const expected = files.map(file => {
+    const sceneId = path.relative(selected, file).split(path.sep).join('/');
+    const nodeId = Object.keys(identities).find(id => identities[id].present !== false && identities[id].bindingKey === `file:${sceneId}`);
+    assert.match(nodeId, /^tree-node-[a-f0-9]{32}$/u); assert.notEqual(nodeId, f.a.nodeId); assert.notEqual(nodeId, f.b.nodeId);
+    return { sceneId, nodeId, content: fs.readFileSync(file, 'utf8') };
+  });
+  assert.deepEqual(scenes.map(({ sceneId, nodeId, content }) => ({ sceneId, nodeId, content })), expected);
   assert.deepEqual(projectFiles(f.root), defaultBefore); assert.deepEqual(projectFiles(selected), selectedBefore);
 });

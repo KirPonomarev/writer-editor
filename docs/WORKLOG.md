@@ -5966,3 +5966,7 @@ PROCESS_SEQUENCE_RECOVERY_20261106: Primary human39cd7a45 at2026-11-02T09:01:25.
 - 2026-11-12 YALKEN_WRITER_ACTIVE_SCENE_RETURN_20261112: Home Create PR2223 closed e91e7c25/a2ee9965;72 profiles42 bundles exact04c0cae1. Fresh existing Scene causal c59ef267, declaration40de3cda/preflight0a81dc37 and8 admission b60df731; bounded actual-handler RED then no-loss return, native and protected delivery pending. All historical failures and fullMac17UNKNOWN retained.
 
 - 2026-11-12 active-scene return source: actual RED12of15 41a90bbc -> Home15of15/affected44of44 146308e4;14 valid implementation mutants killed8bd18a27. Exact inverse and original tests preserved. Current companions/full software/actual native/normal delivery and merged proofs pending.
+
+## 2026-11-13 — Same-chain native source identity correction
+
+Native93 source return failed89826e5b; clean5dc3033d remains unpushed. Exact-source RED26b83d4b proves default manifest identity leak; correction preflight16421847 admits same20 paths. Native93 closed0/profileb3cb9e51 preserved. Mandatory strict tests and new actual candidate94/merged95 remain pending; fullMac17UNKNOWN.

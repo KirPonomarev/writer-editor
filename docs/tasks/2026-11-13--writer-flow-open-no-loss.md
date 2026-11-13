@@ -266,3 +266,9 @@ AGENT_FINAL_REPORT_V1. CODEX_OUTPUT_POLICY: exactly one text code block, KEY: VA
 ## FAIL_PROTOCOL
 
 Preserve original source/method/process/raw/native/profile/metadata failures. Distinguish finite adapters from actual native behavior, and producer output from independent oracle. Diagnose cheaply before correction; no silent fallback, timeout increase, disabled test, synthetic success, fabricated authority or old proof retagging. FullMac NOT_READY UNFROZEN17UNKNOWN, Word/nativeOffice PAUSED; Black Box after full Mac.
+
+### Native93 diagnosed correction within this same outcome
+
+Observed failure89826e5b: named BOOK93 content including fresh unsaved edit opens and persists, but source Scene/Alt+Enter stays in Flow. Native93 Quit0 and closed profileb3cb9e51 retain all bytes. Exact-source read-only RED26b83d4b proves buildFlowStableNodeIdMap ignores selected project and reads DEFAULT_PROJECT_NAME; requested BOOK93 canonical IDs are empty. Fresh declarationfce96306/preflight16421847 at candidate5dc3033d admits the same20 paths.
+
+Before correction, strengthen maintained real registered/Main selected-project assertions for exact sceneId/nodeId and a colliding-relative-name case, preserving every original assertion. Then pass the same captured selected projectName into the existing read-only identity helper for FlowOpen; retain its default behavior and existing FlowSave caller. No independent UI/store/schema/capability change. Regenerate only affected native source if needed, refresh exact current companions/witnesses, rerun required current gates and build new candidate94 then independently merged95. Original25processes/native93 never retagged; all prior74profiles44bundles plus closed93/bundle93 protected. Full default/LONG, exact native/cold oracle and normal delivery remain mandatory; fullMac17UNKNOWN.

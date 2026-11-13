@@ -1247,7 +1247,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f32605a79807449f18b6314dbd84e16057e00a7ca2771a961cdf103f5122527d"
+        "sha256": "70a7d67de5208c24fdf1a87b3a7ac0b3eae23bc805ab650ccf6e7b810ab394fa"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -2939,15 +2939,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "84146e2f6682067bb52a5a4a5006154dd29d0d6b98fc2e5fb379bcc87b38cbfb"
+        "sha256": "581fbfaf35f13ebe559f7da1609e1e809699bc60fb793332afa0d25c040b1fd6"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "a1c3f5156f6a535be9e0d22b7b65f0ad687ffc135ab0751b6932ad0c74aaddea"
+        "sha256": "37199c9423b4e90f4e8f2fb8ff8398de9f15fcdd9e3b47a5e5e8ea037b204b08"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "42698f3bc7d751ddfa8c37b945f1a289f426d1716aaf683f357784e62913428e"
+        "sha256": "6f0531657103386889b6daa7793a467db596eead80c6fe1de92d27d1d86bef31"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3487,7 +3487,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "2113f881e9966da2cbfa0c6ad05817642c2bb2605b5e05f72d1a3d00bbfd533f"
+        "sha256": "2af68609d1762394285c4f426bcdcd94953ab0ac1fdaefcca06b03d84eae2bce"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3511,7 +3511,7 @@
       },
       {
         "path": "scripts/ops/release-candidate.mjs",
-        "sha256": "28eaf4550c921837f7fce6b593d50f052e91a295a3d4221ae5617b505ad136fa"
+        "sha256": "6e3dbb924a68dfee32a02ca6c68d22cfd915f30bf1b91c4a2190f7567f41b67e"
       },
       {
         "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -3603,7 +3603,7 @@
       },
       {
         "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-        "sha256": "7d2220dc67901ceae77c561ff83d44c38f4e87fbbc20d49407ab262866744222"
+        "sha256": "ea3543a687cb13bda54f60e486c7550757dd92d4fac1f5b240fb908d5803f4a8"
       },
       {
         "path": "src/renderer/flags.js",
@@ -4687,11 +4687,11 @@
       },
       {
         "path": "docs/tasks/2026-11-13--writer-flow-open-no-loss.md",
-        "sha256": "311a8d7d99fd365366cd9e69c1061691e75038fa741f30e73fd6a4792baecb96"
+        "sha256": "3a956a05b05233428eeb7af2dd7cc572adba979e374c8a19c10ebc144788e77d"
       },
       {
         "path": "test/unit/writer-flow-open-no-loss.test.js",
-        "sha256": "82f498642dde02fa876076bc46307ccfa96352d5a26fb9983f539263e2808c99"
+        "sha256": "1f50ce9cb0fae981e0342d094173016b3b1ff8f66575087824d5e3b765bc9797"
       }
     ],
     "followupRepair": {

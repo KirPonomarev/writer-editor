@@ -12471,7 +12471,7 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "src/main.js",
-      "sha256": "f32605a79807449f18b6314dbd84e16057e00a7ca2771a961cdf103f5122527d"
+      "sha256": "70a7d67de5208c24fdf1a87b3a7ac0b3eae23bc805ab650ccf6e7b810ab394fa"
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
@@ -12515,15 +12515,15 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "84146e2f6682067bb52a5a4a5006154dd29d0d6b98fc2e5fb379bcc87b38cbfb"
+      "sha256": "581fbfaf35f13ebe559f7da1609e1e809699bc60fb793332afa0d25c040b1fd6"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "a1c3f5156f6a535be9e0d22b7b65f0ad687ffc135ab0751b6932ad0c74aaddea"
+      "sha256": "37199c9423b4e90f4e8f2fb8ff8398de9f15fcdd9e3b47a5e5e8ea037b204b08"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "42698f3bc7d751ddfa8c37b945f1a289f426d1716aaf683f357784e62913428e"
+      "sha256": "6f0531657103386889b6daa7793a467db596eead80c6fe1de92d27d1d86bef31"
     },
     {
       "path": "AGENTS.md",
@@ -12555,15 +12555,15 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "05ba29f285cd2e322f03245543dc3565f9e2ff557efb2c97c11375ec23e5711e"
+      "sha256": "e161b90e88a23c3a90c271c1f3647df1c400f82b58158b1fa35f9dd2073daedb"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "2113f881e9966da2cbfa0c6ad05817642c2bb2605b5e05f72d1a3d00bbfd533f"
+      "sha256": "2af68609d1762394285c4f426bcdcd94953ab0ac1fdaefcca06b03d84eae2bce"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
-      "sha256": "28eaf4550c921837f7fce6b593d50f052e91a295a3d4221ae5617b505ad136fa"
+      "sha256": "6e3dbb924a68dfee32a02ca6c68d22cfd915f30bf1b91c4a2190f7567f41b67e"
     },
     {
       "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -12587,7 +12587,7 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-      "sha256": "7d2220dc67901ceae77c561ff83d44c38f4e87fbbc20d49407ab262866744222"
+      "sha256": "ea3543a687cb13bda54f60e486c7550757dd92d4fac1f5b240fb908d5803f4a8"
     },
     {
       "path": "src/renderer/flags.js",
@@ -12719,7 +12719,7 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "cb498b96511648d46f6bfee17feb9bf2595a34b491d6542d003a816def17ad1a"
+      "sha256": "b23ce9fa56e7a74c6078a6d805b39957a335fda3a3f184a84b47f04b0b46cf0e"
     },
     {
       "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -12775,11 +12775,11 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "c2de92c295dd0a73c4c1b1ab97a6fb6ebd66f17c5d3b8e2f1813d6d918cb4e81"
+      "sha256": "141797af488ee4394c2f06bb887119e086dd373cf7b5915cdf401a33e41bc788"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "54567c5b3e3c38356d1e5637584a979d6d0fdb3bd89cf5e81324a28f8056da0f"
+      "sha256": "54ed34f4e9f92a56073d1c245d56b8df3eb69ef2af6cc3fc6dddf0afc021101c"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -13487,17 +13487,17 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-13--writer-flow-open-no-loss.md",
-      "sha256": "311a8d7d99fd365366cd9e69c1061691e75038fa741f30e73fd6a4792baecb96"
+      "sha256": "3a956a05b05233428eeb7af2dd7cc572adba979e374c8a19c10ebc144788e77d"
     },
     {
       "path": "test/unit/writer-flow-open-no-loss.test.js",
-      "sha256": "82f498642dde02fa876076bc46307ccfa96352d5a26fb9983f539263e2808c99"
+      "sha256": "1f50ce9cb0fae981e0342d094173016b3b1ff8f66575087824d5e3b765bc9797"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "09c476ad618b5a03e6075895995cab6047111ee19b85bc15adce2970a1f44a1e"
+      "sha256": "b36555e1f55223fa5a093700405ac9bbbc272ba394f82ec62eb5c0e29cecd934"
     }
   ]
 });

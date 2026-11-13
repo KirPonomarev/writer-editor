@@ -34052,9 +34052,9 @@ async function getFlowBatchGuard(projectRoot) {
   };
 }
 
-async function buildFlowStableNodeIdMap() {
-  const manifestPath = getProjectManifestPath(DEFAULT_PROJECT_NAME);
-  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
+async function buildFlowStableNodeIdMap(projectName = DEFAULT_PROJECT_NAME) {
+  const manifestPath = getProjectManifestPath(projectName);
+  const manifestRecord = await readProjectManifest(projectName);
   const manifest = manifestRecord ? manifestRecord.manifest : null;
   const nodes = manifest && manifest.treeIdentity && manifest.treeIdentity.nodes
     && typeof manifest.treeIdentity.nodes === 'object'
@@ -34130,7 +34130,7 @@ async function handleFlowOpenV1() {
     const romanRoot = await buildRomanTree(projectName);
     assertCurrent();
     const flowNodes = collectFlowEditableNodes(romanRoot, []);
-    const flowIdentity = await buildFlowStableNodeIdMap();
+    const flowIdentity = await buildFlowStableNodeIdMap(projectName);
     assertCurrent();
 
     const scenes = [];
