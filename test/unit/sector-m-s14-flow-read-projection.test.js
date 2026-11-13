@@ -103,7 +103,7 @@ test('S14 main flow open returns stable read descriptors and never writes missin
   const openEnd = source.indexOf('async function handleFlowSaveV1(payloadRaw)')
   const openSource = source.slice(openStart, openEnd)
 
-  assert.ok(source.includes('async function buildFlowStableNodeIdMap()'))
+  assert.ok(source.includes('async function buildFlowStableNodeIdMap(projectName = DEFAULT_PROJECT_NAME)'))
   assert.ok(source.includes('function buildFlowSceneReadDescriptor(node, identity)'))
   assert.ok(source.includes('sceneId: descriptor.sceneId'))
   assert.ok(source.includes('nodeId: descriptor.nodeId'))

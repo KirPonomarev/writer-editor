@@ -1,3 +1,7 @@
+## 2026-11-13
+
+- Same M34: actual native94 warm/cold and independent914ab86a retain exact dirty Unicode/book/source/Undo/Save; original AX setup and Chromium warnings retained. Complete DEFAULT bd3b750f is4799/4739/1fail/59oldskips; only S14 helper-signature expectation is stale. Actual no-write S14 prospective4/4 6da81700 and fresh21-path declaration237fc028/preflightf1494bcf precede the same-chain one-literal amendment. Runtime/package bytes stay protected; all required current software/native-applicability/normal delivery remain pending.
+
 # Source checkpoint — whole-book open no-loss
 
 Maintained22 and whole affected312 pass0skip/todo; independent9fd54446 reconstructs all original Main/editor bytes and retains11 old tests. Real selected-project RED corrected; canonical Save/current read/publication guard and renderer rebuilt. No native/current-candidate/delivery acceptance yet; same20 paths and all old data/errors preserved.

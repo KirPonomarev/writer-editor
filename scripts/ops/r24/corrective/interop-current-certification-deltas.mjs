@@ -12515,15 +12515,15 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "581fbfaf35f13ebe559f7da1609e1e809699bc60fb793332afa0d25c040b1fd6"
+      "sha256": "d0dc2b58d33aae3625866bf810eed007c80e054abd95561a0f4da01d9dd55c77"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "37199c9423b4e90f4e8f2fb8ff8398de9f15fcdd9e3b47a5e5e8ea037b204b08"
+      "sha256": "c91cf2159e5402b5661713699a1e2c74552e93959199ca332535519656416ef6"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "6f0531657103386889b6daa7793a467db596eead80c6fe1de92d27d1d86bef31"
+      "sha256": "5b3eaa49db9ce45f662a4a0baa1288612567eb92916147b3faab236944282448"
     },
     {
       "path": "AGENTS.md",
@@ -12555,11 +12555,11 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "e161b90e88a23c3a90c271c1f3647df1c400f82b58158b1fa35f9dd2073daedb"
+      "sha256": "6d2eb05c653447134d9a746ca8b1b2c91844ee2687fbc2edcca5f964b625cd8e"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "2af68609d1762394285c4f426bcdcd94953ab0ac1fdaefcca06b03d84eae2bce"
+      "sha256": "4ad28890f62307db291a2c9f21c7c974d4ba3e9c79722805f4122f8f97608b3b"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
@@ -12599,7 +12599,7 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "scripts/ops/sector-m-scope-map.json",
-      "sha256": "771a4a33a06e40a786813ff5e0c6a67cc439fd98f77cdd24bcaf06aa1de0b926"
+      "sha256": "12df3819de2bbd3849710bf81bb6d9985522662637501c2c549fbac9650c174e"
     },
     {
       "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -12719,7 +12719,7 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "b23ce9fa56e7a74c6078a6d805b39957a335fda3a3f184a84b47f04b0b46cf0e"
+      "sha256": "8f9332943ada7d8bff0ce6a3b909949865e162b7d244e1e23852ab7e4b9b2b37"
     },
     {
       "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -12775,11 +12775,11 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "141797af488ee4394c2f06bb887119e086dd373cf7b5915cdf401a33e41bc788"
+      "sha256": "ca2edf05c79c03c07d859b4e28bf472390a9a34b38cb1ddf079a326707fdc77d"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "54ed34f4e9f92a56073d1c245d56b8df3eb69ef2af6cc3fc6dddf0afc021101c"
+      "sha256": "9a54fe599c7d5c362e0f3cc2dc53433fc6379a876220febbe4238f08dc36d7fe"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -13487,17 +13487,21 @@ const R24_INTEROP_WRITER_FLOW_OPEN_NO_LOSS_20261113_DELTA = Object.freeze({
     },
     {
       "path": "docs/tasks/2026-11-13--writer-flow-open-no-loss.md",
-      "sha256": "3a956a05b05233428eeb7af2dd7cc572adba979e374c8a19c10ebc144788e77d"
+      "sha256": "2cf7fc4e5a39dcc7ceec14d6acd4c2ad364307cdd1e225e785180667d64d9844"
     },
     {
       "path": "test/unit/writer-flow-open-no-loss.test.js",
       "sha256": "1f50ce9cb0fae981e0342d094173016b3b1ff8f66575087824d5e3b765bc9797"
+    },
+    {
+      "path": "test/unit/sector-m-s14-flow-read-projection.test.js",
+      "sha256": "b3250fbd19154e9bfe9a68728dc30a22d4d83d08d8a7fe8043400c30c0c01537"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "b36555e1f55223fa5a093700405ac9bbbc272ba394f82ec62eb5c0e29cecd934"
+      "sha256": "e57ba7c54a624afcdfea1f96f575faa1a010a93de56bf1b7294c011bb133ffc3"
     }
   ]
 });

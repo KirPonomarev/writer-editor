@@ -1018,7 +1018,8 @@
     "test/unit/sector-m-close-mutation.test.js",
     "test/unit/sector-m-doctor-query.test.js",
     "docs/tasks/2026-11-13--writer-flow-open-no-loss.md",
-    "test/unit/writer-flow-open-no-loss.test.js"
+    "test/unit/writer-flow-open-no-loss.test.js",
+    "test/unit/sector-m-s14-flow-read-projection.test.js"
   ],
   "protectedFiles": [
     {
@@ -2939,15 +2940,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "581fbfaf35f13ebe559f7da1609e1e809699bc60fb793332afa0d25c040b1fd6"
+        "sha256": "d0dc2b58d33aae3625866bf810eed007c80e054abd95561a0f4da01d9dd55c77"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "37199c9423b4e90f4e8f2fb8ff8398de9f15fcdd9e3b47a5e5e8ea037b204b08"
+        "sha256": "c91cf2159e5402b5661713699a1e2c74552e93959199ca332535519656416ef6"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "6f0531657103386889b6daa7793a467db596eead80c6fe1de92d27d1d86bef31"
+        "sha256": "5b3eaa49db9ce45f662a4a0baa1288612567eb92916147b3faab236944282448"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3487,7 +3488,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "2af68609d1762394285c4f426bcdcd94953ab0ac1fdaefcca06b03d84eae2bce"
+        "sha256": "4ad28890f62307db291a2c9f21c7c974d4ba3e9c79722805f4122f8f97608b3b"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3619,7 +3620,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "771a4a33a06e40a786813ff5e0c6a67cc439fd98f77cdd24bcaf06aa1de0b926"
+        "sha256": "12df3819de2bbd3849710bf81bb6d9985522662637501c2c549fbac9650c174e"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4687,11 +4688,15 @@
       },
       {
         "path": "docs/tasks/2026-11-13--writer-flow-open-no-loss.md",
-        "sha256": "3a956a05b05233428eeb7af2dd7cc572adba979e374c8a19c10ebc144788e77d"
+        "sha256": "2cf7fc4e5a39dcc7ceec14d6acd4c2ad364307cdd1e225e785180667d64d9844"
       },
       {
         "path": "test/unit/writer-flow-open-no-loss.test.js",
         "sha256": "1f50ce9cb0fae981e0342d094173016b3b1ff8f66575087824d5e3b765bc9797"
+      },
+      {
+        "path": "test/unit/sector-m-s14-flow-read-projection.test.js",
+        "sha256": "b3250fbd19154e9bfe9a68728dc30a22d4d83d08d8a7fe8043400c30c0c01537"
       }
     ],
     "followupRepair": {

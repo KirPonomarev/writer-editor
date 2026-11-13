@@ -31,7 +31,7 @@ Fresh startupdad0de18, full ordered normative reads and scoped factual history w
 
 ## ALLOWLIST
 
-Exactly20 prospective paths; no other repository write:
+Exactly21 prospective paths after the admitted S14 signature amendment below; no other repository write:
 
 - docs/CONTEXT.md
 - docs/HANDOFF.md
@@ -52,6 +52,7 @@ Exactly20 prospective paths; no other repository write:
 - src/main.js
 - src/renderer/editor.bundle.js
 - src/renderer/editor.js
+- test/unit/sector-m-s14-flow-read-projection.test.js
 - test/unit/writer-flow-open-no-loss.test.js
 
 Only exact current Main/source pin refresh in the existing release cut is admitted; candidate remains UNFROZEN/NOT_READY and all17 qualification rows remain identical UNKNOWN. Existing finalizer seven-target prepare/review/CAS/readback, complete historical certificate delta retention, exact inventory/scope enrollment and standing-authorized append-only technical SHA witnesses are mechanical companions. No guard algorithm, old witness, classification, historical frozen tuple or qualification denominator changes.
@@ -272,3 +273,9 @@ Preserve original source/method/process/raw/native/profile/metadata failures. Di
 Observed failure89826e5b: named BOOK93 content including fresh unsaved edit opens and persists, but source Scene/Alt+Enter stays in Flow. Native93 Quit0 and closed profileb3cb9e51 retain all bytes. Exact-source read-only RED26b83d4b proves buildFlowStableNodeIdMap ignores selected project and reads DEFAULT_PROJECT_NAME; requested BOOK93 canonical IDs are empty. Fresh declarationfce96306/preflight16421847 at candidate5dc3033d admits the same20 paths.
 
 Before correction, strengthen maintained real registered/Main selected-project assertions for exact sceneId/nodeId and a colliding-relative-name case, preserving every original assertion. Then pass the same captured selected projectName into the existing read-only identity helper for FlowOpen; retain its default behavior and existing FlowSave caller. No independent UI/store/schema/capability change. Regenerate only affected native source if needed, refresh exact current companions/witnesses, rerun required current gates and build new candidate94 then independently merged95. Original25processes/native93 never retagged; all prior74profiles44bundles plus closed93/bundle93 protected. Full default/LONG, exact native/cold oracle and normal delivery remain mandatory; fullMac17UNKNOWN.
+
+### Native94 and whole-default S14 signature compatibility amendment
+
+Native94 remains its original cd5b39ee build/ASAR1a3a188e. Actual owned BOOK94 dirty Unicode Save-before-book, Scene/AltReturn source return, Undo/Save and ordinary warm/cold Quit0 are observed; closed profiles99152006/ab3750ee and independent decoded-byte914ab86a retain Alpha literal and exactly one added Beta paragraph. Initial AX cursor-after setup remains UNKNOWN; the same four Chromium cache warnings as93 are retained. No global native or release claim.
+
+Complete DEFAULT bd3b750f/full lossless TAP6a89cb8e is FAIL:4799tests4739pass1fail59unchanged skips. The only failure is the old S14 literal requiring buildFlowStableNodeIdMap() after its admitted selected-project parameter. Actual no-write whole-S14 prospective6da81700 passes4/4 with only that literal updated. Fresh21-path declaration237fc028/preflightf1494bcf precedes this amendment; earlier20-path references retain their historical scope. Admit exactly that signature expectation, preserving every assertion and all production/package bytes; add whole S14 to the affected denominator, refresh existing exact companions/witnesses, freeze, then all mandatory software and normal delivery. Verify all1497 package inputs before applying native94 evidence to the later test/docs head; never retag its build or old failures. Same600manual/400docs/1000total budget, one rollback and one delivery chain.
