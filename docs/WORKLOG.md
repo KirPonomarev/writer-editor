@@ -6026,3 +6026,7 @@ Native93 source return failed89826e5b; clean5dc3033d remains unpushed. Exact-sou
 ## 2026-11-14 — Same M37 Main terminal paragraph boundary
 
 Native105 remains failed/closed-9 with all84file bytes/text protected;87profiles55bundles preservationa3bd0d30. Renewalbeeb1f29/pf78dc1102 keeps originalM36 base/same chain. Actual full Main RED88784f2c73tests70pass3fail -> minimal strict expected-framing input -> GREEN314373fa73of73, original62literal and8hostile/stale/repeatedSave retained. Whole22file affected1f5d6833d584 1247of1247, independentc0b98271f249. No native acceptance/push/PR/merge yet; fresh106/merged107 and full configured delivery pending; all17UNKNOWN.
+
+## 2026-11-14 — Same M37 native-menu Flow Save source route
+
+Declaration8f322c01/preflightfcafc785:23paths/original budgets/base. CausalRED20c02cec -> whole90GREENf3487f29; original73literal, deterministicrenderer3551f0aa. Initial whole27files14ba27be FAIL1698of1699: one stale current editor digest in unchanged WP307 assertion239. Official current finalizer admitted dirty-scope refresh precedes coherent commit and complete whole27 repeat; no failure credited green. Failed106/diagnostic107 boundaries and89profiles57bundles retained; fresh108/merged109 and full current delivery required; goalACTIVE.

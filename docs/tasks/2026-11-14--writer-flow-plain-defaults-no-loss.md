@@ -9,12 +9,12 @@ HEAD_SHA_AT_START: db769858b85aab3fb4d932c796851f8fb08ad68f
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/writer-flow-plain-defaults-no-loss-20261114
 DOCUMENT_CLASS: PRODUCT_TASK_CONTRACT
-STATUS: SAME_M37_RENEWED_MAIN_BOUNDARY_ADMISSION_NOT_RUNTIME_ACCEPTANCE
+STATUS: SAME_M37_NATIVE_SAVE_ROUTE_RENEWAL_NOT_RUNTIME_ACCEPTANCE
 GROUP_ID: GROUP_04_STORAGE_AND_WRITE
 DESIGN_TOOL_ROUTER: pinned declarationb616f47e; pure Core logic and deterministic generated output, design contract unchanged
 DELIVERY_POLICY: COMMIT_REQUIRED=true; PUSH_REQUIRED=true; PR_REQUIRED=true; MERGE_REQUIRED=true; POST_MERGE_EXACT_HEAD_REQUIRED=true
 OWNER_AUTHORITY: Continuing direct-owner full macOS V6/DNA5 goal, sole executor; bounded technical repair and exact existing witnesses remain delegated. Human-only/private/secrets/admin/OS-policy/signing/notary/publication remain closed. No new agents/chats/models/services/timers or independent infra.
-CLAIM_BOUNDARY: Same M37 ordinary-scene-to-Flow no-loss Save outcome. Existing private Core default view plus strict Main expected plain-paragraph framing; no global codec/comparator, schema, explicit rich semantics, persistence, Kernel or UI design change and no fullMac promotion.
+CLAIM_BOUNDARY: Same M37 ordinary-scene-to-Flow no-loss Save outcome. Existing Core/default and Main/framing repairs plus native-menu Save routing and an identity-bound existing-channel renderer receiver; no global codec/comparator, schema, explicit rich semantics, persistence, Kernel or UI design change and no fullMac promotion.
 
 ## MICRO_GOAL
 
@@ -52,6 +52,7 @@ Manual source/tests budget400changed lines, task/factual docs350,total750. Gener
 - src/core/document-content-envelope-v1.cjs
 - test/unit/sector-m-m7-flow-mode.test.js
 - src/main.js
+- src/renderer/editor.js
 - test/unit/writer-flow-open-no-loss.test.js
 - docs/tasks/2026-11-14--writer-flow-plain-defaults-no-loss.md
 - src/renderer/editor.bundle.js
@@ -59,9 +60,16 @@ Manual source/tests budget400changed lines, task/factual docs350,total750. Gener
 
 ## DENYLIST
 
-Everything outside exact22paths. No handwritten renderer/preload, global Main comparator/Kernel/lifecycle/atomic changes, Core runtime/schema/format/global normalization/analysis, security/dependency or new port/surface edits. Only existing Main Flow expected plain-paragraph framing may change under renewalbeeb1f29. No blanket attribute/null stripping, semantic erasure, rich downgrade, weakened/skipped test, fake snapshot/ACK/Pulse or disabled no-loss guard. No direct protected push, force push, rebase, amend, git stash/reset/checkout/clean or deletion/cleanup. Preserve canonical owner6de, old candidate549a and all old profile/bundle/raw/text/history/authority/failure bytes. Word/nativeOffice PAUSED; Black Box after fullMac. No signing/notary/publication/private/secrets/admin/OS-policy or new agent/chat/model/service/timer.
+Everything outside exact23paths. No handwritten preload, visual design, global Main comparator/Kernel/lifecycle/atomic changes, Core runtime/schema/format/global normalization/analysis, security/dependency or new port/surface edits. Renewal09 admits only native-menu mode selection, private read-only snapshot query and existing-channel Flow intent receiver in editor.js; original Core and Main framing repairs remain. No blanket attribute/null stripping, semantic erasure, rich downgrade, weakened/skipped test, fake snapshot/ACK/Pulse or disabled no-loss guard. No direct protected push, force push, rebase, amend, git stash/reset/checkout/clean or deletion/cleanup. Preserve canonical owner6de, old candidate549a and all old profile/bundle/raw/text/history/authority/failure bytes. Word/nativeOffice PAUSED; Black Box after fullMac. No signing/notary/publication/private/secrets/admin/OS-policy or new agent/chat/model/service/timer.
 
 ## CONTRACT / SHAPES
+
+Same-M37 renewal09: cleanS4 f7fe6b2c/treea9036677, bootstrapf5d723df, renewed full normative/scoped factual reads and fresh literal remote db769 precede declaration8f322c01/preflightfcafc785. Original22path contract gains only editor.js:23paths, same400source-tests/350docs/750total budget, original base/branch/outcome/rollback/delivery. This explicit renewal supersedes earlier framing-only and handwritten-renderer exclusions solely for the route below; all earlier receipts keep their original identities.
+Actual106 stays failed/frozen: normal CmdS left Flow unsaved, Quit/TERM refused, admitted own final stop-9; fullprofilec53f600b/textccbf909d/loopstop84ad0ba7 retained. Diagnostic107 is S4 plus temporary observational source, not a candidate: nativeCmdS emitted zeroFlowmarkers and no writes; explicitCmdShiftS produced actual9file durable batch, dirtyfalse and normalQuit0. Tracea33e730c/closed033fb5e6/physical5631e77d preserve89profiles57bundles35historicalmissingUNKNOWN8carriers. Lost unexecuted R2 runtime remains separately UNKNOWN.
+The diagnostic107 prospective literal oracle remains FAIL8of9: UI Return inserted one real empty Beta paragraph. All9files match independently decoded actual snapshot09e80608, including that blank; do not rewrite old expectation. New regular candidate108 and merged109 require fresh admission/build/profile and prospectively pinned input recipe: fill Flow's existing terminal empty paragraph with Two without Return, then Return before Three.
+Native-menu cmd.project.save uses a private read-only snapshot option, preserving pending recording and tree fence. Capture/recheck window, contents, project/root/file, owner, session, lifecycle, generation and fence; revalidate Save capability/profile/entitlement. Flow delivers existing cmd.project.plan.flowSave intent with project/document/generation/publication binding; editor receiver rechecks then dispatches existing bus. Delivery is saved:false; only actual Core atomic receipt/ACK clears dirty. Ordinary scene and UI bridge retain original Kernel Save. No new channel, command, writer or generic runtime dispatcher.
+Initial renewed whole27file execution14ba27be is FAIL1698of1699, no skips/todo/cancel: sole WP307 assertion239 sees old admitted editor hashad6691cc versus actualdd7164c9. Every original assertion stays literal. Existing finalizer explicitly permits dirty paths within admitted scope; therefore refresh its exact current digest-only witnesses on f7 before the coherent source/companion commit, then repeat whole27files. This changes step order only; no required failure is credited green, no new scope/budget/base or historical carrier rewrite.
+Maintained full-Main native-menu causal RED precedes source edits; original73 cases/assertions stay literal. Prove real9file Save/second edit/ACK, ordinary and UI-bridge controls, query no pending/fence mutation and stale/capability refusals; inspect exact source inverse and regenerate official renderer twice. Fresh0700 canonical temporary APFS unit runtime yalken-m37-native-save-route-20261114 is separately admitted before creation, final evidence T777. Earlier temporary parent lost its marker and is not reused. Candidate108/merged109 native acceptance, full configured current software and normal checked delivery remain mandatory; goal ACTIVE.
 
 O: ordinary default-only scene -> changed Flow Save -> real durable content/ACK -> normal warm Quit0 and same-profile cold retain9meanings/identities/meta/cards and exact prospectively allowed bytes.
 T: existing UI intent -> Kernel/capability -> existing Core facade/Flow composer -> PROJECT_FLOW_SAVE_V1 -> Main snapshot/source/revision/generation revalidation -> existing atomic batch/Core receipt -> immutable result. Pure comparison gives no write authority.

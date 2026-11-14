@@ -27162,6 +27162,16 @@ function dispatchListTypeAction(listAction) {
   }
 }
 
+function handleNativeFlowSaveIntent(packet) {
+  const expected = packet?.payload;
+  if (packet?.commandId !== EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE || !expected || typeof expected !== 'object' || Array.isArray(expected)
+    || flowModeState?.active !== true || !expected.projectId || !expected.documentId
+    || expected.projectId !== currentProjectId || expected.documentId !== currentDocumentId
+    || expected.generation !== localEditGeneration || expected.treeContentPublicationId !== currentTreeContentPublicationId) return false;
+  void dispatchUiCommand(EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE);
+  return true;
+}
+
 async function handlePlanFlowSave() {
   await handleFlowModeSaveUiPath();
   return { performed: true };
@@ -28975,6 +28985,7 @@ if (window.electronAPI) {
     return false;
   }
 
+  window.electronAPI?.onRuntimeCommand?.(handleNativeFlowSaveIntent);
   if (isTiptapMode) {
     setTiptapRuntimeHandlers({
       historyCommand: (commandId) => {

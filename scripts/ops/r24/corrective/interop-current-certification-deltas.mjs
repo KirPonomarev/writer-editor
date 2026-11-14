@@ -15650,7 +15650,7 @@ const R24_INTEROP_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114_DELTA = Object.fre
     },
     {
       "path": "src/main.js",
-      "sha256": "b8c19a7a29e0ca67340fcc97b110814933d830a677873b7ac312cdd507d32e80"
+      "sha256": "039bbd03f938758f0cc1590bda9fd06cc325f1dbf85c3debf24c379c123241ec"
     },
     {
       "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
@@ -15658,11 +15658,11 @@ const R24_INTEROP_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114_DELTA = Object.fre
     },
     {
       "path": "src/renderer/editor.bundle.js",
-      "sha256": "70bd8dfb29a3df7ca3de9c91aa17d937b0d7d1aa0c19198d42a3b5175d497b1b"
+      "sha256": "a48fcbd8aa0eef97e4e5055b860bd53fecf584c43d8d826172f9c1f68b5272f1"
     },
     {
       "path": "src/renderer/editor.js",
-      "sha256": "ad6691cc5dc47173375a333b71b6a407ba18f5474d218c3289a07e6a0103468e"
+      "sha256": "dd7164c9457e046b0d8aa5fcd0e4e64c4e76f302b3aac610f9e72c000567ba34"
     },
     {
       "path": "test/unit/project-tree-pathless-contract.test.js",
@@ -15694,15 +15694,15 @@ const R24_INTEROP_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114_DELTA = Object.fre
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "66b10607db2b6acffc3226c6789e0e06333a6a4b828fad995c80fbca342c616f"
+      "sha256": "fe37430e77c4769b0b457ffa5e3d0409aece8fa8ec6098c157fda0dd0933d57c"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "dc2d6643e6ac8d8f911f7fc874aed1c37e4d73897e6555d8a59e1a31644bf999"
+      "sha256": "e963c22674db22b6250b5a1616bb92a5d491a35199fbfcb57bbc055a75ab2e0c"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "dcb6aebe7002a95470ee5d3e5a3326333c6b6d5f7d5e560c470d714bf6abfbb4"
+      "sha256": "a94211316bb9711cef794aaf73a9c33dda6b056b5cf90611f8f5567470fd6cfa"
     },
     {
       "path": "AGENTS.md",
@@ -15734,15 +15734,15 @@ const R24_INTEROP_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114_DELTA = Object.fre
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "9504ce60a7e80165c67966a51b5d31b4588674fd4aa3c09c944f3c4fc3ab90f6"
+      "sha256": "63e46308add819176c76b88bc1b78ed7f92a52da13647e3b01475c33d1f83ee3"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "5f0d5307bb8c249d60330e1d0962f2d52f3101fec2b192214059dfff0f0ea883"
+      "sha256": "e1c854e1c0d44faab31036265d378ec7aa7e92b74debf37def84f3b2c1ae7bf1"
     },
     {
       "path": "scripts/ops/release-candidate.mjs",
-      "sha256": "1c83b406753fc1ab2b921dd2a36523e8c2a723dbfee7c3b015351e9434d26116"
+      "sha256": "05d0cc4c1527a80184769f65aab29872b3d4296f8157dbdafcfebeaf57de6f3d"
     },
     {
       "path": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
@@ -15766,7 +15766,7 @@ const R24_INTEROP_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114_DELTA = Object.fre
     },
     {
       "path": "docs/OPS/R24/FIRST_MAC_RELEASE_CUT_V2.json",
-      "sha256": "fc75e5fdab169a2eb529c2a0ca44c7c5f46d06fe1c1b2d94fb6af94941c2ac02"
+      "sha256": "0f9a796f4e64f320484736ad7af78fe56708207b258d11b36709eec07813d151"
     },
     {
       "path": "src/renderer/flags.js",
@@ -15898,7 +15898,7 @@ const R24_INTEROP_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114_DELTA = Object.fre
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "f6fbb483338df2055ce01fbc7bf56b0f849c64ac3a2a893779dd6958911301a4"
+      "sha256": "487421f80b6bdeee14b5213a1a18a0418b0a593d0e766826692a632cff6b8506"
     },
     {
       "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -15954,11 +15954,11 @@ const R24_INTEROP_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114_DELTA = Object.fre
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "8ecd87456ac4afbce3e2b194b2dad9017d75d04526612ec2918aa6f5a6d5e7d9"
+      "sha256": "4599743c2d8ea7a2c9de4d49f44069ff2a028ce842b3b4322dcd420d1fdd68a9"
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "fda410eaf45a7100b12ddff0088182e785f62533cefbc6f4fb60bb6bf3e52ca8"
+      "sha256": "0dd9ddb38530bb0af3bc22f2ea4a420249b5fb49087fa42fcade4be71b85acfa"
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -16670,7 +16670,7 @@ const R24_INTEROP_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114_DELTA = Object.fre
     },
     {
       "path": "test/unit/writer-flow-open-no-loss.test.js",
-      "sha256": "1b1a0403f1ba898b8028ea15e315bb923258b88d2ee841983d0139ac4f69f639"
+      "sha256": "82d6b976690cdc5ba4a22cc613114b39a745c99c2fbe53521a092374606f8bd9"
     },
     {
       "path": "test/unit/sector-m-s14-flow-read-projection.test.js",
@@ -16710,13 +16710,13 @@ const R24_INTEROP_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114_DELTA = Object.fre
     },
     {
       "path": "docs/tasks/2026-11-14--writer-flow-plain-defaults-no-loss.md",
-      "sha256": "e89722800c4b8b6f12234f39c25b9a3002c3242a0589181fda8982f0243b46b1"
+      "sha256": "a6a15124410bc88a71ae78c77ccf6286fd08051cee62c33edfe3bf2d07cac6a8"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "cb2408035a4e9fa598a8597f56ccfdcbc8a781dd3c3317984ee61fa43942d166"
+      "sha256": "35e2b6afd5e98a63e3b1856e019d36480b9b9f3dd280c49c141287f781dfa709"
     }
   ]
 });

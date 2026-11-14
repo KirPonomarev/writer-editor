@@ -1,3 +1,17 @@
+# CURRENT — Same M37: native-menu Flow Save route in source
+
+TASK_ID: YALKEN_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114
+BINDING_BASE_SHA: db769858b85aab3fb4d932c796851f8fb08ad68f
+SOURCE_RENEWAL: cleanf7fe6b2c/treea9036677, bootstrapf5d723df/full normative/scoped factual reads, declaration8f322c01/preflightfcafc785/E01fd6eb27. Exactly23paths, original400source-tests/350docs/750total budget and same open chain; no push/PR/CI/merge/native acceptance.
+
+Actual106 remains failed/closed-9. Diagnostic107 is S4 plus temporary observers: standardCmdS zeroFlowmarkers/no writes; explicitCmdShiftS actual9file batch/ACK, dirtyfalse, normalQuit0. Original prospective literal oracle FAIL8of9 retained (one inserted empty Beta paragraph); independent09e80608 matches all9 actual snapshot meanings including blank. Tracea33e730c/closed033fb5e6/physical5631e77d protect89profiles57bundles35historicalmissingUNKNOWN8carriers; lostunexecutedR2 separateUNKNOWN.
+
+Maintained causal RED20c02cec observes native generic Save SNAPSHOT_UNAVAILABLE/E_FLOW_SCENE_SNAPSHOT_FORBIDDEN before a Flow intent, all73original cases passing. Minimal native-only read-only query preserves pending recording/fence, binds current context and revalidates Save capability. Existing-channel receiver rechecks project/document/generation/publication/activeFlow then dispatches existing bus/Core atomic/ACK. Intent returns saved:false. Main/editor inverse restores every otherS4byte; original73test bytes/Core/global guards literal. WholeGREENf3487f29 is90of90,0fail/cancel/skip/todo; two new fixture-setup faults retained. Official renderer twice deterministic3551f0aa givesa48fcbd8; preloadfc334d6a/helper9810036b literal.
+
+Initial whole27files14ba27be is FAIL1698of1699,0skip/todo/cancel: sole unchanged WP307 assertion239 sees old admitted editorad6691cc versus actualdd7164c9. This initial result is not green. Exact current digest-only finalizer refresh uses its existing admitted dirty-scope route before coherent commit; a complete renewed whole27 execution and independently bound receipt remain mandatory. No old history, test assertion or semantic policy changes. No native or release acceptance from source proof.
+
+Regularcandidate108/merged109 need separately admitted exact-source builds/profiles, prospective terminal-paragraph input recipe, real successive CmdS saves and normal warm/cold. Remaining current software and full checked delivery mandatory. All17UNKNOWN/NOT_READY/UNFROZEN,59old skips uncovered; Word/nativeOffice PAUSED, Black Box after fullMac; goal ACTIVE.
+
 # CURRENT — Same M37: native-shaped Main Save regression repaired in source
 
 TASK_ID: YALKEN_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114
