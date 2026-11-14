@@ -6036,3 +6036,7 @@ Declaration8f322c01/preflightfcafc785:23paths/original budgets/base. CausalRED20
 Complete reboot baseline e74fb5c4:4905/4845/1/59, one old Save-wrapper string. Fresh declaration12/preflight/taskE0 before test edit; initial task H2-count format failure retained and corrected within existing CONTRACT section. Actual whole bridge RED20cc4818 (3of4) thenGREENc8270fde (4of4), no skips. One assertion region only, product1497package inputs literal and every unrelated test byte inverse exact. Current digest witnesses, renewed current proofs and normal full delivery remain mandatory; native108 stays originalS5, all17UNKNOWN, goalACTIVE.
 
 Structural negative proof e878b312 found broad matching could miss native fallback removal. Same-region refinement9a9f4ab2 preserves every unrelated old test byte, whole4of4 GREEN9c465310 and independent03f69a39 reject all5 route/capability/intent mutants. Product1497 inputs literal; no runtime change.
+
+## 2026-11-14 — Same M37 one existing unit-path current binding
+
+Projected DATA finding fde976bb on checkpoint 5b310074: bridge test is required inventory member but outside DATA/current certificate. Fresh declarationbfc748e0/preflight3bd3ad9b and E08b0bd04d admit exactly this current path/SHA, no product/test byte or prior row/history/17UNKNOWN change. Normal current proof/native/delivery mandatory.

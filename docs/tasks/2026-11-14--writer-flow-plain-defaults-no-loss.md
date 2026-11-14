@@ -65,6 +65,10 @@ Everything outside exact23paths. No handwritten preload, visual design, global M
 
 ## CONTRACT / SHAPES
 
+**SAME M37 — exact current metadata path admission13**
+
+Clean checkpoint 5b310074, fresh declarationbfc748e0/preflight3bd3ad9b. Read-only projected finding fde976bb identifies exactly the already admitted required lifecycle bridge test outside DATA current delivery scope. Append only that existing path/current SHA to DATA admittedPaths1017to1018, sourceBindings869to870 and selected current certificate267to268; all old rows/classifications/history preserved, necessary current digests through existing finalizer. Product/generated/test bytes freeze at this checkpoint; no semantic, gate, scope/base/budget or17UNKNOWN change. Actual current namespace/full configured/native/delivery proofs remain mandatory before push.
+
 **SAME M37 — lifecycle bridge assertion renewal12**
 
 CleanS5 ee4c62e2/tree7c9cfa2d; declaration9d17b03c/preflight captured before edit. Same original db769base, branch, outcome, rollback,400source-tests/350docs/750total budgets and mandatory delivery. Allowlist gains only existing unit sector-m-preload-file-lifecycle-command-bridge.test.js:24paths. This explicitly permits replacing its one stale Save-handler source-format assertion and adding scoped native/non-native/ordinary Kernel route checks; every other original assertion/body remains literal.

@@ -15694,15 +15694,15 @@ const R24_INTEROP_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114_DELTA = Object.fre
     },
     {
       "path": "docs/CONTEXT.md",
-      "sha256": "259fa50d9095857f388d8c7fa6fececa9ff88874f8775e55c6805a3f969f304b"
+      "sha256": "e8ede44559f10703a09a782a613cfe9d623702aad720630fa531900f32b2b9dd"
     },
     {
       "path": "docs/HANDOFF.md",
-      "sha256": "2c8a194032dd0db0d30ae54d5c454e9c9ccdbb84ef1270bf018452a4c9981ba2"
+      "sha256": "708798232d9ef078178bdcbc57a4e4f9d7e297cff3ecec45984f89ca32d8becc"
     },
     {
       "path": "docs/WORKLOG.md",
-      "sha256": "0d15096a79ba3ded7bf8c8847a1e6337cb41f13bbd2f7662e85de9ffaaaaad4c"
+      "sha256": "dba9af9964a39fba7104d3639548b450a1b8fa314cbaaab7c573d12b43c793f1"
     },
     {
       "path": "AGENTS.md",
@@ -15734,7 +15734,7 @@ const R24_INTEROP_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114_DELTA = Object.fre
     },
     {
       "path": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "28156585258eb568d3e3fca82a1da8f06574600bbb66169edb899eefc7f6cadb"
+      "sha256": "b3ca2d2c3b65096e1fb1d62212152ae0ba823558668745b230f44009c80c3439"
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -16710,13 +16710,17 @@ const R24_INTEROP_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114_DELTA = Object.fre
     },
     {
       "path": "docs/tasks/2026-11-14--writer-flow-plain-defaults-no-loss.md",
-      "sha256": "a8ae5492060e833fec89e26799ea7044ef329669d0956f0920480b0dfd73c558"
+      "sha256": "79c3f3358ab02d7bc54d951de717d76f9dfc6c12b974adb6e23dad41f0c53788"
+    },
+    {
+      "path": "test/unit/sector-m-preload-file-lifecycle-command-bridge.test.js",
+      "sha256": "1b06c8ee1863e86bea0a8fe91f5c35d14bf95aa21b7302f1e5ed312864df31d6"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "12fb2f2be3043db0483b95be9707bdb27289c2333431502bbd8e7775294a4351"
+      "sha256": "d1ca58976c678362e5d8fbb7fe12b817929ccfd982aa2a7ba8111e65ae058dac"
     }
   ]
 });
