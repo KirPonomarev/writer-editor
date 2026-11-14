@@ -1,3 +1,8 @@
+# 2026-11-14 — Flow plain editor defaults: source checkpoint
+
+- One private Core comparison helper and two composer references accept only three correctly scoped null defaults. Genuine whole M7 RED298f2936 precedes Core edit; GREEN04b2e3f6 is29/29; whole21-file affectedf1ee9b8b is1207/1207, all0fail/cancel/skip/todo. Independent560a279b/6142e479 preserve original source/assertions and bind actual named executions.
+- Official renderer builds35429f12 are byte-identical; renderer70bd8dfb, preload literalfc334d6a. Native104 remains failed/closed with original profile/text/raw retained. Fresh native/current witnesses/full software/delivery remain pending;17 fullMac rows UNKNOWN, Word/nativeOffice PAUSED, Black Box after fullMac.
+
 # 2026-11-13 — Archive RESTORE live Stage10 handover source checkpoint
 
 - Source-only repair on base73ef: actual native101 warm owner mismatch/cold control retained; genuine full S33 RED then90/90; other16 whole-file obligations covered with original failed aggregate plus unchanged S28 canonical-temp control. Independent7e16252a/79dc50e4 and one Main inverse preserve all original assertions and source bytes.
@@ -6017,3 +6022,21 @@ PROCESS_SEQUENCE_RECOVERY_20261106: Primary human39cd7a45 at2026-11-02T09:01:25.
 ## 2026-11-13 — Same-chain native source identity correction
 
 Native93 source return failed89826e5b; clean5dc3033d remains unpushed. Exact-source RED26b83d4b proves default manifest identity leak; correction preflight16421847 admits same20 paths. Native93 closed0/profileb3cb9e51 preserved. Mandatory strict tests and new actual candidate94/merged95 remain pending; fullMac17UNKNOWN.
+
+## 2026-11-14 — Same M37 Main terminal paragraph boundary
+
+Native105 remains failed/closed-9 with all84file bytes/text protected;87profiles55bundles preservationa3bd0d30. Renewalbeeb1f29/pf78dc1102 keeps originalM36 base/same chain. Actual full Main RED88784f2c73tests70pass3fail -> minimal strict expected-framing input -> GREEN314373fa73of73, original62literal and8hostile/stale/repeatedSave retained. Whole22file affected1f5d6833d584 1247of1247, independentc0b98271f249. No native acceptance/push/PR/merge yet; fresh106/merged107 and full configured delivery pending; all17UNKNOWN.
+
+## 2026-11-14 — Same M37 native-menu Flow Save source route
+
+Declaration8f322c01/preflightfcafc785:23paths/original budgets/base. CausalRED20c02cec -> whole90GREENf3487f29; original73literal, deterministicrenderer3551f0aa. Initial whole27files14ba27be FAIL1698of1699: one stale current editor digest in unchanged WP307 assertion239. Official current finalizer admitted dirty-scope refresh precedes coherent commit and complete whole27 repeat; no failure credited green. Failed106/diagnostic107 boundaries and89profiles57bundles retained; fresh108/merged109 and full current delivery required; goalACTIVE.
+
+## 2026-11-14 — Same M37 lifecycle bridge structural compatibility
+
+Complete reboot baseline e74fb5c4:4905/4845/1/59, one old Save-wrapper string. Fresh declaration12/preflight/taskE0 before test edit; initial task H2-count format failure retained and corrected within existing CONTRACT section. Actual whole bridge RED20cc4818 (3of4) thenGREENc8270fde (4of4), no skips. One assertion region only, product1497package inputs literal and every unrelated test byte inverse exact. Current digest witnesses, renewed current proofs and normal full delivery remain mandatory; native108 stays originalS5, all17UNKNOWN, goalACTIVE.
+
+Structural negative proof e878b312 found broad matching could miss native fallback removal. Same-region refinement9a9f4ab2 preserves every unrelated old test byte, whole4of4 GREEN9c465310 and independent03f69a39 reject all5 route/capability/intent mutants. Product1497 inputs literal; no runtime change.
+
+## 2026-11-14 — Same M37 one existing unit-path current binding
+
+Projected DATA finding fde976bb on checkpoint 5b310074: bridge test is required inventory member but outside DATA/current certificate. Fresh declarationbfc748e0/preflight3bd3ad9b and E08b0bd04d admit exactly this current path/SHA, no product/test byte or prior row/history/17UNKNOWN change. Normal current proof/native/delivery mandatory.

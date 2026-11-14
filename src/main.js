@@ -25245,7 +25245,7 @@ function assertTreeRecoverySnapshot(snapshot, admission) {
   if (fence.sourceNodeId) admission.sourceImage = image;
 }
 
-function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null, environmentRequest = null, allowFlowAuthoring = false) {
+function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null, environmentRequest = null, allowFlowAuthoring = false, readOnly = false) {
   if (!mainWindow || mainWindow.isDestroyed()) {
     return Promise.reject(new Error('No active window'));
   }
@@ -25280,7 +25280,7 @@ function requestEditorSnapshot(timeoutMs = 2500, recoveryAdmission = null, envir
         if (recoveryAdmission) assertTreeRecoverySnapshot(snapshot, recoveryAdmission);
         else if (fence) await assertTreeEditorSnapshotIdentity(snapshot, false, fence);
         checkSession();
-        if (snapshot?.flowModeActive === true) { resolve(snapshot); return; }
+        if (readOnly === true || snapshot?.flowModeActive === true) { resolve(snapshot); return; }
         const prepared = await preparePendingRecordingSnapshot(snapshot, recordingSession);
         checkSession();
         const publicationFence = fence || (typeof treeEditorReplacementFence !== 'undefined' ? treeEditorReplacementFence : null);
@@ -34339,8 +34339,14 @@ async function handleFlowSaveV1(payloadRaw) {
         ...(parsed.doc ? { doc: envelope.buildParagraphDocumentFromText(parsed.text) } : { text: parsed.text }),
         metaEnabled: activePayload.hasMetaBlock || parsed.hasMetaBlock, meta: activePayload.meta, cards: activePayload.cards,
       });
+      // Tiptap retains the projection's terminal empty paragraph; keep both exact plain framings.
+      const expectedNativeSnapshot = parsed.doc ? envelope.composeObservablePayload({
+        doc: envelope.buildParagraphDocumentFromText(snapshot.plainText),
+        metaEnabled: activePayload.hasMetaBlock || parsed.hasMetaBlock, meta: activePayload.meta, cards: activePayload.cards,
+      }) : expectedSnapshot;
       if (snapshot.projectId !== manifest?.manifest?.projectId || snapshot.documentId !== active?.nodeId
-        || parsed.issue || !await treeSceneSnapshotsEqual(expectedSnapshot, snapshot.content)
+        || parsed.issue || (!await treeSceneSnapshotsEqual(expectedSnapshot, snapshot.content)
+          && !(parsed.doc && await treeSceneSnapshotsEqual(expectedNativeSnapshot, snapshot.content)))
         || normalizeFlowTextInput(parsed.text).trimEnd() !== normalizeFlowTextInput(snapshot.plainText).trimEnd()
         || !mapped.ok || mapped.scenes.length !== normalizedScenes.length || mapped.scenes.some((s, i) => {
           const target = normalizedScenes[i]; return s.path !== target.path || s.sceneId !== target.sceneId
@@ -36261,6 +36267,34 @@ function sendCanonicalRuntimeCommand(commandId, payload = {}, legacyCommand = ''
   }
   mainWindow.webContents.send('ui:runtime-command', envelope);
   return true;
+}
+
+async function handleNativeMenuSave(invocationContext) {
+  if (invocationContext?.invocationSource !== 'native-menu' || !mainWindow || mainWindow.isDestroyed()) {
+    return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE, {});
+  }
+  const read = () => [mainWindow, mainWindow?.webContents, getProjectRootPath(), currentFilePath,
+    activeStage10ApplicationBootstrap, commentAuthoringSessionId, currentLifecycleSubjectId(),
+    lastSignaledEditGeneration, treeEditorReplacementFence];
+  const captured = read();
+  const snapshot = await requestEditorSnapshot(2500, null, null, true, true);
+  if (read().some((value, index) => value !== captured[index]) || !captured[0] || captured[0].isDestroyed()
+    || !captured[1] || captured[1].isDestroyed() || projectArchiveOpenCapture
+    || !Number.isSafeInteger(snapshot.generation) || snapshot.generation < lastSignaledEditGeneration) {
+    throw Error('NATIVE_SAVE_CONTEXT_STALE');
+  }
+  if (snapshot.flowModeActive !== true) {
+    return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE, {});
+  }
+  userBookmarkCapability('cmd.project.save');
+  const capability = evaluateCommandCapabilityAuthority({ commandId: 'cmd.project.save', capabilityId: 'cap.project.save',
+    platformId: DEFAULT_AUTHORITY_PLATFORM_ID, matrixDoc: readAuthorityCapabilityMatrixDoc() });
+  if (!capability.ok || !snapshot.projectId || !snapshot.documentId) throw Error('NATIVE_SAVE_CONTEXT_STALE');
+  const dispatched = sendCanonicalRuntimeCommand('cmd.project.plan.flowSave', {
+    projectId: snapshot.projectId, documentId: snapshot.documentId, generation: snapshot.generation,
+    treeContentPublicationId: snapshot.treeContentPublicationId || '',
+  });
+  return { ok: dispatched, dispatched, saved: false };
 }
 
 function resolveCollabScopeLocalState() {
@@ -40035,9 +40069,7 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   [PROJECT_LIFECYCLE_PERMANENT_DELETE_COMMAND_ID]: async (payload = {}) => {
     return normalizeUiBridgeMenuResult(await handleProjectLifecyclePermanentDeleteCommand(payload));
   },
-  'cmd.project.save': async () => {
-    return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE, {});
-  },
+  'cmd.project.save': (_payload, invocationContext) => handleNativeMenuSave(invocationContext),
   'cmd.project.pulse.optIn': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_IN, payload),
   'cmd.project.pulse.optOut': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_OPT_OUT, payload),
   'cmd.project.pulse.correctMetric': payload => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PULSE_CORRECT_METRIC, payload),

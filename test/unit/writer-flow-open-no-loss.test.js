@@ -539,3 +539,185 @@ for (const changedSynopsis of [false, true]) {
       for (const s of h.calls.at(-1).payload.scenes) assert.equal(fs.readFileSync(s.path, 'utf8'), s.content); }
   });
 }
+
+// Keep the original normalized fixture unchanged. A native Tiptap snapshot
+// also retains the terminal empty paragraph in the read projection's text.
+function useNativeBookParagraphFraming(h, defaults = true, mutate = () => {}) {
+  const core = require('../../src/core/document-content-envelope-v1.cjs');
+  h.context.getTiptapDocumentSnapshot = () => {
+    const doc = core.buildParagraphDocumentFromText(h.context.text);
+    if (defaults) {
+      doc.attrs = { wordPendingRevisions: null, wordUserBookmarks: null };
+      doc.content.forEach(p => { p.attrs = { textAlign: null }; });
+    }
+    mutate(doc);
+    return { text: h.context.text, doc };
+  };
+}
+for (const defaults of [false, true]) {
+  test('actual registered native terminal paragraph Save and new edit remain durable; defaults=' + defaults, async t => {
+    const { f, h, snapshot } = await bookFixture(t);
+    useNativeBookParagraphFraming(h, defaults);
+    const core = require('../../src/core/document-content-envelope-v1.cjs');
+    assert.ok(h.context.text.endsWith('\n'));
+    const native = core.parseObservablePayload(snapshot().content);
+    assert.equal(native.doc.content.length, h.context.text.split('\n').length);
+    assert.notEqual(native.doc.content.length, core.buildParagraphDocumentFromText(native.text).content.length);
+    const manifest = fs.readFileSync(f.manifestPath), identities = h.context.flowModeState.scenes.map(s => [s.sceneId, s.nodeId]);
+    let response; const dispatch = h.context.dispatchUiCommand;
+    h.context.dispatchUiCommand = async (...args) => { response = await dispatch(...args); return response; };
+    for (const generation of [8, 9]) {
+      if (generation === 9) {
+        h.context.text = h.context.text.replace('EDITED', 'TWICE 🧭 İ Σσς العربية 漢字');
+        h.context.localEditGeneration = generation; h.context.localDirty = true;
+        h.context.flowModeState = { ...h.context.flowModeState, dirty: true };
+        f.probe.state({ generation, dirty: true });
+      }
+      await h.save();
+      assert.equal(response.ok, true, JSON.stringify(response));
+      assert.equal(response.value.receipt.committed, true);
+      assert.equal(response.value.receipt.ack.savedGeneration, generation);
+      assert.equal(h.context.localDirty, false); assert.equal(f.probe.state().dirty, false);
+      assert.equal(h.context.lastAckedGeneration, generation);
+      assert.deepEqual(h.context.flowModeState.scenes.map(s => [s.sceneId, s.nodeId]), identities);
+      assert.deepEqual(fs.readFileSync(f.manifestPath), manifest);
+      const sent = h.calls.filter(x => x.id === 'cmd.project.flowSaveV1').at(-1).payload.scenes;
+      assert.equal(sent.length, 9);
+      for (const s of sent) assert.equal(fs.readFileSync(s.path, 'utf8'), s.content);
+      assert.equal(core.parseObservablePayload(fs.readFileSync(f.beta, 'utf8')).text,
+        generation === 8 ? 'Beta EDITED 😀 e\u0301' : 'Beta TWICE 🧭 İ Σσς العربية 漢字 😀 e\u0301');
+    }
+  });
+}
+for (const fault of ['unknown-null', 'explicit-alignment', 'bold', 'hard-break', 'extra-paragraph', 'changed-text', 'metadata', 'cards']) {
+  test('actual native terminal paragraph retains strict ' + fault + ' refusal before effect or ACK', async t => {
+    const { f, h } = await bookFixture(t), before = projectFiles(f.root);
+    useNativeBookParagraphFraming(h, true, doc => {
+      if (fault === 'unknown-null') doc.attrs.unknown = null;
+      if (fault === 'explicit-alignment') doc.content[0].attrs.textAlign = 'left';
+      if (fault === 'bold') doc.content[0].content[0].marks = [{ type: 'bold' }];
+      if (fault === 'hard-break') doc.content[0].content.push({ type: 'hardBreak' });
+      if (fault === 'extra-paragraph') doc.content.push({ type: 'paragraph', attrs: { textAlign: null } });
+      if (fault === 'changed-text') doc.content[0].content[0].text += ' UNAUTHORIZED';
+    });
+    if (fault === 'metadata') { h.context.metaEnabled = true; h.context.currentMeta = { status: 'changed', tags: {}, synopsis: 'Keep' }; }
+    if (fault === 'cards') h.context.currentCards = [{ id: 'owned', title: 'Keep', text: 'Unsaved' }];
+    let response; const dispatch = h.context.dispatchUiCommand;
+    h.context.dispatchUiCommand = async (...args) => { response = await dispatch(...args); return response; };
+    const working = h.snapshot(); await h.save();
+    assert.equal(response.ok, false); assert.equal(response.error.code, 'M7_FLOW_SNAPSHOT_MISMATCH');
+    assert.deepEqual(projectFiles(f.root), before);
+    assert.equal(f.probe.state().dirty, true); assert.deepEqual(h.snapshot(), working);
+  });
+}
+test('actual native paragraph snapshot cannot authorize a queued write after newer typing', async t => {
+  const { f, h } = await bookFixture(t), before = projectFiles(f.root);
+  useNativeBookParagraphFraming(h);
+  const resume = f.probe.captureQueued('save flow scene batch'); await h.save();
+  h.context.text += ' NEWER 🧭'; h.context.localEditGeneration = 9;
+  f.probe.state({ generation: 9, dirty: true });
+  const working = h.snapshot();
+  await assert.rejects(resume(), /M7_FLOW_CONTEXT_STALE/u);
+  assert.deepEqual(projectFiles(f.root), before); assert.deepEqual(h.snapshot(), working);
+  assert.equal(h.context.lastAckedGeneration, 7); assert.equal(f.probe.state().dirty, true);
+});
+
+function nativeSaveFixtureFactory() {
+  const m = new Module(fixturePath, module); m.filename = fixturePath;
+  m.paths = Module._nodeModulePaths(path.dirname(fixturePath));
+  const hooks = `
+    nativeReadState: () => ({ pending: activePendingRecording, fence: treeEditorReplacementFence, admissions: pendingRecordingSaveAdmissions.size }),
+    nativeFence(snapshot) { return treeEditorReplacementFence = { filePath: currentFilePath, projectRoot: getProjectRootPath(),
+      owner: activeStage10ApplicationBootstrap, session: commentAuthoringSessionId, subjectId: currentLifecycleSubjectId(),
+      projectId: snapshot.projectId, documentId: snapshot.documentId }; },
+    revokeNativeSave() { readAuthorityCapabilityMatrixDoc = () => null; },`;
+  m._compile(initializer.replace(anchor, anchor + hooks) + '\nmodule.exports = fixture;', fixturePath);
+  return m.exports;
+}
+const nativeSave = (f, options = {}, payload = {}) => f.probe.menuCommand('cmd.project.save', payload, { route: 'command.bus', ...options });
+const nativeFlowIntents = mounted => mounted.sends.filter(x => x.channel === 'ui:runtime-command' && x.payload.commandId === 'cmd.project.plan.flowSave');
+async function compileNativeFlowReceiver(h) {
+  h.context.EXTRA_COMMAND_IDS = (await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/projectCommands.mjs')).href)).EXTRA_COMMAND_IDS;
+  assert.ok(source().includes('window.electronAPI?.onRuntimeCommand?.(handleNativeFlowSaveIntent);\n  if (isTiptapMode)'));
+  vm.runInContext(productionFunction(source(), 'handleNativeFlowSaveIntent'), h.context);
+}
+test('actual native-menu Save delivers only a bound intent; real renderer bus and Core save twice', async t => {
+  const { f, h, mounted } = await bookFixture(t); useNativeBookParagraphFraming(h);
+  const registryModule = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/registry.mjs')).href);
+  const runnerModule = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/runCommand.mjs')).href);
+  const commands = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/projectCommands.mjs')).href);
+  const bus = await import(pathToFileURL(path.join(ROOT, 'src/renderer/commands/commandBusGuard.mjs')).href);
+  const registry = registryModule.createCommandRegistry(), pending = [];
+  commands.registerProjectCommands(registry, { uiActions: { planFlowSave: () => h.save() } });
+  const runner = runnerModule.createCommandRunner(registry), dispatch = h.context.dispatchUiCommand;
+  h.context.dispatchUiCommand = (id, payload) => {
+    if (id !== 'cmd.project.plan.flowSave') return dispatch(id, payload);
+    const result = bus.runCommandThroughBus(runner, id, payload, { route: 'command.bus' }); pending.push(result); return result;
+  };
+  const manifest = fs.readFileSync(f.manifestPath), identities = h.context.flowModeState.scenes.map(s => [s.nodeId, s.sceneId]);
+  for (const generation of [8, 9]) {
+    if (generation === 9) { h.context.text = h.context.text.replace('EDITED', 'TWICE 🧭 العربية');
+      h.context.localEditGeneration++; h.context.localDirty = true; h.context.flowModeState.dirty = true; f.probe.state({ generation, dirty: true }); }
+    const before = projectFiles(f.root), result = await nativeSave(f);
+    assert.equal(nativeFlowIntents(mounted).length, generation - 7, JSON.stringify(result));
+    assert.equal(result.saved, false); assert.equal(result.dispatched, true);
+    assert.deepEqual(projectFiles(f.root), before); assert.equal(f.probe.state().dirty, true); assert.equal(h.context.lastAckedGeneration, generation - 1);
+    await compileNativeFlowReceiver(h);
+    h.context.packet = nativeFlowIntents(mounted).at(-1).payload;
+    assert.equal(vm.runInContext('handleNativeFlowSaveIntent(packet)', h.context), true); await Promise.all(pending.splice(0));
+    assert.equal(h.context.localDirty, false); assert.equal(f.probe.state().dirty, false); assert.equal(h.context.lastAckedGeneration, generation);
+    const sent = h.calls.filter(x => x.id === 'cmd.project.flowSaveV1').at(-1).payload.scenes; assert.equal(sent.length, 9);
+    for (const s of sent) assert.equal(fs.readFileSync(s.path, 'utf8'), s.content);
+    assert.deepEqual(fs.readFileSync(f.manifestPath), manifest); assert.deepEqual(h.context.flowModeState.scenes.map(s => [s.nodeId, s.sceneId]), identities);
+    assert.ok(require('../../src/core/document-content-envelope-v1.cjs').parseObservablePayload(fs.readFileSync(f.beta, 'utf8')).text.includes(generation === 8 ? 'EDITED' : 'TWICE 🧭 العربية'));
+  }
+});
+for (const drift of ['typing', 'project', 'document', 'session', 'owner', 'window', 'fence', 'capability']) {
+  test('native-menu Save refuses ' + drift + ' during read before intent or write', async t => {
+    const { f, h, mounted, snapshot } = await bookFixture(t, 'Роман', nativeSaveFixtureFactory());
+    const before = projectFiles(f.root), send = mounted.event.sender.send;
+    mounted.event.sender.send = (channel, payload) => { send(channel, payload); if (channel !== 'editor:snapshot-request') return;
+      if (drift === 'typing') f.probe.state({ generation: 9 });
+      if (drift === 'project') f.probe.state({ projectName: 'Other' });
+      if (drift === 'document') f.probe.replaceDocument(f.alpha);
+      if (drift === 'session') f.probe.changeSession();
+      if (drift === 'owner') f.probe.replaceTreeQueryOwner();
+      if (drift === 'window') queueMicrotask(() => f.probe.state({ window: null }));
+      if (drift === 'fence') f.probe.nativeFence(snapshot());
+      if (drift === 'capability') f.probe.revokeNativeSave(); };
+    await assert.rejects(nativeSave(f)); assert.equal(nativeFlowIntents(mounted).length, 0);
+    assert.deepEqual(projectFiles(f.root), before); assert.equal(h.context.lastAckedGeneration, 7);
+  });
+}
+test('native mode query preserves pending recording and fence; default snapshot still enforces them', async t => {
+  const f = await nativeSaveFixtureFactory()(t), snapshot = { projectId: f.query.projectId, documentId: f.b.nodeId };
+  mountRenderer(f, 'Beta', 0, null, snapshot); const pending = { unprepared: true }; f.probe.state({ pending });
+  const before = f.probe.nativeReadState(); assert.equal((await f.probe.snapshot(2500, null, null, true, true)).content, 'Beta');
+  assert.deepEqual(f.probe.nativeReadState(), before); await assert.rejects(f.probe.snapshot());
+  f.probe.state({ pending: null }); const fence = f.probe.nativeFence(snapshot);
+  await f.probe.snapshot(2500, null, null, true, true); assert.equal(f.probe.nativeReadState().fence, fence);
+  await f.probe.snapshot(); assert.equal(f.probe.nativeReadState().fence, null);
+});
+test('ordinary native Save stays durable and UI bridge payload cannot select the native route', async t => {
+  const f = await fixture(t), mounted = mountRenderer(f, 'Ordinary 🧭 العربية', 1); f.probe.state({ dirty: true });
+  await nativeSave(f); assert.equal(fs.readFileSync(f.beta, 'utf8'), 'Ordinary 🧭 العربية'); assert.equal(f.probe.state().dirty, false);
+  const book = await bookFixture(t), before = projectFiles(book.f.root);
+  await nativeSave(book.f, { invocationSource: 'ui-command-bridge' }, { invocationSource: 'native-menu' });
+  assert.equal(nativeFlowIntents(book.mounted).length, 0); assert.deepEqual(projectFiles(book.f.root), before);
+  assert.equal(nativeFlowIntents(mounted).length, 0);
+});
+for (const fault of ['project', 'document', 'generation', 'publication', 'closed', 'wrong-command']) {
+  test('renderer refuses stale native Flow Save ' + fault + ' without a command or ACK', async () => {
+    const h = await saveRenderer(saveRefs()), before = h.snapshot(), calls = h.calls.length;
+    h.context.packet = { commandId: 'cmd.project.plan.flowSave', payload: { projectId: h.context.currentProjectId,
+      documentId: h.context.currentDocumentId, generation: h.context.localEditGeneration, treeContentPublicationId: h.context.currentTreeContentPublicationId } };
+    const p = h.context.packet.payload;
+    if (fault === 'project') p.projectId = 'other'; if (fault === 'document') p.documentId = 'other';
+    if (fault === 'generation') p.generation++; if (fault === 'publication') p.treeContentPublicationId = 'other';
+    if (fault === 'closed') h.context.flowModeState.active = false;
+    if (fault === 'wrong-command') h.context.packet.commandId = 'cmd.project.save';
+    const working = h.snapshot(); await compileNativeFlowReceiver(h);
+    assert.equal(vm.runInContext('handleNativeFlowSaveIntent(packet)', h.context), false);
+    assert.deepEqual(h.snapshot(), working); assert.equal(h.calls.length, calls); assert.equal(before.ack, working.ack);
+  });
+}
