@@ -1022,7 +1022,9 @@
     "test/unit/sector-m-s14-flow-read-projection.test.js",
     "docs/tasks/2026-11-13--writer-flow-save-no-loss.md",
     "src/core/save-receipt-ack-v1.cjs",
-    "docs/tasks/2026-11-13--archive-restore-stage10-handover.md"
+    "docs/tasks/2026-11-13--archive-restore-stage10-handover.md",
+    "test/unit/sector-m-m7-flow-mode.test.js",
+    "docs/tasks/2026-11-14--writer-flow-plain-defaults-no-loss.md"
   ],
   "protectedFiles": [
     {
@@ -1263,7 +1265,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "93be5e7e112ba97894fc4b9c58e71363d6ad61f259ad65dcb7e6ab0ca35cf467"
+        "sha256": "70bd8dfb29a3df7ca3de9c91aa17d937b0d7d1aa0c19198d42a3b5175d497b1b"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -1955,7 +1957,7 @@
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
-        "sha256": "1734c1904c9dc4b2b8e02c549b9ff68bd2e1c7c2820ea937ad6962f3a7750911"
+        "sha256": "ffeec67e1ac13a2fddedba6339a6ca839b351b32dc82c1b061afe912be761c82"
       },
       {
         "path": "src/renderer/documentContentEnvelope.mjs",
@@ -2943,15 +2945,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "03dc340e6d45ad21bb0ad73ec624f2ccd4726597742211a2d62fb3e553ff9e3f"
+        "sha256": "1964792029a7ab8e8f13c311b7ecb4f2ebd8434d1f9e1011ddad6ec7a6821c08"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "db5b74a705cd6b260c91fa1b859a6be7bd65ae442cd4dbce4b00ee605d7ce372"
+        "sha256": "afb1787a0add961d5c24b3f7ce99cdd236daff6266a1dc274abe8343c21cedf8"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "174f9fed43d7b830583bd4c94d7b3bf7b1c919d90a294a5f78fdbd0fa6c383f3"
+        "sha256": "ee4f8eee7742dc275d7e92f5c836552da9ab09b268e8bfee316884436ddc54b8"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3491,7 +3493,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "04c2068c7df96a507a7fc055f2c941dafb7095a3c9b30184719e3f1c751d2b74"
+        "sha256": "6c4149c7a861a7578f88a4125666c713737dd3cb95d430a0ec0db6a56a70b784"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -3623,7 +3625,7 @@
       },
       {
         "path": "scripts/ops/sector-m-scope-map.json",
-        "sha256": "17f7fb415ac01e4ac35e86303eed53ee750ba66e316ffcd2eb8128085a668f00"
+        "sha256": "d05b763ceb0bc2efba31d316c2864348055d9126dd3b99a409d1ab536bed3c23"
       },
       {
         "path": "test/contracts/yalken-atlas-v5-r2-c02-safe-semantic-interactions.contract.test.js",
@@ -4716,6 +4718,14 @@
       {
         "path": "docs/tasks/2026-11-13--archive-restore-stage10-handover.md",
         "sha256": "7b61a733f34bed9d7bca3eb6445853620311c71b04600def353ca648e5b87aca"
+      },
+      {
+        "path": "test/unit/sector-m-m7-flow-mode.test.js",
+        "sha256": "343e2054181bd6f1907f4bba38a1573b82a003963beeb6fc2b9866d59f8c542b"
+      },
+      {
+        "path": "docs/tasks/2026-11-14--writer-flow-plain-defaults-no-loss.md",
+        "sha256": "2b212d0e5a55ad1a0ef32c0fdfb54513585e6b548aad046ad371caf58d4b8c34"
       }
     ],
     "followupRepair": {
