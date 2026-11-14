@@ -1,3 +1,15 @@
+# CURRENT — Same M37: native-shaped Main Save regression repaired in source
+
+TASK_ID: YALKEN_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114
+BINDING_BASE_SHA: db769858b85aab3fb4d932c796851f8fb08ad68f
+SOURCE_RENEWAL: same unclosed branch, originalM36 delivery base fixed; clean S2 4542763d/tree5ad67f84 before declarationbeeb1f29/preflight78dc1102 and taskE060cc3cca. Original S1 Core default repair and S2 mechanical witnesses retain their identities. No push, PR, CI, merge or native acceptance yet.
+
+Actual new105 built from S2: ordinary Beta Save1109bytes0a50742c/Pulse0to1, changed77word Flow stayed unsaved0of9; normal Quit and TERM refused, separately admitted exact own stop returned-9. All181entries84regular files and visible504UTF16/733UTF8 text retained; physicala3bd0d30 preserves87profiles55bundles35missingUNKNOWN8archivedcarriers. Failed105 stays frozen; no native error code observed, no warm/cold acceptance.
+
+Whole maintained full-Main causal RED88784f2c:73tests70pass3fail, original62 and all8newhostile cases pass; native terminal paragraph positives fail at actual M7_FLOW_SNAPSHOT_MISMATCH and queued boundary is not reached. Independentfafc8003 precedes Main edit. Minimal Main expected raw-plainText paragraph document now passes the same strict comparator alongside the old normalized framing; every original guard/global comparator/codec/lifecycle/atomic byte remains unchanged outside that exact delta. Whole Main GREEN314373fa73of73; repeated new-edit Save real9file bytes/IDs/metadata/cards/ACK, hostile rich/unknown/mismatch and queued stale typing protected. Source-derived fixtures are not native proof.
+
+SOURCE_AFFECTED: whole22file execution 1f5d6833d584, 1247of1247, no fail/skip/todo/cancel; overlaps/parent rows are not unique coverage. Independentc0b98271f249. Main/source tests remain within400manual lines; docs/task350,total750, generated/mechanical separate. Same normal delivery remains open. Fresh candidate106 and merged107 each need new exact-source/build/profile StageAdmission and real normal warm/cold; remaining8software processes still unexecuted after105 failure. All17UNKNOWN/NOT_READY/UNFROZEN,59old baseline skips uncovered, Word/nativeOffice PAUSED, Black Box after fullMac; standing goal ACTIVE.
+
 # CURRENT — Plain editor defaults in Flow: source observed
 
 TASK_ID: YALKEN_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114

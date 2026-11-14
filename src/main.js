@@ -34339,8 +34339,14 @@ async function handleFlowSaveV1(payloadRaw) {
         ...(parsed.doc ? { doc: envelope.buildParagraphDocumentFromText(parsed.text) } : { text: parsed.text }),
         metaEnabled: activePayload.hasMetaBlock || parsed.hasMetaBlock, meta: activePayload.meta, cards: activePayload.cards,
       });
+      // Tiptap retains the projection's terminal empty paragraph; keep both exact plain framings.
+      const expectedNativeSnapshot = parsed.doc ? envelope.composeObservablePayload({
+        doc: envelope.buildParagraphDocumentFromText(snapshot.plainText),
+        metaEnabled: activePayload.hasMetaBlock || parsed.hasMetaBlock, meta: activePayload.meta, cards: activePayload.cards,
+      }) : expectedSnapshot;
       if (snapshot.projectId !== manifest?.manifest?.projectId || snapshot.documentId !== active?.nodeId
-        || parsed.issue || !await treeSceneSnapshotsEqual(expectedSnapshot, snapshot.content)
+        || parsed.issue || (!await treeSceneSnapshotsEqual(expectedSnapshot, snapshot.content)
+          && !(parsed.doc && await treeSceneSnapshotsEqual(expectedNativeSnapshot, snapshot.content)))
         || normalizeFlowTextInput(parsed.text).trimEnd() !== normalizeFlowTextInput(snapshot.plainText).trimEnd()
         || !mapped.ok || mapped.scenes.length !== normalizedScenes.length || mapped.scenes.some((s, i) => {
           const target = normalizedScenes[i]; return s.path !== target.path || s.sceneId !== target.sceneId

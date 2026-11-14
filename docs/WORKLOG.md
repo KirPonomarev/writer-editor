@@ -6022,3 +6022,7 @@ PROCESS_SEQUENCE_RECOVERY_20261106: Primary human39cd7a45 at2026-11-02T09:01:25.
 ## 2026-11-13 — Same-chain native source identity correction
 
 Native93 source return failed89826e5b; clean5dc3033d remains unpushed. Exact-source RED26b83d4b proves default manifest identity leak; correction preflight16421847 admits same20 paths. Native93 closed0/profileb3cb9e51 preserved. Mandatory strict tests and new actual candidate94/merged95 remain pending; fullMac17UNKNOWN.
+
+## 2026-11-14 — Same M37 Main terminal paragraph boundary
+
+Native105 remains failed/closed-9 with all84file bytes/text protected;87profiles55bundles preservationa3bd0d30. Renewalbeeb1f29/pf78dc1102 keeps originalM36 base/same chain. Actual full Main RED88784f2c73tests70pass3fail -> minimal strict expected-framing input -> GREEN314373fa73of73, original62literal and8hostile/stale/repeatedSave retained. Whole22file affected1f5d6833d584 1247of1247, independentc0b98271f249. No native acceptance/push/PR/merge yet; fresh106/merged107 and full configured delivery pending; all17UNKNOWN.

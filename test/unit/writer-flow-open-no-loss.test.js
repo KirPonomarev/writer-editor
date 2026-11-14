@@ -539,3 +539,85 @@ for (const changedSynopsis of [false, true]) {
       for (const s of h.calls.at(-1).payload.scenes) assert.equal(fs.readFileSync(s.path, 'utf8'), s.content); }
   });
 }
+
+// Keep the original normalized fixture unchanged. A native Tiptap snapshot
+// also retains the terminal empty paragraph in the read projection's text.
+function useNativeBookParagraphFraming(h, defaults = true, mutate = () => {}) {
+  const core = require('../../src/core/document-content-envelope-v1.cjs');
+  h.context.getTiptapDocumentSnapshot = () => {
+    const doc = core.buildParagraphDocumentFromText(h.context.text);
+    if (defaults) {
+      doc.attrs = { wordPendingRevisions: null, wordUserBookmarks: null };
+      doc.content.forEach(p => { p.attrs = { textAlign: null }; });
+    }
+    mutate(doc);
+    return { text: h.context.text, doc };
+  };
+}
+for (const defaults of [false, true]) {
+  test('actual registered native terminal paragraph Save and new edit remain durable; defaults=' + defaults, async t => {
+    const { f, h, snapshot } = await bookFixture(t);
+    useNativeBookParagraphFraming(h, defaults);
+    const core = require('../../src/core/document-content-envelope-v1.cjs');
+    assert.ok(h.context.text.endsWith('\n'));
+    const native = core.parseObservablePayload(snapshot().content);
+    assert.equal(native.doc.content.length, h.context.text.split('\n').length);
+    assert.notEqual(native.doc.content.length, core.buildParagraphDocumentFromText(native.text).content.length);
+    const manifest = fs.readFileSync(f.manifestPath), identities = h.context.flowModeState.scenes.map(s => [s.sceneId, s.nodeId]);
+    let response; const dispatch = h.context.dispatchUiCommand;
+    h.context.dispatchUiCommand = async (...args) => { response = await dispatch(...args); return response; };
+    for (const generation of [8, 9]) {
+      if (generation === 9) {
+        h.context.text = h.context.text.replace('EDITED', 'TWICE 🧭 İ Σσς العربية 漢字');
+        h.context.localEditGeneration = generation; h.context.localDirty = true;
+        h.context.flowModeState = { ...h.context.flowModeState, dirty: true };
+        f.probe.state({ generation, dirty: true });
+      }
+      await h.save();
+      assert.equal(response.ok, true, JSON.stringify(response));
+      assert.equal(response.value.receipt.committed, true);
+      assert.equal(response.value.receipt.ack.savedGeneration, generation);
+      assert.equal(h.context.localDirty, false); assert.equal(f.probe.state().dirty, false);
+      assert.equal(h.context.lastAckedGeneration, generation);
+      assert.deepEqual(h.context.flowModeState.scenes.map(s => [s.sceneId, s.nodeId]), identities);
+      assert.deepEqual(fs.readFileSync(f.manifestPath), manifest);
+      const sent = h.calls.filter(x => x.id === 'cmd.project.flowSaveV1').at(-1).payload.scenes;
+      assert.equal(sent.length, 9);
+      for (const s of sent) assert.equal(fs.readFileSync(s.path, 'utf8'), s.content);
+      assert.equal(core.parseObservablePayload(fs.readFileSync(f.beta, 'utf8')).text,
+        generation === 8 ? 'Beta EDITED 😀 e\u0301' : 'Beta TWICE 🧭 İ Σσς العربية 漢字 😀 e\u0301');
+    }
+  });
+}
+for (const fault of ['unknown-null', 'explicit-alignment', 'bold', 'hard-break', 'extra-paragraph', 'changed-text', 'metadata', 'cards']) {
+  test('actual native terminal paragraph retains strict ' + fault + ' refusal before effect or ACK', async t => {
+    const { f, h } = await bookFixture(t), before = projectFiles(f.root);
+    useNativeBookParagraphFraming(h, true, doc => {
+      if (fault === 'unknown-null') doc.attrs.unknown = null;
+      if (fault === 'explicit-alignment') doc.content[0].attrs.textAlign = 'left';
+      if (fault === 'bold') doc.content[0].content[0].marks = [{ type: 'bold' }];
+      if (fault === 'hard-break') doc.content[0].content.push({ type: 'hardBreak' });
+      if (fault === 'extra-paragraph') doc.content.push({ type: 'paragraph', attrs: { textAlign: null } });
+      if (fault === 'changed-text') doc.content[0].content[0].text += ' UNAUTHORIZED';
+    });
+    if (fault === 'metadata') { h.context.metaEnabled = true; h.context.currentMeta = { status: 'changed', tags: {}, synopsis: 'Keep' }; }
+    if (fault === 'cards') h.context.currentCards = [{ id: 'owned', title: 'Keep', text: 'Unsaved' }];
+    let response; const dispatch = h.context.dispatchUiCommand;
+    h.context.dispatchUiCommand = async (...args) => { response = await dispatch(...args); return response; };
+    const working = h.snapshot(); await h.save();
+    assert.equal(response.ok, false); assert.equal(response.error.code, 'M7_FLOW_SNAPSHOT_MISMATCH');
+    assert.deepEqual(projectFiles(f.root), before);
+    assert.equal(f.probe.state().dirty, true); assert.deepEqual(h.snapshot(), working);
+  });
+}
+test('actual native paragraph snapshot cannot authorize a queued write after newer typing', async t => {
+  const { f, h } = await bookFixture(t), before = projectFiles(f.root);
+  useNativeBookParagraphFraming(h);
+  const resume = f.probe.captureQueued('save flow scene batch'); await h.save();
+  h.context.text += ' NEWER 🧭'; h.context.localEditGeneration = 9;
+  f.probe.state({ generation: 9, dirty: true });
+  const working = h.snapshot();
+  await assert.rejects(resume(), /M7_FLOW_CONTEXT_STALE/u);
+  assert.deepEqual(projectFiles(f.root), before); assert.deepEqual(h.snapshot(), working);
+  assert.equal(h.context.lastAckedGeneration, 7); assert.equal(f.probe.state().dirty, true);
+});
