@@ -717,6 +717,34 @@ function composeObservablePayload({
   return parts.filter(Boolean).join('\n\n');
 }
 
+// Editor schema defaults are empty only at their owning node. Compare a copy;
+// the persisted document and the shared codec/analysis contracts stay unchanged.
+function documentForFlowPlainTextComparison(doc) {
+  const comparisonDoc = cloneJsonValue(doc);
+  const pending = [comparisonDoc];
+  while (pending.length) {
+    const node = pending.pop();
+    if (!isPlainObject(node)) continue;
+    const defaults = node === comparisonDoc
+      ? ['wordPendingRevisions', 'wordUserBookmarks']
+      : node.type === 'paragraph' ? ['textAlign'] : [];
+    if (isPlainObject(node.attrs)) {
+      let removedDefault = false;
+      for (const key of defaults) {
+        if (Object.hasOwn(node.attrs, key) && node.attrs[key] === null) {
+          delete node.attrs[key];
+          removedDefault = true;
+        }
+      }
+      if (removedDefault && Object.keys(node.attrs).length === 0) delete node.attrs;
+    }
+    if (Array.isArray(node.content)) {
+      for (const child of node.content) pending.push(child);
+    }
+  }
+  return comparisonDoc;
+}
+
 function composeDocumentContentFromBase({
   baseContent = '',
   nextVisibleText = '',
@@ -727,8 +755,9 @@ function composeDocumentContentFromBase({
   const metaEnabledValue = metaEnabled === null ? parsed.hasMetaBlock : Boolean(metaEnabled);
 
   if (parsed.doc) {
-    const analysis = analyzeDocumentPlainTextRoundTrip(parsed.doc);
-    const canonicalParsedDoc = serializeDocumentJson(parsed.doc);
+    const comparisonDoc = documentForFlowPlainTextComparison(parsed.doc);
+    const analysis = analyzeDocumentPlainTextRoundTrip(comparisonDoc);
+    const canonicalParsedDoc = serializeDocumentJson(comparisonDoc);
     const canonicalParagraphDoc = serializeDocumentJson(buildParagraphDocumentFromText(parsed.text || ''));
     const matchesLegacyParagraphShape = canonicalParsedDoc === canonicalParagraphDoc;
     const unchangedVisibleText = normalizedNextVisibleText === trimLegacyTextContent(parsed.text || '');

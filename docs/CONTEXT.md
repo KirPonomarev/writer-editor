@@ -1,3 +1,15 @@
+# CURRENT — Plain editor defaults in Flow: source observed
+
+TASK_ID: YALKEN_WRITER_FLOW_PLAIN_DEFAULTS_NO_LOSS_20261114
+BINDING_BASE_SHA: db769858b85aab3fb4d932c796851f8fb08ad68f
+SOURCE_CHECKPOINT_01: Native104 remains FAILED/closed: ordinary Save persists1109bytes and Pulse0to1; two changed Flow intents leave project/default/Pulse bytes literal, normal Quit refuses, separately admitted own final stop returns-9. Actual33ed7b35/closureb77dad03, full71file profile and observed unsaved text remain retained. No successful Flow/Pulse differential or normal cold acceptance from104.
+
+Genuine maintained whole M7 RED298f2936 fails exactly6 default-positive cases plus their parent; all7 original tests and14 hostile controls pass. Private Core comparisonffeec67e omits only doc-root wordPendingRevisions:null/wordUserBookmarks:null and paragraph textAlign:null on a copy. Current M7 GREEN04b2e3f6 is29/29,0fail/cancel/skip/todo. Independent560a279b restores every other Core byte and all original test bytes; global parse/serialization/analysis, Main/Kernel/atomic source remain literal. Explicit/unknown/non-null/misplaced attributes, rich structure, metadata/cards, mixed Unicode and empty paragraphs retain their tested boundaries.
+
+Whole21-file affected chainf1ee9b8b is1207/1207 with0fail/cancel/skip/todo; independent6142e479 binds actual raw terminal, named execution and all21 file hashes. Counts include parent TAP rows and overlap other proofs; they are not unique full-product coverage. Actual old104 payload pure-composer recheck56bd4f00 now accepts changed text while preserving metadata/cards and input bytes; it is not native104 success.
+
+Two official current-input renderer builds35429f12 produce identical outputs: renderer70bd8dfb; preloadfc334d6a stays literal to base. No manual UI/bundle/codec changes or new dependencies/ports/timers. Fresh separately admitted candidate105 and merged106 native builds, current mechanical witnesses, full configured software wave and normal checked push/PR/CI/merge/exact merged verification remain mandatory. Physical baselinea3b366e8 preserves86 profiles54 bundles35missingUNKNOWN8archived carriers. All17 fullMac UNKNOWN/NOT_READY/UNFROZEN; Word/nativeOffice PAUSED; Black Box follows fullMac; standing goal ACTIVE.
+
 # CURRENT — Restored archive live-owner handover: source observed
 
 TASK_ID: YALKEN_ARCHIVE_RESTORE_STAGE10_HANDOVER_20261113

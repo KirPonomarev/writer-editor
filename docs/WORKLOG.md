@@ -1,3 +1,8 @@
+# 2026-11-14 — Flow plain editor defaults: source checkpoint
+
+- One private Core comparison helper and two composer references accept only three correctly scoped null defaults. Genuine whole M7 RED298f2936 precedes Core edit; GREEN04b2e3f6 is29/29; whole21-file affectedf1ee9b8b is1207/1207, all0fail/cancel/skip/todo. Independent560a279b/6142e479 preserve original source/assertions and bind actual named executions.
+- Official renderer builds35429f12 are byte-identical; renderer70bd8dfb, preload literalfc334d6a. Native104 remains failed/closed with original profile/text/raw retained. Fresh native/current witnesses/full software/delivery remain pending;17 fullMac rows UNKNOWN, Word/nativeOffice PAUSED, Black Box after fullMac.
+
 # 2026-11-13 — Archive RESTORE live Stage10 handover source checkpoint
 
 - Source-only repair on base73ef: actual native101 warm owner mismatch/cold control retained; genuine full S33 RED then90/90; other16 whole-file obligations covered with original failed aggregate plus unchanged S28 canonical-temp control. Independent7e16252a/79dc50e4 and one Main inverse preserve all original assertions and source bytes.
