@@ -9,7 +9,7 @@ HEAD_SHA_AT_START: db769858b85aab3fb4d932c796851f8fb08ad68f
 TARGET_BRANCH: main
 PUSH_BRANCH: codex/writer-flow-plain-defaults-no-loss-20261114
 DOCUMENT_CLASS: PRODUCT_TASK_CONTRACT
-STATUS: SAME_M37_NATIVE_SAVE_ROUTE_RENEWAL_NOT_RUNTIME_ACCEPTANCE
+STATUS: SAME_M37_LIFECYCLE_ASSERTION_RENEWAL_NOT_RUNTIME_ACCEPTANCE
 GROUP_ID: GROUP_04_STORAGE_AND_WRITE
 DESIGN_TOOL_ROUTER: pinned declarationb616f47e; pure Core logic and deterministic generated output, design contract unchanged
 DELIVERY_POLICY: COMMIT_REQUIRED=true; PUSH_REQUIRED=true; PR_REQUIRED=true; MERGE_REQUIRED=true; POST_MERGE_EXACT_HEAD_REQUIRED=true
@@ -53,6 +53,7 @@ Manual source/tests budget400changed lines, task/factual docs350,total750. Gener
 - test/unit/sector-m-m7-flow-mode.test.js
 - src/main.js
 - src/renderer/editor.js
+- test/unit/sector-m-preload-file-lifecycle-command-bridge.test.js
 - test/unit/writer-flow-open-no-loss.test.js
 - docs/tasks/2026-11-14--writer-flow-plain-defaults-no-loss.md
 - src/renderer/editor.bundle.js
@@ -63,6 +64,12 @@ Manual source/tests budget400changed lines, task/factual docs350,total750. Gener
 Everything outside exact23paths. No handwritten preload, visual design, global Main comparator/Kernel/lifecycle/atomic changes, Core runtime/schema/format/global normalization/analysis, security/dependency or new port/surface edits. Renewal09 admits only native-menu mode selection, private read-only snapshot query and existing-channel Flow intent receiver in editor.js; original Core and Main framing repairs remain. No blanket attribute/null stripping, semantic erasure, rich downgrade, weakened/skipped test, fake snapshot/ACK/Pulse or disabled no-loss guard. No direct protected push, force push, rebase, amend, git stash/reset/checkout/clean or deletion/cleanup. Preserve canonical owner6de, old candidate549a and all old profile/bundle/raw/text/history/authority/failure bytes. Word/nativeOffice PAUSED; Black Box after fullMac. No signing/notary/publication/private/secrets/admin/OS-policy or new agent/chat/model/service/timer.
 
 ## CONTRACT / SHAPES
+
+**SAME M37 — lifecycle bridge assertion renewal12**
+
+CleanS5 ee4c62e2/tree7c9cfa2d; declaration9d17b03c/preflight captured before edit. Same original db769base, branch, outcome, rollback,400source-tests/350docs/750total budgets and mandatory delivery. Allowlist gains only existing unit sector-m-preload-file-lifecycle-command-bridge.test.js:24paths. This explicitly permits replacing its one stale Save-handler source-format assertion and adding scoped native/non-native/ordinary Kernel route checks; every other original assertion/body remains literal.
+Actual complete reboot baseline e74fb5c4 is FAIL:4905tests/4845pass/1fail/59originalskips, no cancel/todo. Sole failure line64 expects the old async handler string. Native108 actual successes remain at S5 identities; no failure or different-head process retagging. Focused whole-file causal RED precedes the correction, whole-file GREEN follows. Product/Main/Core/editor/preload/bundle bytes and all1497packaged input bindings remain literal; no comment/dead-code appeasement, bypass, skip or semantic policy weakening.
+Refresh only necessary existing current SHA witnesses, preserve all historical rows and17UNKNOWN classifications, then complete current configured proof policies and normal checked delivery. Artifact equivalence requires the entire immutable package-input tuple and original native source/build/profile identities. Separately admit fresh candidate109 and genuinely rebuilt merged110 for any new-head native observation; never relabel108 or the old requested109 as those executions. Actual full baseline, current metadata and all normal delivery gates remain mandatory. Goal ACTIVE; Word/nativeOfficePAUSED, BlackBox after fullMac.
 
 Same-M37 renewal09: cleanS4 f7fe6b2c/treea9036677, bootstrapf5d723df, renewed full normative/scoped factual reads and fresh literal remote db769 precede declaration8f322c01/preflightfcafc785. Original22path contract gains only editor.js:23paths, same400source-tests/350docs/750total budget, original base/branch/outcome/rollback/delivery. This explicit renewal supersedes earlier framing-only and handwritten-renderer exclusions solely for the route below; all earlier receipts keep their original identities.
 Actual106 stays failed/frozen: normal CmdS left Flow unsaved, Quit/TERM refused, admitted own final stop-9; fullprofilec53f600b/textccbf909d/loopstop84ad0ba7 retained. Diagnostic107 is S4 plus temporary observational source, not a candidate: nativeCmdS emitted zeroFlowmarkers and no writes; explicitCmdShiftS produced actual9file durable batch, dirtyfalse and normalQuit0. Tracea33e730c/closed033fb5e6/physical5631e77d preserve89profiles57bundles35historicalmissingUNKNOWN8carriers. Lost unexecuted R2 runtime remains separately UNKNOWN.

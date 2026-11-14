@@ -6030,3 +6030,9 @@ Native105 remains failed/closed-9 with all84file bytes/text protected;87profiles
 ## 2026-11-14 — Same M37 native-menu Flow Save source route
 
 Declaration8f322c01/preflightfcafc785:23paths/original budgets/base. CausalRED20c02cec -> whole90GREENf3487f29; original73literal, deterministicrenderer3551f0aa. Initial whole27files14ba27be FAIL1698of1699: one stale current editor digest in unchanged WP307 assertion239. Official current finalizer admitted dirty-scope refresh precedes coherent commit and complete whole27 repeat; no failure credited green. Failed106/diagnostic107 boundaries and89profiles57bundles retained; fresh108/merged109 and full current delivery required; goalACTIVE.
+
+## 2026-11-14 — Same M37 lifecycle bridge structural compatibility
+
+Complete reboot baseline e74fb5c4:4905/4845/1/59, one old Save-wrapper string. Fresh declaration12/preflight/taskE0 before test edit; initial task H2-count format failure retained and corrected within existing CONTRACT section. Actual whole bridge RED20cc4818 (3of4) thenGREENc8270fde (4of4), no skips. One assertion region only, product1497package inputs literal and every unrelated test byte inverse exact. Current digest witnesses, renewed current proofs and normal full delivery remain mandatory; native108 stays originalS5, all17UNKNOWN, goalACTIVE.
+
+Structural negative proof e878b312 found broad matching could miss native fallback removal. Same-region refinement9a9f4ab2 preserves every unrelated old test byte, whole4of4 GREEN9c465310 and independent03f69a39 reject all5 route/capability/intent mutants. Product1497 inputs literal; no runtime change.

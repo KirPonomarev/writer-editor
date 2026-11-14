@@ -2945,15 +2945,15 @@
       },
       {
         "path": "docs/CONTEXT.md",
-        "sha256": "fe37430e77c4769b0b457ffa5e3d0409aece8fa8ec6098c157fda0dd0933d57c"
+        "sha256": "259fa50d9095857f388d8c7fa6fececa9ff88874f8775e55c6805a3f969f304b"
       },
       {
         "path": "docs/HANDOFF.md",
-        "sha256": "e963c22674db22b6250b5a1616bb92a5d491a35199fbfcb57bbc055a75ab2e0c"
+        "sha256": "2c8a194032dd0db0d30ae54d5c454e9c9ccdbb84ef1270bf018452a4c9981ba2"
       },
       {
         "path": "docs/WORKLOG.md",
-        "sha256": "a94211316bb9711cef794aaf73a9c33dda6b056b5cf90611f8f5567470fd6cfa"
+        "sha256": "0d15096a79ba3ded7bf8c8847a1e6337cb41f13bbd2f7662e85de9ffaaaaad4c"
       },
       {
         "path": "src/core/word-comment-ranges-v1.cjs",
@@ -3493,7 +3493,7 @@
       },
       {
         "path": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-        "sha256": "e1c854e1c0d44faab31036265d378ec7aa7e92b74debf37def84f3b2c1ae7bf1"
+        "sha256": "d89997ad693dbaff031531e811213d2013f0626dbffd913966e528b359935091"
       },
       {
         "path": "test/unit/sector-m-s32-full-archive-export.test.js",
@@ -4725,7 +4725,7 @@
       },
       {
         "path": "docs/tasks/2026-11-14--writer-flow-plain-defaults-no-loss.md",
-        "sha256": "a6a15124410bc88a71ae78c77ccf6286fd08051cee62c33edfe3bf2d07cac6a8"
+        "sha256": "a8ae5492060e833fec89e26799ea7044ef329669d0956f0920480b0dfd73c558"
       }
     ],
     "followupRepair": {
